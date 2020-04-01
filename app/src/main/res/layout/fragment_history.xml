@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HistoryFragment"
+    android:id="@+id/historyFragment">
+
+    <RelativeLayout
+        android:id="@+id/historyFragment_relativeLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusableInTouchMode="true"
+        android:clickable="true"
+        android:focusable="true">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageFrame"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:padding="8dp"
+            android:src="@drawable/contact_unfoto" />
+
+        <TextView
+            android:id="@+id/nameFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_toEndOf="@id/imageFrame"
+            android:padding="4dp"
+            android:text="name"
+            android:textSize="18sp"
+            android:textStyle="normal"/>
+
+        <ImageView
+            android:id="@+id/typeCallFrame"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_below="@id/nameFrame"
+            android:layout_toEndOf="@id/imageFrame"
+            android:src="@drawable/baseline_call_made_24" />
+
+        <TextView
+            android:id="@+id/numberFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:layout_below="@id/nameFrame"
+            android:layout_marginTop="2dp"
+            android:layout_toEndOf="@id/typeCallFrame"
+            android:text="number"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/timeFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:layout_above="@id/separator"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="13dp"
+            android:text="time"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/dateFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:layout_above="@id/separator"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="36dp"
+            android:text="date"
+            android:textSize="16sp" />
+
+        <View
+            android:id="@+id/separator"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:layout_below="@id/imageFrame"
+            android:layout_marginStart="64dp"
+            android:layout_marginEnd="16dp"
+            android:background="#A2A59C" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/historyFragment.imageCall"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:padding="8dp"
+            android:src="@drawable/telephony_call_192"
+            android:visibility="invisible"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/historyFragment.imageWhatsApp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:padding="8dp"
+            android:src="@drawable/whatsapp_192"
+            android:layout_alignParentEnd="true"
+            android:visibility="invisible"/>
+
+
+    </RelativeLayout>
+
+</FrameLayout>

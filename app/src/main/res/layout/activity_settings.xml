@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingsActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TableRow>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="15dp"
+            android:textSize="25sp"
+            android:text="Размер иконок:"
+            android:layout_weight="1"/>
+
+            <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="15dp"
+            android:textSize="25sp"
+            android:text="Отступ иконок слева:"
+                android:layout_weight="1"/>
+            </TableRow>
+            <TableRow>
+        <EditText
+            android:id="@+id/CirSizeEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:gravity="center"
+            android:textSize="25sp"
+            android:text="64"
+            android:layout_weight="1"/>
+
+        <EditText
+            android:id="@+id/MarginStartEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:gravity="center"
+            android:textSize="25sp"
+            android:text="50"
+            android:layout_weight="1"/>
+            </TableRow>
+            <TableRow>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="15dp"
+            android:textSize="25sp"
+            android:text="Отступ иконок Сверху:"
+            android:layout_weight="1"/>
+            <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="15dp"
+            android:textSize="25sp"
+            android:text="Отступ между иконками:"
+                android:layout_weight="1"/>
+            </TableRow>
+            <TableRow>
+        <EditText
+            android:id="@+id/MarginTopEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:gravity="center"
+            android:textSize="25sp"
+            android:text="150"
+            android:layout_weight="1"/>
+
+        <EditText
+            android:id="@+id/OffsetEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:gravity="center"
+            android:textSize="25sp"
+            android:text="50"
+            android:layout_weight="1"/>
+            </TableRow>
+
+            <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="15dp"
+                android:textSize="20sp"
+                android:text="Граница движения иконок:"
+                android:layout_weight="2"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:textSize="20sp"
+                    android:text="Значение движения до учета действия:"
+                    android:layout_weight="3"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:textSize="20sp"
+                    android:text="Погрешность движения до переключения вектора:"
+                    android:layout_weight="3"/>
+
+            </TableRow>
+            <TableRow>
+                <EditText
+                    android:id="@+id/MaxTouchET"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:textSize="25sp"
+                    android:text="50"
+                    android:layout_weight="2"/>
+                <EditText
+                    android:id="@+id/DifTouchET"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:textSize="25sp"
+                    android:text="50"
+                    android:layout_weight="3"/>
+                <EditText
+                    android:id="@+id/MaxPriorET"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:textSize="25sp"
+                    android:text="50"
+                    android:layout_weight="3"/>
+            </TableRow>
+        <TableRow>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:text="Метод сжатия:"
+            android:layout_weight="1"/>
+        <Spinner
+            android:id="@+id/ListPhotoMethod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:dropDownWidth="wrap_content"
+            android:spinnerMode="dialog"
+            android:layout_weight="2"/>
+    </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:text="Кол-во иконок:"
+                    android:layout_weight="2"/>
+                <Spinner
+                    android:id="@+id/ListCountCirs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:dropDownWidth="wrap_content"
+                    android:spinnerMode="dialog"
+                    android:layout_weight="7"/>
+
+              <!--  <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:text="Выв:"
+                    android:layout_weight="3"/>
+                <Spinner
+                    android:id="@+id/listReverse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:dropDownWidth="wrap_content"
+                    android:spinnerMode="dialog"
+                    android:layout_weight="2"/>-->
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:text="Свет фона:"
+                    android:layout_weight="1"/>
+                <Spinner
+                    android:id="@+id/ListColorsFon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:dropDownWidth="wrap_content"
+                    android:spinnerMode="dialog"
+                    android:layout_weight="2"/>
+                <Button
+                    android:id="@+id/buttonInsertPhoto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:onClick="onClickButtonPhoto"
+                    android:background="@drawable/sharp_insert_photo_black_48"/>
+            </TableRow>
+</TableLayout>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:onClick="onClickButton"
+            android:text="Сохранить" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
