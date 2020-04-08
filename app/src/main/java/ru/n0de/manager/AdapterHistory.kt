@@ -2,11 +2,9 @@ package ru.n0de.manager
 
 import android.content.Context
 import android.content.Intent
-import android.opengl.Visibility
 import android.provider.CallLog
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -15,36 +13,15 @@ import javax.security.auth.callback.Callback
 import android.widget.TextView
 import android.widget.ImageView
 import android.widget.RelativeLayout
-import androidx.core.view.marginEnd
-import androidx.core.view.marginStart
 import com.zerobranch.layout.SwipeLayout
-import kotlinx.android.synthetic.main.fragment_history.*
-import kotlinx.android.synthetic.main.history_swiping_item.view.*
 import org.jetbrains.anko.find
-import org.jetbrains.anko.sdk27.coroutines.onTouch
-import java.lang.Exception
-import java.lang.reflect.Method
-import java.nio.file.Files.find
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import java.util.*
-import kotlin.math.abs
-import kotlin.math.sign
-import java.util.Collections.swap
 
 
-
-class AdapterHistory(var items: ArrayList<HistoryItem>, val callback: Callback?): RecyclerView.Adapter<AdapterHistory.HolderHistory>(), ItemTouchHelperAdapter {
+class AdapterHistory(var items: ArrayList<HistoryItem>, val callback: Callback?, val onClick: Boolean = true): RecyclerView.Adapter<AdapterHistory.HolderHistory>(), ItemTouchHelperAdapter {
 
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
-        /*if (fromPosition < toPosition) {
-            for (i in fromPosition until toPosition) {
-                swap(items, i, i + 1)
-            }
-        } else {
-            for (i in fromPosition downTo toPosition + 1) {
-                swap(items, i, i - 1)
-            }
-        }
-        notifyItemMoved(fromPosition, toPosition)*/
     }
 
     override fun onItemDismiss(position: Int) {
@@ -53,7 +30,6 @@ class AdapterHistory(var items: ArrayList<HistoryItem>, val callback: Callback?)
     }
 
     private lateinit var context: Context
-    private lateinit var backupHistoryItem: BackupHistoryItem
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory{
         context = parent.context
@@ -67,24 +43,13 @@ class AdapterHistory(var items: ArrayList<HistoryItem>, val callback: Callback?)
         holder.bind(items[position])
     }
 
-    fun View.setMargins(start:Int = MainActivity.nullNum, top:Int = MainActivity.nullNum, end:Int = MainActivity.nullNum, bottom:Int = MainActivity.nullNum){
-        var layoutParams = this.layoutParams as RelativeLayout.LayoutParams
-        layoutParams.marginStart = if(start != MainActivity.nullNum) start else layoutParams.marginStart
-        layoutParams.topMargin = if(top != MainActivity.nullNum) top else layoutParams.topMargin
-        layoutParams.marginEnd = if(end != MainActivity.nullNum) end else layoutParams.marginEnd
-        layoutParams.bottomMargin = if(bottom != MainActivity.nullNum) bottom else layoutParams.bottomMargin
-        this.layoutParams = layoutParams
-    }
-
-    private fun openDialog(listCells: List<HistoryItem>) {
-        val intent = Intent(this.context, DetailHistory::class.java)
-        intent.putExtra(Keys.ListCells, listCells[0].numberContact)
+    private fun openDetail(item: HistoryItem) {
+        val intent = Intent(this.context, DetailHistoryActivity::class.java)
+        intent.putExtra(Keys.number, item.numberContact)
+        intent.putExtra(Keys.id, item.contactID)
         context.startActivity(intent)
     }
 
-    private fun clicableAll(bool: Boolean){
-
-    }
 
     inner class HolderHistory(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -97,30 +62,16 @@ class AdapterHistory(var items: ArrayList<HistoryItem>, val callback: Callback?)
         private val dateCon = itemView.findViewById<TextView>(R.id.dateContact)
         private val typeCall = itemView.findViewById<ImageView>(R.id.typeCall)
         private val swipeL = itemView.find<SwipeLayout>(R.id.swipe_layout)
-
-        private var xPos = 0f
-        private var yPos = 0f
-        private var priorityY = true
-        private var priority = 20
-        private var marStart = 0
-        private var marEndTime = 0
-        private var openDetail = true
-        private val DIF = 100
-        private val MAXT = 200
-        private val onClick = true
-        private lateinit var isdown: View
+        private val relaytL = itemView.find<RelativeLayout>(R.id.drag_layout)
 
         fun bind(item: HistoryItem) {
-
-            //swipeL.showMode(SwipeLayout.ShowMode.LayDown)
-//            swipeL.addDrag(SwipeLayout.DragEdge.Left, imageLeft)
-            //swipeL.addDrag(SwipeLayout.DragEdge.Right, imageRight)
 
             imageCon.setImageDrawable(item.image)
             nameCon.text = item.nameContact
             numberCon.text = "${item.numberContact}, ${Metoths.getFormatedTime(item.duration)}"
             timeCon.text = item.time
             dateCon.text = item.date
+
             when(item.typeCall){
                 CallLog.Calls.OUTGOING_TYPE -> typeCall.setImageResource(R.drawable.baseline_call_made_24)
                 CallLog.Calls.INCOMING_TYPE -> typeCall.setImageResource(R.drawable.baseline_call_received_24)
@@ -144,42 +95,16 @@ class AdapterHistory(var items: ArrayList<HistoryItem>, val callback: Callback?)
                     swipeL.close()
                 }
 
-
                 override fun onClose() {
-//                    imageLeft.visibility = View.INVISIBLE
-//                    imageRight.visibility = View.INVISIBLE
                 }
 
             })
+            if (onClick)
+            relaytL.setOnClickListener {
+                openDetail(item)
+            }
 
-            /*swipeL.addDrag(SwipeLayout.DragEdge.Right, bottomWrapper)
 
-            swipeL.addSwipeListener(object : SwipeLayout.SwipeListener{
-                override fun onOpen(layout: SwipeLayout?) {
-                    //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
-
-                override fun onUpdate(layout: SwipeLayout?, leftOffset: Int, topOffset: Int) {
-                    Log.d("AdapterHistory.kt: ", "layout = $layout, leftOffset = $leftOffset, topoffset = $topOffset")
-                }
-
-                override fun onStartOpen(layout: SwipeLayout?) {
-                    //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
-
-                override fun onStartClose(layout: SwipeLayout?) {
-                    //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
-
-                override fun onHandRelease(layout: SwipeLayout?, xvel: Float, yvel: Float) {
-                    //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
-
-                override fun onClose(layout: SwipeLayout?) {
-                    //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
-
-            })*/
 
             /*itemView.onTouch { v, event ->
                 Log.d("OnTouchHistory: ", "Event = ${event.actionMasked}")

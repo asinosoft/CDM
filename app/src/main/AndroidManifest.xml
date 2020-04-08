@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -15,7 +15,8 @@
         android:roundIcon="@drawable/app_icon_512"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DetailHistory"></activity>
+        <activity android:name=".DetailHistoryActivity"></activity>
+        <activity android:name=".DetailHistory" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".ActivityPhoneChoose" />
         <activity android:name=".MainActivity">

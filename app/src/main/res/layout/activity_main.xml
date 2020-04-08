@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     android:id="@+id/MainActivity.relativeLayout"
-    android:overScrollMode="never">
+    android:overScrollMode="never"
+    android:animateLayoutChanges="true">
 
     <ru.n0de.manager.LockableNestedScrollView
         android:id="@+id/scrollView"

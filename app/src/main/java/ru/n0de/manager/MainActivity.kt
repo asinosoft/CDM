@@ -39,6 +39,11 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.pwittchen.swipe.library.rx2.Swipe
+import com.github.pwittchen.swipe.library.rx2.SwipeEvent
+import com.github.pwittchen.swipe.library.rx2.SwipeListener
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onLongClick
@@ -99,6 +104,9 @@ class MainActivity : FragmentActivity() {
     lateinit var relativeLayout: RelativeLayout
     private lateinit var scrollView: LockableNestedScrollView
 
+    lateinit var swipe: Swipe
+    var swipeEvent: SwipeEvent = SwipeEvent.SWIPED_LEFT
+
     private var marStart = 0
     private var marEndTime = 0
     private var openDetail = true
@@ -127,6 +135,8 @@ class MainActivity : FragmentActivity() {
         buttonSettings.setOnClickListener {
             openSettings()
         }
+
+//        setSwipe()
         /*relativeLayout.onLongClick {
             if (sliderIsLongClickAvalable) {
                 sliderIsLongClick = true
@@ -231,6 +241,48 @@ class MainActivity : FragmentActivity() {
         setHistory()
     }
 
+    private fun setSwipe() {
+        swipe = Swipe()
+        swipe.setListener(object: SwipeListener{
+            override fun onSwipedUp(event: MotionEvent?): Boolean {
+                swipeEvent = SwipeEvent.SWIPED_UP
+                return true
+            }
+
+            override fun onSwipedDown(event: MotionEvent?): Boolean {
+                swipeEvent = SwipeEvent.SWIPED_DOWN
+                return true
+            }
+
+            override fun onSwipingUp(event: MotionEvent?) {
+                swipeEvent = SwipeEvent.SWIPING_UP
+            }
+
+            override fun onSwipedRight(event: MotionEvent?): Boolean {
+                swipeEvent = SwipeEvent.SWIPED_RIGHT
+                return true
+            }
+
+            override fun onSwipingLeft(event: MotionEvent?) {
+                swipeEvent = SwipeEvent.SWIPING_LEFT
+            }
+
+            override fun onSwipingRight(event: MotionEvent?) {
+                swipeEvent = SwipeEvent.SWIPING_RIGHT
+            }
+
+            override fun onSwipingDown(event: MotionEvent?) {
+                swipeEvent = SwipeEvent.SWIPING_DOWN
+            }
+
+            override fun onSwipedLeft(event: MotionEvent?): Boolean {
+                swipeEvent = SwipeEvent.SWIPED_LEFT
+                return true
+            }
+
+        })
+    }
+
     override fun onStart() {
         super.onStart()
         scrollToEnd()
@@ -332,7 +384,7 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun setHistory() {
-        val list = getHistoryListLatest(-1)
+        val list = getHistoryListLatest(100)
         val listUnique = ArrayList<HistoryCell>()
         list.forEach {
             if (!listUnique.containNumber(it.numberContact)) {
@@ -891,20 +943,29 @@ class MainActivity : FragmentActivity() {
                     cir.bringToFront()
                     //Log.d("CirTemp: ", "layparam = ${cirTemp.layoutParams.height} / ${cirTemp.layoutParams.width} / ${cirTemp.marginStart} / ${cirTemp.marginTop}")
                 } else if (event.actionMasked == MotionEvent.ACTION_MOVE && !cir.inContact()) {
-                    val layoutParams = cir.layoutParams as RelativeLayout.LayoutParams
-                    layoutParams.marginStart = getMarginStart(difX, difY)
-                    layoutParams.topMargin =
-                        marginTop - (if (layoutParams.marginStart == marginStart) difY.toInt() else 0)
-                    //marginTop - if (abs(difY) > abs(difX)) difY.toInt() else 0
-                    cir.layoutParams = layoutParams
-                    setActionImage(cir, difX, difY)
+                    val layoutMarginStart = getMarginStart(difX, difY)
+//                    layoutParams.topMargin =
+//                        marginTop - (if (layoutParams.marginStart == marginStart) difY.toInt() else 0)
+//                    cir.layoutParams = layoutParams
+                    cir.animate()
+                        .y(marginTop.toFloat() - (if (layoutMarginStart == marginStart) difY else 0.toFloat()))
+                        .x(layoutMarginStart.toFloat())
+                        .setDuration(0)
+                        .start()
+                    setActionImage(cir, difX, difY, marginStart, marginTop)
                     cir.isDrag = abs(difX) + abs(difY) <= settings.dragPogres
                     deleteImage.visibility = View.INVISIBLE
+                    Log.d("MainActivity.kt: ", "SwipeEvent: ${swipeEvent.name}")
                 } else if (event.actionMasked == MotionEvent.ACTION_UP) {
-                    val layoutParams = cir.layoutParams as RelativeLayout.LayoutParams
-                    layoutParams.marginStart = marginStart
-                    layoutParams.topMargin = marginTop
-                    cir.layoutParams = layoutParams
+//                    val layoutParams = cir.layoutParams as RelativeLayout.LayoutParams
+//                    layoutParams.marginStart = marginStart
+//                    layoutParams.topMargin = marginTop
+//                    cir.layoutParams = layoutParams
+                    cir.animate()
+                        .x(marginStart.toFloat())
+                        .y(marginTop.toFloat())
+                        .setDuration(0)
+                        .start()
                     cir.openCard = difX == 0f && difY == 0f
                     cir.isDrag = true
                     deleteImage.visibility = View.INVISIBLE
@@ -974,7 +1035,7 @@ class MainActivity : FragmentActivity() {
         cirTemp.layoutParams = layoutParams
     }
 
-    private fun setActionImage(cir: CirView, difX: Float, difY: Float) {
+    private fun setActionImage(cir: CirView, difX: Float, difY: Float, startX: Int, startY: Int) {
 
         cirTemp.visibility =
             if (abs(difX) < settings.difTouch && abs(difY) < settings.difTouch) View.INVISIBLE else View.VISIBLE
@@ -982,7 +1043,7 @@ class MainActivity : FragmentActivity() {
         //Log.d("CirTemp: ", "Visibility = ${cirTemp.visibility == View.VISIBLE}")
         cirTemp.setBackgroundResource(R.drawable.sms_192)
 
-        when (getAction(difX, difY)) {
+        when (getAction(cir, startX, startY)) {
             Direction.LEFT -> cirTemp.setImageResource(R.drawable.whatsapp_192) // Влево
             Direction.DOWN -> cirTemp.setImageResource(R.drawable.sms_192) // Вниз
             Direction.TOP -> cirTemp.setImageResource(R.drawable.email_192) // Вверх
@@ -1002,6 +1063,16 @@ class MainActivity : FragmentActivity() {
         val _difY = abs(difY)
         if (_difX > _difY) return if (difX / _difX == 1.0f) Direction.LEFT else Direction.RIGHT
         if (_difX < _difY) return if (difY / _difY == 1.0f) Direction.TOP else Direction.DOWN
+        return Direction.UNKNOWN
+    }
+
+    private fun getAction(cir: CirView, startX: Int, startY: Int): Direction {
+
+        val difX = startX - cir.x
+        val difY = startY - cir.y
+
+        if (abs(difX) > abs(difY)) return if (difX.sign == 1.0f) Direction.LEFT else Direction.RIGHT
+        if (abs(difX) < abs(difY)) return if (difY.sign == 1.0f) Direction.TOP else Direction.DOWN
         return Direction.UNKNOWN
     }
 
