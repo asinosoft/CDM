@@ -81,7 +81,7 @@
             android:background="#A2A59C" />
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/historyFragment.imageCall"
+            android:id="@+id/imageCall"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:padding="8dp"
@@ -89,7 +89,7 @@
             android:visibility="invisible"/>
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/historyFragment.imageWhatsApp"
+            android:id="@+id/imageWhatsApp"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:padding="8dp"

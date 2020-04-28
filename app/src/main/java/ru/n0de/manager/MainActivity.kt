@@ -130,7 +130,7 @@ class MainActivity : FragmentActivity() {
         recyclerView.isNestedScrollingEnabled = false
         scrollView = find(R.id.scrollView)
         scrollView.setScrollingEnabled(true)
-        relativeLayout = find(R.id.MainActivity_relativeLayout)
+        relativeLayout = find(R.id.relativeLayout)
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         buttonSettings.setOnClickListener {
             openSettings()

@@ -109,8 +109,8 @@ class HistoryFragment : Fragment() {
                     timeFrame.setMargins(end = marEndTime + difX.toInt())
                     dateFrame.setMargins(end = marEndTime + difX.toInt())
 
-                    historyFragment_imageCall.visibility = if(Math.abs(difX) >= DIF) if(difX / Math.abs(difX) == -1f) View.VISIBLE else View.INVISIBLE else View.INVISIBLE
-                    historyFragment_imageWhatsApp.visibility = if(Math.abs(difX) >= DIF) if(difX / Math.abs(difX) == 1f) View.VISIBLE else View.INVISIBLE else View.INVISIBLE
+                    imageCall.visibility = if(Math.abs(difX) >= DIF) if(difX / Math.abs(difX) == -1f) View.VISIBLE else View.INVISIBLE else View.INVISIBLE
+                    imageWhatsApp.visibility = if(Math.abs(difX) >= DIF) if(difX / Math.abs(difX) == 1f) View.VISIBLE else View.INVISIBLE else View.INVISIBLE
                     /*if (scrollView.context != null) {
                         var difY = (yPos - event.rawX).toInt()
                         scrollView.scrollTo(0, 100)
@@ -121,10 +121,10 @@ class HistoryFragment : Fragment() {
                     imageFrame.setMargins(start = marStart)
                     timeFrame.setMargins(end = marEndTime)
                     dateFrame.setMargins(end = marEndTime)
-                    if(historyFragment_imageCall.visibility == View.VISIBLE) callPhone(cell.numberContact)
-                    if(historyFragment_imageWhatsApp.visibility == View.VISIBLE) openWhatsApp(cell.numberContact)
-                    historyFragment_imageWhatsApp.visibility = View.INVISIBLE
-                    historyFragment_imageCall.visibility = View.INVISIBLE
+                    if(imageCall.visibility == View.VISIBLE) callPhone(cell.numberContact)
+                    if(imageWhatsApp.visibility == View.VISIBLE) openWhatsApp(cell.numberContact)
+                    imageWhatsApp.visibility = View.INVISIBLE
+                    imageCall.visibility = View.INVISIBLE
                     /*var difX = xPos - event.rawX
                     openDetail = Math.abs(difX) <= 10*/
                     if(onClick && openDetail){

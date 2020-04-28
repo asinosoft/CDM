@@ -10,10 +10,15 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.Spinner
+import android.widget.*
 import org.jetbrains.anko.find
 import com.google.gson.Gson
 import android.provider.MediaStore
+import com.ramotion.foldingcell.views.FoldingCellView
+import com.xw.repo.BubbleSeekBar
+import com.xw.repo.BubbleSeekBar.OnProgressChangedListener
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import ru.n0de.manager.databinding.SettingsLayoutBinding
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -30,21 +35,59 @@ class SettingsActivity : AppCompatActivity() {
     lateinit var listColorFon: Spinner
     lateinit var settings: Settings
     lateinit var loader: Loader
+    lateinit var views: SettingsLayoutBinding
     var filePathPhoto = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT // вертикальная
-        setContentView(R.layout.activity_settings)
-        supportActionBar!!.hide()
+        //requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT // вертикальная
+        views = SettingsLayoutBinding.inflate(layoutInflater)
+        setContentView(views.root)
 //        window.statusBarColor = Color.BLACK
 //        window.navigationBarColor = Color.BLACK
     }
 
     override fun onStart() {
         super.onStart()
-        initilaze()
-        setValues()
+        views.seekBar1.onProgressChangedListener = object : OnProgressChangedListener {
+            override fun onProgressChanged(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float,
+                fromUser: Boolean
+            ) {
+                views.circleImageView.setSize(progress)
+            }
+
+            override fun getProgressOnActionUp(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float
+            ) {
+            }
+
+            override fun getProgressOnFinally(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float,
+                fromUser: Boolean
+            ) {
+            }
+        }
+        /*views.foldingCell1.initialize(1000, Color.DKGRAY, 2);
+        views.foldingCell1.initialize(30, 1000, Color.DKGRAY, 2);
+        views.foldingCell1.setOnClickListener {
+            views.foldingCell1.toggle(false)
+        }*/
+//        initilaze()
+//        setValues()
+    }
+
+    fun View.setSize(size: Int){
+        val l = this.layoutParams
+        l.width = size
+        l.height = size
+        this.layoutParams = l
     }
 
     private fun saveData() {
@@ -153,7 +196,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
+        super.onActivityResult(requestCode, resultCode, data)
         if (requestCode != 12 || resultCode != Activity.RESULT_OK) return
         val uri = data!!.data
         val projection = arrayOf(MediaStore.Images.Media.DATA)

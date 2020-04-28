@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:id="@+id/MainActivity.relativeLayout"
+    android:id="@+id/relativeLayout"
     android:overScrollMode="never"
     android:animateLayoutChanges="true">
 
@@ -206,7 +206,7 @@
         android:background="@drawable/baseline_settings_black_48"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="12dp"
-        android:layout_marginBottom="12dp"/>
+        android:layout_marginBottom="12dp" />
 
     <ImageView
         android:id="@+id/deleteImage"
