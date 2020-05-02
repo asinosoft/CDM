@@ -7,21 +7,31 @@ import android.net.Uri
 import java.io.Serializable
 import java.net.URI
 
-class Settings: Serializable {
-    var dragPogres = 10
-    var sizeCirs = 200
-    var marginStartCirs = 100
-    var marginTopCirs = 150
-    var offsetCirs = 300
-    var maxTouch = 200
-    var maxPrior = 50
-    var difTouch = 150
-    var historyListHeight = 1000
-    var spliterOfssetGlobal = 0
-    var photoType = PhotoType.Full
-    var countCirs = 12
-    var themeColor = Color.WHITE
-    var listHistoryReverse = true
+data class Settings(
+    var dragPogres: Int = 10,
+    var sizeCirs: Int = 200,
+    var marginStartCirs: Int = 100,
+    var marginTopCirs: Int = 150,
+    var offsetCirs: Int = 300,
+    var maxTouch: Int = 200,
+    var maxPrior: Int = 50,
+    var difTouch: Int = 150,
+    var historyListHeight: Int = 1000,
+    var spliterOfssetGlobal: Int = 0,
+    var photoType: PhotoType = PhotoType.Full,
+    var countCirs: Int = 12,
+    var themeColor: Int = Color.WHITE,
+    var listHistoryReverse: Boolean = true,
     //var customPhotoFonUrl: Uri? = null
-    var photoFilePath = ""
+    var photoFilePath: String = "",
+    var leftButton: Actions = Actions.WhatsApp,
+    var rightButton: Actions = Actions.PhoneCall,
+    var topButton: Actions = Actions.Email,
+    var bottomButton: Actions = Actions.Sms,
+    var chooserButton1: Actions = Actions.Telegram,
+    var chooserButton2: Actions = Actions.Viber
+)
+
+enum class Actions{
+    WhatsApp, Viber, Telegram, PhoneCall, Email, Sms
 }

@@ -2,6 +2,7 @@
     <string name="app_name">Manager</string>
     <string name="setting_count_buttons">Количество кнопок контактов:</string>
     <string name="settings_size_buttons">Размер кнопок контактов:</string>
+    <string name="fone_color">Цвет фона:</string>
     <string-array name="count_curs">
         <item>3</item>
         <item>6</item>

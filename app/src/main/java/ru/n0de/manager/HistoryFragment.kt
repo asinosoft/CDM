@@ -95,9 +95,9 @@ class HistoryFragment : Fragment() {
                 MotionEvent.ACTION_DOWN -> {
                     xPos = event.rawX
                     yPos = event.rawY
-                    marStart = imageFrame.marginStart
-                    marEndTime = timeFrame.marginEnd
-                    openDetail = true
+//                    marStart = imageFrame.marginStart
+//                    marEndTime = timeFrame.marginEnd
+//                    openDetail = true
                 }
 
                 MotionEvent.ACTION_MOVE -> {

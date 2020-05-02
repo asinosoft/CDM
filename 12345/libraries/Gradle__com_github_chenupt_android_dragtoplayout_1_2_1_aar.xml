@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.chenupt.android:dragtoplayout:1.2.1@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/b9c8506ca09e524eebbe72f4129bcfe1/jetified-dragtoplayout-1.2.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/b9c8506ca09e524eebbe72f4129bcfe1/jetified-dragtoplayout-1.2.1/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.chenupt.android/dragtoplayout/1.2.1/5b361ff55a29317c743820f7b773b5692e50ab17/dragtoplayout-1.2.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.chenupt.android/dragtoplayout/1.2.1/63b7c16f5b5862cfd13306a26d639a8c1fb7987f/dragtoplayout-1.2.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

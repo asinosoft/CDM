@@ -14,16 +14,4 @@ import java.io.InputStream
 import java.io.Serializable
 import kotlin.math.abs
 
-class Cir(IdContanct: String, Number: String, Email: String, Name: String): Serializable {
-    var idContact: String = ""
-    var number: String = ""
-    var email: String = ""
-    var name = ""
-
-    init {
-        idContact = IdContanct
-        number = Number
-        email = Email
-        name = Name
-    }
-}
+data class Cir(val IdContact: String = "", val Number: String = "", val Email: String = "", val Name: String = "", val action: Actions? = Actions.Sms)

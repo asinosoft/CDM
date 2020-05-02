@@ -1,57 +1,49 @@
 package ru.n0de.manager
 
-import RecyclerTouchListerner
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.*
-import android.os.Bundle
-import android.provider.ContactsContract
-import android.util.Log
 import android.content.pm.PackageManager
-import android.net.Uri
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import java.io.ByteArrayInputStream
-import android.provider.ContactsContract.Contacts.Photo.DISPLAY_PHOTO
-import android.widget.RelativeLayout
-import androidx.core.view.marginStart
-import androidx.core.view.marginTop
-import org.jetbrains.anko.sdk27.coroutines.onTouch
-import java.io.IOException
-import kotlin.math.abs
-import android.content.pm.ActivityInfo
 import android.database.Cursor
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.provider.CallLog
+import android.provider.ContactsContract
+import android.provider.ContactsContract.Contacts.Photo.DISPLAY_PHOTO
+import android.util.Log
 import android.view.*
 import android.widget.Button
-import android.widget.ScrollView
-import androidx.core.view.ScrollingView
-import androidx.core.widget.NestedScrollView
+import android.widget.RelativeLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
+import androidx.core.view.marginStart
+import androidx.core.view.marginTop
 import androidx.fragment.app.FragmentActivity
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.pwittchen.swipe.library.rx2.Swipe
 import com.github.pwittchen.swipe.library.rx2.SwipeEvent
 import com.github.pwittchen.swipe.library.rx2.SwipeListener
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.*
-import org.jetbrains.anko.sdk27.coroutines.onLongClick
-import org.jetbrains.anko.sdk27.coroutines.onScrollChange
-import java.lang.Exception
+import org.jetbrains.anko.backgroundColor
+import org.jetbrains.anko.find
+import org.jetbrains.anko.longToast
+import org.jetbrains.anko.sdk27.coroutines.onTouch
+import org.jetbrains.anko.toast
+import java.io.ByteArrayInputStream
+import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
+import kotlin.math.abs
 import kotlin.math.sign
 
 
@@ -118,7 +110,6 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_main)
         loader = Loader(this)
         settings = loader.loadSettings()
@@ -384,7 +375,7 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun setHistory() {
-        val list = getHistoryListLatest(100)
+        val list = getHistoryListLatest(300)
         val listUnique = ArrayList<HistoryCell>()
         list.forEach {
             if (!listUnique.containNumber(it.numberContact)) {
@@ -637,7 +628,7 @@ class MainActivity : FragmentActivity() {
                     )
                 ) R.drawable.sharp_control_point_white_48 else R.drawable.sharp_control_point_black_48
             )
-            cirs[i].visibility = if (i >= settings.countCirs) View.INVISIBLE else View.VISIBLE
+            cirs[i].visibility = if (i >= settings.countCirs) View.GONE else View.VISIBLE
         }
         setHistory()
         //recyclerView.setHeight(settings.historyListHeight)
@@ -649,11 +640,10 @@ class MainActivity : FragmentActivity() {
         if (countCirsPred == settings.countCirs) return
         //TODO: Временное решение
         return
-
-        var size = Point()
-        windowManager.defaultDisplay.getSize(size)
-        changeAllMarginTop(size.y - (cirs[settings.countCirs - 1].marginTop + cirs[settings.countCirs - 1].height + settings.offsetCirs))
-        countCirsPred = settings.countCirs
+//        var size = Point()
+//        windowManager.defaultDisplay.getSize(size)
+//        changeAllMarginTop(size.y - (cirs[settings.countCirs - 1].marginTop + cirs[settings.countCirs - 1].height + settings.offsetCirs))
+//        countCirsPred = settings.countCirs
     }
 
     private fun changeAllMarginTop(i: Int) {
@@ -975,10 +965,10 @@ class MainActivity : FragmentActivity() {
                     if (abs(difX) < settings.difTouch && abs(difY) < settings.difTouch || upped) return@onTouch
 
                     when (getAction(difX, difY)) {
-                        Direction.LEFT -> openWhatsApp(cir.number) // Влево
-                        Direction.DOWN -> sendSMS(cir.number) // Вниз
-                        Direction.TOP -> mailToEmail(cir.email) // Вверх
-                        Direction.RIGHT -> callPhone(cir.number) // вправо
+                        Direction.LEFT -> openAction(settings.leftButton, cir)// Влево
+                        Direction.DOWN -> openAction(settings.bottomButton, cir) // Вниз
+                        Direction.TOP -> openAction(settings.topButton, cir) // Вверх
+                        Direction.RIGHT -> openAction(settings.rightButton, cir) // вправо
                         Direction.UNKNOWN -> Log.e("Direction: ", "UNKNOWN!")
                     }
                     vibrate()
@@ -1026,6 +1016,30 @@ class MainActivity : FragmentActivity() {
         }
     }
 
+    private fun openAction(action: Actions, cir: CirView) {
+        when(action){
+            Actions.WhatsApp -> openWhatsApp(cir.number)
+            Actions.Sms -> sendSMS(cir.number)
+            Actions.Email -> mailToEmail(cir.email)
+            Actions.PhoneCall -> callPhone(cir.number)
+            Actions.Viber -> openViber(cir.number)
+            Actions.Telegram -> openTelegram()
+        }
+    }
+
+    private fun openTelegram() {
+        val telegram =
+            Intent(Intent.ACTION_VIEW, Uri.parse("https://telegram.me/InfotechAvl_bot"))
+        startActivity(telegram)
+    }
+
+    private fun openViber(phone: String) {
+        val intent = Intent("android.intent.action.VIEW")
+        intent.setClassName("com.viber.voip", "com.viber.voip.WelcomeActivity")
+        intent.data = "tel:$phone".toUri()
+        startActivity(intent)
+    }
+
     private fun copyCirs(cir: CirView, cirTemp: CirView) {
         val layoutParams = cirTemp.layoutParams as RelativeLayout.LayoutParams
         layoutParams.marginStart = cir.marginStart + settings.sizeCirs / 10
@@ -1044,11 +1058,22 @@ class MainActivity : FragmentActivity() {
         cirTemp.setBackgroundResource(R.drawable.sms_192)
 
         when (getAction(cir, startX, startY)) {
-            Direction.LEFT -> cirTemp.setImageResource(R.drawable.whatsapp_192) // Влево
-            Direction.DOWN -> cirTemp.setImageResource(R.drawable.sms_192) // Вниз
-            Direction.TOP -> cirTemp.setImageResource(R.drawable.email_192) // Вверх
-            Direction.RIGHT -> cirTemp.setImageResource(R.drawable.telephony_call_192) // вправо
+            Direction.LEFT -> cirTemp.setImageResource(getResDrawable(settings.leftButton)) // Влево
+            Direction.DOWN -> cirTemp.setImageResource(getResDrawable(settings.bottomButton)) // Вниз
+            Direction.TOP -> cirTemp.setImageResource(getResDrawable(settings.topButton)) // Вверх
+            Direction.RIGHT -> cirTemp.setImageResource(getResDrawable(settings.rightButton)) // вправо
             Direction.UNKNOWN -> Log.e("ActionImage: ", "UNKNOWN!")
+        }
+    }
+
+    private fun getResDrawable(action: Actions): Int {
+        return when (action){
+            Actions.WhatsApp -> R.drawable.whatsapp_192
+            Actions.Sms -> R.drawable.sms_192
+            Actions.Email -> R.drawable.email_192
+            Actions.PhoneCall -> R.drawable.telephony_call_192
+            Actions.Viber -> R.drawable.viber
+            Actions.Telegram -> R.drawable.telegram
         }
     }
 

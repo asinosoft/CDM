@@ -10,6 +10,14 @@ android {
     viewBinding {
         enabled = true
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
     defaultConfig {
         applicationId "ru.n0de.manager"
         minSdkVersion 24
@@ -71,4 +79,8 @@ dependencies {
     implementation 'com.xw.repo:bubbleseekbar:3.20-lite'
     implementation 'com.vstechlab.easyfonts:easyfonts:1.0.0'
     implementation 'com.ramotion.foldingcell:folding-cell:1.2.3'
+    implementation 'com.github.cdflynn:crossview:v1.0.1'
+    implementation 'com.jaredrummler:colorpicker:1.1.0'
+    implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
+    implementation 'com.ornach.nobobutton:nobobutton:1.6'
 }

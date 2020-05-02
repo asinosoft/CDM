@@ -41,7 +41,7 @@ class Loader(contextBase: Context) {
         cirs.forEach { cir ->
             cirSers.add(cir.toCir())
         }
-        e.putString(Keys.Cirs, gson.toJson(cirSers))
+        e.putString(Keys.Cirs, gson.toJson(cirSers).toString())
         e.apply()
     }
 
@@ -55,11 +55,10 @@ class Loader(contextBase: Context) {
         var listCirs = ArrayList<Cir>()
         map.forEach { cir ->
             var CirT = Cir(
-            IdContanct = cir["idContact"]!!.toString(),
-            Number = cir["number"]!!.toString(),
-            Email = cir["email"]!!.toString(),
-            Name = cir["name"]!!.toString()
-            )
+            IdContact = cir["IdContact"]!!.toString(),
+            Number = cir["Number"]!!.toString(),
+            Email = cir["Email"]!!.toString(),
+            Name = cir["Name"]!!.toString())
             listCirs.add(CirT)
         }
         return listCirs

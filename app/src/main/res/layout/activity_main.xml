@@ -11,7 +11,7 @@
     <ru.n0de.manager.LockableNestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:orientation="vertical"
@@ -59,6 +59,7 @@
         android:layout_height="64dp"
         android:layout_marginStart="50dp"
         android:layout_marginTop="150dp"
+        android:layout_marginBottom="100dp"
         android:src="@drawable/pluswhite"
         android:focusable="true"
         android:clickable="true"/>
@@ -85,6 +86,7 @@
             android:layout_height="64dp"
             android:layout_marginStart="50dp"
             android:layout_marginTop="250dp"
+        android:layout_marginBottom="100dp"
             android:src="@drawable/pluswhite" />
 
     <ru.n0de.manager.CirView
@@ -109,6 +111,7 @@
             android:layout_height="64dp"
             android:layout_marginStart="50dp"
             android:layout_marginTop="350dp"
+            android:layout_marginBottom="100dp"
             android:src="@drawable/pluswhite" />
 
         <ru.n0de.manager.CirView
@@ -133,6 +136,7 @@
             android:layout_height="64dp"
             android:layout_marginStart="50dp"
             android:layout_marginTop="450dp"
+            android:layout_marginBottom="100dp"
             android:src="@drawable/pluswhite" />
 
         <ru.n0de.manager.CirView
@@ -157,6 +161,7 @@
         android:layout_height="64dp"
         android:layout_marginStart="50dp"
         android:layout_marginTop="550dp"
+        android:layout_marginBottom="100dp"
         android:src="@drawable/pluswhite" />
 
     <ru.n0de.manager.CirView
@@ -181,6 +186,7 @@
         android:layout_height="64dp"
         android:layout_marginStart="50dp"
         android:layout_marginTop="650dp"
+        android:layout_marginBottom="100dp"
         android:src="@drawable/pluswhite" />
 
     <ru.n0de.manager.CirView

@@ -30,6 +30,7 @@ public class CirView extends CircleImageView {
     public String number = "";
     public String email = "";
     public String name = "";
+    public Actions action;
     public boolean openCard = true;
     public boolean isDrag = true;
     private Drawable image = null;
@@ -48,7 +49,7 @@ public class CirView extends CircleImageView {
     }
 
     public Cir toCir(){
-        return new Cir(idContact, number, email, name);
+        return new Cir(idContact, number, email, name, action);
     }
 
     public void fromCir(Cir cir){
@@ -56,6 +57,7 @@ public class CirView extends CircleImageView {
         number = cir.getNumber();
         email = cir.getEmail();
         name = cir.getName();
+        action = cir.getAction();
     }
 
     public void fromCir(LinkedTreeMap cir){
