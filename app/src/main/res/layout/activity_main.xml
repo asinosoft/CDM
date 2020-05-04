@@ -8,7 +8,7 @@
     android:overScrollMode="never"
     android:animateLayoutChanges="true">
 
-    <ru.n0de.manager.LockableNestedScrollView
+    <com.asinosoft.cdm.LockableNestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -48,12 +48,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-    <ru.n0de.manager.CirView
+    <com.asinosoft.cdm.CirView
         android:id="@+id/CirTemp"
         android:layout_width="64sp"
         android:layout_height="64dp"/>
 
-    <ru.n0de.manager.CirView
+    <com.asinosoft.cdm.CirView
         android:id="@+id/Cir1"
         android:layout_width="64sp"
         android:layout_height="64dp"
@@ -64,7 +64,7 @@
         android:focusable="true"
         android:clickable="true"/>
 
-    <ru.n0de.manager.CirView
+    <com.asinosoft.cdm.CirView
         android:id="@+id/Cir2"
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -72,7 +72,7 @@
         android:layout_marginTop="150dp"
         android:src="@drawable/pluswhite" />
 
-    <ru.n0de.manager.CirView
+    <com.asinosoft.cdm.CirView
             android:id="@+id/Cir3"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -80,7 +80,7 @@
             android:layout_marginTop="150dp"
             android:src="@drawable/pluswhite" />
 
-    <ru.n0de.manager.CirView
+    <com.asinosoft.cdm.CirView
             android:id="@+id/Cir4"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -89,7 +89,7 @@
         android:layout_marginBottom="100dp"
             android:src="@drawable/pluswhite" />
 
-    <ru.n0de.manager.CirView
+    <com.asinosoft.cdm.CirView
             android:id="@+id/Cir5"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -97,7 +97,7 @@
             android:layout_marginTop="250dp"
             android:src="@drawable/pluswhite" />
 
-    <ru.n0de.manager.CirView
+    <com.asinosoft.cdm.CirView
             android:id="@+id/Cir6"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -105,7 +105,7 @@
             android:layout_marginTop="250dp"
             android:src="@drawable/pluswhite" />
 
-        <ru.n0de.manager.CirView
+        <com.asinosoft.cdm.CirView
             android:id="@+id/Cir7"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -114,7 +114,7 @@
             android:layout_marginBottom="100dp"
             android:src="@drawable/pluswhite" />
 
-        <ru.n0de.manager.CirView
+        <com.asinosoft.cdm.CirView
             android:id="@+id/Cir8"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -122,7 +122,7 @@
             android:layout_marginTop="350dp"
             android:src="@drawable/pluswhite" />
 
-        <ru.n0de.manager.CirView
+        <com.asinosoft.cdm.CirView
             android:id="@+id/Cir9"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -130,7 +130,7 @@
             android:layout_marginTop="350dp"
             android:src="@drawable/pluswhite" />
 
-        <ru.n0de.manager.CirView
+        <com.asinosoft.cdm.CirView
             android:id="@+id/Cir10"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -139,7 +139,7 @@
             android:layout_marginBottom="100dp"
             android:src="@drawable/pluswhite" />
 
-        <ru.n0de.manager.CirView
+        <com.asinosoft.cdm.CirView
             android:id="@+id/Cir11"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -147,7 +147,7 @@
             android:layout_marginTop="450dp"
             android:src="@drawable/pluswhite" />
 
-        <ru.n0de.manager.CirView
+        <com.asinosoft.cdm.CirView
             android:id="@+id/Cir12"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -155,7 +155,7 @@
             android:layout_marginTop="450dp"
             android:src="@drawable/pluswhite" />
 
-    <ru.n0de.manager.CirView
+    <com.asinosoft.cdm.CirView
         android:id="@+id/Cir13"
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -164,7 +164,7 @@
         android:layout_marginBottom="100dp"
         android:src="@drawable/pluswhite" />
 
-    <ru.n0de.manager.CirView
+    <com.asinosoft.cdm.CirView
         android:id="@+id/Cir14"
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -172,7 +172,7 @@
         android:layout_marginTop="550dp"
         android:src="@drawable/pluswhite" />
 
-    <ru.n0de.manager.CirView
+    <com.asinosoft.cdm.CirView
         android:id="@+id/Cir15"
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -180,7 +180,7 @@
         android:layout_marginTop="550dp"
         android:src="@drawable/pluswhite" />
 
-    <ru.n0de.manager.CirView
+    <com.asinosoft.cdm.CirView
         android:id="@+id/Cir16"
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -189,7 +189,7 @@
         android:layout_marginBottom="100dp"
         android:src="@drawable/pluswhite" />
 
-    <ru.n0de.manager.CirView
+    <com.asinosoft.cdm.CirView
         android:id="@+id/Cir17"
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -197,7 +197,7 @@
         android:layout_marginTop="650dp"
         android:src="@drawable/pluswhite" />
 
-    <ru.n0de.manager.CirView
+    <com.asinosoft.cdm.CirView
         android:id="@+id/Cir18"
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -228,5 +228,5 @@
             </RelativeLayout>
         </LinearLayout>
 
-    </ru.n0de.manager.LockableNestedScrollView>
+    </com.asinosoft.cdm.LockableNestedScrollView>
 </RelativeLayout>

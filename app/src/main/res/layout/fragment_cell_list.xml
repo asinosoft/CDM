@@ -19,35 +19,35 @@
         android:id="@+id/cellhistory1"
         android:layout_width="wrap_content"
         android:layout_height="65dp"
-        android:name="ru.n0de.manager.HistoryFragment"/>
+        android:name="com.asinosoft.cdm.HistoryFragment"/>
 
     <fragment
         android:id="@+id/cellhistory2"
         android:layout_width="wrap_content"
         android:layout_height="65dp"
-        android:name="ru.n0de.manager.HistoryFragment"/>
+        android:name="com.asinosoft.cdm.HistoryFragment"/>
     <fragment
         android:id="@+id/cellhistory3"
         android:layout_width="wrap_content"
         android:layout_height="65dp"
-        android:name="ru.n0de.manager.HistoryFragment"/>
+        android:name="com.asinosoft.cdm.HistoryFragment"/>
 
     <fragment
         android:id="@+id/cellhistory4"
         android:layout_width="wrap_content"
         android:layout_height="65dp"
-        android:name="ru.n0de.manager.HistoryFragment"/>
+        android:name="com.asinosoft.cdm.HistoryFragment"/>
 
     <fragment
         android:id="@+id/cellhistory5"
         android:layout_width="wrap_content"
         android:layout_height="65dp"
-        android:name="ru.n0de.manager.HistoryFragment"/>
+        android:name="com.asinosoft.cdm.HistoryFragment"/>
     <fragment
         android:id="@+id/cellhistory6"
         android:layout_width="wrap_content"
         android:layout_height="65dp"
-        android:name="ru.n0de.manager.HistoryFragment"/>
+        android:name="com.asinosoft.cdm.HistoryFragment"/>
 </LinearLayout>
 
 </FrameLayout>

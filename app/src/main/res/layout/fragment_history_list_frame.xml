@@ -26,84 +26,84 @@
             android:id="@+id/history1"
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:name="ru.n0de.manager.HistoryFragment"/>
+            android:name="com.asinosoft.cdm.HistoryFragment"/>
 
         <fragment
             android:id="@+id/history2"
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:name="ru.n0de.manager.HistoryFragment"/>
+            android:name="com.asinosoft.cdm.HistoryFragment"/>
         <fragment
             android:id="@+id/history3"
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:name="ru.n0de.manager.HistoryFragment"/>
+            android:name="com.asinosoft.cdm.HistoryFragment"/>
 
         <fragment
             android:id="@+id/history4"
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:name="ru.n0de.manager.HistoryFragment"/>
+            android:name="com.asinosoft.cdm.HistoryFragment"/>
 
         <fragment
             android:id="@+id/history5"
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:name="ru.n0de.manager.HistoryFragment"/>
+            android:name="com.asinosoft.cdm.HistoryFragment"/>
         <fragment
             android:id="@+id/history6"
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:name="ru.n0de.manager.HistoryFragment"/>
+            android:name="com.asinosoft.cdm.HistoryFragment"/>
         <fragment
             android:id="@+id/history7"
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:name="ru.n0de.manager.HistoryFragment"/>
+            android:name="com.asinosoft.cdm.HistoryFragment"/>
         <fragment
             android:id="@+id/history8"
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:name="ru.n0de.manager.HistoryFragment"/>
+            android:name="com.asinosoft.cdm.HistoryFragment"/>
 
         <fragment
             android:id="@+id/history9"
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:name="ru.n0de.manager.HistoryFragment"/>
+            android:name="com.asinosoft.cdm.HistoryFragment"/>
 
         <fragment
             android:id="@+id/history10"
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:name="ru.n0de.manager.HistoryFragment"/>
+            android:name="com.asinosoft.cdm.HistoryFragment"/>
         <fragment
             android:id="@+id/history11"
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:name="ru.n0de.manager.HistoryFragment"/>
+            android:name="com.asinosoft.cdm.HistoryFragment"/>
         <fragment
             android:id="@+id/history12"
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:name="ru.n0de.manager.HistoryFragment"/>
+            android:name="com.asinosoft.cdm.HistoryFragment"/>
         <fragment
             android:id="@+id/history13"
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:name="ru.n0de.manager.HistoryFragment"/>
+            android:name="com.asinosoft.cdm.HistoryFragment"/>
 
         <fragment
             android:id="@+id/history14"
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:name="ru.n0de.manager.HistoryFragment"/>
+            android:name="com.asinosoft.cdm.HistoryFragment"/>
 
         <fragment
             android:id="@+id/history15"
             android:layout_width="wrap_content"
             android:layout_height="65dp"
-            android:name="ru.n0de.manager.HistoryFragment"/>
+            android:name="com.asinosoft.cdm.HistoryFragment"/>
     </LinearLayout>
 </ScrollView>
 </FrameLayout>
