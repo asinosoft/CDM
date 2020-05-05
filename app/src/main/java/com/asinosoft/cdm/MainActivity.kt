@@ -125,6 +125,7 @@ class MainActivity : FragmentActivity() {
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         buttonSettings.setOnClickListener {
             openSettings()
+//            Intent(this, SearchActivity::class.java).let(this::startActivity)
         }
 
 //        setSwipe()
@@ -590,9 +591,7 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun openSettings() {
-        val intentSettings = Intent(applicationContext, SettingsActivity::class.java)
-        intentSettings.putExtra(Keys.Settings, com.google.gson.Gson().toJson(settings))
-        startActivityForResult(intentSettings, ACTIVITYSETTINGS)
+        startActivityForResult(Intent(this, SettingsActivity::class.java).apply {putExtra(Keys.Settings, com.google.gson.Gson().toJson(settings))}, ACTIVITYSETTINGS)
     }
 
     private fun loadData() {

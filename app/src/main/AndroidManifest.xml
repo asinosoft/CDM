@@ -16,7 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
-        <activity android:name=".DetailHistoryActivity"></activity>
+        <activity android:name=".SearchActivity"></activity>
+        <activity android:name=".DetailHistoryActivity" />
         <activity android:name=".DetailHistory" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".ActivityPhoneChoose" />
