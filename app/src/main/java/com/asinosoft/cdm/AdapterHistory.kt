@@ -180,3 +180,4 @@ class AdapterHistory(var items: ArrayList<HistoryItem>, val callback: Callback?,
     }
 
 }
+

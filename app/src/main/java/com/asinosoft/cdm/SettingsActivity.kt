@@ -21,6 +21,8 @@ import android.view.DragEvent
 import com.xw.repo.BubbleSeekBar
 import com.xw.repo.BubbleSeekBar.OnProgressChangedListener
 import com.asinosoft.cdm.databinding.SettingsLayoutBinding
+import com.jaeger.library.StatusBarUtil
+import kotlinx.android.synthetic.main.settings_layout.*
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -46,8 +48,8 @@ class SettingsActivity : AppCompatActivity() {
         //requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT // вертикальная
         v = SettingsLayoutBinding.inflate(layoutInflater)
         setContentView(v.root)
-//        window.statusBarColor = Color.BLACK
-//        window.navigationBarColor = Color.BLACK
+
+        StatusBarUtil.setTranslucentForImageView(this, scrollView)
     }
 
     override fun onStart() {

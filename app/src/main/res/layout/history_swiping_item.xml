@@ -3,7 +3,10 @@
     android:id="@+id/relativeL"
     android:layout_width="match_parent"
     android:layout_height="65dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:clickable="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <com.zerobranch.layout.SwipeLayout
         android:id="@+id/swipe_layout"
@@ -97,7 +100,6 @@
         android:text="date"
         android:textSize="16sp" />
 
-
         <View
             android:id="@+id/separator"
             android:layout_width="wrap_content"
@@ -108,9 +110,6 @@
             android:background="#A2A59C" />
 
         </RelativeLayout>
-
-
-
 
     </com.zerobranch.layout.SwipeLayout>
 
