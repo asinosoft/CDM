@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:id="@+id/relativeLayout"
+    android:overScrollMode="never"
+    android:animateLayoutChanges="true">
+
+    <com.asinosoft.cdm.LockableNestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+<!--    <fragment-->
+<!--        android:id="@+id/fragmentListHistory"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:name="ru.n0de.manager.HistoryListFrame"-->
+<!--        android:layout_marginTop="-1800dp" />-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+<!--    <ImageView-->
+<!--        android:id="@+id/slider"-->
+<!--        android:layout_width="48dp"-->
+<!--        android:layout_height="48dp"-->
+<!--        android:src="@drawable/baseline_unfold_more_24"-->
+<!--        android:layout_below="@id/fragmentListHistory"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_marginEnd="12dp"-->
+<!--        android:visibility="invisible"/>-->
+<!--        android:focusableInTouchMode="true"-->
+<!--        android:focusable="true"-->
+<!--        android:clickable="true"-->
+
+            <RelativeLayout
+                android:id="@+id/relatLay2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+    <com.asinosoft.cdm.CirView
+        android:id="@+id/CirTemp"
+        android:layout_width="64sp"
+        android:layout_height="64dp"/>
+
+    <com.asinosoft.cdm.CirView
+        android:id="@+id/Cir1"
+        android:layout_width="64sp"
+        android:layout_height="64dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginBottom="100dp"
+        android:src="@drawable/pluswhite"
+        android:focusable="true"
+        android:clickable="true"/>
+
+    <com.asinosoft.cdm.CirView
+        android:id="@+id/Cir2"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="150dp"
+        android:layout_marginTop="150dp"
+        android:src="@drawable/pluswhite" />
+
+    <com.asinosoft.cdm.CirView
+            android:id="@+id/Cir3"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="250dp"
+            android:layout_marginTop="150dp"
+            android:src="@drawable/pluswhite" />
+
+    <com.asinosoft.cdm.CirView
+            android:id="@+id/Cir4"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="250dp"
+        android:layout_marginBottom="100dp"
+            android:src="@drawable/pluswhite" />
+
+    <com.asinosoft.cdm.CirView
+            android:id="@+id/Cir5"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="150dp"
+            android:layout_marginTop="250dp"
+            android:src="@drawable/pluswhite" />
+
+    <com.asinosoft.cdm.CirView
+            android:id="@+id/Cir6"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="250dp"
+            android:layout_marginTop="250dp"
+            android:src="@drawable/pluswhite" />
+
+        <com.asinosoft.cdm.CirView
+            android:id="@+id/Cir7"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="350dp"
+            android:layout_marginBottom="100dp"
+            android:src="@drawable/pluswhite" />
+
+        <com.asinosoft.cdm.CirView
+            android:id="@+id/Cir8"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="150dp"
+            android:layout_marginTop="350dp"
+            android:src="@drawable/pluswhite" />
+
+        <com.asinosoft.cdm.CirView
+            android:id="@+id/Cir9"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="250dp"
+            android:layout_marginTop="350dp"
+            android:src="@drawable/pluswhite" />
+
+        <com.asinosoft.cdm.CirView
+            android:id="@+id/Cir10"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="450dp"
+            android:layout_marginBottom="100dp"
+            android:src="@drawable/pluswhite" />
+
+        <com.asinosoft.cdm.CirView
+            android:id="@+id/Cir11"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="150dp"
+            android:layout_marginTop="450dp"
+            android:src="@drawable/pluswhite" />
+
+        <com.asinosoft.cdm.CirView
+            android:id="@+id/Cir12"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="250dp"
+            android:layout_marginTop="450dp"
+            android:src="@drawable/pluswhite" />
+
+    <com.asinosoft.cdm.CirView
+        android:id="@+id/Cir13"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="550dp"
+        android:layout_marginBottom="100dp"
+        android:src="@drawable/pluswhite" />
+
+    <com.asinosoft.cdm.CirView
+        android:id="@+id/Cir14"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="150dp"
+        android:layout_marginTop="550dp"
+        android:src="@drawable/pluswhite" />
+
+    <com.asinosoft.cdm.CirView
+        android:id="@+id/Cir15"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="250dp"
+        android:layout_marginTop="550dp"
+        android:src="@drawable/pluswhite" />
+
+    <com.asinosoft.cdm.CirView
+        android:id="@+id/Cir16"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="650dp"
+        android:layout_marginBottom="100dp"
+        android:src="@drawable/pluswhite" />
+
+    <com.asinosoft.cdm.CirView
+        android:id="@+id/Cir17"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="150dp"
+        android:layout_marginTop="650dp"
+        android:src="@drawable/pluswhite" />
+
+    <com.asinosoft.cdm.CirView
+        android:id="@+id/Cir18"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="250dp"
+        android:layout_marginTop="650dp"
+        android:src="@drawable/pluswhite" />
+
+    <Button
+        android:id="@+id/ButtonSettings"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="@drawable/baseline_settings_black_48"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="12dp" />
+
+    <ImageView
+        android:id="@+id/deleteImage"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:translationY="-50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_above="@id/ButtonSettings"
+        android:layout_marginStart="6dp"
+        android:background="@drawable/baseline_delete_black_48"
+        android:visibility="invisible"/>
+
+            </RelativeLayout>
+        </LinearLayout>
+
+    </com.asinosoft.cdm.LockableNestedScrollView>
+</RelativeLayout>
