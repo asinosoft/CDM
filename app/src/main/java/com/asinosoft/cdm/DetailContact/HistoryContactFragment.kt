@@ -92,7 +92,7 @@ class HistoryContactFragment : Fragment() {
             emailType = contactEmailType, rawContactId = hasWhatsApp(number),
             whatsAppVideoCallId = getContactIdForWhatsAppVideoCall(name), whatsAppCallId = getContactIdForWhatsAppCall(name),
             viberUri = callViberUri(number), hasViber = hasViber(name),  hasTelegram = getTelegram(number), telegramId = getTelegramId(name),
-        skypeId = getSkypeId(number), skypeName = getSkypeName(number)))
+        skypeId = getSkypeId(number), skypeName = "?"))
 
         return list
     }
@@ -237,25 +237,6 @@ class HistoryContactFragment : Fragment() {
 
         return contactId
     }
-
-    private fun getSkypeName(number: String):String?{
-        val id = Funcs.getContactID(this.context!!, number)
-        val selection = ContactsContract.Data.CONTACT_ID + " = ? AND account_type IN (?)"
-        val selectionArg = arrayOf(id, "com.skype.raider")
-        val cursor: Cursor = context!!.contentResolver.query(ContactsContract.Data.CONTENT_URI,
-            arrayOf(ContactsContract.CommonDataKinds.Im.DISPLAY_NAME),
-        selection, selectionArg, null)!!
-
-        var userName: String? = null
-
-        if(cursor != null){
-            if(cursor.moveToFirst()){
-                userName = cursor.getString(0)
-            }
-        }
-        return userName
-    }
-
 }
 
 
