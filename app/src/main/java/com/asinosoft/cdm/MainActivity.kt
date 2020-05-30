@@ -751,7 +751,8 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun getPhotoNow(id: Long): Bitmap? =
-        if (settings.photoType == PhotoType.Thum) openPhoto(id) else openDisplayPhoto(contactId = id)
+        if (settings.photoType == PhotoType.Thum) openPhoto(id) else openPhoto(contactId = id)
+
 
     override fun onStop() {
         saveAll()

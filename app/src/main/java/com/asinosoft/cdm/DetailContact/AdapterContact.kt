@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths
 import com.asinosoft.cdm.R
+import org.jetbrains.anko.find
 
 
 class AdapterContact(private val items: ArrayList<ContactItem>): RecyclerView.Adapter<AdapterContact.ViewContactInfo>() {
@@ -32,9 +33,9 @@ class AdapterContact(private val items: ArrayList<ContactItem>): RecyclerView.Ad
 
     inner class ViewContactInfo(view: View): RecyclerView.ViewHolder(view){
 
-        private val number = itemView.findViewById<TextView>(R.id.number_id)
-        private val numberType = itemView.findViewById<TextView>(R.id.discription_id1)
-        private val btnCall = itemView.findViewById<ImageButton>(R.id.callBtnNumber)
+        private val number = itemView.find<TextView>(R.id.number_id)
+        private val numberType = itemView.find<TextView>(R.id.discription_id1)
+        private val btnCall = itemView.find<ImageButton>(R.id.callBtnNumber)
         private val btnMsg = itemView.findViewById<ImageButton>(R.id.msgBtnNumber)
 
         private val linearEmail = itemView.findViewById<LinearLayout>(R.id.linearEmail)

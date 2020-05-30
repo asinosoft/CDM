@@ -5,6 +5,7 @@ import android.net.Uri
 class ContactItem(
     var name: String?,
     var number: String?,
+    var number2: String?,
     var numberType: Int?,
     var email: String?,
     var emailType: Int?,

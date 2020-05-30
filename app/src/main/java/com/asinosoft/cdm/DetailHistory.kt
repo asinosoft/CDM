@@ -13,6 +13,7 @@ import android.provider.ContactsContract
 import android.util.AttributeSet
 import android.view.View
 import androidx.fragment.app.FragmentActivity
+import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
@@ -97,7 +98,7 @@ class DetailHistory : FragmentActivity() {
     private fun openDisplayPhoto(contactId: Long): Bitmap? {
         val contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId)
         val displayPhotoUri = Uri.withAppendedPath(contactUri,
-            ContactsContract.Contacts.Photo.DISPLAY_PHOTO
+            ContactsContract.Contacts.Photo.PHOTO
         )
         try {
             val fd = contentResolver.openAssetFileDescriptor(displayPhotoUri, "r")
@@ -107,5 +108,4 @@ class DetailHistory : FragmentActivity() {
         }
 
     }
-
 }

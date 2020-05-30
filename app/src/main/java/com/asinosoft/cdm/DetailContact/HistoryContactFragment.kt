@@ -1,11 +1,14 @@
 package com.asinosoft.cdm.DetailContact
 
+import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Contacts
 import android.provider.ContactsContract
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Funcs
 import com.asinosoft.cdm.Keys
 import com.asinosoft.cdm.R
+import com.bumptech.glide.load.engine.bitmap_recycle.IntegerArrayAdapter
+import kotlinx.android.synthetic.main.history_item.*
 
 
 class HistoryContactFragment : Fragment() {
@@ -44,6 +49,9 @@ class HistoryContactFragment : Fragment() {
         lim.orientation = LinearLayoutManager.VERTICAL
         recyclerView.layoutManager = lim
         recyclerView.adapter = AdapterContact(getContactInfo(getNumber(this.context!!)))
+
+        getPhone(getNumber(this.context!!))
+
     }
 
     private fun getNumber(context: Context): String {
@@ -54,11 +62,14 @@ class HistoryContactFragment : Fragment() {
     private fun getContactInfo(number: String): ArrayList<ContactItem>{
 
         val list = ArrayList<ContactItem>()
+        val listNumbers = ArrayList<String>()
         val id = Funcs.getContactID(this.context!!, number)
         val selection: String = ContactsContract.CommonDataKinds.Phone.CONTACT_ID+"=?"
         val selectionArg = arrayOf(id)
         val cursor: Cursor = context!!.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-            arrayOf(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME), selection, selectionArg, null)!!
+            arrayOf(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME), selection, selectionArg, null)!!
+
 
         val selection1: String = ContactsContract.CommonDataKinds.Email.CONTACT_ID+"=?"
         val selectionArg1 = arrayOf(id)
@@ -88,7 +99,7 @@ class HistoryContactFragment : Fragment() {
         }
 
         list.add(ContactItem(
-            name = name, number = contactNumber, numberType = contactNumberType, email = contactEmail,
+            name = name, number = contactNumber, number2 = "",numberType = contactNumberType, email = contactEmail,
             emailType = contactEmailType, rawContactId = hasWhatsApp(number),
             whatsAppVideoCallId = getContactIdForWhatsAppVideoCall(name), whatsAppCallId = getContactIdForWhatsAppCall(name),
             viberUri = callViberUri(number), hasViber = hasViber(name),  hasTelegram = getTelegram(number), telegramId = getTelegramId(name),
@@ -236,6 +247,10 @@ class HistoryContactFragment : Fragment() {
         }
 
         return contactId
+    }
+
+    private fun getPhone(number: String){
+
     }
 }
 
