@@ -5,76 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-
-    <LinearLayout
-        android:id="@+id/linearNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/discription_id1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="5dp"
-                android:paddingTop="5dp"
-                android:text="@string/describe"
-                android:textSize="12dp"></TextView>
-
-            <TextView
-                android:id="@+id/number_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="5dp"
-                android:paddingTop="5dp"
-                android:text="+79039051968"
-                android:textColor="@color/black"
-                android:textSize="16dp">
-
-            </TextView>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginStart="90dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.501"
-            app:layout_constraintStart_toEndOf="@+id/linearLayout"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageButton
-                android:id="@+id/callBtnNumber"
-                android:layout_width="35dip"
-                android:layout_height="35dip"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/telephony_call_192"
-                android:contentDescription="@string/describe" />
-
-            <ImageButton
-                android:id="@+id/msgBtnNumber"
-                android:layout_width="35dip"
-                android:layout_height="35dip"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/sms_192"
-                android:contentDescription="@string/describe" />
-        </LinearLayout>
-    </LinearLayout>
-
     <LinearLayout
         android:id="@+id/linearEmail"
         android:layout_width="match_parent"
@@ -105,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="5dp"
                 android:paddingTop="5dp"
-                android:text="+79039051968"
+                android:text="@string/describe"
                 android:textColor="@color/black"
                 android:textSize="16dp">
 
