@@ -16,17 +16,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
-        <activity android:name=".SearchActivity"></activity>
-        <activity android:name=".DetailHistoryActivity" />
-        <activity android:name=".DetailHistory" />
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".ActivityPhoneChoose" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".ManagerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".SearchActivity" />
+        <activity android:name=".DetailHistoryActivity" />
+        <activity android:name=".DetailHistory" />
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".ActivityPhoneChoose" />
+        <activity android:name=".MainActivity">
         </activity>
     </application>
 

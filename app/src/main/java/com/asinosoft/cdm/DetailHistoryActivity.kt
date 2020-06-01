@@ -17,6 +17,9 @@ import android.provider.ContactsContract
 import java.io.IOException
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import com.asinosoft.cdm.DetailContact.HistoryContactFragment
+import com.jaeger.library.StatusBarUtil
+import kotlinx.android.synthetic.main.activity_detail_history.*
 import java.lang.Exception
 
 
@@ -31,7 +34,8 @@ class DetailHistoryActivity : AppCompatActivity() {
         val adapter = FragmentPagerItemAdapter(
             supportFragmentManager, FragmentPagerItems.with(this)
                 .add("История", HistoryDetailFragment::class.java)
-                .add("Настройки", HistoryOptionFragment::class.java)
+//                .add("Настройки", HistoryOptionFragment::class.java)
+                .add("Контакт", HistoryContactFragment::class.java)
                 .create()
         )
 
@@ -42,6 +46,7 @@ class DetailHistoryActivity : AppCompatActivity() {
         val viewPagerTab = findViewById<SmartTabLayout>(R.id.viewpagertab)
         viewPagerTab.setViewPager(viewPager)
         val imageView = findViewById<ImageView>(R.id.image)
+        StatusBarUtil.setTranslucentForImageView(this, imageView)
         try {
         imageView.setImageDrawable(getPhotoSaffety(intent.getStringExtra(Keys.id)!!.toLong()))
         }catch (e: Exception){}

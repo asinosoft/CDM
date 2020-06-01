@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/linearNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/discription_id1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                android:text="@string/describe"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/number_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                android:text="+79039051968"
+                android:textColor="@color/black"
+                android:textSize="16dp">
+
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginStart="90dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintStart_toEndOf="@+id/linearLayout"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/callBtnNumber"
+                android:layout_width="35dip"
+                android:layout_height="35dip"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/telephony_call_192"
+                android:contentDescription="@string/describe" />
+
+            <ImageButton
+                android:id="@+id/msgBtnNumber"
+                android:layout_width="35dip"
+                android:layout_height="35dip"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/sms_192"
+                android:contentDescription="@string/describe" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/linearEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearNumber">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/discriptionEmail_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                android:text="@string/describe"
+                android:textSize="12dp"/>
+
+            <TextView
+                android:id="@+id/email_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                android:text="@string/describe"
+                android:textColor="@color/black"
+                android:textSize="16dp">
+
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginStart="80dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/linearLayout"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/msgBtnEmail"
+                android:layout_width="35dip"
+                android:layout_height="35dip"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/email_192"
+                android:contentDescription="@string/describe" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearWhatsApp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/descriptionWhatsApp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="5dp"
+                android:text="@string/type_whatsapp"
+                android:textSize="12dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayout2"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/whatsAppMsgNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="@string/whatsApp_msg"
+                android:textColor="@color/black"
+                android:textSize="16dp"/>
+
+            <ImageButton
+                android:id="@+id/whatsAppMsgBtn"
+                android:layout_width="35dip"
+                android:layout_height="35dip"
+                android:layout_marginStart="120dp"
+                android:background="@drawable/whatsapp_message"
+                android:paddingBottom="5dp"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayout3"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/whatsAppCallNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="@string/whatsApp_Call"
+                android:textColor="@color/black"
+                android:textSize="16dp"/>
+
+            <ImageButton
+                android:id="@+id/whatsAppCallBtn"
+                android:layout_width="35dip"
+                android:layout_height="35dip"
+                android:layout_marginStart="100dp"
+                android:background="@drawable/whatsapp_call"
+                android:paddingBottom="5dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayout3"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/whatsAppVideoCall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="@string/whatsApp_videoCall"
+                android:textColor="@color/black"
+                android:textSize="16dp" />
+
+            <ImageButton
+                android:id="@+id/whatsAppVideoCallBtn"
+                android:layout_width="35dip"
+                android:layout_height="35dip"
+                android:layout_marginStart="100dp"
+                android:background="@drawable/whatsapp_call"
+                android:paddingBottom="5dp" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearViber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/linearWhatsApp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/type_viber"
+                android:paddingLeft="5dp"
+                android:textSize="12dp">
+
+            </TextView>
+        </LinearLayout>
+        <LinearLayout
+            android:padding="5dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="0dp">
+            <TextView
+                android:id="@+id/viberMsg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="@string/describe"
+                android:textColor="@color/black"
+                android:textSize="16dp">
+            </TextView>
+
+            <ImageButton
+                android:id="@+id/viberMsgBtn"
+                android:layout_width="35dip"
+                android:layout_height="35dip"
+                android:layout_marginStart="100dp"
+                android:padding="5dp"
+                android:background="@drawable/viber"
+                android:paddingBottom="5dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:padding="5dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="0dp">
+            <TextView
+                android:id="@+id/viberCall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="@string/describe"
+                android:textColor="@color/black"
+                android:textSize="16dp">
+            </TextView>
+
+            <ImageButton
+                android:id="@+id/viberCallBtn"
+                android:layout_width="35dip"
+                android:layout_height="35dip"
+                android:layout_marginStart="100dp"
+                android:background="@drawable/viber"
+                android:paddingBottom="5dp" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearTelegram"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/linearViber"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:text="@string/type_telegram"
+            android:paddingLeft="5dp"
+            android:textSize="12dp">
+        </TextView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/telegramName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/describe"
+                android:padding="5dp"
+                android:textSize="16dp"
+                android:textColor="@color/black">
+
+            </TextView>
+
+            <ImageButton
+                android:id="@+id/telegramMsgBtn"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/telegram"
+                android:layout_marginStart="100dp">
+
+            </ImageButton>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearSkype"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/linearTelegram"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/type_skype"
+            android:paddingLeft="5dp"
+            android:textSize="12dp">
+        </TextView>
+        <LinearLayout
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/skypeName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/describe"
+                android:padding="5dp"
+                android:textSize="16dp"
+                android:textColor="@color/black">
+            </TextView>
+            <ImageButton
+                android:id="@+id/skypeMsgBtn"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/skype_message"
+                android:layout_marginStart="100dp">
+            </ImageButton>
+        </LinearLayout>
+        <LinearLayout
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/skypeNameCall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/describe"
+                android:padding="5dp"
+                android:textSize="16dp"
+                android:textColor="@color/black">
+            </TextView>
+            <ImageButton
+                android:id="@+id/skypeCallBtn"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/skype_call"
+                android:layout_marginStart="100dp">
+            </ImageButton>
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout >

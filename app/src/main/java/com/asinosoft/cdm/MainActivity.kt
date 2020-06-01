@@ -270,7 +270,7 @@ class MainActivity : FragmentActivity() {
     }
 
     fun HistoryCell.toItem() =
-        HistoryItem(this.image, this.nameContact, this.numberContact, this.time, this.typeCall, this.duration, this.date, this.contactID)
+        HistoryItem(this.nameContact, this.numberContact, this.time, this.typeCall, this.duration, this.date, this.contactID)
 
 
     private fun ArrayList<HistoryCell>.containNumber(num: String): Boolean {

@@ -24,8 +24,15 @@ data class Settings(
     var topButton: Actions = Actions.Email,
     var bottomButton: Actions = Actions.Sms,
     var chooserButton1: Actions = Actions.Telegram,
-    var chooserButton2: Actions = Actions.Viber
-)
+    var chooserButton2: Actions = Actions.Viber,
+    var historyButtom: Boolean = true,
+    var cirMenu: Boolean = false
+){
+
+    fun toDirectActions() = DirectActions(leftButton, rightButton, topButton, bottomButton)
+}
+
+data class DirectActions(val left: Actions = Actions.WhatsApp, val right: Actions = Actions.PhoneCall, val top: Actions = Actions.Email, val down: Actions = Actions.Sms)
 
 enum class Actions{
     WhatsApp, Viber, Telegram, PhoneCall, Email, Sms

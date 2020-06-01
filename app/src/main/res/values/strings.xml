@@ -39,4 +39,38 @@
     <string name="logo">logo</string>
     <string name="ok">Ok</string>
 
+    <string name="describe">describe</string>
+
+    <string name="type_home">Домашний</string>
+    <string name="type_mobile">Мобильный</string>
+    <string name="type_work">Рабочий</string>
+    <string name="type_fax_work">Рабочий факс</string>
+    <string name="type_fax_home">Домашний факс</string>
+    <string name="type_pager">Пейджер</string>
+    <string name="type_other">Иной</string>
+    <string name="type_callback">Перезвон.</string>
+    <string name="type_car">Автомобиль</string>
+    <string name="type_company_main">Основной организации</string>
+    <string name="type_isdn">ISDN</string>
+    <string name="type_main">Основной</string>
+    <string name="type_other_fax">Иной факс</string>
+    <string name="type_radio">Радио</string>
+    <string name="type_telex">Telex</string>
+    <string name="type_tty_tdd">TTY TDD</string>
+    <string name="type_work_mobile">Рабочий мобильный</string>
+    <string name="type_work_pager">Рабочий пейджер</string>
+    <string name="type_assistant">Дополнительный</string>
+    <string name="type_mms">MMS</string>
+    <string name="type_skype">Skype</string>
+    <string name="type_whatsapp">WhatsApp</string>
+    <string name="type_viber">Viber</string>
+    <string name="type_e_mail">E-mail</string>
+    <string name="type_my">Личный</string>
+
+    <string name="whatsApp_Call">Аудиозвонок</string>
+    <string name="whatsApp_videoCall">Видеозвонок</string>
+    <string name="whatsApp_msg">Написать</string>
+    <string name="type_telegram">Телеграм</string>
+
+
 </resources>

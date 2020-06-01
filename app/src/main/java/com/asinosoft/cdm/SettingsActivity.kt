@@ -66,6 +66,8 @@ class SettingsActivity : AppCompatActivity() {
         initSeek2()
         initSeek3()
         initSeek4()
+        initSeek5()
+        initSeek6()
         initSave()
     }
 
@@ -79,7 +81,8 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun saveAll() {
         loader.saveSettings(settings.copy(countCirs = v.seekBarCountButtons.progress, sizeCirs = v.seekBarSizeButtons.progress, rightButton = v.cirRight.action,
-        leftButton = v.cirLeft.action, topButton = v.cirTop.action, bottomButton = v.cirBottom.action, chooserButton1 = v.cirChoose1.action, chooserButton2 = v.cirChoose2.action))
+        leftButton = v.cirLeft.action, topButton = v.cirTop.action, bottomButton = v.cirBottom.action, chooserButton1 = v.cirChoose1.action, chooserButton2 = v.cirChoose2.action,
+        cirMenu = v.menu.isChecked, historyButtom = v.hisButtom.isChecked))
     }
 
     private fun setData() {
@@ -91,6 +94,10 @@ class SettingsActivity : AppCompatActivity() {
         v.cirBottom.action = settings.bottomButton
         v.cirChoose1.action = settings.chooserButton1
         v.cirChoose2.action = settings.chooserButton2
+        v.radioHis.check(if (settings.historyButtom) 1 else 0)
+        (v.radioHis.getChildAt(v.radioHis.checkedRadioButtonId) as RadioButton).isChecked = true
+        v.radioCir.check(if (settings.cirMenu) 1 else 0)
+        (v.radioCir.getChildAt(v.radioCir.checkedRadioButtonId) as RadioButton).isChecked = true
         v.cirRight.let(this::setCirData)
         v.cirLeft.let(this::setCirData)
         v.cirTop.let(this::setCirData)
@@ -197,6 +204,22 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    private fun initSeek5() {
+        if(v.expandable1.isExpanded) v.cross5.cross() else v.cross5.plus()
+        v.cardViewText5.setOnClickListener {
+            v.expandable5.toggle(true)
+            v.cross5.toggle(500L)
+        }
+    }
+
+    private fun initSeek6() {
+        if(v.expandable6.isExpanded) v.cross6.cross() else v.cross6.plus()
+        v.cardViewText6.setOnClickListener {
+            v.expandable6.toggle(true)
+            v.cross6.toggle(500L)
+        }
+    }
+
     private fun initSeek1() {
         if(v.expandable1.isExpanded) v.cross1.cross() else v.cross1.plus()
         v.cardViewText1.setOnClickListener {
@@ -274,6 +297,8 @@ class SettingsActivity : AppCompatActivity() {
         settings.maxPrior = maxPrior.text.toString().toInt()
         settings.difTouch = difTouch.text.toString().toInt()
         settings.photoFilePath = filePathPhoto
+        settings.historyButtom = v.radioHis.checkedRadioButtonId == 1
+        settings.cirMenu = v.radioCir.checkedRadioButtonId == 1
         loader.saveSettings(settings)
     }
 

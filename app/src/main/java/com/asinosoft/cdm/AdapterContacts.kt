@@ -18,7 +18,7 @@ import kotlinx.coroutines.*
 import org.jetbrains.anko.runOnUiThread
 import kotlin.coroutines.CoroutineContext
 
-class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.OnClickListener, val onClick: Boolean = true): RecyclerView.Adapter<AdapterContacts.Holder>(), ItemTouchHelperAdapter, CoroutineScope {
+class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.OnClickListener, val onClick: Boolean = true): RecyclerView.Adapter<AdapterContacts.Holder>(), CoroutineScope {
 
     private lateinit var context: Context
     private var nums = ""
@@ -139,11 +139,11 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
                 override fun onOpen(direction: Int, isContinuous: Boolean) {
                     when (direction) {
                         SwipeLayout.RIGHT -> {
-                            v.relativeL.callOnClick()
+                            Metoths.callPhone(item.phoneNumbers[0].normalizedNumber, context)
                         }
                         SwipeLayout.LEFT -> {
 //                            imageRight.visibility = View.VISIBLE
-//                            Metoths.openWhatsApp(item.numberContact, context)
+                            Metoths.openWhatsApp(item.phoneNumbers[0].normalizedNumber, context)
                         }
                         else -> Log.e(
                             "AdapterHistory.kt: ",
@@ -169,14 +169,6 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
                 v.name.setColoredText(it.value)
             }
         }
-    }
-
-    override fun onItemMove(fromPosition: Int, toPosition: Int) {
-        //todo доделатать
-    }
-
-    override fun onItemDismiss(position: Int) {
-        //todo доделать
     }
 
 }
