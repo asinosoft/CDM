@@ -1,10 +1,17 @@
 package com.asinosoft.cdm;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
+import com.github.tamir7.contacts.Contact;
+import com.github.tamir7.contacts.Email;
+import com.github.tamir7.contacts.PhoneNumber;
 import com.google.gson.internal.LinkedTreeMap;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import kotlin.text.Regex;
@@ -33,6 +40,8 @@ public class CirView extends CircleImageView {
     public boolean isDrag = true;
     private Drawable image = null;
     private String idContactTemp = "";
+    public List<PhoneNumber> numbers = new ArrayList<>();
+    public List<Email> emails = new ArrayList<>();
 
     public Boolean inContact() {
         return idContact.isEmpty();
@@ -100,5 +109,16 @@ public class CirView extends CircleImageView {
         String temp = new Regex("\\D").replace(number, "").trim();
         //Log.d("CompareNumber: ", temp + " == " + num + " = " + temp.equals(num));
         return temp.equals(num);
+    }
+
+    public void setData(Contact contact){
+        idContact = contact.getId().toString();
+        numbers = contact.getPhoneNumbers();
+        number = numbers.get(0).toString();
+        emails = contact.getEmails();
+        email = emails.get(0).toString();
+        Bitmap bt = Metoths.Companion.getPhoto(contact.getId(), getContext());
+        if (bt != null) setImageBitmap(bt);
+        else setImageResource(R.drawable.contact_unfoto);
     }
 }

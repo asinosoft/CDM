@@ -65,7 +65,7 @@ class AdapterHistory(var items: ArrayList<HistoryItem>, val callback: Callback?,
 
         fun bind(item: HistoryItem) {
 
-            imageCon.setImageDrawable(item.image)
+//            imageCon.setImageDrawable(item.image)
             nameCon.text = item.nameContact
             numberCon.text = "${item.numberContact}, ${Metoths.getFormatedTime(item.duration)}"
             timeCon.text = item.time
@@ -180,3 +180,4 @@ class AdapterHistory(var items: ArrayList<HistoryItem>, val callback: Callback?,
     }
 
 }
+

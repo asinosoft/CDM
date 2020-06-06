@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
  */
 public class Nk_board extends Fragment {
 
-    public interface OnKeyBoard {
+public interface OnKeyBoard {
         void onOnDeletePressed(View v);
         void onKeyPressed(int value);
         void onOkPressed(View v);

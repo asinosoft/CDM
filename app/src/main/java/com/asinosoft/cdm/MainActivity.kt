@@ -33,10 +33,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.pwittchen.swipe.library.rx2.Swipe
 import com.github.pwittchen.swipe.library.rx2.SwipeEvent
 import com.github.pwittchen.swipe.library.rx2.SwipeListener
+import com.github.tamir7.contacts.Contact
+import com.github.tamir7.contacts.Contacts
+import com.jaeger.library.StatusBarUtil
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.find
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.sdk27.coroutines.onTouch
+import org.jetbrains.anko.support.v4.drawerLayout
 import org.jetbrains.anko.toast
 import java.io.ByteArrayInputStream
 import java.io.IOException
@@ -52,8 +56,7 @@ class MainActivity : FragmentActivity() {
 
     companion object {
         const val ACTIVITYSETTINGS = 12
-        const val developerWebsite = "https://kwork.ru/user/n0de"
-        const val nameTitle = "Manager@n0de"
+        const val INTENT_SEARCH_ACTIVITY = 1
         const val nullNum = -9999
     }
 
@@ -118,7 +121,13 @@ class MainActivity : FragmentActivity() {
         deleteImage = find(R.id.deleteImage)
         root = buttonSettings.rootView
         recyclerView = find(R.id.recyclerView)
-        recyclerView.isNestedScrollingEnabled = false
+        recyclerView.apply {
+            isNestedScrollingEnabled = false
+            setHasFixedSize(true)
+            setItemViewCacheSize(20)
+            isDrawingCacheEnabled = true
+            drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
+        }
         scrollView = find(R.id.scrollView)
         scrollView.setScrollingEnabled(true)
         relativeLayout = find(R.id.relativeLayout)
@@ -128,151 +137,10 @@ class MainActivity : FragmentActivity() {
 //            Intent(this, SearchActivity::class.java).let(this::startActivity)
         }
 
-//        setSwipe()
-        /*relativeLayout.onLongClick {
-            if (sliderIsLongClickAvalable) {
-                sliderIsLongClick = true
-                vibrate()
-                longToast("Сдвинуть и сохранить положение")
-            }
-        }
-        relativeLayout.onTouch { v, event ->
-            Log.i("Slider: ", "Event = ${event.actionMasked}")
-            when (event.actionMasked) {
-                MotionEvent.ACTION_DOWN -> {
-                    marginTopCirs = cirs[0].marginTop
-                    heightList = recyclerView.height
-                    yPos = event.rawY
-//                    scrollY = recyclerView.height
-                    true
-                }
-
-                MotionEvent.ACTION_UP -> {
-                    if (sliderIsLongClick) {
-                        sliderIsLongClick = false
-                        splitterSetGolobalMargins(
-                            recyclerView.height,
-                            cirs[0].marginTop,
-                            historyListBack = heightList,
-                            cirsMarginBack = marginTopCirs
-                        )
-                        heightList = recyclerView.height
-                        loader.saveSettings(settings)
-                    } else {
-                        *//* fragmentListHistory.view!!.setMargins(marginTopFragment)
-                        cirsRefresh(0)*//*
-                    }
-                    //Log.i("Slider: ", "spliterOfssetGlobal: ${settings.spliterOfssetGlobal}")
-                    sliderIsLongClickAvalable = true
-                }
-
-                MotionEvent.ACTION_MOVE -> {
-//                    Log.i("ScrollState:", "${recyclerView.scrollState}")
-//                    if (recyclerView.scrollState == RecyclerView.SCROLL_STATE_DRAGGING) return@onTouch
-                    var difY = event.rawY - yPos
-                    if (heightList + difY.toInt() < 1) difY = -heightList.toFloat()
-//                    if (difY.sign == -1f && heightList + difY.toInt() < 1) return@onTouch
-                    sliderIsLongClickAvalable = if (sliderIsLongClick) true else difY == 0f
-                    cirsRefresh(difY.toInt(), marginTopCirs)
-                    recyclerView.setHeight(heightList + difY.toInt())
-                    recyclerView.scrollToPosition(recyclerView.adapter!!.itemCount - 1)
-//                    recyclerView.scrollTo(recyclerView.scrollX, scrollY - difY.toInt())
-//                    Log.i("MainActivity.Scroll: ", "scrollY = $scrollY ; rec.scrollY = ${recyclerView.scrollY} ; difY = $difY")
-                    //Log.i("Slider: ", "difY = $difY / MarginTopSlider = $marginTopSlider / rawY = ${event.rawY} / listHistory.marTop = ${fragmentListHistory.view!!.marginTop}")
-                }
-            }
-        }*/
-       /* recyclerView.onTouch { v, event ->
-
-            Log.i("MainActivity.recyclerView.Touch: ", "event = ${event.actionMasked}")
-
-            when(event.actionMasked){
-
-                MotionEvent.ACTION_DOWN ->{
-                    recyclerDownY = event.rawY
-                    heightList = recyclerView.height
-                    marginTopCirs = cirs[0].marginTop
-                }
-
-                MotionEvent.ACTION_UP ->{
-                    recyclerDownY = 0f
-                }
-
-                MotionEvent.ACTION_MOVE ->{
-                    if(recyclerDownY == 0f) {
-                        recyclerDownY = event.rawY
-                        heightList = recyclerView.height
-                        marginTopCirs = cirs[0].marginTop
-                    }
-
-                    var difY = event.rawY - recyclerDownY
-
-                    if (recyclerView.height >= relativeLayout.height){
-
-                        val visibleItemCount = recyclerView.layoutManager!!.childCount
-                        val totalItemCount = recyclerView.layoutManager!!.itemCount
-                        val pastVisiblesItems = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-                        recyclerEndHistory = ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
-                        if (recyclerEndHistory)
-                            recyclerView.setHeight(heightList + difY.toInt())
-                    }
-                    else
-                        recyclerView.setHeight(heightList + difY.toInt())
-                    //recyclerView.scrollToPosition(recyclerView.adapter!!.itemCount)
-                    if(recyclerView.height < relativeLayout.height)
-                    cirsRefresh(difY.toInt(), marginTopCirs)
-//                    Log.i("MainActivity.recyclerView.Touch: ", " down = $recyclerDownY ; rawY = ${event.rawY} ; difY = $difY ; heightList = $heightList ; recyclerView.height = ${recyclerView.height}")
-                }
-            }
-
-        }*/
-
+        Contacts.initialize(this)
         checkPermissionNow()
         initilazeCirs()
         prefGet()
-        setHistory()
-    }
-
-    private fun setSwipe() {
-        swipe = Swipe()
-        swipe.setListener(object: SwipeListener{
-            override fun onSwipedUp(event: MotionEvent?): Boolean {
-                swipeEvent = SwipeEvent.SWIPED_UP
-                return true
-            }
-
-            override fun onSwipedDown(event: MotionEvent?): Boolean {
-                swipeEvent = SwipeEvent.SWIPED_DOWN
-                return true
-            }
-
-            override fun onSwipingUp(event: MotionEvent?) {
-                swipeEvent = SwipeEvent.SWIPING_UP
-            }
-
-            override fun onSwipedRight(event: MotionEvent?): Boolean {
-                swipeEvent = SwipeEvent.SWIPED_RIGHT
-                return true
-            }
-
-            override fun onSwipingLeft(event: MotionEvent?) {
-                swipeEvent = SwipeEvent.SWIPING_LEFT
-            }
-
-            override fun onSwipingRight(event: MotionEvent?) {
-                swipeEvent = SwipeEvent.SWIPING_RIGHT
-            }
-
-            override fun onSwipingDown(event: MotionEvent?) {
-                swipeEvent = SwipeEvent.SWIPING_DOWN
-            }
-
-            override fun onSwipedLeft(event: MotionEvent?): Boolean {
-                swipeEvent = SwipeEvent.SWIPED_LEFT
-                return true
-            }
-
-        })
     }
 
     override fun onStart() {
@@ -386,11 +254,6 @@ class MainActivity : FragmentActivity() {
                 listUnique.add(it)
             }
         }
-//        (fragmentListHistory as HistoryListFrame).setAllParams(
-//            ArrayList<HistoryCell>(), //listUnique,
-//            list,
-//            if (settings.photoFilePath == "") settings.themeColor else nullNum
-//        )
 
         val listItem = ArrayList<HistoryItem>()
         listUnique.forEach {
@@ -398,69 +261,16 @@ class MainActivity : FragmentActivity() {
         }
 
         var myAdapter = AdapterHistory(listItem.reversed() as java.util.ArrayList<HistoryItem>, null)
-//            override fun onTouch(item: HistoryItem, event: MotionEvent) {
-//                    Log.d("OnTouchHistory: ", "Event = ${event.actionMasked}")
-//                    when(event.actionMasked){
-//                        MotionEvent.ACTION_DOWN -> {
-//                            xPos = event.rawX
-//                            yPos = event.rawY
-//                            marStart = imageCon.marginStart
-//                            marEndTime = timeCon.marginEnd
-//                            openDetail = true
-//                        }
-//
-//                        MotionEvent.ACTION_MOVE -> {
-//                            var difX = xPos - event.rawX
-//                            openDetail = Math.abs(difX) <= 10
-//                            difX = if (Math.abs(difX) > MAXT) MAXT * (difX / Math.abs(difX)) else difX
-//
-//                            imageCon.setMargins(start = marStart - difX.toInt())
-//                            timeCon.setMargins(end = marEndTime + difX.toInt())
-//                            dateCon.setMargins(end = marEndTime + difX.toInt())
-//
-//                            imageLeft.visibility = if(Math.abs(difX) >= DIF) if(difX / Math.abs(difX) == -1f) View.VISIBLE else View.INVISIBLE else View.INVISIBLE
-//                            imageRight.visibility = if(Math.abs(difX) >= DIF) if(difX / Math.abs(difX) == 1f) View.VISIBLE else View.INVISIBLE else View.INVISIBLE
-//                            /*if (scrollView.context != null) {
-//                                var difY = (yPos - event.rawX).toInt()
-//                                scrollView.scrollTo(0, 100)
-//                            }*/
-//                        }
-//
-//                        MotionEvent.ACTION_UP -> {
-//                            imageCon.setMargins(start = marStart)
-//                            timeCon.setMargins(end = marEndTime)
-//                            dateCon.setMargins(end = marEndTime)
-//                            if(imageLeft.visibility == View.VISIBLE) Metoths.callPhone(item.numberContact, context)
-//                            if(imageRight.visibility == View.VISIBLE) Metoths.openWhatsApp(item.numberContact, context)
-//                            imageLeft.visibility = View.INVISIBLE
-//                            imageRight.visibility = View.INVISIBLE
-//                            /*var difX = xPos - event.rawX
-//                            openDetail = Math.abs(difX) <= 10*/
-//                            if(onClick && openDetail){
-//                                openDialog(items)
-//                                openDetail = false
-//                            }
-//                        }
-//                    }
-//            }
-//        })
-        var lim = LinearLayoutManager(this)
-        lim.orientation = LinearLayoutManager.VERTICAL
-//        var mDividerItemDecoration = DividerItemDecoration(recyclerView.context, lim.orientation)
-//        recyclerView.addItemDecoration(mDividerItemDecoration)
-        recyclerView.layoutManager = lim
-        //recyclerView.addOnItemTouchListener(RecyclerTouchListerner(this, RecyclerTouchListerner.SimpleItemMotionEventListener()))
-        //recyclerView.setOnTouchListener { v, event -> return@setOnTouchListener true }
+
+        recyclerView.layoutManager = LinearLayoutManager(this).apply {
+            orientation = RecyclerView.VERTICAL
+            initialPrefetchItemCount = 9}
         recyclerView.adapter = myAdapter
         recyclerView.scrollToPosition(listItem.count() - 1)
-
-        /*val callback = HistoryItemTouchHelperCallback(myAdapter)
-        val touchHelper = ItemTouchHelper(callback)
-        touchHelper.attachToRecyclerView(recyclerView)*/
     }
 
     fun HistoryCell.toItem() =
-        HistoryItem(this.image, this.nameContact, this.numberContact, this.time, this.typeCall, this.duration, this.date, this.contactID)
+        HistoryItem(this.nameContact, this.numberContact, this.time, this.typeCall, this.duration, this.date, this.contactID)
 
 
     private fun ArrayList<HistoryCell>.containNumber(num: String): Boolean {
@@ -512,7 +322,7 @@ class MainActivity : FragmentActivity() {
                     date
                 )
             )
-            Log.d("History: ", "$i = ${historyCell.nameContact} / ${historyCell.date}")
+//            Log.d("History: ", "$i = ${historyCell.nameContact} / ${historyCell.date}")
             list.add(historyCell)
         }
         return list//if(b) list.reversed() as ArrayList<HistoryCell> else list
@@ -579,11 +389,6 @@ class MainActivity : FragmentActivity() {
         return cir
     }
 
-    private fun shareDeveloper() {
-        val intentWeb = Intent(Intent.ACTION_VIEW, Uri.parse(developerWebsite))
-        startActivity(intentWeb)
-    }
-
     private fun clearAll() {
         cirs.forEach {
             it.clear(if (settings.themeColor == Color.BLACK) R.drawable.sharp_control_point_white_48 else R.drawable.sharp_control_point_black_48)
@@ -639,10 +444,6 @@ class MainActivity : FragmentActivity() {
         if (countCirsPred == settings.countCirs) return
         //TODO: Временное решение
         return
-//        var size = Point()
-//        windowManager.defaultDisplay.getSize(size)
-//        changeAllMarginTop(size.y - (cirs[settings.countCirs - 1].marginTop + cirs[settings.countCirs - 1].height + settings.offsetCirs))
-//        countCirsPred = settings.countCirs
     }
 
     private fun changeAllMarginTop(i: Int) {
@@ -661,17 +462,11 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun setStatusBarColor() {
-        window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-        if (settings.themeColor == Color.WHITE) return
-        window.statusBarColor = Color.BLACK
-        window.navigationBarColor = window.statusBarColor
+        StatusBarUtil.setTranslucentForImageView(this, recyclerView)
     }
 
     fun CirView.setSize(size: Int) {
-        var layoutParams = this.layoutParams as RelativeLayout.LayoutParams
-        layoutParams.width = size
-        layoutParams.height = size
-        this.layoutParams = layoutParams
+        this.layoutParams = (this.layoutParams as RelativeLayout.LayoutParams).apply { width = size; height = size }
     }
 
     private fun changeGlobalOffset(difY: Int) {
@@ -698,51 +493,6 @@ class MainActivity : FragmentActivity() {
 
         }
         loadData()
-        /*try {
-            for (i in cirs.indices) {
-                var it = myPref.getString(i.toString(), "")!!
-                if (it.length < 7) continue
-                var ind = it.substring(0, it.indexOf('/')).toInt()
-                var temp = it.substring(it.indexOf('/') + 1, it.length)
-                var idCon = temp.substring(0, temp.indexOf("/"))
-                var idtel = temp.substring(temp.indexOf('/') + 1, temp.lastIndexOf('/'))
-                var idEmail = temp.substring(temp.lastIndexOf('/') + 1, temp.length)
-                cirs[ind].idContact = idCon
-                cirs[ind].number = idtel
-                cirs[ind].email = idEmail
-
-                Log.d("load: ", "$ind / $idCon / $idtel / $idEmail")
-                var photo = if (photoMethodTh) openPhoto(idCon.toLong()) else  openDisplayPhoto(contactId = idCon.toLong())
-                if (photo != null)
-                    cirs[ind].cirIt.setImageBitmap(photo)
-                else
-                    cirs[ind].cirIt.setImageResource(R.drawable.contact)
-            }
-            loadData()
-        }catch (e: Exception){Log.e("prefGet: ", e.toString())}
-        val contacts = myPref.getStringSet("Contacts", HashSet<String>())
-        val numbers = myPref.getStringSet("Numbers", HashSet<String>())
-        val emails = myPref.getStringSet("Emails", HashSet<String>())
-
-        if (emails != null)
-            for (i in cirs.indices){
-                cirs[i].number = numbers!!.toTypedArray<String>()[i]
-                cirs[i].idContact = contacts!!.toTypedArray<String>()[i]
-                cirs[i].email = emails!!.toTypedArray<String>()[i]
-                val temp = openDisplayPhoto(contactId = contacts!!.toTypedArray()[i].toLong())
-                if(temp != null)
-                    cirs[i].cirIt.setImageBitmap(temp)
-                else
-                    cirs[i].cirIt.setImageResource(R.drawable.contact)
-            }
-        val fileName = this.baseContext.filesDir.name + "/cirs.txt"
-        val lineList = mutableListOf<String>()
-        File(fileName).useLines { lines -> lines.forEach { lineList.add(it) }}
-        lineList.forEach {
-
-            cirs[ind].doAsync {  }
-        }
-        */
     }
 
     private fun getPhotoSaffety(id: Long): Drawable {
@@ -751,8 +501,7 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun getPhotoNow(id: Long): Bitmap? =
-        if (settings.photoType == PhotoType.Thum) openPhoto(id) else openPhoto(contactId = id)
-
+        if (settings.photoType == PhotoType.Thum) openPhoto(id) else openDisplayPhoto(contactId = id)
 
     override fun onStop() {
         saveAll()
@@ -765,28 +514,6 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun saveAll() {
-        /*  val contacts =  HashSet<String>()
-        val numbers = HashSet<String>()
-        val emails = HashSet<String>()
-        val emailArr = arrayOfNulls<String>(12)
-
-        val e = myPref.edit()
-        for(i in cirs.indices) {
-            contacts.add(if(cirs[i].idContact == "") "/" else cirs[i].idContact)
-            numbers.add(cirs[i].number)
-            emails.add(cirs[i].email)
-            emailArr[i] = if (cirs[i].email == "") "//" else cirs[i].email
-        }
-        e.putStringSet("Contacts", contacts)
-        e.putStringSet("Numbers", numbers)
-        e.putStringSet("Emails", emails)
-        e.putStringSet("EmArr", emailArr.toHashSet())
-        e.apply()
-
-        val fileName = this.baseContext.filesDir.name + "/cirs.txt"
-        val myfile = File(fileName)
-        myfile.createNewFile()*/
-
         loader.saveCirs(cirs)
     }
 
@@ -816,24 +543,16 @@ class MainActivity : FragmentActivity() {
             cir.setOnClickListener {
                 if (cir.inContact()) {
                     index = ind
-                    val intent = Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)
-                    startActivityForResult(intent, 1)
+                    startActivityForResult(Intent(this, SearchActivity::class.java), INTENT_SEARCH_ACTIVITY)
                 } else if (cir.openCard) openCardContact(cir.idContact)
             }
 
             cir.setOnLongClickListener {
-                // Create a new ClipData.
-                // This is done in two steps to provide clarity. The convenience method
-                // ClipData.newPlainText() can create a plain text ClipData in one step.
                 if (!(it as CirView).isDrag || it.inContact()) return@setOnLongClickListener false
                 it.bringToFront()
                 deleteImage.visibility = View.VISIBLE
-                // Create a new ClipData.Item from the ImageView object's tag
                 val item = ClipData.Item(it.tag as? CharSequence)
 
-                // Create a new ClipData using the tag as a label, the plain text MIME type, and
-                // the already-created item. This will create a new ClipDescription object within the
-                // ClipData, and set its MIME type entry to "text/plain"
                 val dragData = ClipData(
                     it.tag as? CharSequence,
                     arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
@@ -1152,6 +871,20 @@ class MainActivity : FragmentActivity() {
     @SuppressLint("MissingPermission")
     fun callPhone(telNum: String) {
         val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$telNum"))
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CALL_PHONE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
         startActivity(intent)
     }
 
@@ -1196,6 +929,7 @@ class MainActivity : FragmentActivity() {
 
     @SuppressLint("MissingSuperCall")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         try {
             if (requestCode == ACTIVITYSETTINGS) {
                 if (resultCode == Activity.RESULT_OK) loadData()
@@ -1204,6 +938,17 @@ class MainActivity : FragmentActivity() {
             /*if (requestCode == 20) {
                     cirs[index].number = data!!.getStringExtra("Number"); return
                 }*/
+
+            if (requestCode == INTENT_SEARCH_ACTIVITY){
+                data?.extras?.getString(Keys.number)?.let {
+                    Contacts.initialize(this)
+                    val t = Contacts.getQuery().whereContains(Contact.Field.PhoneNormalizedNumber, it).find()
+                    cirs[index].setData(t.first())
+                }
+
+            }
+
+            return
             val contactData = data!!.data
             var contactId = ""
             val listContactId = ArrayList<String>()
