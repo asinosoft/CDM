@@ -30,7 +30,7 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
         holder.bind(elements[position])
     }
 
-    inner class ViewContactInfo(view: View): RecyclerView.ViewHolder(view){
+    inner class ViewContactInfo(val view: View): RecyclerView.ViewHolder(view){
 
         private val mCustomLeft = itemView.findViewById<ImageButton>(R.id.callBtnNumber)
         private var mCustomRight = itemView.findViewById<ImageButton>(R.id.msgBtnNumber)
@@ -67,6 +67,16 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
                     mContact.TYPE_TELEGRAM -> numberType.text = context.getString(R.string.type_telegram)
                     mContact.TYPE_SKYPE -> numberType.text = context.getString(R.string.type_skype)
                 }
+            }else{
+                numberType.text = " "
+            }
+
+            if(null != item.emailType){
+                when(item.emailType){
+                    1 -> numberType.text = context.getString(R.string.type_work)
+                    2 -> numberType.text = context.getString(R.string.type_my)
+                    3 -> numberType.text = context.getString(R.string.type_other)
+                }
             }
 
             /**
@@ -86,17 +96,24 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
                 0 -> { mCustomLeft.setBackgroundResource(R.drawable.call)
                         number.text = item.active
                        mCustomLeft.setOnClickListener(View.OnClickListener { v ->
-                        Metoths.callPhone(item.active!!, context) })
+                        Metoths.callPhone(item.active!!, context)
+                       })
                     mCustomRight.setBackgroundResource(R.drawable.message)
                     mCustomRight.setOnClickListener(View.OnClickListener { v ->
                         Metoths.sendMsg(item.active!!, context)
                     })
+                    view.setOnClickListener {
+                        Metoths.callPhone(item.active!!, context)
+                    }
                 }
                 1 -> {
                     number.text = item.active
                     mCustomLeft.setBackgroundResource(R.drawable.email_192)
                     mCustomRight.visibility = View.INVISIBLE
                     mCustomLeft.setOnClickListener {
+                        Metoths.sendEmail(item.active!!, context)
+                    }
+                    view.setOnClickListener {
                         Metoths.sendEmail(item.active!!, context)
                     }
                 }
@@ -107,12 +124,18 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
                     mCustomLeft.setOnClickListener {
                         Metoths.openWhatsAppMsg(item.active!!, context)
                     }
+                    view.setOnClickListener {
+                        Metoths.openWhatsAppMsg(item.active!!, context)
+                    }
                 }
                 3 -> {
                     number.text = "Аудиозвонок " + item.active
                     mCustomLeft.setBackgroundResource(R.drawable.whatsapp_call)
                     mCustomRight.visibility = View.INVISIBLE
                     mCustomLeft.setOnClickListener {
+                        Metoths.callWhatsApp(item.Id!!, context)
+                    }
+                    view.setOnClickListener {
                         Metoths.callWhatsApp(item.Id!!, context)
                     }
                 }
@@ -123,12 +146,18 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
                     mCustomLeft.setOnClickListener {
                         Metoths.videoCallWhatsApp(item.Id!!, context)
                     }
+                    view.setOnClickListener {
+                        Metoths.videoCallWhatsApp(item.Id!!, context)
+                    }
                 }
                 5 -> {
                     number.text = "Написать " + item.active
                     mCustomLeft.setBackgroundResource(R.drawable.viber_message)
                     mCustomRight.visibility = View.INVISIBLE
                     mCustomLeft.setOnClickListener {
+                        Metoths.viberMsg(item.Id!!, context)
+                    }
+                    view.setOnClickListener {
                         Metoths.viberMsg(item.Id!!, context)
                     }
                 }
@@ -138,7 +167,10 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
                     mCustomRight.visibility = View.INVISIBLE
                     mCustomLeft.setOnClickListener {
                         Metoths.viberCall(item.active!!, context)
-                }
+                    }
+                    view.setOnClickListener {
+                        Metoths.viberCall(item.active!!, context)
+                    }
                 }
 
                 7 -> {
@@ -146,6 +178,9 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
                     mCustomLeft.setBackgroundResource(R.drawable.telegram)
                     mCustomRight.visibility = View.INVISIBLE
                     mCustomLeft.setOnClickListener {
+                        Metoths.openTelegramNow(item.Id!!, context)
+                    }
+                    view.setOnClickListener {
                         Metoths.openTelegramNow(item.Id!!, context)
                     }
                 }
@@ -156,12 +191,18 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
                     mCustomLeft.setOnClickListener {
                         Metoths.skypeMsg(item.active!!, context)
                     }
+                    view.setOnClickListener {
+                        Metoths.skypeMsg(item.active!!, context)
+                    }
                 }
                 9 -> {
                     number.text = "Звонок " + item.contactName
                     mCustomLeft.setBackgroundResource(R.drawable.skype_call)
                     mCustomRight.visibility = View.INVISIBLE
                     mCustomLeft.setOnClickListener {
+                        Metoths.skypeCall(item.active!!, context)
+                    }
+                    view.setOnClickListener {
                         Metoths.skypeCall(item.active!!, context)
                     }
                 }
