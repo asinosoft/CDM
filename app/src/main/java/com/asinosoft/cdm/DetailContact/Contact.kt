@@ -24,11 +24,11 @@ class Contact () {
 
     var name: String? = null
     var contactID: String? = null
-    var mActiveNumber: Int? = 0 // Позиция активного номера в mPhoneNumbers
     var mSkypeName: String? = null
     var mEmailAdress = ArrayList<String>()
     var mPhoneNumbers = ArrayList<String>()
     var mPhoneTypes = ArrayList<Int>()
+    var mEmailType = ArrayList<Int>()
     var mWhatsAppNumbers = ArrayList<String>()
     var mWhatsAppNumbers2 = ArrayList<String>()
     var mWhatsAppCallId = ArrayList<String>()
@@ -38,9 +38,6 @@ class Contact () {
     var mTelegram = ArrayList<String>()
     var mTelegramId = ArrayList<String>()
 
-
-    private var mCustomRight: Int? = null
-    var mCustomLeft: Int? = null
 
     fun parseDataCursor(id: String, context: Context){
          var isFirst: Boolean = true
@@ -79,7 +76,7 @@ class Contact () {
 
              when(mimeType){
                  MIME_TYPE_PHONE -> getNumberFormData(data, data4, data2)
-                 MIME_TYPE_E_MAIL -> getEmailFromData(data)
+                 MIME_TYPE_E_MAIL -> getEmailFromData(data, data2)
                  MIME_TYPE_WHATSAPP_CALL -> getWhatsAppCallFromData(_id, data)
                  MIME_TYPE_WHATSAPP_VIDEO -> getWhatsAppVideoFromData(_id, data)
                  MIME_TYPE_VIBER_MSG -> getViberFromData(_id, data)
@@ -116,9 +113,13 @@ class Contact () {
         }
     }
 
-    private fun getEmailFromData(data: String){
+    private fun getEmailFromData(data: String, data2: String){
         if(null != data){
             this.mEmailAdress.add(data)
+            if(null != data2){
+                val type = Integer.parseInt(data2)
+                this.mEmailType.add(type)
+            }else this.mEmailType.add(-1)
         }
     }
 
@@ -206,5 +207,71 @@ class Contact () {
             val res = data.split("@".toRegex()).toTypedArray()
             res[0]
         } else data
+    }
+
+    fun getContactListForDetail(): ArrayList<ContactDetailListElement>{
+
+        var result = ArrayList<ContactDetailListElement>()
+        for (i in mPhoneNumbers.indices) {
+            val numberStr: String = mPhoneNumbers[i]
+            val element = ContactDetailListElement(0, numberStr, mPhoneTypes[i])
+            result.add(element)
+        }
+
+        if(mEmailAdress.size > 0){
+            for(i in mEmailAdress.indices){
+                val eMail: String = mEmailAdress[i]
+                val element = ContactDetailListElement(1, eMail, null, null,null, mEmailType[i])
+                result.add(element)
+            }
+        }
+
+        if(mWhatsAppNumbers.size > 0){
+            for(i in mWhatsAppNumbers.indices){
+                val numberStr = mWhatsAppNumbers[i]
+                val element = ContactDetailListElement(2, numberStr, TYPE_WHATSAPP, mWhatsAppCallId[i])
+                result.add(element)
+            }
+        }
+        if(mWhatsAppNumbers.size > 0){
+            for(i in mWhatsAppNumbers.indices){
+                val numberStr = mWhatsAppNumbers[i]
+                val element = ContactDetailListElement(3, numberStr, null, mWhatsAppCallId[i])
+                result.add(element)
+            }
+        }
+        if(mWhatsAppNumbers2.size > 0){
+            for(i in mWhatsAppNumbers2.indices){
+                val numberStr = mWhatsAppNumbers2[i]
+                val element = ContactDetailListElement(4, numberStr, null, mWhatsAppVideoId[i])
+                result.add(element)
+            }
+        }
+        if(mViberNumbers.size > 0){
+            for(i in mViberNumbers.indices){
+                val numberStr = mViberNumbers[i]
+                val element = ContactDetailListElement(5, numberStr, TYPE_VIBER, mViberId[i])
+                val element1 = ContactDetailListElement(6, numberStr, null, mViberId[i])
+                result.add(element)
+                result.add(element1)
+            }
+        }
+        if(mTelegram.size > 0){
+            for(i in mTelegram.indices){
+                val numberStr = mPhoneNumbers[i]
+                val element = ContactDetailListElement(7, numberStr, TYPE_TELEGRAM, mTelegramId[i])
+                result.add(element)
+            }
+        }
+        if(null != mSkypeName){
+            val numberStr = mSkypeName
+            val element = ContactDetailListElement(8, numberStr, TYPE_SKYPE, contactID, name)
+            val element1 = ContactDetailListElement(9, numberStr, null, contactID, name)
+            result.add(element)
+            result.add(element1)
+
+        }
+
+        return result
     }
 }
