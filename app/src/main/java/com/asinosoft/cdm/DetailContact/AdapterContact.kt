@@ -9,11 +9,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths
 import com.asinosoft.cdm.R
+import kotlin.collections.ArrayList
 
 class AdapterContact(val elements: ArrayList<ContactDetailListElement>): RecyclerView.Adapter<AdapterContact.ViewContactInfo>() {
 
     private lateinit var context: Context
     val mContact = Contact()
+    val stHelper = StHelper()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewContactInfo {
@@ -33,9 +35,11 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
     inner class ViewContactInfo(val view: View): RecyclerView.ViewHolder(view){
 
         private val mCustomLeft = itemView.findViewById<ImageButton>(R.id.callBtnNumber)
-        private var mCustomRight = itemView.findViewById<ImageButton>(R.id.msgBtnNumber)
+        private var mCustomMiddle = itemView.findViewById<ImageButton>(R.id.msgBtnNumber)
+        private var mCustomRight = itemView.findViewById<ImageButton>(R.id.videoBtnNumber)
         private var numberType = itemView.findViewById<TextView>(R.id.discription_id)
         private var number = itemView.findViewById<TextView>(R.id.number_id)
+        private var bText = itemView.findViewById<TextView>(R.id.bText)
 
         fun bind(item: ContactDetailListElement){
 
@@ -66,6 +70,7 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
                     mContact.TYPE_VIBER -> numberType.text = context.getString(R.string.type_viber)
                     mContact.TYPE_TELEGRAM -> numberType.text = context.getString(R.string.type_telegram)
                     mContact.TYPE_SKYPE -> numberType.text = context.getString(R.string.type_skype)
+                    mContact.TYPE_BITHDAY -> numberType.text = context.getString(R.string.type_bithday)
                 }
             }else{
                 numberType.text = " "
@@ -81,131 +86,98 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
 
             /**
              * 0 - NumberCallAndMsg
-             * 1 - EmailMsg
-             * 2 - WhatsAppMsg
-             * 3 - WhatsAppCall
-             * 4 - WhatsAppVideoCall
-             * 5 - ViberMsg
-             * 6 - ViberCall
-             * 7 - open Telegram
-             * 8 - SkypeMsg
-             * 9 - SkypeCall
+             * 1 - WhatsApp
+             * 2 - Viber
+             * 3 - Telegram
+             * 4 - Skype
+             * 5 - Email
+             * 6 - BithDay
              */
 
             when (item.mActiveType) {
-                0 -> { mCustomLeft.setBackgroundResource(R.drawable.call)
-                        number.text = item.active
-                       mCustomLeft.setOnClickListener(View.OnClickListener { v ->
+                0 -> {
+                    mCustomMiddle.setBackgroundResource(R.drawable.call)
+                    number.text = item.active
+                    mCustomLeft.visibility = View.INVISIBLE
+                    bText.visibility = View.GONE
+                    mCustomMiddle.setOnClickListener(View.OnClickListener { v ->
                         Metoths.callPhone(item.active!!, context)
-                       })
+                    })
                     mCustomRight.setBackgroundResource(R.drawable.message)
                     mCustomRight.setOnClickListener(View.OnClickListener { v ->
                         Metoths.sendMsg(item.active!!, context)
                     })
-                    view.setOnClickListener {
-                        Metoths.callPhone(item.active!!, context)
-                    }
                 }
                 1 -> {
-                    number.text = item.active
-                    mCustomLeft.setBackgroundResource(R.drawable.email_192)
-                    mCustomRight.visibility = View.INVISIBLE
+                    number.text = stHelper.convertNumber(item.active!!)
+                    mCustomLeft.setBackgroundResource(R.drawable.whatsapp_message)
+                    mCustomMiddle.setBackgroundResource(R.drawable.whatsapp_call)
+                    bText.visibility = View.GONE
                     mCustomLeft.setOnClickListener {
-                        Metoths.sendEmail(item.active!!, context)
+                        Metoths.openWhatsApp(item.active!!, context)
                     }
-                    view.setOnClickListener {
-                        Metoths.sendEmail(item.active!!, context)
+                    mCustomMiddle.setOnClickListener {
+                        Metoths.callWhatsApp(item.Id!!, context)
+                    }
+                    mCustomRight.setOnClickListener {
+                        Metoths.videoCallWhatsApp(item.callId!!, context)
                     }
                 }
                 2 -> {
-                    number.text = "Написать " + item.active
-                    mCustomLeft.setBackgroundResource(R.drawable.whatsapp_192)
-                    mCustomRight.visibility = View.INVISIBLE
-                    mCustomLeft.setOnClickListener {
-                        Metoths.openWhatsAppMsg(item.active!!, context)
+                    number.text = stHelper.convertNumber(item.active!!)
+                    mCustomMiddle.setBackgroundResource(R.drawable.viber_message)
+                    mCustomRight.setBackgroundResource(R.drawable.viber)
+                    mCustomLeft.visibility = View.INVISIBLE
+                    bText.visibility = View.GONE
+                    mCustomMiddle.setOnClickListener {
+                        Metoths.viberMsg(item.Id!!, context)
                     }
-                    view.setOnClickListener {
-                        Metoths.openWhatsAppMsg(item.active!!, context)
+                    mCustomRight.setOnClickListener {
+                        Metoths.viberCall(item.active!!, context)
                     }
                 }
                 3 -> {
-                    number.text = "Аудиозвонок " + item.active
-                    mCustomLeft.setBackgroundResource(R.drawable.whatsapp_call)
-                    mCustomRight.visibility = View.INVISIBLE
-                    mCustomLeft.setOnClickListener {
-                        Metoths.callWhatsApp(item.Id!!, context)
-                    }
-                    view.setOnClickListener {
-                        Metoths.callWhatsApp(item.Id!!, context)
+                    number.text = item.contactNameAndNumber
+                    mCustomRight.setBackgroundResource(R.drawable.telegram)
+                    mCustomMiddle.visibility = View.INVISIBLE
+                    mCustomLeft.visibility = View.INVISIBLE
+                    bText.visibility = View.GONE
+                    mCustomRight.setOnClickListener {
+                        Metoths.openTelegramNow(item.active!!, context)
                     }
                 }
                 4 -> {
-                    number.text = "Видеозвонок " + item.active
-                    mCustomLeft.setBackgroundResource(R.drawable.whatsapp_call)
-                    mCustomRight.visibility = View.INVISIBLE
-                    mCustomLeft.setOnClickListener {
-                        Metoths.videoCallWhatsApp(item.Id!!, context)
+                    number.text = item.contactNameAndNumber
+                    mCustomMiddle.setBackgroundResource(R.drawable.skype_message)
+                    mCustomRight.setBackgroundResource(R.drawable.skype_call)
+                    mCustomLeft.visibility = View.INVISIBLE
+                    bText.visibility = View.GONE
+                    mCustomMiddle.setOnClickListener {
+                        Metoths.skypeMsg(item.active!!, context)
                     }
-                    view.setOnClickListener {
-                        Metoths.videoCallWhatsApp(item.Id!!, context)
+                    mCustomRight.setOnClickListener {
+                        Metoths.skypeCall(item.active!!, context)
                     }
                 }
                 5 -> {
-                    number.text = "Написать " + item.active
-                    mCustomLeft.setBackgroundResource(R.drawable.viber_message)
-                    mCustomRight.visibility = View.INVISIBLE
-                    mCustomLeft.setOnClickListener {
-                        Metoths.viberMsg(item.Id!!, context)
-                    }
-                    view.setOnClickListener {
-                        Metoths.viberMsg(item.Id!!, context)
+                    number.text = item.active
+                    mCustomRight.setBackgroundResource(R.drawable.email_192)
+                    mCustomMiddle.visibility = View.INVISIBLE
+                    mCustomLeft.visibility = View.INVISIBLE
+                    bText.visibility = View.GONE
+                    mCustomRight.setOnClickListener {
+                        Metoths.sendEmail(item.active!!, context)
                     }
                 }
                 6 -> {
-                    number.text = "Аудиозвонок " + item.active
-                    mCustomLeft.setBackgroundResource(R.drawable.viber)
-                    mCustomRight.visibility = View.INVISIBLE
-                    mCustomLeft.setOnClickListener {
-                        Metoths.viberCall(item.active!!, context)
-                    }
-                    view.setOnClickListener {
-                        Metoths.viberCall(item.active!!, context)
-                    }
+                    number.text = item.active
+                    bText.text = item.Id + " лет"
+                    bText.visibility = View.VISIBLE
+                    mCustomLeft.visibility = View.GONE
+                    mCustomMiddle.visibility = View.GONE
+                    mCustomRight.visibility = View.GONE
                 }
 
-                7 -> {
-                    number.text = "Написать " + item.active
-                    mCustomLeft.setBackgroundResource(R.drawable.telegram)
-                    mCustomRight.visibility = View.INVISIBLE
-                    mCustomLeft.setOnClickListener {
-                        Metoths.openTelegramNow(item.Id!!, context)
-                    }
-                    view.setOnClickListener {
-                        Metoths.openTelegramNow(item.Id!!, context)
-                    }
-                }
-                8 -> {
-                    number.text = "Написать " + item.contactName
-                    mCustomLeft.setBackgroundResource(R.drawable.skype_message)
-                    mCustomRight.visibility = View.INVISIBLE
-                    mCustomLeft.setOnClickListener {
-                        Metoths.skypeMsg(item.active!!, context)
-                    }
-                    view.setOnClickListener {
-                        Metoths.skypeMsg(item.active!!, context)
-                    }
-                }
-                9 -> {
-                    number.text = "Звонок " + item.contactName
-                    mCustomLeft.setBackgroundResource(R.drawable.skype_call)
-                    mCustomRight.visibility = View.INVISIBLE
-                    mCustomLeft.setOnClickListener {
-                        Metoths.skypeCall(item.active!!, context)
-                    }
-                    view.setOnClickListener {
-                        Metoths.skypeCall(item.active!!, context)
-                    }
-                }
             }
         }
     }
