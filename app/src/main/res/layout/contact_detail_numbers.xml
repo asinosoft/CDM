@@ -18,59 +18,86 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_marginStart="18dp">
 
             <TextView
-                android:id="@+id/discription_id1"
+                android:id="@+id/discription_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="5dp"
                 android:paddingTop="5dp"
                 android:text="@string/describe"
-                android:textSize="12dp"></TextView>
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/number_id"
-                android:layout_width="wrap_content"
+                android:layout_width="195dp"
                 android:layout_height="wrap_content"
-                android:paddingLeft="5dp"
-                android:paddingTop="5dp"
+                android:paddingTop="3dp"
                 android:text="@string/describe"
                 android:textColor="@color/black"
-                android:textSize="16dp">
+                android:textSize="20sp">
 
             </TextView>
         </LinearLayout>
-
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginStart="90dp"
-            android:orientation="horizontal"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toEndOf="@+id/linearLayout"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageButton
                 android:id="@+id/callBtnNumber"
-                android:layout_width="35dip"
-                android:layout_height="35dip"
+                android:layout_width="40dip"
+                android:layout_height="40dip"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="8dp"
                 android:background="@drawable/telephony_call_192"
-                android:contentDescription="@string/describe" />
+                android:contentDescription="@string/describe"
+                android:visibility="visible" />
 
             <ImageButton
                 android:id="@+id/msgBtnNumber"
-                android:layout_width="35dip"
-                android:layout_height="35dip"
+                android:layout_width="40dip"
+                android:layout_height="40dip"
+                android:layout_marginStart="10dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
                 android:background="@drawable/sms_192"
-                android:contentDescription="@string/describe" />
+                android:contentDescription="@string/describe"
+                android:visibility="visible" />
+
+            <ImageButton
+                android:id="@+id/videoBtnNumber"
+                android:layout_width="40dip"
+                android:layout_height="40dip"
+                android:layout_marginStart="10dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/whatsapp_call"
+                android:contentDescription="@string/describe"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="19dp"
+            android:layout_marginStart="45dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/bText"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:text="20"
+                android:padding="10dp">
+
+            </TextView>
         </LinearLayout>
     </LinearLayout>
 
