@@ -3,6 +3,10 @@ package com.asinosoft.cdm.DetailContact
 import android.util.Log
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
+import java.text.DateFormat
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
 
 class StHelper {
 
@@ -20,6 +24,32 @@ class StHelper {
             )
         }
         return numberStr
+    }
+
+    fun parseDateToddMMyyyy(time: String?): String? {
+        val inputPattern = "yyyy-MM-dd"
+        val outputPattern = "dd MMM yyyy г."
+        val inputFormat = SimpleDateFormat(inputPattern)
+        val outputFormat = SimpleDateFormat(outputPattern)
+        var date: Date? = null
+        var str: String? = null
+        try {
+            date = inputFormat.parse(time)
+            str = outputFormat.format(date)
+        } catch (e: ParseException) {
+            e.printStackTrace()
+        }
+        return str
+    }
+
+    fun parseToMillis(time: String?): String{
+        val str_date = time
+        val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd")
+        val date = formatter.parse(str_date) as Date
+        val dateToMillis = System.currentTimeMillis()
+        val ageInMillis = dateToMillis - date.time
+        val age = ageInMillis/1000/60/60/24/365
+        return age.toString()
     }
 
 
