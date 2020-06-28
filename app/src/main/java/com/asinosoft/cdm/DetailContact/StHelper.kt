@@ -48,7 +48,7 @@ class StHelper {
         val date = formatter.parse(str_date) as Date
         val dateToMillis = System.currentTimeMillis()
         val ageInMillis = dateToMillis - date.time
-        val age = ageInMillis/1000/60/60/24/365
+        val age = ageInMillis/1000/60/60/24/366
         return age.toString()
     }
 

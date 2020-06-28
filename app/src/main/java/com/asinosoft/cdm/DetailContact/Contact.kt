@@ -4,11 +4,7 @@ import android.content.Context
 import android.database.Cursor
 import android.provider.ContactsContract
 import android.util.Log
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.ArrayList
-
 
 class Contact () {
 
@@ -19,14 +15,14 @@ class Contact () {
     val MIME_TYPE_VIBER_MSG = "vnd.android.cursor.item/vnd.com.viber.voip.viber_number_message"
     val MIME_TYPE_TELEGRAM = "vnd.android.cursor.item/vnd.org.telegram.messenger.android.profile"
     val MIME_TYPE_SKYPE = "vnd.android.cursor.item/com.skype4life.message"
-    val MIME_TYPE_BITHDAY = "vnd.android.cursor.item/contact_event"
+    val MIME_TYPE_BIRTHDAY = "vnd.android.cursor.item/contact_event"
 
     val TYPE_SKYPE = 121
     val TYPE_WHATSAPP = 122
     val TYPE_VIBER = 123
     val TYPE_EMAIL = 124
     val TYPE_TELEGRAM = 125
-    val TYPE_BITHDAY = 126
+    val TYPE_BIRTHDAY = 126
 
     var name: String? = null
     var contactID: String? = null
@@ -91,7 +87,7 @@ class Contact () {
                  MIME_TYPE_VIBER_MSG -> getViberFromData(_id, data)
                  MIME_TYPE_TELEGRAM -> getTelegramFromData(_id, data)
                  MIME_TYPE_SKYPE -> getSkypeFromData(data)
-                 MIME_TYPE_BITHDAY -> getBithdayFromData(data, data2)
+                 MIME_TYPE_BIRTHDAY -> getBithdayFromData(data, data2)
              }
              cursor.moveToNext()
         }
@@ -281,7 +277,7 @@ class Contact () {
         if(mBirthDay.size > 0){
             for(i in mBirthDay.indices){
                 val numberStr = mBirthDay[i]
-                val element = ContactDetailListElement(6, numberStr, TYPE_BITHDAY, mAge[i])
+                val element = ContactDetailListElement(6, numberStr, TYPE_BIRTHDAY, mAge[i])
                 result.add(element)
             }
         }

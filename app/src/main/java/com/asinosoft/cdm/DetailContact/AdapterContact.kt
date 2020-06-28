@@ -70,7 +70,7 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
                     mContact.TYPE_VIBER -> numberType.text = context.getString(R.string.type_viber)
                     mContact.TYPE_TELEGRAM -> numberType.text = context.getString(R.string.type_telegram)
                     mContact.TYPE_SKYPE -> numberType.text = context.getString(R.string.type_skype)
-                    mContact.TYPE_BITHDAY -> numberType.text = context.getString(R.string.type_bithday)
+                    mContact.TYPE_BIRTHDAY -> numberType.text = context.getString(R.string.type_birthday)
                 }
             }else{
                 numberType.text = " "
@@ -91,7 +91,7 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
              * 3 - Telegram
              * 4 - Skype
              * 5 - Email
-             * 6 - BithDay
+             * 6 - BirthDay
              */
 
             when (item.mActiveType) {
