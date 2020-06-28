@@ -71,6 +71,7 @@
     <string name="whatsApp_videoCall">Видеозвонок</string>
     <string name="whatsApp_msg">Написать</string>
     <string name="type_telegram">Telegram</string>
+    <string name="type_birthday">День рождения</string>
 
 
 </resources>
