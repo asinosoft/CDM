@@ -2,6 +2,7 @@ package com.asinosoft.cdm
 
 import androidx.lifecycle.ViewModel
 
-class HistoryDetailViewModel : ViewModel() {
-    // TODO: Implement the ViewModel
-}
+/**
+ * Фоновая логика экрана детальной информации
+ */
+class HistoryDetailViewModel : ViewModel()

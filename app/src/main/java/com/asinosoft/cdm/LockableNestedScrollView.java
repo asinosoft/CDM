@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 
+/**
+ * ScrollView с возможно отключения пролистывания
+ */
 public class LockableNestedScrollView extends NestedScrollView {
     // by default is scrollable
     private boolean scrollable = true;

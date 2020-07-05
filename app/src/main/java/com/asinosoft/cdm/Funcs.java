@@ -14,20 +14,17 @@ import android.provider.ContactsContract;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Класс с методами для работы парсера.
+ */
 public class Funcs {
 
-   /* private long getContactIdFromNumber(String number) {
-        String[] projection = new String[]{Contacts.Phones.PERSON_ID};
-        Uri contactUri = Uri.withAppendedPath(Contacts.Phones.CONTENT_FILTER_URL,Uri.encode(number));
-        Cursor c = getContentResolver().query(contactUri, projection, null, null, null);
-
-        if (c.moveToFirst()) {
-            long contactId=c.getLong(c.getColumnIndex(Contacts.Phones.PERSON_ID));
-            return contactId;
-        }
-        return -1;
-    }*/
-
+    /**
+     * Метод возвращающий идентификатор контакта по его номеру.
+     * @param context контекст
+     * @param number номер
+     * @return id
+     */
     public static String getContactID(Context context, String number){
         ContentResolver contentResolver = context.getContentResolver();
         String contactId = null;
@@ -55,6 +52,12 @@ public class Funcs {
         return contactId;
     }
 
+    /**
+     * Класс возвращающий фото контакта по номеру
+     * @param context контекст
+     * @param number номер
+     * @return фото
+     */
     public static Drawable retrieveContactPhoto(Context context, String number) {
         ContentResolver contentResolver = context.getContentResolver();
         String contactId = null;
@@ -102,15 +105,4 @@ public class Funcs {
         return new BitmapDrawable(photo);
     }
 
-    /*public Drawable getPhoto(Context context, String url){
-        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(url));
-        Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
-
-        if (cursor != null && cursor.moveToNext()) {
-            image_uri = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.PHOTO_URI));
-            //Log.d(TAG, "image_uri "+image_uri);
-        }
-        if(cursor !=null)
-            cursor.close();
-    }*/
 }

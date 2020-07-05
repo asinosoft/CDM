@@ -80,7 +80,6 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/lato_semibold"
                         android:gravity="center"
                         android:padding="20dp"
                         android:text="@string/setting_count_buttons"
@@ -132,7 +131,6 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/lato_semibold"
                     android:gravity="center"
                     android:padding="20dp"
                     android:text="@string/settings_size_buttons"
@@ -174,6 +172,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/card_view_text2">
 
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Размер:"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
             <com.xw.repo.BubbleSeekBar
                 android:layout_marginTop="6dp"
                 android:id="@+id/seekBarSizeButtons"
@@ -182,12 +190,91 @@
                 app:bsb_auto_adjust_section_mark="true"
                 app:bsb_second_track_color="@color/blue"
                 app:bsb_touch_to_seek="true"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textView1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:paddingHorizontal="20dp"
                 app:bsb_min="30"
                 app:bsb_max="300" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Количество колонок:"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/seekBarSizeButtons"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <CheckBox
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start|center_vertical"
+            android:id="@+id/checkboxOffsetCirs"
+            app:layout_constraintTop_toBottomOf="@id/textView2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:checked="true"
+            android:text="Автоматически определять отступы" />
+
+        <com.xw.repo.BubbleSeekBar
+            android:layout_marginTop="6dp"
+            android:id="@+id/seekBarColumnsButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:bsb_auto_adjust_section_mark="true"
+            app:bsb_second_track_color="@color/blue"
+            app:bsb_touch_to_seek="true"
+            app:layout_constraintTop_toBottomOf="@id/checkboxOffsetCirs"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:paddingHorizontal="20dp"
+            app:bsb_min="1"
+            app:bsb_max="4"
+            app:bsb_progress="1"
+            app:bsb_section_count="3"
+            app:bsb_section_text_position="below_section_mark"
+            app:bsb_show_section_mark="true"
+            app:bsb_show_section_text="true"
+            app:bsb_show_thumb_text="true"/>
+
+        <TextView
+            android:id="@+id/textViewBorder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ширина обводки кнопок:"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/seekBarColumnsButtons"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.xw.repo.BubbleSeekBar
+            android:layout_marginTop="6dp"
+            android:id="@+id/seekBarBorderButtons"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:bsb_auto_adjust_section_mark="true"
+            app:bsb_second_track_color="@color/blue"
+            app:bsb_touch_to_seek="true"
+            app:layout_constraintTop_toBottomOf="@id/textViewBorder"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/colorPicker"
+            android:paddingHorizontal="20dp"
+            android:layout_marginEnd="5dp"
+            app:bsb_min="1"
+            app:bsb_max="100"
+            app:bsb_progress="1"/>
+
+        <Button
+            android:id="@+id/colorPicker"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/palette"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/seekBarBorderButtons"/>
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/circleImageView"
@@ -197,7 +284,7 @@
                 android:src="@drawable/contact_unfoto"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/seekBarSizeButtons" />
+                app:layout_constraintTop_toBottomOf="@+id/seekBarBorderButtons" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -235,7 +322,6 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/lato_semibold"
                     android:gravity="center"
                     android:padding="20dp"
                     android:text="Управление"
@@ -332,10 +418,8 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/lato_semibold"
                         android:gravity="center"
                         android:padding="20dp"
-                        android:text="Расположение списка истории"
                         android:textColor="@color/purple"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -430,7 +514,6 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/lato_semibold"
                         android:gravity="center"
                         android:padding="20dp"
                         android:text="Стиль приложения:"
@@ -507,7 +590,6 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/lato_semibold"
                         android:gravity="center"
                         android:padding="20dp"
                         android:text="Настройка действий:"
@@ -551,14 +633,14 @@
                         android:paddingTop="20dp"
                         android:paddingBottom="20dp">
 
-                        <com.asinosoft.cdm.CirView
+                        <com.asinosoft.cdm.CircularImageView
                             android:id="@+id/contact"
                             android:layout_width="64dp"
                             android:layout_height="64dp"
                             android:layout_centerInParent="true"
                             android:src="@drawable/contact_unfoto"/>
 
-                        <com.asinosoft.cdm.CirView
+                        <com.asinosoft.cdm.CircularImageView
                             android:id="@+id/cirTop"
                             android:layout_width="86dp"
                             android:layout_height="86dp"
@@ -567,7 +649,7 @@
                             android:layout_marginBottom="10dp"
                             android:src="@drawable/contact_unfoto"/>
 
-                        <com.asinosoft.cdm.CirView
+                        <com.asinosoft.cdm.CircularImageView
                             android:id="@+id/cirBottom"
                             android:layout_width="86dp"
                             android:layout_height="86dp"
@@ -576,7 +658,7 @@
                             android:layout_marginTop="10dp"
                             android:src="@drawable/contact_unfoto"/>
 
-                        <com.asinosoft.cdm.CirView
+                        <com.asinosoft.cdm.CircularImageView
                             android:id="@+id/cirLeft"
                             android:layout_width="86dp"
                             android:layout_height="86dp"
@@ -585,7 +667,7 @@
                             android:layout_marginEnd="10dp"
                             android:src="@drawable/contact_unfoto"/>
 
-                        <com.asinosoft.cdm.CirView
+                        <com.asinosoft.cdm.CircularImageView
                             android:id="@+id/cirRight"
                             android:layout_width="86dp"
                             android:layout_height="86dp"
@@ -601,14 +683,14 @@
                         android:paddingBottom="20dp"
                         android:gravity="center">
 
-                        <com.asinosoft.cdm.CirView
+                        <com.asinosoft.cdm.CircularImageView
                             android:id="@+id/cirChoose1"
                             android:layout_width="86dp"
                             android:layout_height="86dp"
                             android:src="@drawable/contact_unfoto"
                             android:layout_marginHorizontal="10dp"/>
 
-                        <com.asinosoft.cdm.CirView
+                        <com.asinosoft.cdm.CircularImageView
                             android:id="@+id/cirChoose2"
                             android:layout_width="86dp"
                             android:layout_height="86dp"
@@ -616,7 +698,7 @@
                             android:src="@drawable/contact_unfoto"
                             android:layout_marginHorizontal="10dp"/>
 
-                        <com.asinosoft.cdm.CirView
+                        <com.asinosoft.cdm.CircularImageView
                             android:id="@+id/cirChoose3"
                             android:layout_width="86dp"
                             android:layout_height="86dp"

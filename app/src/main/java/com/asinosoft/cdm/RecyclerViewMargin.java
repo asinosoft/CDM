@@ -6,6 +6,9 @@ import android.view.View;
 import androidx.annotation.IntRange;
 import androidx.recyclerview.widget.RecyclerView;
 
+/**
+ * Класс позволяющий поставить кастомные отступы в списках.
+ */
 public class RecyclerViewMargin extends RecyclerView.ItemDecoration {
     private final int columns;
     private int margin;

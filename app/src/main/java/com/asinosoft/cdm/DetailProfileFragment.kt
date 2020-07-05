@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 
 
-class DetailProfileFragment : Fragment() {
+class   DetailProfileFragment : Fragment() {
 
     companion object {
         fun newInstance() = DetailProfileFragment()

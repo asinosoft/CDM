@@ -64,7 +64,9 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewHistoryBottom"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:clickable="true"/>
 
     </LinearLayout>
 

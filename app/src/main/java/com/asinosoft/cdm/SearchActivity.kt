@@ -2,35 +2,24 @@ package com.asinosoft.cdm
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
-import android.icu.lang.UCharacter
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.Metoths.Companion.addUnique
 import com.asinosoft.cdm.Metoths.Companion.toggle
 import com.asinosoft.cdm.databinding.ActivitySearchBinding
-import com.fujiyuu75.sequent.Animation
-import com.fujiyuu75.sequent.Sequent
 import com.github.tamir7.contacts.Contact
 import com.github.tamir7.contacts.Contacts
-import com.github.tamir7.contacts.PhoneNumber
 import com.jaeger.library.StatusBarUtil
-import kotlinx.android.synthetic.main.activity_phone_choose.*
 import kotlinx.android.synthetic.main.activity_search.*
-import kotlinx.android.synthetic.main.fragment_nk_board.*
-import kotlinx.android.synthetic.main.fragment_nk_board.input_text
 import kotlinx.android.synthetic.main.keyboard.*
-import kotlinx.coroutines.*
-import org.jetbrains.anko.sdk27.coroutines.onContextClick
-import org.jetbrains.anko.toggleButton
 
+/**
+ * Класс экрана поиска
+ */
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var v: ActivitySearchBinding

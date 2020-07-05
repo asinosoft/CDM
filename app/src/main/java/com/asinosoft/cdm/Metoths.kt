@@ -41,6 +41,9 @@ import kotlin.math.absoluteValue
 import kotlin.math.sign
 import kotlin.math.withSign
 
+/**
+ * Класс важный методов, представляет собой набор низкоуровневых методов.
+ */
 class Metoths {
 
     companion object {
@@ -72,6 +75,13 @@ class Metoths {
             }
         }
 
+        fun ArrayList<HistoryItem>.containsNumber(num: String): Boolean{
+            forEach {
+                if (it.numberContact == num) return true
+            }
+            return false
+        }
+
         fun sendMsg(telNum: String, context: Context){
             val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$telNum"))
             context.startActivity(intent)
@@ -97,13 +107,13 @@ class Metoths {
             context.startActivity(sky)
         }
 
-        fun callWhatsApp(id: Int, context: Context){
+        fun callWhatsApp(id: String, context: Context){
             val intent = Intent().setAction(Intent.ACTION_VIEW)
             intent.setDataAndType(Uri.parse("content://com.android.contacts/data/$id"), "vnd.android.cursor.item/vnd.com.whatsapp.voip.call")
             intent.setPackage("com.whatsapp")
             context.startActivity(intent)
         }
-        fun videoCallWhatsApp(id: Int, context: Context){
+        fun videoCallWhatsApp(id: String, context: Context){
             val intent = Intent().setAction(Intent.ACTION_VIEW)
             intent.setDataAndType(Uri.parse("content://com.android.contacts/data/$id"), "vnd.android.cursor.item/vnd.com.whatsapp.video.call")
             intent.setPackage("com.whatsapp")
@@ -118,17 +128,17 @@ class Metoths {
             context.startActivity(Intent.createChooser(sendIntent, "").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         }
 
-        fun viberMsg(id: Int, context: Context){
+        fun viberMsg(id: String, context: Context){
             val intent = Intent().setAction(Intent.ACTION_VIEW)
             intent.setDataAndType(Uri.parse("content://com.android.contacts/data/$id"), "vnd.android.cursor.item/vnd.com.viber.voip.viber_number_message")
             intent.setPackage("com.viber.voip")
             context.startActivity(intent)
         }
 
-        fun viberCall(uri: Uri, context: Context){
+        fun viberCall(number: String, context: Context){
             val intent = Intent()
             intent.action = Intent.ACTION_VIEW
-            if (null != uri) {
+            number.toUri().let { uri ->
                 intent.setDataAndType(uri, "vnd.android.cursor.item/vnd.com.viber.voip.viber_number_call")
                 intent.setPackage("com.viber.voip")
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -137,6 +147,9 @@ class Metoths {
 
         }
 
+        /**
+         * Возвращает набор букв кнопки клавиатуры по его номеру
+         */
         private fun getWords(it: Char, context: Context): String {
             return when (it){
 //                '0' -> context.getString(R.string.digit_zero_text)
@@ -198,8 +211,18 @@ class Metoths {
                 .start()
         }
 
+        /**
+         * Открыть карточку контакта по его id
+         */
         fun openCardContact(idContact: String, context: Context) {
             Intent(Intent.ACTION_VIEW).apply { data = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, idContact) }.let(context::startActivity)
+        }
+
+        fun openDetailContact(num: String, context: Context){
+
+            Intent(context, DetailHistoryActivity::class.java).apply {
+                putExtra(Keys.number, num)
+            }.let(context::startActivity)
         }
 
         fun View.translateDiff(cirStart: PointF, diff: PointF, duration: Long = 0L){
@@ -370,6 +393,18 @@ class Metoths {
             val telegram =
                 Intent(Intent.ACTION_VIEW, Uri.parse("https://telegram.me/InfotechAvl_bot"))
             context.startActivity(telegram)
+        }
+
+        fun openTelegramNow(id: String, context: Context){
+            val isAppInstalled = appInstalledOrNot("org.telegram.messenger", context)
+            if (isAppInstalled) {
+                val intent = Intent().setAction(Intent.ACTION_VIEW)
+                intent.setDataAndType(Uri.parse("content://com.android.contacts/data/$id"), "vnd.android.cursor.item/vnd.org.telegram.messenger.android.profile")
+                context.startActivity(intent)
+            } else {
+                context.toast("Ошибка! Telegram не установлен!")
+            }
+            Log.e("Action: ", "Telegram open!")
         }
 
         fun openViber(phone: String, context: Context) {

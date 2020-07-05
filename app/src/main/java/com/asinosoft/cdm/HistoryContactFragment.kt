@@ -1,29 +1,24 @@
 package com.asinosoft.cdm.DetailContact
 
-import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
-import android.provider.Contacts
 import android.provider.ContactsContract
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Funcs
 import com.asinosoft.cdm.Keys
 import com.asinosoft.cdm.R
-import com.bumptech.glide.load.engine.bitmap_recycle.IntegerArrayAdapter
-import kotlinx.android.synthetic.main.fragment_item_list.*
-import kotlinx.android.synthetic.main.history_item.*
 
-
+/**
+ * Класс вкладки "Контакт" в детальной информации по элементу истории.
+ */
 class HistoryContactFragment : Fragment() {
 
     override fun onCreateView(
@@ -42,7 +37,7 @@ class HistoryContactFragment : Fragment() {
         var lim = LinearLayoutManager(this.context!!)
         lim.orientation = LinearLayoutManager.VERTICAL
         recyclerView.layoutManager = lim
-        recyclerView.adapter = AdapterContact(getContactInfo(getNumber(this.context!!)))
+//        recyclerView.adapter = AdapterContact(getContactInfo(getNumber(this.context!!)))
 
         getPhone(getNumber(this.context!!))
 

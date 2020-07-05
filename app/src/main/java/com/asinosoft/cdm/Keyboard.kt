@@ -11,6 +11,9 @@ import kotlinx.android.synthetic.main.keyboard.*
 import kotlinx.android.synthetic.main.keyboard.view.*
 import org.jetbrains.anko.support.v4.runOnUiThread
 
+/**
+ * Класс кастомной клавиатуры.
+ */
 class Keyboard: Fragment() {
 
     override fun onCreateView(

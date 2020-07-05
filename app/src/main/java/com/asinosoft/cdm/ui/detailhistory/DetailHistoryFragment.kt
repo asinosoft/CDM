@@ -8,6 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.asinosoft.cdm.R
 
+/**
+ * Класс детальной истории в экране информации по элементу истории.
+ */
 class DetailHistoryFragment : Fragment() {
 
     companion object {

@@ -2,6 +2,9 @@ package com.asinosoft.cdm
 
 import android.graphics.drawable.Drawable
 
+/**
+ * Информационный класс элементов истории.
+ */
 data class HistoryItem(
 
 //    var image: Drawable,

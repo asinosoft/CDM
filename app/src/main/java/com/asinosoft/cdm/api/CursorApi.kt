@@ -15,12 +15,15 @@ import androidx.core.database.getLongOrNull
 import androidx.core.graphics.drawable.toDrawable
 import com.asinosoft.cdm.Funcs
 import com.asinosoft.cdm.HistoryItem
+import com.asinosoft.cdm.Metoths.Companion.containsNumber
 import kotlinx.coroutines.*
 import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
-
+/**
+ * Класс потокового парсера истории.
+ */
 class CursorApi {
 
     companion object {
@@ -31,9 +34,10 @@ class CursorApi {
             count: Int = -1,
             onNext: (HistoryItem) -> Unit = {},
             numFilter: String? = null,
-            nextForce: Boolean = false
+            nextForce: Boolean = false,
+            numUnique: Boolean = false
         ) =
-            withContext(Dispatchers.IO) {
+            withContext(Dispatchers.Default) {
                 val list = ArrayList<HistoryItem>()
                 val proj = arrayOf(
                     CallLog.Calls.CACHED_NAME,
@@ -70,7 +74,7 @@ class CursorApi {
                             }) && if (i == -1) true else --i >= 0
                         ) {
                             var num = cursor.getString(number)
-                            if (num == "" || (num != numFilter && numFilter != null)) continue
+                            if (num == "" || (num != numFilter && numFilter != null) || (numUnique && list.containsNumber(num))) continue
 
                             var callDayTime: Long = cursor.getLong(date)
                             var date = Date(callDayTime)
@@ -100,7 +104,6 @@ class CursorApi {
                                     date
                                 )
                             )
-                            if (!list.containsWith(historyItem) || nextForce)
                                 onNext(historyItem)
 //            Log.d("History: ", "$i = ${historyCell.nameContact} / ${historyCell.date}")
                             list.add(historyItem)
@@ -218,7 +221,9 @@ class CursorApi {
                 }
                 moveToFirst()
             }
-            return (list[0] < list[1])
+            return if (list.count() > 1)
+             (list[0] < list[1])
+            else true
         }
 
         fun getPhotoFromID(id: Int, context: Context): Bitmap? {

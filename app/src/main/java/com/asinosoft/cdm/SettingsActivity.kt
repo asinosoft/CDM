@@ -6,50 +6,56 @@ import android.content.ClipData
 import android.content.ClipDescription
 import android.content.Intent
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.*
-import org.jetbrains.anko.find
-import com.google.gson.Gson
 import android.provider.MediaStore
 import android.util.Log
 import android.view.DragEvent
+import android.view.View
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.widget.RadioButton
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.appcompat.app.AppCompatActivity
+import com.asinosoft.cdm.Metoths.Companion.setSize
+import com.asinosoft.cdm.databinding.SettingsLayoutBinding
+import com.google.gson.Gson
+import com.jaeger.library.StatusBarUtil
+import com.jaredrummler.android.colorpicker.ColorPickerDialog
+import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
 import com.xw.repo.BubbleSeekBar
 import com.xw.repo.BubbleSeekBar.OnProgressChangedListener
-import com.asinosoft.cdm.databinding.SettingsLayoutBinding
-import com.jaeger.library.StatusBarUtil
 import kotlinx.android.synthetic.main.settings_layout.*
+import org.jetbrains.anko.image
 
 
-class SettingsActivity : AppCompatActivity() {
+/**
+ * Класс экрана настроек приложения
+ */
+class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
 
-    lateinit var sizeEd: EditText
-    lateinit var marginStartEd: EditText
-    lateinit var marginTopEd: EditText
-    lateinit var offsetEd: EditText
-    lateinit var maxTouch: EditText
-    lateinit var maxPrior: EditText
-    lateinit var difTouch: EditText
-    private lateinit var listPhoto: Spinner
-    lateinit var listCount: Spinner
-    lateinit var listColorFon: Spinner
     lateinit var settings: Settings
     lateinit var loader: Loader
     lateinit var v: SettingsLayoutBinding
-    lateinit var draggedCir: CirView
+    lateinit var draggedCir: CircularImageView
     var filePathPhoto = ""
+    var widthScreen: Int? = null
+    set(value) {
+        field = value
+        updateSeekSize()
+        v.seekBarSizeButtons.setProgress(settings.sizeCirs.toFloat())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT // вертикальная
         v = SettingsLayoutBinding.inflate(layoutInflater)
         setContentView(v.root)
 
         StatusBarUtil.setTranslucentForImageView(this, scrollView)
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        widthScreen = scrollView.width
     }
 
     override fun onStart() {
@@ -69,6 +75,7 @@ class SettingsActivity : AppCompatActivity() {
         initSeek5()
         initSeek6()
         initSave()
+        setAllCirs(settings.borderWidthCirs, settings.colorBorder)
     }
 
     private fun initSave() {
@@ -82,7 +89,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun saveAll() {
         loader.saveSettings(settings.copy(countCirs = v.seekBarCountButtons.progress, sizeCirs = v.seekBarSizeButtons.progress, rightButton = v.cirRight.action,
         leftButton = v.cirLeft.action, topButton = v.cirTop.action, bottomButton = v.cirBottom.action, chooserButton1 = v.cirChoose1.action, chooserButton2 = v.cirChoose2.action,
-        cirMenu = v.menu.isChecked, historyButtom = v.hisButtom.isChecked))
+        cirMenu = v.menu.isChecked, historyButtom = v.hisButtom.isChecked, columnsCirs = v.seekBarColumnsButtons.progress, borderWidthCirs = v.seekBarBorderButtons.progress))
     }
 
     private fun setData() {
@@ -104,9 +111,12 @@ class SettingsActivity : AppCompatActivity() {
         v.cirBottom.let(this::setCirData)
         v.cirChoose1.let(this::setCirData)
         v.cirChoose2.let(this::setCirData)
+        v.seekBarColumnsButtons.setProgress(settings.columnsCirs.toFloat().takeIf { it > 0 } ?: 0f)
+        v.checkboxOffsetCirs.isChecked = settings.columnsCirs == -1
+        v.seekBarBorderButtons.setProgress(settings.borderWidthCirs.toFloat())
     }
 
-    private fun setCirData(cir: CirView) {
+    private fun setCirData(cir: CircularImageView) {
         cir.setImageResource(getResDrawable(cir.action))
     }
 
@@ -135,7 +145,7 @@ class SettingsActivity : AppCompatActivity() {
         v.cirChoose2.let(this@SettingsActivity::setDragListener)
     }
 
-    private fun setDragListener(cir: CirView) {
+    private fun setDragListener(cir: CircularImageView) {
         cir.setOnLongClickListener {
             it.bringToFront()
             draggedCir = cir
@@ -196,6 +206,11 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    private fun CircularImageView.swapCir(c: CircularImageView){
+        this.image = c.image.also { c.image = this.image }
+        this.action = c.action.also { c.action = this.action }
+    }
+
     private fun initSeek3() {
         if(v.expandable3.isExpanded) v.cross3.cross() else v.cross3.plus()
         v.cardViewText3.setOnClickListener {
@@ -226,10 +241,94 @@ class SettingsActivity : AppCompatActivity() {
             v.expandable1.toggle(true)
             v.cross1.toggle(500L)
         }
+       updateSeekSize()
+
+        seekBarBorderButtons.onProgressChangedListener = object : OnProgressChangedListener{
+            override fun onProgressChanged(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float,
+                fromUser: Boolean
+            ) {
+                circleImageView.borderWidth = progress
+                setAllCirs(width = progress)
+            }
+
+            override fun getProgressOnActionUp(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float
+            ) {
+            }
+
+            override fun getProgressOnFinally(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float,
+                fromUser: Boolean
+            ) {
+            }
+
+        }
+
+       v.seekBarColumnsButtons.onProgressChangedListener = object : OnProgressChangedListener{
+           override fun onProgressChanged(
+               bubbleSeekBar: BubbleSeekBar?,
+               progress: Int,
+               progressFloat: Float,
+               fromUser: Boolean
+           ) {
+               updateSeekSize()
+           }
+
+           override fun getProgressOnActionUp(
+               bubbleSeekBar: BubbleSeekBar?,
+               progress: Int,
+               progressFloat: Float
+           ) {
+           }
+
+           override fun getProgressOnFinally(
+               bubbleSeekBar: BubbleSeekBar?,
+               progress: Int,
+               progressFloat: Float,
+               fromUser: Boolean
+           ) {
+           }
+
+       }
+    }
+
+    private fun updateSeekSize() {
+        if(widthScreen == null) return
+        val maxSize = widthScreen!! * when(v.seekBarColumnsButtons.progress){
+            1 -> 0.4f
+            2 -> 0.4f
+            3 -> 0.28f
+            4 -> 0.23f
+            else -> 0f
+        }
+        val minSize = widthScreen!! /7
+        Log.d("${this.javaClass}", "updateSeekSize: min = $minSize; max = $maxSize")
+        v.seekBarSizeButtons.configBuilder.apply {
+            max(maxSize.toFloat())
+            min(minSize.toFloat())
+        }.build()
+        v.seekBarSizeButtons.setProgress(widthScreen!! * when(v.seekBarColumnsButtons.progress){
+            1 -> 0.3f
+            2 -> 0.25f
+            3 -> 0.19f
+            4 -> 0.16f
+            else -> 0f
+        })
+
+        v.colorPicker.setOnClickListener {
+            ColorPickerDialog.newBuilder().setColor(Color.RED).show(this);
+        }
     }
 
     private fun initSeek2() {
-        if(v.expandable2.isExpanded) v.cross2.cross() else v.cross2.plus()
+        if (v.expandable2.isExpanded) v.cross2.cross() else v.cross2.plus()
         v.cardViewText2.setOnClickListener {
             v.expandable2.toggle(true)
             v.cross2.toggle(500L)
@@ -259,14 +358,7 @@ class SettingsActivity : AppCompatActivity() {
                 fromUser: Boolean
             ) {
             }
-    }
-    /*views.foldingCell1.initialize(1000, Color.DKGRAY, 2);
-    views.foldingCell1.initialize(30, 1000, Color.DKGRAY, 2);
-    views.foldingCell1.setOnClickListener {
-        views.foldingCell1.toggle(false)
-    }*/
-//        initilaze()
-//        setValues()
+        }
     }
 
     private fun increaseViewSize(view: View, height: Int) {
@@ -279,120 +371,6 @@ class SettingsActivity : AppCompatActivity() {
             view.layoutParams = layoutParams
         }
         valueAnimator.start()
-    }
-
-    fun View.setSize(size: Int){
-        val l = this.layoutParams
-        l.width = size
-        l.height = size
-        this.layoutParams = l
-    }
-
-    private fun saveData() {
-        settings.sizeCirs = sizeEd.text.toString().toInt()
-        settings.marginStartCirs = marginStartEd.text.toString().toInt()
-        settings.marginTopCirs = marginTopEd.text.toString().toInt()
-        settings.offsetCirs = offsetEd.text.toString().toInt()
-        settings.maxTouch = maxTouch.text.toString().toInt()
-        settings.maxPrior = maxPrior.text.toString().toInt()
-        settings.difTouch = difTouch.text.toString().toInt()
-        settings.photoFilePath = filePathPhoto
-        settings.historyButtom = v.radioHis.checkedRadioButtonId == 1
-        settings.cirMenu = v.radioCir.checkedRadioButtonId == 1
-        loader.saveSettings(settings)
-    }
-
-    private fun setValues() {
-        settings.run {
-        sizeEd.setText(sizeCirs.toString())
-        marginStartEd.setText(marginStartCirs.toString())
-        marginTopEd.setText(marginTopCirs.toString())
-        offsetEd.setText(offsetCirs.toString())
-        this@SettingsActivity.maxTouch.setText(maxTouch.toString())
-        this@SettingsActivity.maxPrior.setText(maxPrior.toString())
-        this@SettingsActivity.difTouch.setText(difTouch.toString())
-        }
-    }
-
-    private fun initilaze() {
-        sizeEd = find(R.id.CirSizeEditText)
-        marginStartEd = find(R.id.MarginStartEditText)
-        marginTopEd = find(R.id.MarginTopEditText)
-        offsetEd = find(R.id.OffsetEditText)
-        maxPrior = find(R.id.MaxPriorET)
-        maxTouch = find(R.id.MaxTouchET)
-        difTouch = find(R.id.DifTouchET)
-        listPhoto = find(R.id.ListPhotoMethod)
-        listCount = find(R.id.ListCountCirs)
-        listColorFon = find(R.id.ListColorsFon)
-        settings = Gson().fromJson(intent.getStringExtra(Keys.Settings), Settings::class.java)
-        loader = Loader(this)
-        listPhoto.adapter = ArrayAdapter(
-            this,
-            R.layout.support_simple_spinner_dropdown_item,
-            arrayOf("Сжатый", "Полный")
-        )
-        listPhoto.prompt = "Выберите метод получения фото:"
-        listPhoto.setSelection(PhotoType.getInt(settings.photoType))
-        listPhoto.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                itemSelected: View, selectedItemPosition: Int, selectedId: Long
-            ) {
-                settings.photoType = PhotoType.getType(selectedItemPosition)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
-        val arrayCount = resources.getStringArray(R.array.count_curs)
-        listCount.adapter =
-            ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, arrayCount)
-        listCount.prompt = "Выберите колличество иконок:"
-        listCount.setSelection(arrayCount.indexOf(settings.countCirs.toString()))
-        listCount.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                itemSelected: View, selectedItemPosition: Int, selectedId: Long
-            ) {
-                settings.countCirs = arrayCount[selectedItemPosition].toInt()
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
-        listColorFon.run {
-            val arrayColor = arrayOf("Белый", "Серый", "Черный")
-            adapter = ArrayAdapter(this@SettingsActivity, R.layout.support_simple_spinner_dropdown_item, arrayColor)
-            prompt = "Выберите цвет фона:"
-            setSelection(if (settings.themeColor == Color.WHITE) 0 else if (settings.themeColor == Color.BLACK) 2 else 1)
-            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>,
-                    itemSelected: View, selectedItemPosition: Int, selectedId: Long
-                ) {
-                    when (selectedItemPosition) {
-                        0 -> settings.themeColor = Color.WHITE
-                        1 -> settings.themeColor = resources.getColor(R.color.costomGray)
-                        2 -> settings.themeColor = Color.BLACK
-                    }
-
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>) {}
-            }
-        }
-    }
-
-    fun onClickButton(view: View) {
-        saveData()
-        setResult(Activity.RESULT_OK)
-        finish()
-    }
-
-    fun onClickButtonPhoto(view: View) {
-        //Intent to pick image
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, 12)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -408,5 +386,38 @@ class SettingsActivity : AppCompatActivity() {
         val filepath = cursor.getString(columnIndex)
         cursor.close()
         filePathPhoto = filepath
+    }
+
+    override fun onDialogDismissed(dialogId: Int) {
+    }
+
+    override fun onColorSelected(dialogId: Int, color: Int) {
+        settings.colorBorder = color
+        circleImageView.borderColor = color
+        setAllCirs(color = color)
+    }
+
+    private fun setAllCirs(width: Int? = null, @ColorInt color: Int ? = null) {
+        width?.let {
+            cirBottom.borderWidth = it.toFloat()
+            cirChoose1.borderWidth = it.toFloat()
+            cirChoose2.borderWidth = it.toFloat()
+            cirChoose3.borderWidth = it.toFloat()
+            cirTop.borderWidth = it.toFloat()
+            cirRight.borderWidth = it.toFloat()
+            cirLeft.borderWidth = it.toFloat()
+            circleImageView.borderWidth = it
+        }
+
+        color?.let {
+            cirBottom.borderColor = it
+            cirChoose1.borderColor = it
+            cirChoose2.borderColor = it
+            cirChoose3.borderColor = it
+            cirTop.borderColor = it
+            cirRight.borderColor = it
+            cirLeft.borderColor = it
+            circleImageView.borderColor = it
+        }
     }
 }

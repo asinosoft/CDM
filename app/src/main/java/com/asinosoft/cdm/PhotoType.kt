@@ -1,5 +1,6 @@
 package com.asinosoft.cdm
 
+@Deprecated("Класс устарел!")
 enum class PhotoType {
     Thum,
     Full;
