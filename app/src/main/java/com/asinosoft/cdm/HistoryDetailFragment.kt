@@ -1,26 +1,13 @@
 package com.asinosoft.cdm
 
-import android.content.ContentUris
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.net.Uri
-import androidx.lifecycle.ViewModelProviders
+import android.content.Context
 import android.os.Bundle
-import android.provider.CallLog
-import android.provider.ContactsContract
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat.getDrawable
-import androidx.recyclerview.widget.RecyclerView
-import java.io.IOException
-import java.util.*
-import kotlin.collections.ArrayList
-import android.content.Context
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.adapters.AdapterCallLogs
 import com.asinosoft.cdm.api.CursorApi
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +15,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.runOnUiThread
 
-
+/**
+ * Фрагмент вкладки "Истории" в детальной информации по элементу истории
+ */
 class HistoryDetailFragment : Fragment() {
 
     override fun onCreateView(
@@ -53,8 +42,9 @@ class HistoryDetailFragment : Fragment() {
         lim.orientation = LinearLayoutManager.VERTICAL
         recyclerView.layoutManager = lim
         recyclerView.adapter = AdapterCallLogs(list,false, context!!)
-        GlobalScope.launch(Dispatchers.IO) { (recyclerView.adapter as AdapterCallLogs).items = CursorApi.getHistoryListLatest(context!!, numFilter = getNum(context!!))
-        context?.runOnUiThread {recyclerView.adapter?.notifyDataSetChanged()}}
+        GlobalScope.launch(Dispatchers.IO) {
+            CursorApi.getHistoryListLatest(context!!, numFilter = getNum(context!!), onNext = {context?.runOnUiThread {(recyclerView.adapter as AdapterCallLogs).addItem(it)}})
+            context?.runOnUiThread {recyclerView.adapter?.notifyDataSetChanged()}}
     }
 
     private fun getNum(context: Context): String {

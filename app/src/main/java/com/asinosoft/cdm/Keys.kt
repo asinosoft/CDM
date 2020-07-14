@@ -1,9 +1,11 @@
 package com.asinosoft.cdm
 
-import android.content.SharedPreferences
-
+/**
+ * Класс, хранящий константные значения ключей.
+ */
 class Keys {
     companion object{
+        val idCir: Int = 1123456
         val adapterPos = "adapterPosition"
         val id = "ID"
         val item = "Item"

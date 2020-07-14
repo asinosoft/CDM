@@ -1,4 +1,4 @@
-package com.asinosoft.cdm.DetailContact
+package com.asinosoft.cdm.detail_contact
 
 import android.util.Log
 import com.google.i18n.phonenumbers.PhoneNumberUtil
@@ -20,7 +20,7 @@ class StHelper {
             numberStr = "-1"
             Log.e(
                 "myLogHelper",
-                if (e.message != null) e.message else "null error message"
+                e.message ?: "null error message"
             )
         }
         return numberStr

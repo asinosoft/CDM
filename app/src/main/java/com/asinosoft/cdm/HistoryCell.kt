@@ -3,6 +3,7 @@ package com.asinosoft.cdm
 import android.graphics.drawable.Drawable
 import java.io.Serializable
 
+@Deprecated("Класс устарел!")
 class HistoryCell(image: Drawable, name: String, number: String, time: String, type: Int, duration: String, date: String,  ContactID: String = ""): Serializable {
 
     var image: Drawable

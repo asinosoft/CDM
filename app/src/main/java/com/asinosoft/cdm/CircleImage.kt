@@ -30,6 +30,7 @@ import com.asinosoft.cdm.Metoths.Companion.dp
 import com.asinosoft.cdm.Metoths.Companion.mailToEmail
 import com.asinosoft.cdm.Metoths.Companion.makeTouch
 import com.asinosoft.cdm.Metoths.Companion.openCardContact
+import com.asinosoft.cdm.Metoths.Companion.openDetailContact
 import com.asinosoft.cdm.Metoths.Companion.openTelegram
 import com.asinosoft.cdm.Metoths.Companion.openViber
 import com.asinosoft.cdm.Metoths.Companion.sendSMS
@@ -39,12 +40,14 @@ import com.asinosoft.cdm.Metoths.Companion.toPointF
 import com.asinosoft.cdm.Metoths.Companion.toVisibility
 import com.asinosoft.cdm.Metoths.Companion.translateDiff
 import com.asinosoft.cdm.Metoths.Companion.translateTo
+import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
 import com.google.android.material.snackbar.Snackbar
 import com.skydoves.powermenu.PowerMenu
 import de.hdodenhof.circleimageview.CircleImageView
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.onLongClick
 import org.jetbrains.anko.sdk27.coroutines.onTouch
+import org.jetbrains.anko.vibrator
 import java.net.URL
 
 class CircleImage@JvmOverloads constructor(
@@ -64,6 +67,8 @@ class CircleImage@JvmOverloads constructor(
     var editCir: CircularImageView? = null,
     var openEditForPos: (Contact, ContactSettings) -> Unit = { _, _ -> },
     var openEdit: (Int, Contact, ContactSettings) -> Unit = {_, _, _ -> },
+    var touchDownForIndex: () -> Unit = {},
+    var touchDown: (Int) -> Unit = {},
     var lockableNestedScrollView: LockableNestedScrollView? = null
 ): CircularImageView(context, attrs, defStyleAttr) {//TODO: Добавь в настройках изменение типа управления кнопками (перетаскивание, меню)
 
@@ -128,7 +133,7 @@ class CircleImage@JvmOverloads constructor(
             if (!isMoving) {
                 if (contact == null) {
                     pickContactForNum()
-                } else openCardContact(contact!!.id.toString(), context)
+                } else openDetailContact(contact!!.phoneNumbers.first().normalizedNumber, context)
             }
         }
     }
@@ -164,9 +169,9 @@ class CircleImage@JvmOverloads constructor(
         }
     }
 
-    public fun setActionImage(view: CircularImageView){
+    fun setActionImage(view: CircularImageView){
         actionImage = view
-        actionImage?.setSize(((size - shadowRadius * 2) * 0.8f).toInt())
+        actionImage?.setSize((size - shadowRadius * 2).toInt())
     }
 
     fun updateRadius(){
@@ -227,7 +232,7 @@ class CircleImage@JvmOverloads constructor(
             Log.d("${this.javaClass}", "onTouchMove: isMoving = $isMoving")
             this.translateDiff(cirStart!!, diff, animationDuration)
             actionImage?.apply {
-                isVisible = diff.diffVisible(animationRadius)
+                isVisible = diff.diffVisible(animationRadius).also {vis -> if (vis && !isVisible) context.vibrator.vibrateSafety(ManagerViewModel.VIBRO) }
                 directActions?.action(diff.diffAction(animationRadius))?.let {action ->
                     this.setImageAction(action)
                 }
@@ -253,6 +258,7 @@ class CircleImage@JvmOverloads constructor(
 
     private fun onTouchDown(event: MotionEvent) {
         Log.d("CircleImage", "Action TouchDown -> (${this.x}; ${this.y}) --> (${event.rawX}; ${event.rawY}) ")
+        touchDownForIndex()
         touchStart = event.toPointF()
         cirStart = this.toPointF()
         isLongClick = false

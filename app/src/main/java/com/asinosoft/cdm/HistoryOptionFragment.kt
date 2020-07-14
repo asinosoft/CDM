@@ -7,12 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-
+/**
+ * Класс вкладки "Настройки" в экране детальной информации по элементу истории.
+ */
 class HistoryOptionFragment : Fragment() {
-
-    companion object {
-        fun newInstance() = HistoryOptionFragment()
-    }
 
     private lateinit var viewModel: HistoryOptionViewModel
 

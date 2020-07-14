@@ -14,14 +14,11 @@ import com.asinosoft.cdm.api.CursorApi.Companion.getDisplayPhoto
 import com.asinosoft.cdm.api.CursorApi.Companion.getPhotoFromID
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
 import com.zerobranch.layout.SwipeLayout
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.jetbrains.anko.runOnUiThread
 
 
-class AdapterCallLogs(var items: ArrayList<HistoryItem>, val onClick: Boolean = true, val context: Context, val onAdd: (Int) -> Unit = {}): RecyclerView.Adapter<AdapterCallLogs.HolderHistory>() {
+class AdapterCallLogs(var items: ArrayList<HistoryItem>, val onClick: Boolean = true, val context: Context, var onAdd: (Int) -> Unit = {}): RecyclerView.Adapter<AdapterCallLogs.HolderHistory>() {
 
     private var pos = 0
     private var job: Job? = null
@@ -38,24 +35,7 @@ class AdapterCallLogs(var items: ArrayList<HistoryItem>, val onClick: Boolean = 
     fun addItem(item: HistoryItem){
         items.add(item)
         notifyItemInserted(itemCount - 1)
-//        jobInsert(itemCount - 1)
     }
-
-    private fun jobInsert(i: Int) {
-        if (job == null || job!!.isCompleted){
-            pos = i
-            job = GlobalScope.launch {
-                delay(500L)
-                context.runOnUiThread {
-                    (itemCount - 1 - pos).takeIf { it >= 0 }?.let {
-                        notifyItemRangeInserted(pos, it)
-                        it.let(onAdd)
-                    }
-                }
-            }
-        }
-    }
-
 
     override fun getItemCount() = items.size
 
@@ -68,6 +48,15 @@ class AdapterCallLogs(var items: ArrayList<HistoryItem>, val onClick: Boolean = 
         intent.putExtra(Keys.number, item.numberContact)
         intent.putExtra(Keys.id, item.contactID)
         context?.startActivity(intent)
+    }
+
+    suspend fun addItemByCorutine(it: HistoryItem, i: Int = -1) {
+        withContext(Dispatchers.IO){
+            items.add(it)
+            withContext(Dispatchers.Main){
+                notifyItemInserted(itemCount - 1)
+            }
+        }
     }
 
 

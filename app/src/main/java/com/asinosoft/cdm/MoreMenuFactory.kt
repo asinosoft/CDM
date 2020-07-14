@@ -13,6 +13,9 @@ import com.skydoves.powermenu.PowerMenu
 import com.skydoves.powermenu.PowerMenuItem
 import com.skydoves.powermenu.kotlin.createPowerMenu
 
+/**
+ * Фабрика объектов выплывающего меню.
+ */
 class MoreMenuFactory : PowerMenu.Factory() {
 
     override fun create(context: Context, lifecycle: LifecycleOwner): PowerMenu {

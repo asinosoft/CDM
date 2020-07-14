@@ -19,3 +19,15 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# keep GsonSerializable interface, it would be thrown away by proguard since it is empty
+-keep class com.asinosoft.cdm.Settings
+
+-keepclassmembers enum * { *; }
+
+# member fields of serialized classes, including enums that implement this interface
+-keepclassmembers class * implements com.asinosoft.cdm.Settings {
+    <fields>;
+}
+
+# also keep names of these classes. not required, but just in case.
+-keepnames class * implements com.asinosoft.cdm.Settings

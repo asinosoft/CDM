@@ -37,6 +37,8 @@ open class CircularImageView @JvmOverloads constructor(
     private var circleCenter = 0
     private var heightCircle: Int = 0
 
+    var action = Actions.Email
+
     //region Attributes
     var circleColor: Int = Color.WHITE
         set(value) {

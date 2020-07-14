@@ -1,4 +1,4 @@
-package com.asinosoft.cdm.DetailContact
+package com.asinosoft.cdm.detail_contact
 
 class ContactDetailListElement(
     var mActiveType: Int? = null,

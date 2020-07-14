@@ -52,6 +52,8 @@ class CirAdapter(var items: ArrayList<CircleImage>, val context: Context, val se
                         notifyItemRemoved(absoluteAdapterPosition)
                         posDrag = -1
                     }
+                    borderWidth = settings.borderWidthCirs.toFloat()
+                    borderColor = settings.colorBorder
                     replaceListenerForHolder = {
                         replaceListener(this@Holder)
                     }
@@ -63,11 +65,14 @@ class CirAdapter(var items: ArrayList<CircleImage>, val context: Context, val se
                     pickContactForNum = {
                         pickContact(absoluteAdapterPosition)
                     }
+                    touchDownForIndex = {
+                        touchDown(absoluteAdapterPosition)
+                    }
 
                     setOnDragListener { v, event ->
                         when(event.action){
                             DragEvent.ACTION_DRAG_ENTERED -> {
-                                vibrator.vibrateSafety(10)
+                                vibrator.vibrateSafety(ManagerViewModel.VIBRO)
                                 setImageDrawable(items[posDrag].drawable.also { items[posDrag].setImageDrawable(this.drawable) })
                             }
                             DragEvent.ACTION_DRAG_EXITED -> {
