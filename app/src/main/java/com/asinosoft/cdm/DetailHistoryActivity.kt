@@ -17,9 +17,8 @@ import android.provider.ContactsContract
 import java.io.IOException
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
-import com.asinosoft.cdm.DetailContact.HistoryContactFragment
+import com.asinosoft.cdm.detail_contact.ContactDetailFragment
 import com.jaeger.library.StatusBarUtil
-import kotlinx.android.synthetic.main.activity_detail_history.*
 import java.lang.Exception
 
 
@@ -33,9 +32,9 @@ class DetailHistoryActivity : AppCompatActivity() {
 
         val adapter = FragmentPagerItemAdapter(
             supportFragmentManager, FragmentPagerItems.with(this)
-                .add("История", HistoryDetailFragment::class.java)
+                .add("История", HistoryDetailFragment().javaClass)
 //                .add("Настройки", HistoryOptionFragment::class.java)
-                .add("Контакт", HistoryContactFragment::class.java)
+                .add("Контакт", ContactDetailFragment().javaClass)
                 .create()
         )
 

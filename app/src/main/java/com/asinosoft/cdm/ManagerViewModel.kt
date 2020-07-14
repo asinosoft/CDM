@@ -1,5 +1,6 @@
 package com.asinosoft.cdm
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -11,6 +12,7 @@ import android.util.Log
 import android.view.DragEvent
 import android.view.View
 import android.view.animation.OvershootInterpolator
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
@@ -19,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths.Companion.dp
 import com.asinosoft.cdm.Metoths.Companion.setSize
+import com.asinosoft.cdm.Metoths.Companion.toggle
 import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.adapters.AdapterCallLogs
 import com.asinosoft.cdm.api.CursorApi.Companion.getHistoryListLatest
@@ -57,6 +60,7 @@ class ManagerViewModel : ViewModel() {
     private lateinit var pickedContact: () -> Unit
     private lateinit var settingsOpen: (Settings) -> Unit
     private lateinit var logsManager: LogsManager
+    private lateinit var activity: AppCompatActivity
     private var indexOfFrontChild = 0
     private val listCirs: ArrayList<CircleImage> by lazy { // Ленивая загрузка кнопок избранных контактов
         GlobalScope.launch { loadCirs { listCirs.add(it)}; context.runOnUiThread { v.recyclerView.adapter?.notifyDataSetChanged() } }
@@ -76,13 +80,17 @@ class ManagerViewModel : ViewModel() {
     private val adapterCirMoshi: JsonAdapter<CirPairData> by lazy {
         moshi.adapter(CirPairData().javaClass)
     }
+    private val keyboard: Keyboard by lazy{
+        activity.supportFragmentManager.findFragmentById(R.id.keyboard) as Keyboard
+    }
 
     fun start(
         v: ActivityManagerBinding,
         context: Context,
         lifecycle: Lifecycle,
         pickedContact: () -> Unit,
-        settingsOpen: (Settings) -> Unit
+        settingsOpen: (Settings) -> Unit,
+        activity: AppCompatActivity
     ) {
         this.v = v
         this.context = context
@@ -94,6 +102,7 @@ class ManagerViewModel : ViewModel() {
         touchHelper = ItemTouchHelper(ItemTouchCallbackCir())
         touchHelper.attachToRecyclerView(v.recyclerView)
         logsManager = LogsManager(context)
+        this.activity = activity
     }
 
     private fun updateHistoryList() {
@@ -217,6 +226,12 @@ class ManagerViewModel : ViewModel() {
         }
         v.fabSearch.setOnClickListener { fab ->
             Intent(context, SearchActivity::class.java).let(context::startActivity)
+        }
+        v.settingsButton.setOnClickListener {
+            settingsOpen(settings)
+        }
+        v.fabKeyboard.setOnClickListener {
+            v.layoutKeyboard.toggle()
         }
     }
 

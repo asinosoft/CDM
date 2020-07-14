@@ -86,7 +86,7 @@ class ManagerActivity : AppCompatActivity() {
 
 
     fun startForView(){
-        viewModel.start(v, this, lifecycle, pickedContact = { pickContact() }, settingsOpen = { settingOpen(it) })
+        viewModel.start(v, this, lifecycle, pickedContact = { pickContact() }, settingsOpen = { settingOpen(it) }, activity = this)
         viewModel.initViews()
     }
 
@@ -118,7 +118,7 @@ class ManagerActivity : AppCompatActivity() {
         if (requestCode == ACTIVITY_PICK_CONTACT && resultCode == Activity.RESULT_OK) {
             viewModel.onResult(requestCode, requestCode, data)
         } else if (requestCode == ACTIVITY_SETTINGS && resultCode == Activity.RESULT_OK) {
-            viewModel.start(v, this, lifecycle, pickedContact = { pickContact() }, settingsOpen = { settingOpen(it) })
+            viewModel.start(v, this, lifecycle, pickedContact = { pickContact() }, settingsOpen = { settingOpen(it) }, activity = this)
             viewModel.initViews(false)
         }
     }
