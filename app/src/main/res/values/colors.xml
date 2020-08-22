@@ -12,4 +12,13 @@
 
     <color name="nk_color_strike">#2E7D32</color>
     <color name="nk_color_pressed">#4cc552</color>
+
+    <color name="gray">#9F9A9A</color>
+    <color name="icon_active_dark">#FFFFFF</color>
+
+    <color name="red">#E80202</color>
+    <color name="green">#51D50B</color>
+
+
+
 </resources>
