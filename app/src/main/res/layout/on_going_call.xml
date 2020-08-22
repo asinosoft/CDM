@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <!-- Call Timer -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_status_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="24dp" />
+
+    <TextView
+        android:id="@+id/text_stopwatch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/red"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guide_status_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="00:00">
+
+    </TextView>
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        app:layout_constraintBottom_toTopOf="@+id/text_caller"
+        app:layout_constraintEnd_toEndOf="@+id/text_caller"
+        app:layout_constraintStart_toStartOf="@+id/text_caller"
+        app:layout_constraintTop_toBottomOf="@+id/text_stopwatch">
+
+        <ImageView
+            android:id="@+id/image_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/ic_account_circle_black_24dp">
+
+        </ImageView>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/image_photo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:civ_border_width="0dp" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/text_caller"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textStyle="normal"
+        android:textAllCaps="false"
+        android:textSize="30dp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+        app:layout_constraintBottom_toTopOf="@+id/text_status"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Александр" />
+
+    <TextView
+        android:id="@+id/text_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:textColor="@color/red"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+        app:layout_constraintBottom_toTopOf="@+id/guide_eye_level"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="@+id/text_caller"
+        tools:text="@string/status_call_active" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_eye_level"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.40" />
+
+    <ImageView
+        android:id="@+id/button_mute"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_weight="1"
+        android:background="@drawable/ripple_oval"
+        android:src="@drawable/ic_mic_off_black_24dp"
+        android:backgroundTint="@color/selector_button_icon"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="16dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/button_hold"
+        app:layout_constraintEnd_toStartOf="@+id/button_hold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintTop_toTopOf="@+id/button_hold"
+        tools:visibility="visible">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/button_hold"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/ripple_oval"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="invisible"
+        android:padding="16dp"
+        android:src ="@drawable/outline_pause_24"
+        android:backgroundTint="@color/selector_button_icon"
+        app:layout_constraintEnd_toStartOf="@id/button_speaker"
+        app:layout_constraintStart_toEndOf="@id/button_mute"
+        app:layout_constraintTop_toTopOf="@+id/guide_eye_level"
+        app:layout_constraintBottom_toTopOf="@id/button_add_call"
+        app:layout_constraintHorizontal_bias="0.5"
+        tools:visibility="visible">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/button_speaker"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:padding="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/outline_volume_up_24"
+        android:background="@drawable/ripple_oval"
+        android:visibility="invisible"
+        android:backgroundTint="@color/selector_button_icon"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintBottom_toBottomOf="@+id/button_hold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/button_hold"
+        app:layout_constraintTop_toTopOf="@+id/button_hold"
+        tools:visibility="visible">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/button_keypad"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:padding="16dp"
+        android:src="@drawable/outline_dialpad_24"
+        android:backgroundTint="@color/selector_button_icon"
+        android:background="@drawable/ripple_oval"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="invisible"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/button_add_call"
+        app:layout_constraintEnd_toStartOf="@+id/button_add_call"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/button_add_call"
+        app:layout_constraintVertical_bias="0.0"
+        tools:visibility="visible">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/button_add_call"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:padding="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/outline_add_24"
+        android:background="@drawable/ripple_oval"
+        android:backgroundTint="@color/selector_button_icon"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/reject_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/button_keypad"
+        app:layout_constraintTop_toBottomOf="@+id/button_hold"
+        tools:visibility="visible">
+
+    </ImageView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/answer_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="50dp"
+        android:scaleType="center"
+        android:src="@drawable/outline_call_24"
+        android:tint="@color/green"
+        app:backgroundTint="@color/white"
+        app:fabCustomSize="62dp"
+        android:visibility="invisible"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:maxImageSize="36dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/reject_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="50dp"
+        android:scaleType="center"
+        android:src="@drawable/outline_call_end_24"
+        android:tint="@color/red"
+        app:backgroundTint="@color/white"
+        app:fabCustomSize="62dp"
+        app:fabSize="normal"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:maxImageSize="36dp" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/reject_btn2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:src="@drawable/outline_call_end_24"
+        android:tint="@color/red"
+        android:visibility="visible"
+        android:backgroundTint="@color/white"
+        app:fabCustomSize="72dp"
+        app:maxImageSize="36dp"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/reject_btn"
+        app:layout_constraintStart_toEndOf="@+id/answer_btn" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
