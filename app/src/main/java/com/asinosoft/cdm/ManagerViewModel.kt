@@ -1,6 +1,5 @@
 package com.asinosoft.cdm
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -10,15 +9,14 @@ import android.os.Vibrator
 import android.provider.ContactsContract
 import android.util.Log
 import android.view.DragEvent
-import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.animation.OvershootInterpolator
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths.Companion.dp
 import com.asinosoft.cdm.Metoths.Companion.setSize
 import com.asinosoft.cdm.Metoths.Companion.toggle
@@ -31,14 +29,10 @@ import com.github.tamir7.contacts.Contacts
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.wickerlabs.logmanager.LogObject
 import com.wickerlabs.logmanager.LogsManager
 import jp.wasabeef.recyclerview.animators.LandingAnimator
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
 import kotlinx.coroutines.*
 import org.jetbrains.anko.runOnUiThread
-import org.jetbrains.anko.sdk27.coroutines.onScrollChange
-import org.jetbrains.anko.support.v4.onScrollChange
 import org.jetbrains.anko.vibrator
 
 /**
@@ -46,7 +40,7 @@ import org.jetbrains.anko.vibrator
  */
 class ManagerViewModel : ViewModel() {
 
-    companion object{
+    companion object {
         const val VIBRO = 30L
     }
 
@@ -56,22 +50,25 @@ class ManagerViewModel : ViewModel() {
     private lateinit var touchHelper: ItemTouchHelper
     private lateinit var v: ActivityManagerBinding
     private lateinit var context: Context
-    private lateinit var  lifecycle: Lifecycle
+    private lateinit var lifecycle: Lifecycle
     private lateinit var pickedContact: () -> Unit
     private lateinit var settingsOpen: (Settings) -> Unit
     private lateinit var logsManager: LogsManager
     private lateinit var activity: AppCompatActivity
     private var indexOfFrontChild = 0
     private val listCirs: ArrayList<CircleImage> by lazy { // Ленивая загрузка кнопок избранных контактов
-        GlobalScope.launch { loadCirs { listCirs.add(it)}; context.runOnUiThread { v.recyclerView.adapter?.notifyDataSetChanged() } }
+        GlobalScope.launch { loadCirs { listCirs.add(it) }; context.runOnUiThread { v.recyclerView.adapter?.notifyDataSetChanged() } }
         arrayListOf<CircleImage>()
     }
 
     private var cirLayoutHeight = 0
-    private val adapterCallLogs: AdapterCallLogs by lazy{
-        AdapterCallLogs(arrayListOf(), context = context, onAdd = {v.scrollView.scrollBy(65.dp * it, 65.dp * it)})
+    private val adapterCallLogs: AdapterCallLogs by lazy {
+        AdapterCallLogs(
+            arrayListOf(),
+            context = context,
+            onAdd = { v.scrollView.scrollBy(65.dp * it, 65.dp * it) })
     }
-    private val sharedPreferences: SharedPreferences by lazy{
+    private val sharedPreferences: SharedPreferences by lazy {
         context.getSharedPreferences(Keys.ManagerPreference, Context.MODE_PRIVATE)
     }
     private val moshi: Moshi by lazy {
@@ -80,7 +77,7 @@ class ManagerViewModel : ViewModel() {
     private val adapterCirMoshi: JsonAdapter<CirPairData> by lazy {
         moshi.adapter(CirPairData().javaClass)
     }
-    private val keyboard: Keyboard by lazy{
+    private val keyboard: Keyboard by lazy {
         activity.supportFragmentManager.findFragmentById(R.id.keyboard) as Keyboard
     }
 
@@ -105,40 +102,61 @@ class ManagerViewModel : ViewModel() {
         this.activity = activity
     }
 
+    private suspend fun updateRvHistoryHeight() {
+        withContext(Dispatchers.Default) {
+            with(if (settings.historyButtom) v.recyclerViewHistoryBottom else v.recyclerViewHistory) {
+                adapter?.let { adapterThis ->
+                    val h = adapterThis.itemCount * 65.dp
+                    withContext(Dispatchers.Main) {
+                        setSize(height = h)
+                    }
+                }
+            }
+        }
+    }
+
     private fun updateHistoryList() {
+        setHistoryVisibleDown(settings.historyButtom)
         with(if (settings.historyButtom) v.recyclerViewHistoryBottom else v.recyclerViewHistory) {
-            layoutManager = object : LinearLayoutManager(context, LinearLayoutManager.VERTICAL, !settings.historyButtom){
+            layoutManager = object : LinearLayoutManager(
+                context,
+                VERTICAL,
+                !settings.historyButtom
+            ) {
                 override fun supportsPredictiveItemAnimations(): Boolean {
                     return false
                 }
             }
-            itemAnimator = LandingAnimator(OvershootInterpolator())
-            adapter = adapterCallLogs.apply { if (settings.historyButtom) onAdd = {}}
-//            v.scrollView.onScrollChange { v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
-//                getChildAt(childCount - 1)?.let {
-//                    (it.bottom - this@ManagerViewModel.v.scrollView.height - scrollY).let { diff ->
-////                        if (diff <= 0) (adapter as AdapterCallLogs).updateUI((childCount).takeIf { count -> count >= 0 } ?: 0, 10)
-//                            if (diff <= 0) GlobalScope.launch {(adapter as AdapterCallLogs)}
-//                    }
-//                }
-//            }
+            isNestedScrollingEnabled = true
+//            itemAnimator = LandingAnimator(OvershootInterpolator())
+            adapter = adapterCallLogs.apply { if (settings.historyButtom) onAdd = {} }
 
             this.setItemViewCacheSize(20)
 
             GlobalScope.launch {
                 withContext(Dispatchers.Unconfined) {
-                        getHistoryListLatest(
-                            context,
-                            onNext = {
-                                launch {
-                                    (adapter as AdapterCallLogs).addItemByCorutine(it, -1)
+                    getHistoryListLatest(
+                        context,
+                        onNext = {
+                            launch {
+                                (adapter as AdapterCallLogs?)?.apply {
+                                    if (itemCount <= 20)
+                                        addItemByCorutine(it, -1)
+                                    else
+                                        addBuffer(it)
                                 }
-                            },
-                            numUnique = true
-                        )
+                            }
+                        },
+                        numUnique = true
+                    )
                 }
             }
         }
+    }
+
+    private fun setHistoryVisibleDown(Visibility: Boolean) {
+        v.rvDown.visibility = if (Visibility) VISIBLE else GONE
+        v.rvTop.visibility = if (!Visibility) VISIBLE else GONE
     }
 
     private suspend fun loadCirs(onNext: (CircleImage) -> Unit = {}): ArrayList<CircleImage>? =
@@ -151,27 +169,34 @@ class ManagerViewModel : ViewModel() {
                         r.add(newCir(settings, touchHelper, pair).also(onNext))
                     }
                 }
+                if (r.size == 0) r.add(newCir(settings, touchHelper).also(onNext))
                 return@withContext r
             }
             return@withContext null
         }
 
 
-    private fun onChangeHeightCir(h: Int){
+    private fun onChangeHeightCir(h: Int) {
         cirLayoutHeight = h
         v.recyclerView.setSize(height = h)
     }
 
     fun initViews(updateHistory: Boolean = true) {
-        if(updateHistory) updateHistoryList()
+        if (updateHistory) updateHistoryList()
         listCirs.forEach {
             it.size = settings.sizeCirs
         }
-        v.recyclerView.layoutManager = CirLayoutManager({onChangeHeightCir(it)}, columns = settings.columnsCirs)
+        v.recyclerView.layoutManager =
+            CirLayoutManager({ onChangeHeightCir(it) }, columns = settings.columnsCirs)
         if (listCirs.isNotEmpty()) listCirs.updateItems(v.scrollView)
-        v.recyclerView.adapter = CirAdapter(listCirs, context, settings, context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator)
+        v.recyclerView.adapter = CirAdapter(
+            listCirs,
+            context,
+            settings,
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        )
         v.recyclerView.itemAnimator = LandingAnimator(OvershootInterpolator())
-        GlobalScope.launch { withTimeout(2_000L){ v.recyclerView.adapter?.notifyDataSetChanged() }}
+        GlobalScope.launch { withTimeout(2_000L) { v.recyclerView.adapter?.notifyDataSetChanged() } }
         v.recyclerView.setChildDrawingOrderCallback { childCount, iteration ->
             var childPos: Int = iteration
             if (indexOfFrontChild < childCount) {
@@ -186,14 +211,17 @@ class ManagerViewModel : ViewModel() {
         v.deleteCir.apply {
             setOnDragListener { view, event ->
                 try {
-                    val viewIt = (v.recyclerView.adapter as CirAdapter).items[((v.recyclerView.adapter as CirAdapter).posDrag)]
-                    when(event.action){
+                    val viewIt =
+                        (v.recyclerView.adapter as CirAdapter).items[((v.recyclerView.adapter as CirAdapter).posDrag)]
+                    when (event.action) {
                         DragEvent.ACTION_DRAG_ENTERED -> {
                             context.vibrator.vibrateSafety(VIBRO)
                         }
                         DragEvent.ACTION_DROP -> viewIt.deleteListener()
                     }
-                }catch (e: Exception) {e.printStackTrace()}
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
                 true
             }
 
@@ -233,13 +261,21 @@ class ManagerViewModel : ViewModel() {
         v.fabKeyboard.setOnClickListener {
             v.layoutKeyboard.toggle()
         }
+        v.buttonRVDownUpdate.setOnClickListener {
+            adapterCallLogs.upIntoBuffer()
+        }
+        v.buttonRVTopUpdate.setOnClickListener {
+            adapterCallLogs.upIntoBuffer()
+        }
     }
 
-    fun newCir(settings: Settings, touchHelper: ItemTouchHelper) = CircleImage(context,
+    fun newCir(settings: Settings, touchHelper: ItemTouchHelper) = CircleImage(
+        context,
         powerMenu = MoreMenuFactory().create(context) { return@create lifecycle }, swiping = true,
         lockableNestedScrollView = v.scrollView,
         menuEnable = settings.cirMenu,
-        deleteCir = v.deleteCir, editCir = v.editCir).apply {
+        deleteCir = v.deleteCir, editCir = v.editCir
+    ).apply {
         size = settings.sizeCirs
         id = Keys.idCir
         tag = i++
@@ -257,20 +293,21 @@ class ManagerViewModel : ViewModel() {
         }
     }
 
-    fun newCir(settings: Settings, touchHelper: ItemTouchHelper, pair: CirPairData) = newCir(settings,touchHelper).apply {
-        pair.contact?.let {
-            contact = it
+    fun newCir(settings: Settings, touchHelper: ItemTouchHelper, pair: CirPairData) =
+        newCir(settings, touchHelper).apply {
+            pair.contact?.let {
+                contact = it
+            }
+            replaceListener = {
+                touchHelper.startDrag(it)
+            }
+            pickContact = { pos ->
+                posPicker = pos
+                pickedContact()
+            }
         }
-        replaceListener = {
-            touchHelper.startDrag(it)
-        }
-        pickContact = { pos ->
-            posPicker = pos
-            pickedContact()
-        }
-    }
 
-    fun saveCirs(){
+    fun saveCirs() {
         var str = ""
         listCirs.forEach {
             str += adapterCirMoshi.toJson(CirPairData(it.contact, it.contactSettings)) + "<end>"
@@ -281,13 +318,8 @@ class ManagerViewModel : ViewModel() {
         Log.d("${this.javaClass}", "saveCirs: saved = $str")
     }
 
-    fun onDestroy(){
+    fun onDestroy() {
         saveCirs()
-//        GlobalScope.launch {
-//            withContext(Dispatchers.IO) {
-//                saveCirs()
-//            }
-//        }
     }
 
     fun onResult(requestCode: Int, requestCode1: Int, data: Intent?) {
@@ -295,7 +327,7 @@ class ManagerViewModel : ViewModel() {
         val projections = arrayOf(ContactsContract.Contacts._ID)
         val cursor = context.contentResolver.query(uri!!, projections, null, null, null)
         var id = 0L
-        if(cursor != null && cursor.moveToFirst()){
+        if (cursor != null && cursor.moveToFirst()) {
             val i = cursor.getColumnIndex(projections[0])
             id = cursor.getLong(i)
         }
@@ -305,8 +337,8 @@ class ManagerViewModel : ViewModel() {
     }
 }
 
-private fun  ArrayList<CircleImage>.updateItems(lockableNestedScrollView: LockableNestedScrollView) {
-    forEach{
+private fun ArrayList<CircleImage>.updateItems(lockableNestedScrollView: LockableNestedScrollView) {
+    forEach {
         it.lockableNestedScrollView = lockableNestedScrollView
     }
 }
