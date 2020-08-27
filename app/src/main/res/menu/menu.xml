@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/itemSettings"
+        android:title="Настройки" />
+    <item
+        android:id="@+id/shareDeveloper"
+        android:title="Связаться с разработчиком" />
+    <item
+        android:id="@+id/idClear"
+        android:title="Сбросить" />
+</menu>
