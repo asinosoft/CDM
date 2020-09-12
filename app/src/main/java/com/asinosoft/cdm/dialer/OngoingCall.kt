@@ -52,15 +52,19 @@ object OngoingCall {
         }
     }
 
-    fun getState(): Int {
-        return if (call == null){
-            Call.STATE_DISCONNECTED
-        } else {
-            call!!.getState()
-        } // if no call, return disconnected
+    fun unregisterCallback(){
+        if(call == null){
+            return
+        }
+        call!!.unregisterCallback(callback)
     }
 
-
+    fun keypad(c: Char) {
+        if (call != null) {
+            call!!.playDtmfTone(c)
+            call!!.stopDtmfTone()
+        }
+    }
 
     fun reject() {
         if(call != null){
@@ -72,9 +76,11 @@ object OngoingCall {
         }
     }
 
-    fun addCall(call: Call){
+
+
+    fun addCall(){
         if(call != null){
-            call.conference(call)
+            call!!.conference(call)
         }
     }
 
@@ -87,6 +93,14 @@ object OngoingCall {
 
     fun isAutoCalling(): Boolean {
         return sIsAutoCalling
+    }
+
+    fun getState(): Int {
+        if(call == null){
+            return Call.STATE_DISCONNECTED
+        }else{
+            return call!!.state
+        }
     }
 
 }

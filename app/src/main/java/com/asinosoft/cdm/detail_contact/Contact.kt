@@ -25,6 +25,7 @@ class Contact () {
     val TYPE_BIRTHDAY = 126
 
     var name: String? = null
+    var photoUri: String? = null
     var contactID: String? = null
     var mSkypeName: String? = null
     var mEmailAdress = ArrayList<String>()
@@ -56,6 +57,8 @@ class Contact () {
                  cursor.getString(cursor.getColumnIndex(ContactsContract.Data._ID))
              val contactId =
                  cursor.getString(cursor.getColumnIndex(ContactsContract.Data.CONTACT_ID))
+            val photoUri =
+                cursor.getString(cursor.getColumnIndex(ContactsContract.Data.PHOTO_URI))
              val displayName =
                  cursor.getString(cursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME))
              val mimeType =
@@ -77,6 +80,7 @@ class Contact () {
                 isFirst = false
                 name = displayName
                 contactID = contactId
+                this.photoUri = photoUri
             }
 
              when(mimeType){

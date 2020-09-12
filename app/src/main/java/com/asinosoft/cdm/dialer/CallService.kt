@@ -9,10 +9,7 @@ class CallService: InCallService() {
 
     override fun onCallAdded(call: Call) {
         super.onCallAdded(call)
-        var intent = Intent(this, OngoingCallActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.setData(call.details.handle)
-        startActivity(intent)
+        OngoingCallActivity.start(this, call)
         OngoingCall.call = call
     }
 
