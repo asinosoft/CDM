@@ -21,9 +21,9 @@
     <uses-permission android:name="android.permission.REQUEST_COMPANION_RUN_IN_BACKGROUND" />
     <uses-permission android:name="android.permission.REQUEST_COMPANION_USE_DATA_IN_BACKGROUND" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
-    <uses-permission android:name="android.permission.CALL_COMPANION_APP"/>
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.CALL_COMPANION_APP" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
     <application
         android:allowBackup="true"
@@ -105,19 +105,29 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".DetailHistoryActivity" />
-        <activity android:name=".SettingsActivity" />
+        <activity
+            android:name=".SearchActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DetailHistoryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SettingsActivity"
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".dialer.CallService"
-            android:permission="android.permission.BIND_INCALL_SERVICE"
-            >
+            android:permission="android.permission.BIND_INCALL_SERVICE">
             <meta-data
                 android:name="android.telecom.IN_CALL_SERVICE_UI"
-                android:value="true"
-                />
+                android:value="true" />
             <intent-filter>
                 <action android:name="android.telecom.InCallService" />
             </intent-filter>
