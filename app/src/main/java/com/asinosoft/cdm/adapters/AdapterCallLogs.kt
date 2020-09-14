@@ -6,22 +6,21 @@ import android.provider.CallLog
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.*
-import com.asinosoft.cdm.api.CursorApi
 import com.asinosoft.cdm.api.CursorApi.Companion.getDisplayPhoto
-import com.asinosoft.cdm.api.CursorApi.Companion.getPhotoFromID
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
 import com.zerobranch.layout.SwipeLayout
-import kotlinx.coroutines.*
-import org.jetbrains.anko.runOnUiThread
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.withContext
 
 
 class AdapterCallLogs(var items: ArrayList<HistoryItem>, val onClick: Boolean = true, val context: Context, var onAdd: (Int) -> Unit = {}): RecyclerView.Adapter<AdapterCallLogs.HolderHistory>() {
 
     private var pos = 0
     private var job: Job? = null
+    private val buffer = ArrayList<HistoryItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory{
         return HolderHistory(CalllogObjectBinding.inflate(LayoutInflater.from(parent.context), parent, false))
@@ -50,10 +49,23 @@ class AdapterCallLogs(var items: ArrayList<HistoryItem>, val onClick: Boolean = 
         context?.startActivity(intent)
     }
 
+    suspend fun addBuffer(item: HistoryItem) {
+        withContext(Dispatchers.IO) {
+            buffer.add(item)
+        }
+    }
+
+    fun upIntoBuffer() {
+        val lastIndex = items.lastIndex
+        items.addAll(buffer)
+        notifyItemRangeInserted(lastIndex, items.lastIndex)
+        buffer.clear()
+    }
+
     suspend fun addItemByCorutine(it: HistoryItem, i: Int = -1) {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             items.add(it)
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {
                 notifyItemInserted(itemCount - 1)
             }
         }
