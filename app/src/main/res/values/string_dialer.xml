@@ -13,9 +13,6 @@
 
     <string name="reject_timer_indicator">Звонок завершен</string>
     <string name="answer_timer_indicator">Ответить</string>
-    <string name="action_reject_call_timer">Reject in</string>
-    <string name="action_send_sms">Reject and send SMS</string>
-    <string name="action_cancel">Cancel</string>
 
     <!--Call State-->
     <string name="status_call_disconnected">Звонок завершен</string>
@@ -24,18 +21,9 @@
     <string name="status_call_dialing">Соеденение…</string>
     <string name="status_call_holding">Вызов на удержании</string>
 
-    <!--Hint-->
-    <string name="hint_path">Path</string>
-    <string name="hint_name">Name</string>
-    <string name="hint_name_column">Name column</string>
-    <string name="hint_number_column">Number column</string>
-    <string name="hint_sms_message">Message</string>
-
-    <string name="pref_sim_select_key">sim_select</string>
-
     <!-- Notification -->
-    <string name="active_call_notification_text">Is calling...</string>
-    <string name="channel_name">notification</string>
+    <string name="active_call_notification_text">Звонок...</string>
+    <string name="channel_name">уведомления</string>
     <string name="channel_description">On Going Call</string>
     <string name="action_answer">Ответить</string>
     <string name="action_hangup">Отклонить</string>

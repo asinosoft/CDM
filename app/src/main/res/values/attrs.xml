@@ -36,7 +36,6 @@
         </attr>
     </declare-styleable>
 
-
     <attr name="iconColor" format="reference" />
     <attr name="secondaryAccentColor" format="reference" />
     <attr name="dialogBackgroundColor" format="reference" />
