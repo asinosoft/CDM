@@ -45,7 +45,6 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
     val ACTION_HANGUP = "Отклонить"
 
     // Call State
-    private var mState: Int = 0
     private var mStateText: String? = null
 
     // Handler variables
@@ -53,10 +52,6 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
     private val TIME_STOP = 0
     private val TIME_UPDATE = 2
     private val REFRESH_RATE = 100
-
-    //  Current states
-    var mIsCallingUI = false
-    var mIsCreatingUI = true
 
     //Audio Manager
     lateinit var mAudioManager: AudioManager
@@ -125,7 +120,6 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
 
         // Audio Manager
         mAudioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        mAudioManager.mode = AudioManager.MODE_IN_CALL
 
         setOnKeyDownListener(this)
 
@@ -199,7 +193,6 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
 
     override fun onStart() {
         super.onStart()
-        mIsCreatingUI = false
 
         OngoingCall.registerCallback()
         OngoingCall.state
@@ -262,12 +255,6 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
 
     @SuppressLint("RestrictedApi")
     fun swithToCallingUI() {
-        if (mIsCallingUI) {
-            return
-        } else {
-            mIsCallingUI = true
-        }
-        mAudioManager.mode = AudioManager.MODE_IN_CALL
         acquireWakeLock()
         mCallTimeHandler.sendEmptyMessage(TIME_START)
 
@@ -287,8 +274,6 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
 
     @SuppressLint("RestrictedApi")
     private fun visibilityInomingCall() {
-
-        mAudioManager.mode = AudioManager.MODE_IN_CALL
         acquireWakeLock()
 
         // Change the buttons layout
@@ -306,28 +291,6 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
 
     }
 
-    private fun updateUI(state: Int) {
-        val statusTextRes: Int
-        when (state) {
-            Call.STATE_ACTIVE -> statusTextRes = R.string.status_call_active
-            Call.STATE_DISCONNECTED -> statusTextRes = R.string.status_call_disconnected
-            Call.STATE_RINGING -> statusTextRes = R.string.status_call_incoming
-            Call.STATE_DIALING -> statusTextRes = R.string.status_call_dialing
-            Call.STATE_CONNECTING -> statusTextRes = R.string.status_call_dialing
-            Call.STATE_HOLDING -> statusTextRes = R.string.status_call_holding
-            else -> statusTextRes = R.string.status_call_active
-        }
-        mState = state
-        mStateText = resources.getString(statusTextRes)
-        mBuilder!!.setContentText(mStateText)
-        try {
-            mNotificationManager!!.notify(NOTIFICATION_ID, mBuilder!!.build())
-        } catch (e: Exception) {
-            // Уведомления не поддерживаются Андроид устройством
-        }
-
-    }
-
     @SuppressLint("SetTextI18n", "RestrictedApi")
     private fun updateUi(state: Int) {
 
@@ -336,10 +299,12 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
 
         if (state == Call.STATE_DIALING) {
             swithToCallingUI()
+            mAudioManager.mode = AudioManager.MODE_IN_CALL
         }
 
         if (state == Call.STATE_RINGING) {
             visibilityInomingCall()
+            mAudioManager.mode = AudioManager.MODE_IN_CALL
         }
     }
 

@@ -2,24 +2,59 @@ package com.asinosoft.cdm
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.ColorMatrixColorFilter
 import android.os.Bundle
+import android.os.Vibrator
 import android.provider.ContactsContract
 import android.telecom.TelecomManager
 import android.util.Log
+import android.view.DragEvent
+import android.view.View
+import android.view.animation.Interpolator
+import android.view.animation.OvershootInterpolator
+import android.widget.PopupMenu
+import android.widget.SeekBar
+import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.core.net.toUri
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import androidx.loader.content.CursorLoader
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import com.asinosoft.cdm.Metoths.Companion.setSize
+import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.detail_contact.ContactDetailListElement
 import com.asinosoft.cdm.dialer.PreferenceUtils
 import com.asinosoft.cdm.dialer.Utilities
 import com.github.florent37.runtimepermission.RuntimePermission.askPermission
+import com.github.tamir7.contacts.Contact
+import com.github.tamir7.contacts.Contacts
 import com.jaeger.library.StatusBarUtil
+import com.skydoves.powermenu.kotlin.ActivityPowerMenuLazy
 import com.skydoves.powermenu.kotlin.powerMenu
+import jp.wasabeef.recyclerview.animators.LandingAnimator
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.anko.backgroundDrawable
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.vibrator
+import org.jetbrains.anko.wrapContent
+import kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf
 
 /**
  * Основной класс приложения, отвечает за работу главного экрана (нового) приложения
@@ -47,7 +82,6 @@ class ManagerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         v = ActivityManagerBinding.inflate(layoutInflater)
         setContentView(v.root)
-
         getPermission()
         viewModel = ViewModelProvider(this).get(ManagerViewModel::class.java)
         StatusBarUtil.setTranslucentForImageView(this, v.container)
@@ -58,16 +92,6 @@ class ManagerActivity : AppCompatActivity() {
             checkPermission(null)
         }
 
-
-    }
-
-    private fun makeCall() {
-        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.CALL_PHONE) == PermissionChecker.PERMISSION_GRANTED) {
-            val uri = "tel:${ContactDetailListElement().active}".toUri()
-            startActivity(Intent(Intent.ACTION_CALL, uri))
-        } else {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_PERMISSION)
-        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -85,13 +109,6 @@ class ManagerActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkVersion(){
-        val lastVersionCode = PreferenceUtils.getInstance().getInt(R.string.pref_last_version_key)
-        if(lastVersionCode < BuildConfig.VERSION_CODE) {
-            PreferenceUtils.getInstance().putInt(R.string.pref_last_version_key, BuildConfig.VERSION_CODE)
-        }
-    }
-
     private fun offerReplacingDefaultDialer() {
         if (getSystemService(TelecomManager::class.java).defaultDialerPackage != packageName) {
             Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
@@ -100,6 +117,21 @@ class ManagerActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkVersion(){
+        val lastVersionCode = PreferenceUtils.getInstance().getInt(R.string.pref_last_version_key)
+        if(lastVersionCode < BuildConfig.VERSION_CODE) {
+            PreferenceUtils.getInstance().putInt(R.string.pref_last_version_key, BuildConfig.VERSION_CODE)
+        }
+    }
+
+    private fun makeCall() {
+        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.CALL_PHONE) == PermissionChecker.PERMISSION_GRANTED) {
+            val uri = "tel:${ContactDetailListElement().active}".toUri()
+            startActivity(Intent(Intent.ACTION_CALL, uri))
+        } else {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_PERMISSION)
+        }
+    }
 
     private fun getPermission() {
         askPermission(this).onDenied { getPermission() }.ask()
