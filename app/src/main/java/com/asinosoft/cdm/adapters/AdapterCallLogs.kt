@@ -11,28 +11,39 @@ import com.asinosoft.cdm.*
 import com.asinosoft.cdm.api.CursorApi.Companion.getDisplayPhoto
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
 import com.zerobranch.layout.SwipeLayout
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import org.jetbrains.anko.runOnUiThread
 
 
 class AdapterCallLogs(var items: ArrayList<HistoryItem>, val onClick: Boolean = true, val context: Context, var onAdd: (Int) -> Unit = {}): RecyclerView.Adapter<AdapterCallLogs.HolderHistory>() {
 
     private var pos = 0
     private var job: Job? = null
+    private var nums = ""
+    private var jobFilter: Job = Job()
+    private var regex: Regex? = null
     private val buffer = ArrayList<HistoryItem>()
+    private var listBackup = items
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory{
-        return HolderHistory(CalllogObjectBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
+        return HolderHistory(
+            CalllogObjectBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
-    fun setList(list: ArrayList<HistoryItem>){
+    fun setList(list: ArrayList<HistoryItem>) {
         this.items = list
+        listBackup = list
         notifyDataSetChanged()
     }
 
     fun addItem(item: HistoryItem){
         items.add(item)
+        listBackup.add(item)
         notifyItemInserted(itemCount - 1)
     }
 
@@ -71,6 +82,33 @@ class AdapterCallLogs(var items: ArrayList<HistoryItem>, val onClick: Boolean = 
         }
     }
 
+    private suspend fun List<HistoryItem>.filtered(nums: String) = coroutineScope {
+        val r = ArrayList<HistoryItem>()
+        this@filtered.forEach { contact ->
+            regex?.find(contact.nameContact)?.let {
+                r.add(contact)
+                return@forEach
+            }
+            if (contact.numberContact.contains(nums, true)) {
+                r.add(contact)
+            }
+        }
+        return@coroutineScope r
+    }
+
+    fun setFilter(nums: String = "") {
+        this.nums = nums
+        regex = Regex(Metoths.getPattern(nums.replace("1", ""), context), RegexOption.IGNORE_CASE)
+        jobFilter = GlobalScope.launch {
+            runBlocking {
+                items = listBackup.filtered(nums)
+                context.runOnUiThread {
+                    notifyDataSetChanged()
+                }
+            }
+        }
+    }
+
 
     inner class HolderHistory(val v: CalllogObjectBinding) : RecyclerView.ViewHolder(v.root) {
 
@@ -78,8 +116,8 @@ class AdapterCallLogs(var items: ArrayList<HistoryItem>, val onClick: Boolean = 
 
             with(v) {
                 if (!item.contactID.isNullOrBlank())
-                item.contactID.toLong()?.let {
-                    if (it > 0) getDisplayPhoto(it, context!!)?.let { bitmap ->
+                    item.contactID.toLong()?.let {
+                        if (it > 0) getDisplayPhoto(it, context!!)?.let { bitmap ->
                         imageContact.setImageBitmap(bitmap)
                     }
                 }

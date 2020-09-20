@@ -13,6 +13,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.OvershootInterpolator
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -31,6 +32,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.wickerlabs.logmanager.LogsManager
 import jp.wasabeef.recyclerview.animators.LandingAnimator
+import kotlinx.android.synthetic.main.keyboard.*
 import kotlinx.coroutines.*
 import org.jetbrains.anko.runOnUiThread
 import org.jetbrains.anko.vibrator
@@ -266,6 +268,9 @@ class ManagerViewModel : ViewModel() {
         }
         v.buttonRVTopUpdate.setOnClickListener {
             adapterCallLogs.upIntoBuffer()
+        }
+        keyboard.input_text.doOnTextChanged { text, start, count, after ->
+            adapterCallLogs.setFilter(text.toString())
         }
     }
 

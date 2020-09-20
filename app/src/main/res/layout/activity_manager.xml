@@ -7,18 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".ManagerActivity">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabKeyboard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="24dp"
-        android:backgroundTint="@android:color/holo_blue_dark"
-        android:clickable="true"
-        android:focusable="true"
-        android:src="@drawable/twotone_keyboard_24" />
-
     <com.asinosoft.cdm.LockableNestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
@@ -150,9 +138,11 @@
     <LinearLayout
         android:id="@+id/layout_keyboard"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="0dp"
         android:layout_alignParentBottom="true"
         android:background="@drawable/shape"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:paddingTop="10dp">
 
         <fragment
@@ -162,4 +152,16 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabKeyboard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="24dp"
+        android:backgroundTint="@android:color/holo_blue_dark"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@drawable/twotone_keyboard_24" />
 </RelativeLayout>
