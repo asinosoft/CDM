@@ -4,48 +4,52 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.graphics.*
 import android.media.AudioManager
 import android.net.Uri
 import android.os.*
+import android.provider.MediaStore
 import android.telecom.Call
+import android.telecom.CallAudioState
+import android.util.Size
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
+import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
+import androidx.core.view.isVisible
 import com.agik.AGIKSwipeButton.Controller.OnSwipeCompleteListener
 import com.agik.AGIKSwipeButton.View.Swipe_Button_View
-import com.asinosoft.cdm.Metoths.Companion.toggle
 import com.asinosoft.cdm.detail_contact.Contact
 import com.asinosoft.cdm.dialer.*
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_ongoing_call.*
+import kotlinx.android.synthetic.main.keyboard.*
 import kotlinx.android.synthetic.main.on_going_call.*
+import org.jetbrains.anko.audioManager
 import java.util.concurrent.TimeUnit
 
 class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
 
     private val disposables = CompositeDisposable()
-
-    private lateinit var number: String
-
+    private var number: String? = null
     lateinit var context: Context
-
     val contactDialer = Contact()
+
+    //bools
+    private var isSpeakerOn = false
 
     // Finals
     private val END_CALL_MILLIS: Long = 1500
-    private val CHANNEL_ID = "notification"
-    private val NOTIFICATION_ID = 42069
-    val ACTION_ANSWER = "Ответить"
-    val ACTION_HANGUP = "Отклонить"
+    private val CALL_NOTIFICATION_ID = 1
+    val MINUTE_SECONDS = 60
 
     // Call State
     private var mStateText: String? = null
+    private var callContactAvatar: Bitmap? = null
 
     // Handler variables
     private val TIME_START = 1
@@ -66,13 +70,7 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
     lateinit var contact: Contact
 
     // PowerManager
-    lateinit var powerManager: PowerManager
     lateinit var wakeLock: PowerManager.WakeLock
-    private var field = 0x00000020
-
-    // Notification
-    var mBuilder: NotificationCompat.Builder? = null
-    var mNotificationManager: NotificationManager? = null
 
     private var mOnKeyDownListener: OnKeyDownListener? = null
 
@@ -80,7 +78,11 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ongoing_call)
-        number = intent.data!!.schemeSpecificPart
+
+        val uri = Uri.decode(OngoingCall.call!!.details.handle.toString())
+        if (uri.startsWith("tel:")) {
+            number = uri.substringAfter("tel:")
+        }
 
         PreferenceUtils.getInstance(this)
         Utilities().setUpLocale(this)
@@ -110,16 +112,9 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
             ongoing_call_layout.setPadding(0, 0, 0, navBarHeight)
         }
 
-        // Initiate PowerManager and WakeLock (turn screen on/off according to distance from face)
-        try {
-            field = PowerManager::class.java.getField("PROXIMITY_SCREEN_OFF_WAKE_LOCK").getInt(null)
-        } catch (ignored: Throwable) {
-        }
-        powerManager = getSystemService(POWER_SERVICE) as PowerManager
-        wakeLock = powerManager.newWakeLock(field, localClassName)
-
         // Audio Manager
         mAudioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        mAudioManager.mode = AudioManager.MODE_IN_CALL
 
         setOnKeyDownListener(this)
 
@@ -139,12 +134,7 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
         }
         ongoing_call_layout.setOnTouchListener(mIncomingCallSwipeListener)
 
-        createNotificationChannel()
-        createNotification()
-
-        getInfoForContact()
-        getContactInformation()
-
+        initProximitySensor()
 
         start.setOnSwipeCompleteListener_forward_reverse(object : OnSwipeCompleteListener {
             override fun onSwipe_Forward(swipeView: Swipe_Button_View) {
@@ -168,6 +158,30 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
             }
         })
 
+        //OngoingCall.registerCallback()
+        OngoingCall.registerCallback(callCallback)
+        OngoingCall.state
+            .subscribe(::updateUi)
+            .addTo(disposables)
+
+        OngoingCall.state
+            .filter { it == Call.STATE_DISCONNECTED }
+            .delay(1, TimeUnit.SECONDS)
+            .firstElement()
+            .subscribe { finish() }
+            .addTo(disposables)
+
+        getInfoForContact()
+        getContactInformation()
+    }
+
+    private fun initProximitySensor() {
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(
+            PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK,
+            "com.simplemobiletools.dialer.pro:wake_lock"
+        )
+        wakeLock!!.acquire(10 * MINUTE_SECONDS * 1000L)
     }
 
     fun getContactInformation() {
@@ -188,43 +202,36 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
         if (id != null) {
             contactDialer.parseDataCursor(id, this)
         }
-
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        OngoingCall.registerCallback()
-        OngoingCall.state
-            .subscribe(::updateUi)
-            .addTo(disposables)
-
-        OngoingCall.state
-            .filter { it == Call.STATE_DISCONNECTED }
-            .delay(1, TimeUnit.SECONDS)
-            .firstElement()
-            .subscribe { finish() }
-            .addTo(disposables)
-
     }
 
     override fun onPostCreate(savedInstanceState: Bundle??) {
         super.onPostCreate(savedInstanceState)
-        OngoingCall.registerCallback()
+        OngoingCall.registerCallback(callCallback)
         //updateUI(OngoingCall.getState())
     }
 
-
     override fun onBackPressed() {
         // In case the dialpad is opened, pressing the back button will close it
-        lKeyboard.toggle()
+        if (keyboard_wrapper.isVisible) {
+            keyboard_wrapper.visibility = View.GONE
+            swithToCallingUI()
+            return
+        } else {
+            super.onBackPressed()
+        }
+
+        if (OngoingCall.getState() == Call.STATE_DIALING) {
+            endCall()
+        }
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        OngoingCall.unregisterCallback()
+        OngoingCall.unregisterCallback(callCallback)
+        notificationManager.cancel(CALL_NOTIFICATION_ID)
         releaseWakeLock()
-        cancelNotification()
+        endCall()
     }
 
 
@@ -235,6 +242,7 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
 
     fun endCall() {
         mCallTimeHandler.sendEmptyMessage(TIME_STOP)
+        notificationManager.cancel(CALL_NOTIFICATION_ID)
         OngoingCall.reject()
         releaseWakeLock()
         if (OngoingCall.isAutoCalling()) {
@@ -242,10 +250,17 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
         } else {
             Handler().postDelayed(this::finish, END_CALL_MILLIS) // Delay the closing of the call
         }
+
+        try {
+            audioManager.mode = AudioManager.MODE_NORMAL
+        } catch (ignored: Exception) {
+        }
     }
 
     private fun releaseWakeLock() {
-        if (wakeLock.isHeld) wakeLock.release()
+        if (wakeLock.isHeld) {
+            wakeLock.release()
+        }
     }
 
     // -- Wake Lock -- //
@@ -256,11 +271,11 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
     @SuppressLint("RestrictedApi")
     fun swithToCallingUI() {
         acquireWakeLock()
-        mCallTimeHandler.sendEmptyMessage(TIME_START)
-
         // Change the buttons layout
         start.visibility = View.GONE
         stop.visibility = View.GONE
+        text_status.visibility = View.VISIBLE
+        text_caller.visibility = View.VISIBLE
         answer_btn.visibility = View.GONE
         reject_btn.visibility = View.GONE
         reject_btn2.visibility = View.VISIBLE
@@ -268,7 +283,6 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
         button_mute.visibility = View.VISIBLE
         button_keypad.visibility = View.VISIBLE
         button_speaker.visibility = View.VISIBLE
-        button_add_call.visibility = View.VISIBLE
     }
 
 
@@ -287,25 +301,21 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
         button_mute.visibility = View.INVISIBLE
         button_keypad.visibility = View.INVISIBLE
         button_speaker.visibility = View.INVISIBLE
-        button_add_call.visibility = View.INVISIBLE
-
     }
 
-    @SuppressLint("SetTextI18n", "RestrictedApi")
-    private fun updateUi(state: Int) {
-
-        text_status.text = "${state.asString().toLowerCase().capitalize()}"
-        mStateText = "${state.asString().toLowerCase().capitalize()}"
-
-        if (state == Call.STATE_DIALING) {
-            swithToCallingUI()
-            mAudioManager.mode = AudioManager.MODE_IN_CALL
-        }
-
-        if (state == Call.STATE_RINGING) {
-            visibilityInomingCall()
-            mAudioManager.mode = AudioManager.MODE_IN_CALL
-        }
+    private fun viewKeyboard() {
+        start.visibility = View.GONE
+        stop.visibility = View.GONE
+        text_status.visibility = View.GONE
+        text_caller.visibility = View.GONE
+        reject_btn2.visibility - View.GONE
+        answer_btn.visibility = View.GONE
+        reject_btn.visibility = View.GONE
+        reject_btn2.visibility = View.GONE
+        button_hold.visibility = View.GONE
+        button_mute.visibility = View.GONE
+        button_keypad.visibility = View.GONE
+        button_speaker.visibility = View.GONE
     }
 
     override fun onStop() {
@@ -327,8 +337,13 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
         }
 
         button_speaker.setOnClickListener {
+            isSpeakerOn = !isSpeakerOn
             Utilities().toggleViewActivation(button_speaker)
             mAudioManager.isSpeakerphoneOn = button_speaker.isActivated
+
+            val newRoute =
+                if (isSpeakerOn) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
+            OngoingCall.inCallService?.setAudioRoute(newRoute)
 
         }
 
@@ -337,19 +352,41 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
             OngoingCall.hold(button_hold.isActivated)
         }
 
-        button_add_call.setOnClickListener {
-            OngoingCall.addCall()
-        }
-
         button_mute.setOnClickListener {
             Utilities().toggleViewActivation(button_mute)
             mAudioManager.isMicrophoneMute = button_mute.isActivated
+            OngoingCall.inCallService?.setMuted(button_mute.isActivated)
         }
 
         button_keypad.setOnClickListener {
-            lKeyboard.toggle()
+            if (keyboard_wrapper.isVisible) {
+                keyboard_wrapper.visibility = View.GONE
+                swithToCallingUI()
+            } else {
+                keyboard_wrapper.visibility = View.VISIBLE
+                viewKeyboard()
+            }
         }
 
+        ripple0.setOnClickListener { dialpadPressed('0') }
+        one_btn.setOnClickListener { dialpadPressed('1') }
+        two_btn.setOnClickListener { dialpadPressed('2') }
+        three_btn.setOnClickListener { dialpadPressed('3') }
+        four_btn.setOnClickListener { dialpadPressed('4') }
+        five_btn.setOnClickListener { dialpadPressed('5') }
+        six_btn.setOnClickListener { dialpadPressed('6') }
+        seven_btn.setOnClickListener { dialpadPressed('7') }
+        eight_btn.setOnClickListener { dialpadPressed('8') }
+        nine_btn.setOnClickListener { dialpadPressed('9') }
+
+        ripple0.setOnLongClickListener { dialpadPressed('+'); true }
+
+        keyboard_wrapper.setBackgroundColor(R.color.white)
+    }
+
+    private fun dialpadPressed(char: Char) {
+        OngoingCall.keypad(char)
+        input_text.addCharacter(char)
     }
 
     @SuppressLint("HandlerLeak")
@@ -382,94 +419,6 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
         text_stopwatch.text = mCallTimer.getStringTime()
     }
 
-    private fun createNotification() {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            var callerName = ""
-
-            callerName = if (contactDialer.name != null) {
-                contactDialer.name!!
-            } else {
-                number
-            }
-
-            val touchNotification = Intent(this, OngoingCallActivity::class.java)
-            touchNotification.flags = Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
-            val pendingIntent = PendingIntent.getActivity(
-                this,
-                0,
-                touchNotification,
-                0
-            )
-
-            //Намерение кнопки ответа
-            val answerIntent = Intent(this, NotificationActionReceiver::class.java)
-            answerIntent.action = ACTION_ANSWER
-            answerIntent.putExtra(Notification.EXTRA_NOTIFICATION_ID, 0)
-            val answerPendingIntent =
-                PendingIntent.getBroadcast(this, 0, answerIntent, PendingIntent.FLAG_CANCEL_CURRENT)
-
-            // Нажатие кнопки отбоя
-            val hangupIntent = Intent(this, NotificationActionReceiver::class.java)
-            hangupIntent.action = OngoingCallActivity().ACTION_HANGUP
-            hangupIntent.putExtra(Notification.EXTRA_NOTIFICATION_ID, 0)
-            val hangupPendingIntent =
-                PendingIntent.getBroadcast(this, 1, hangupIntent, PendingIntent.FLAG_CANCEL_CURRENT)
-
-            mBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.icon_full_144)
-                .setContentTitle(callerName)
-                .setContentText(mStateText)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(pendingIntent)
-                .setColor(Utilities().getAccentColor(this))
-                .setOngoing(true)
-                .setStyle(
-                    androidx.media.app.NotificationCompat.MediaStyle()
-                        .setShowActionsInCompactView(0, 1)
-                )
-                .setAutoCancel(true)
-
-            // Добавление кнопок действий
-            mBuilder!!.addAction(
-                R.drawable.outline_call_24,
-                getString(R.string.action_answer),
-                answerPendingIntent
-            )
-            mBuilder!!.addAction(
-                R.drawable.outline_call_end_24,
-                getString(R.string.action_hangup),
-                hangupPendingIntent
-            )
-
-            val notificationManager = NotificationManagerCompat.from(this)
-            notificationManager.notify(NOTIFICATION_ID, mBuilder!!.build())
-        }
-
-    }
-
-    private fun createNotificationChannel() {
-        //Создайте NotificationChannel, но только для API 26+, потому что
-        //класс NotificationChannel является новым и не входит в библиотеку поддержки
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name: CharSequence = getString(R.string.channel_name)
-            val description = getString(R.string.channel_description)
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance)
-            channel.description = description
-            //Зарегистрируйте канал в системе; ты не можешь изменить важность
-            //или другое поведение уведомлений после этого
-            mNotificationManager = getSystemService(NotificationManager::class.java)
-            mNotificationManager!!.createNotificationChannel(channel)
-        }
-    }
-
-    fun cancelNotification() {
-        val notificationManager =
-            applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancel(NOTIFICATION_ID)
-    }
-
     companion object {
         fun start(context: Context, call: Call) {
             Intent(context, OngoingCallActivity::class.java)
@@ -486,6 +435,156 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
     override fun onKeyPressed(keyCode: Int, event: KeyEvent) {
         OngoingCall.keypad(event.unicodeChar as (Char))
     }
+
+    private fun setupNotification() {
+        val callState = OngoingCall.getState()
+        val channelId = "simple_dialer_channel"
+        if (isOreoPlus()) {
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val name = "call_notification_channel"
+
+            NotificationChannel(channelId, name, importance).apply {
+                setSound(null, null)
+                notificationManager.createNotificationChannel(this)
+            }
+        }
+
+        val openAppIntent = Intent(this, OngoingCallActivity::class.java)
+        openAppIntent.flags = Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
+        val openAppPendingIntent = PendingIntent.getActivity(this, 0, openAppIntent, 0)
+
+        val acceptCallIntent = Intent(this, NotificationActionReceiver::class.java)
+        acceptCallIntent.action = ACCEPT_CALL
+        val acceptPendingIntent =
+            PendingIntent.getBroadcast(this, 0, acceptCallIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+
+        val declineCallIntent = Intent(this, NotificationActionReceiver::class.java)
+        declineCallIntent.action = DECLINE_CALL
+        val declinePendingIntent = PendingIntent.getBroadcast(
+            this,
+            1,
+            declineCallIntent,
+            PendingIntent.FLAG_CANCEL_CURRENT
+        )
+
+        var callerName = ""
+
+        callerName = if (contactDialer.name != null) {
+            contactDialer.name!!
+        } else {
+            number!!
+        }
+
+        callContactAvatar = getCallContactAvatar()
+
+        val contentTextId = when (callState) {
+            Call.STATE_RINGING -> R.string.state_call_ringing
+            Call.STATE_DIALING -> R.string.status_call_dialing
+            Call.STATE_DISCONNECTED -> R.string.status_call_disconnected
+            Call.STATE_DISCONNECTING -> R.string.status_call_disconnected
+            else -> R.string.state_call_active
+        }
+
+        val collapsedView = RemoteViews(packageName, R.layout.call_notification).apply {
+            setText(R.id.notification_caller_name, callerName)
+            setText(R.id.notification_call_status, getString(contentTextId))
+            setVisibleIf(R.id.notification_accept_call, callState == Call.STATE_RINGING)
+
+            setOnClickPendingIntent(R.id.notification_decline_call, declinePendingIntent)
+            setOnClickPendingIntent(R.id.notification_accept_call, acceptPendingIntent)
+
+            if (contactDialer.photoUri != null) {
+                setImageViewBitmap(
+                    R.id.notification_thumbnail,
+                    getCircularBitmap(callContactAvatar!!)
+                )
+            }
+        }
+
+        val builder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.icon_full_144)
+            .setContentIntent(openAppPendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setCategory(Notification.CATEGORY_CALL)
+            .setCustomContentView(collapsedView)
+            .setOngoing(true)
+            .setSound(null)
+            .setUsesChronometer(callState == Call.STATE_ACTIVE)
+            .setChannelId(channelId)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+
+        val notification = builder.build()
+        notificationManager.notify(CALL_NOTIFICATION_ID, notification)
+
+    }
+
+    private fun getCallContactAvatar(): Bitmap? {
+        var bitmap: Bitmap? = null
+        if (contactDialer?.photoUri?.isNotEmpty() == true) {
+            val photoUri = Uri.parse(contactDialer!!.photoUri)
+            try {
+                bitmap = if (isQPlus()) {
+                    val tmbSize = resources.getDimension(R.dimen.list_avatar_size).toInt()
+                    contentResolver.loadThumbnail(photoUri, Size(tmbSize, tmbSize), null)
+                } else {
+                    MediaStore.Images.Media.getBitmap(contentResolver, photoUri)
+
+                }
+
+                bitmap = getCircularBitmap(bitmap!!)
+            } catch (ignored: Exception) {
+                return null
+            }
+        }
+
+        return bitmap
+    }
+
+    private fun getCircularBitmap(bitmap: Bitmap): Bitmap {
+        val output = Bitmap.createBitmap(bitmap.width, bitmap.width, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(output)
+        val paint = Paint()
+        val rect = Rect(0, 0, bitmap.width, bitmap.height)
+        val radius = bitmap.width / 2.toFloat()
+
+        paint.isAntiAlias = true
+        canvas.drawARGB(0, 0, 0, 0)
+        canvas.drawCircle(radius, radius, radius, paint)
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+        canvas.drawBitmap(bitmap, rect, rect, paint)
+        return output
+    }
+
+    @SuppressLint("NewApi")
+    private val callCallback = object : Call.Callback() {
+        override fun onStateChanged(call: Call, state: Int) {
+            super.onStateChanged(call, state)
+            updateUi(state)
+        }
+    }
+
+    @SuppressLint("SetTextI18n", "RestrictedApi")
+    private fun updateUi(state: Int) {
+
+        text_status.text = "${state.asString().toLowerCase().capitalize()}"
+        mStateText = "${state.asString().toLowerCase().capitalize()}"
+
+        if (state == Call.STATE_DIALING) {
+            swithToCallingUI()
+        }
+
+        if (state == Call.STATE_RINGING) {
+            visibilityInomingCall()
+        }
+
+        if (state == Call.STATE_ACTIVE) {
+            mCallTimeHandler.sendEmptyMessage(TIME_START)
+        }
+
+        setupNotification()
+    }
+
+
 
 }
 

@@ -36,6 +36,7 @@ import com.asinosoft.cdm.Metoths.Companion.Direction.*
 import com.github.tamir7.contacts.Contact
 import net.cachapa.expandablelayout.util.FastOutSlowInInterpolator
 import org.jetbrains.anko.toast
+import org.jetbrains.anko.wrapContent
 import java.io.IOException
 import kotlin.math.absoluteValue
 import kotlin.math.sign
@@ -319,7 +320,7 @@ class Metoths {
                     text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)}
 
         fun View.toggle(duration: Long = 500L){
-            ValueAnimator.ofInt(this.measuredHeight, if (this.height == 1) 0 else 1).apply {
+            ValueAnimator.ofInt(this.measuredHeight, if (this.height == 1) wrapContent else 1).apply {
                 this.duration = duration
                 addUpdateListener { layoutParams = layoutParams.apply { height = animatedValue as Int } }
             }.start()
