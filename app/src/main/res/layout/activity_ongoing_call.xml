@@ -13,9 +13,10 @@
         layout="@layout/on_going_call" />
 
     <LinearLayout
-        android:id="@+id/lKeyboard"
+        android:visibility="gone"
+        android:id="@+id/keyboard_wrapper"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@drawable/shape"
         android:backgroundTint="@color/white"
