@@ -18,4 +18,6 @@
 
     <color name="red">#E80202</color>
     <color name="green">#51D50B</color>
+
+    <color name="md_grey">#9E9E9E</color>
 </resources>

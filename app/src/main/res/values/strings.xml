@@ -61,6 +61,9 @@
     <string name="whatsApp_msg">Написать</string>
     <string name="type_telegram">Telegram</string>
     <string name="type_birthday">День рождения</string>
+    <string name="state_call_ringing">Входящий вызов</string>
+    <string name="state_call_active">Текущий вызов</string>
+    <string name="unknow_call">Неизвестный</string>
 
 
 </resources>
