@@ -1,21 +1,24 @@
 package com.asinosoft.cdm.dialer
 
 import android.content.Context
+import android.net.Uri
 import android.telecom.Call
+import android.telecom.InCallService
 import android.telecom.VideoProfile
-import android.telephony.SubscriptionManager
+import com.asinosoft.cdm.Funcs
+import com.asinosoft.cdm.detail_contact.Contact
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
-import java.net.URLDecoder
+
 
 object OngoingCall {
 
     // Variables
     private const val sIsAutoCalling = false
-    private const val sAutoCallPosition = 0
-    private val mSubscriptionManager: SubscriptionManager? = null
-
     val state: BehaviorSubject<Int> = BehaviorSubject.create()
+    var inCallService: InCallService? = null
+    var number: String? = null
+    var contact: Contact? = null
 
     private val callback = object : Call.Callback() {
         override fun onStateChanged(call: Call, newState: Int) {
@@ -30,10 +33,18 @@ object OngoingCall {
 
     }
 
-    fun registerCallback() {
-        if (call == null)
-            return
-        call!!.registerCallback(callback)
+    fun registerCallback(callback: Call.Callback) {
+        try {
+            call!!.registerCallback(callback)
+        }catch (e: Exception){
+
+        }
+    }
+
+    fun getState() = if(call == null){
+        Call.STATE_DISCONNECTED
+    }else{
+        call!!.state
     }
 
     var call: Call? = null
@@ -52,11 +63,13 @@ object OngoingCall {
         }
     }
 
-    fun unregisterCallback(){
-        if(call == null){
-            return
+    fun unregisterCallback(callback: Call.Callback){
+        try {
+            call!!.unregisterCallback(callback)
+        }catch (e: Exception){
+
         }
-        call!!.unregisterCallback(callback)
+
     }
 
     fun keypad(c: Char) {
@@ -76,8 +89,6 @@ object OngoingCall {
         }
     }
 
-
-
     fun addCall(){
         if(call != null){
             call!!.conference(call)
@@ -95,12 +106,6 @@ object OngoingCall {
         return sIsAutoCalling
     }
 
-    fun getState(): Int {
-        if(call == null){
-            return Call.STATE_DISCONNECTED
-        }else{
-            return call!!.state
-        }
-    }
+
 
 }

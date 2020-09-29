@@ -135,8 +135,8 @@
 
         <receiver android:name=".dialer.NotificationActionReceiver">
             <intent-filter>
-                <action android:name="Ответить" />
-                <action android:name="Отклонить" />
+                <action android:name="com.simplemobiletools.dialer.action.ACCEPT_CALL" />
+                <action android:name="com.simplemobiletools.dialer.action.DECLINE_CALL" />
             </intent-filter>
         </receiver>
 

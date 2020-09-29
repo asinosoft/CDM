@@ -9,14 +9,9 @@ class NotificationActionReceiver: BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val action: String? = intent.action
-
-        if (action == OngoingCallActivity().ACTION_ANSWER) {
-            // If the user pressed "Answer" from the notification
-            OngoingCall.answer()
-        }
-        else if (action == OngoingCallActivity().ACTION_HANGUP) {
-            // If the user pressed "Hang up" from the notification
-            OngoingCall.reject()
+        when(action){
+            ACCEPT_CALL -> OngoingCall.answer()
+            DECLINE_CALL -> OngoingCall.reject()
         }
     }
 

@@ -1,13 +1,17 @@
 package com.asinosoft.cdm.dialer
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Rect
+import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.provider.ContactsContract
 import android.telecom.TelecomManager
 import android.util.DisplayMetrics
 import android.util.TypedValue
@@ -132,5 +136,6 @@ class Utilities {
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         return displayMetrics.densityDpi.toFloat()
     }
+
 
 }

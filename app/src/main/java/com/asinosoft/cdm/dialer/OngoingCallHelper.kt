@@ -1,7 +1,19 @@
 package com.asinosoft.cdm.dialer
 
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
 import android.telecom.Call
 import timber.log.Timber
+
+val Context.notificationManager: NotificationManager get() = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+fun isOreoPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+fun isQPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
+private const val PATH = "com.asinosoft.cdm.dialer.action."
+const val ACCEPT_CALL = PATH + "accept_call"
+const val DECLINE_CALL = PATH + "decline_call"
 
 fun Int.asString(): String = when (this) {
     Call.STATE_NEW -> "Новый"
