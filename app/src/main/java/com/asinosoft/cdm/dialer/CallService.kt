@@ -9,13 +9,17 @@ class CallService: InCallService() {
 
     override fun onCallAdded(call: Call) {
         super.onCallAdded(call)
-        OngoingCallActivity.start(this, call)
-        OngoingCall.call = call
+        val intent = Intent(this, OngoingCallActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        CallManager.call = call
+        CallManager.inCallService = this
     }
 
     override fun onCallRemoved(call: Call) {
         super.onCallRemoved(call)
-        OngoingCall.call = null
+        CallManager.call = null
+        CallManager.inCallService = null
     }
 
 }

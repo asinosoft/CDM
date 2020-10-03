@@ -20,7 +20,10 @@ import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
+import com.asinosoft.cdm.Funcs
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.detail_contact.Contact
+import com.skydoves.powermenu.kotlin.createPowerMenu
 import org.jetbrains.annotations.NotNull
 import timber.log.Timber
 import java.util.*
@@ -30,38 +33,10 @@ class Utilities {
     val DEFAULT_DIALER_RC = 11
     val PERMISSION_RC = 10
     val MUST_HAVE_PERMISSIONS = arrayOf(Manifest.permission.CALL_PHONE)
-    lateinit var sLocale: Locale
-    val LONG_VIBRATE_LENGTH: Long = 500
-    val SHORT_VIBRATE_LENGTH: Long = 20
-    val DEFAULT_VIBRATE_LENGTH: Long = 100
-
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun setUpLocale(@NotNull context: Context) {
-        Utilities().sLocale = context.resources.configuration.locales.get(0)
-    }
-
-    fun hasNavBar(context: Context): Boolean {
-        val resources = context.resources
-        val id = resources.getIdentifier("config_showNavigationBar", "bool", "android")
-        return id > 0 && resources.getBoolean(id)
-    }
-
-    fun navBarHeight(context: Context): Int {
-        val resources = context.resources
-        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        return if (resourceId > 0) resources.getDimensionPixelSize(resourceId) else 0
-    }
+    var contactDialer = Contact()
 
     fun toggleViewActivation(view: View) {
         view.isActivated = !view.isActivated
-    }
-
-    fun getAccentColor(context: Context): Int {
-        val typedValue = TypedValue()
-        val a = context.obtainStyledAttributes(typedValue.data, intArrayOf(R.attr.secondaryAccentColor))
-        val color = a.getColor(0, 0)
-        a.recycle()
-        return color
     }
 
     fun checkDefaultDialer(activity: FragmentActivity): Boolean {
@@ -98,44 +73,35 @@ class Utilities {
         ActivityCompat.requestPermissions(activity!!, permissions!!, PERMISSION_RC)
     }
 
-    fun vibrate(@NotNull context: Context, millis: Long) {
-        val vibrator: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        if(vibrator == null) {
-            return
+    fun getNameFromPhoneNumber(context: Context?, number: String): String {
+        val id = Funcs.getContactID(context, "$number")
+        if (id != null) {
+            if (context != null) {
+                contactDialer.parseDataCursor(id, context)
+            }
         }
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(VibrationEffect.createOneShot(millis, VibrationEffect.DEFAULT_AMPLITUDE))
-        }else{
-            vibrator.vibrate(millis)
+
+        return contactDialer.name!!
+    }
+
+    fun getPhotoUriFromPhoneNumber(context: Context?, number: String): String {
+
+        val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number))
+        val projection = arrayOf(
+            ContactsContract.PhoneLookup.PHOTO_URI
+        )
+
+        try {
+            val cursor = context!!.contentResolver.query(uri, projection, null, null, null)
+            cursor.use {
+                if (cursor?.moveToFirst() == true) {
+                    return cursor.getStringValue(ContactsContract.PhoneLookup.PHOTO_URI) ?: ""
+                }
+            }
+        } catch (e: Exception) {
         }
-    }
 
-    fun vibrate(@NotNull context:Context){
-        vibrate(context, DEFAULT_VIBRATE_LENGTH)
+        return ""
     }
-
-    fun inViewInBounds(view: View, x: Int, y: Int, buttonVicinityOffset: Int): Boolean {
-        var outRect = Rect()
-        val location = IntArray(2)
-        view.getDrawingRect(outRect)
-        view.getLocationOnScreen(location)
-        outRect.offset(location[0], location[1])
-        val e = convertDpToPixel(view.context, buttonVicinityOffset.toFloat()) as Int
-        outRect = Rect(outRect.left - e, outRect.top - e, outRect.right + e, outRect.bottom + e)
-        Timber.d("outRect: %s, x and y: %d, %d", outRect.toShortString(), x, y)
-        return outRect.contains(x, y)
-    }
-
-    fun convertDpToPixel(context: Context?, dp: Float): Float {
-        return dp * (dpi(context!!) / DisplayMetrics.DENSITY_DEFAULT)
-    }
-
-    fun dpi(context: Context): Float {
-        val displayMetrics = DisplayMetrics()
-        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-        return displayMetrics.densityDpi.toFloat()
-    }
-
 
 }

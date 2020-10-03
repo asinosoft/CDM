@@ -64,6 +64,7 @@
     <string name="state_call_ringing">Входящий вызов</string>
     <string name="state_call_active">Текущий вызов</string>
     <string name="unknow_call">Неизвестный</string>
+    <string name="unknown_caller">Неизвестный номер</string>
 
 
 </resources>

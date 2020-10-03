@@ -30,111 +30,46 @@ import kotlinx.android.synthetic.main.activity_ongoing_call.*
 import kotlinx.android.synthetic.main.keyboard.*
 import kotlinx.android.synthetic.main.on_going_call.*
 import org.jetbrains.anko.audioManager
+import java.util.*
 import java.util.concurrent.TimeUnit
 
-class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
+class OngoingCallActivity : AppCompatActivity() {
 
-    private val disposables = CompositeDisposable()
-    private var number: String? = null
     lateinit var context: Context
     val contactDialer = Contact()
 
     //bools
     private var isSpeakerOn = false
+    private var isMicrophoneOn = true
+    private var isCallEnded = false
+    private var callDuration = 0
+    private var callContact: CallContact? = null
+    private var callContactAvatar: Bitmap? = null
+    private var proximityWakeLock: PowerManager.WakeLock? = null
+    private var callTimer = Timer()
 
     // Finals
-    private val END_CALL_MILLIS: Long = 1500
     private val CALL_NOTIFICATION_ID = 1
     val MINUTE_SECONDS = 60
-
-    // Call State
-    private var mStateText: String? = null
-    private var callContactAvatar: Bitmap? = null
-
-    // Handler variables
-    private val TIME_START = 1
-    private val TIME_STOP = 0
-    private val TIME_UPDATE = 2
-    private val REFRESH_RATE = 100
-
-    //Audio Manager
-    lateinit var mAudioManager: AudioManager
-
-    // Utilities
-    var mCallTimer = Stopwatch()
-
-    lateinit var mIncomingCallSwipeListener: AllPurposeTouchListener
-
-    // Handlers
-    var mCallTimeHandler: Handler = CallTimeHandler()
-    lateinit var contact: Contact
-
-    // PowerManager
-    lateinit var wakeLock: PowerManager.WakeLock
-
-    private var mOnKeyDownListener: OnKeyDownListener? = null
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ongoing_call)
 
-        val uri = Uri.decode(OngoingCall.call!!.details.handle.toString())
-        if (uri.startsWith("tel:")) {
-            number = uri.substringAfter("tel:")
-        }
-
-        PreferenceUtils.getInstance(this)
-        Utilities().setUpLocale(this)
-
         clickToButtons()
-
-        // This activity needs to show even if the screen is off or locked
-        val window = window
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            setShowWhenLocked(true)
-            setTurnScreenOn(true)
-        } else {
-            window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val km = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-            km.requestDismissKeyguard(this, null)
-        } else {
-            window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
-        }
-        window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-
-        //Detect a nav bar and adapt layout accordingly
-        val hasNavBar: Boolean = Utilities().hasNavBar(this)
-        val navBarHeight: Int = Utilities().navBarHeight(this)
-        if (hasNavBar) {
-            ongoing_call_layout.setPadding(0, 0, 0, navBarHeight)
-        }
-
-        // Audio Manager
-        mAudioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        mAudioManager.mode = AudioManager.MODE_IN_CALL
-
-        setOnKeyDownListener(this)
-
-        // Initiate Swipe listener
-        mIncomingCallSwipeListener = object : AllPurposeTouchListener(this) {
-            override fun onSwipeRight() {
-                activateCall()
-            }
-
-            override fun onSwipeLeft() {
-                endCall()
-            }
-
-            override fun onSwipeTop() {
-
-            }
-        }
-        ongoing_call_layout.setOnTouchListener(mIncomingCallSwipeListener)
-
+        addLockScreenFlags()
         initProximitySensor()
+
+        audioManager.mode = AudioManager.MODE_IN_CALL
+        CallManager.getCallContact(applicationContext) { contact ->
+            callContact = contact
+            callContactAvatar = getCallContactAvatar()
+            runOnUiThread {
+                setupNotification()
+                updateOtherPersonsInfo()
+            }
+        }
 
         start.setOnSwipeCompleteListener_forward_reverse(object : OnSwipeCompleteListener {
             override fun onSwipe_Forward(swipeView: Swipe_Button_View) {
@@ -158,56 +93,47 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
             }
         })
 
-        //OngoingCall.registerCallback()
-        OngoingCall.registerCallback(callCallback)
-        OngoingCall.state
-            .subscribe(::updateUi)
-            .addTo(disposables)
+        CallManager.registerCallback(callCallback)
+        updateCallState(CallManager.getState())
+    }
 
-        OngoingCall.state
-            .filter { it == Call.STATE_DISCONNECTED }
-            .delay(1, TimeUnit.SECONDS)
-            .firstElement()
-            .subscribe { finish() }
-            .addTo(disposables)
+    private fun updateOtherPersonsInfo() {
+        if (callContact == null) {
+            return
+        }
 
-        getInfoForContact()
-        getContactInformation()
+        text_status.text = if (callContact!!.name.isNotEmpty()) callContact!!.name else getString(R.string.unknown_caller)
+        if(callContact!!.name != ""){
+            text_caller.text = callContact!!.name
+        }else{
+            text_caller.text = callContact!!.number
+        }
+
+        if (callContactAvatar != null) {
+            image_placeholder.setImageBitmap(callContactAvatar)
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private fun addLockScreenFlags() {
+        if (isOreoMr1Plus()) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+        } else {
+            window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
+        }
+
+        if (isOreoPlus()) {
+            (getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager).requestDismissKeyguard(this, null)
+        } else {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
+        }
     }
 
     private fun initProximitySensor() {
         val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-        wakeLock = powerManager.newWakeLock(
-            PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK,
-            "com.simplemobiletools.dialer.pro:wake_lock"
-        )
-        wakeLock!!.acquire(10 * MINUTE_SECONDS * 1000L)
-    }
-
-    fun getContactInformation() {
-        if (contactDialer.name != null) {
-            text_caller.text = contactDialer.name
-        } else {
-            text_caller.text = number
-        }
-        if (contactDialer.photoUri != null) {
-            image_placeholder.visibility = View.INVISIBLE
-            image_photo.visibility = View.VISIBLE
-            image_photo.setImageURI(Uri.parse(contactDialer.photoUri))
-        }
-    }
-
-    fun getInfoForContact() {
-        val id = Funcs.getContactID(this, "$number")
-        if (id != null) {
-            contactDialer.parseDataCursor(id, this)
-        }
-    }
-
-    override fun onPostCreate(savedInstanceState: Bundle??) {
-        super.onPostCreate(savedInstanceState)
-        OngoingCall.registerCallback(callCallback)
-        //updateUI(OngoingCall.getState())
+        proximityWakeLock = powerManager.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "com.simplemobiletools.dialer.pro:wake_lock")
+        proximityWakeLock!!.acquire(10 * MINUTE_SECONDS * 1000L)
     }
 
     override fun onBackPressed() {
@@ -220,7 +146,7 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
             super.onBackPressed()
         }
 
-        if (OngoingCall.getState() == Call.STATE_DIALING) {
+        if (CallManager.getState() == Call.STATE_DIALING) {
             endCall()
         }
 
@@ -228,49 +154,65 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        OngoingCall.unregisterCallback(callCallback)
         notificationManager.cancel(CALL_NOTIFICATION_ID)
-        releaseWakeLock()
+        CallManager.unregisterCallback(callCallback)
+        callTimer.cancel()
+        if (proximityWakeLock?.isHeld == true) {
+            proximityWakeLock!!.release()
+        }
+
         endCall()
     }
 
 
     fun activateCall() {
-        OngoingCall.answer()
+        CallManager.accept()
         swithToCallingUI()
     }
 
     fun endCall() {
-        mCallTimeHandler.sendEmptyMessage(TIME_STOP)
-        notificationManager.cancel(CALL_NOTIFICATION_ID)
-        OngoingCall.reject()
-        releaseWakeLock()
-        if (OngoingCall.isAutoCalling()) {
+        CallManager.reject()
+        if (proximityWakeLock?.isHeld == true) {
+            proximityWakeLock!!.release()
+        }
+
+        if (isCallEnded) {
             finish()
-        } else {
-            Handler().postDelayed(this::finish, END_CALL_MILLIS) // Delay the closing of the call
+            return
         }
 
         try {
             audioManager.mode = AudioManager.MODE_NORMAL
         } catch (ignored: Exception) {
         }
-    }
 
-    private fun releaseWakeLock() {
-        if (wakeLock.isHeld) {
-            wakeLock.release()
+        isCallEnded = true
+        if (callDuration > 0) {
+            runOnUiThread {
+                text_status.text = "${callDuration.getFormattedDuration()} (${getString(R.string.status_call_disconnected)})"
+                Handler().postDelayed({
+                    finish()
+                }, 3000)
+            }
+        } else {
+            text_status.text = getString(R.string.status_call_disconnected)
+            finish()
         }
     }
 
-    // -- Wake Lock -- //
-    private fun acquireWakeLock() {
-        if (!wakeLock.isHeld) wakeLock.acquire(10 * 60 * 1000L /*10 minutes*/)
+    private fun getCallTimerUpdateTask() = object : TimerTask() {
+        override fun run() {
+            callDuration++
+            runOnUiThread {
+                if (!isCallEnded) {
+                    text_status.text = callDuration.getFormattedDuration()
+                }
+            }
+        }
     }
 
     @SuppressLint("RestrictedApi")
     fun swithToCallingUI() {
-        acquireWakeLock()
         // Change the buttons layout
         start.visibility = View.GONE
         stop.visibility = View.GONE
@@ -288,8 +230,6 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
 
     @SuppressLint("RestrictedApi")
     private fun visibilityInomingCall() {
-        acquireWakeLock()
-
         // Change the buttons layout
         start.visibility = View.VISIBLE
         stop.visibility = View.VISIBLE
@@ -318,9 +258,26 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
         button_speaker.visibility = View.GONE
     }
 
-    override fun onStop() {
-        super.onStop()
-        disposables.clear()
+    private fun toggleMicrophone() {
+        isMicrophoneOn = !isMicrophoneOn
+        val drawable = if (isMicrophoneOn) R.drawable.ic_mic_black_24dp else R.drawable.outline_mic_off_24
+        button_mute.setImageDrawable(getDrawable(drawable))
+        audioManager.isMicrophoneMute = !isMicrophoneOn
+        CallManager.inCallService?.setMuted(!isMicrophoneOn)
+    }
+    private fun toggleSpeaker() {
+        isSpeakerOn = !isSpeakerOn
+        val drawable = if (isSpeakerOn) R.drawable.outline_volume_up_24 else R.drawable.ic_baseline_volume_off_24
+        button_speaker.setImageDrawable(getDrawable(drawable))
+        audioManager.isSpeakerphoneOn = isSpeakerOn
+
+        val newRoute = if (isSpeakerOn) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
+        CallManager.inCallService?.setAudioRoute(newRoute)
+    }
+
+    private fun toggleHold() {
+        Utilities().toggleViewActivation(button_hold)
+        CallManager.hold(button_hold.isActivated)
     }
 
     @SuppressLint("ResourceAsColor")
@@ -337,25 +294,15 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
         }
 
         button_speaker.setOnClickListener {
-            isSpeakerOn = !isSpeakerOn
-            Utilities().toggleViewActivation(button_speaker)
-            mAudioManager.isSpeakerphoneOn = button_speaker.isActivated
-
-            val newRoute =
-                if (isSpeakerOn) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
-            OngoingCall.inCallService?.setAudioRoute(newRoute)
-
+            toggleSpeaker()
         }
 
         button_hold.setOnClickListener {
-            Utilities().toggleViewActivation(button_hold)
-            OngoingCall.hold(button_hold.isActivated)
+            toggleHold()
         }
 
         button_mute.setOnClickListener {
-            Utilities().toggleViewActivation(button_mute)
-            mAudioManager.isMicrophoneMute = button_mute.isActivated
-            OngoingCall.inCallService?.setMuted(button_mute.isActivated)
+            toggleMicrophone()
         }
 
         button_keypad.setOnClickListener {
@@ -385,59 +332,12 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
     }
 
     private fun dialpadPressed(char: Char) {
-        OngoingCall.keypad(char)
+        CallManager.keypad(char)
         input_text.addCharacter(char)
     }
 
-    @SuppressLint("HandlerLeak")
-    inner class CallTimeHandler : Handler() {
-        override fun handleMessage(msg: Message) {
-            super.handleMessage(msg)
-            when (msg.what) {
-
-                TIME_START -> {
-                    mCallTimer.start()
-                    mCallTimeHandler.sendEmptyMessage(TIME_UPDATE)
-                }
-
-                TIME_STOP -> {
-                    mCallTimeHandler.removeMessages(TIME_UPDATE)
-                    mCallTimer.stop()
-                    updateTimeUI()
-                }
-
-                TIME_UPDATE -> {
-                    updateTimeUI()
-                    mCallTimeHandler.sendEmptyMessageDelayed(TIME_UPDATE, REFRESH_RATE.toLong())
-                }
-
-            }
-        }
-    }
-
-    private fun updateTimeUI() {
-        text_stopwatch.text = mCallTimer.getStringTime()
-    }
-
-    companion object {
-        fun start(context: Context, call: Call) {
-            Intent(context, OngoingCallActivity::class.java)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                .setData(call.details.handle)
-                .let(context::startActivity)
-        }
-    }
-
-    fun setOnKeyDownListener(onKeyDownListener: OnKeyDownListener) {
-        mOnKeyDownListener = onKeyDownListener
-    }
-
-    override fun onKeyPressed(keyCode: Int, event: KeyEvent) {
-        OngoingCall.keypad(event.unicodeChar as (Char))
-    }
-
     private fun setupNotification() {
-        val callState = OngoingCall.getState()
+        val callState = CallManager.getState()
         val channelId = "simple_dialer_channel"
         if (isOreoPlus()) {
             val importance = NotificationManager.IMPORTANCE_DEFAULT
@@ -467,16 +367,7 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
             PendingIntent.FLAG_CANCEL_CURRENT
         )
 
-        var callerName = ""
-
-        callerName = if (contactDialer.name != null) {
-            contactDialer.name!!
-        } else {
-            number!!
-        }
-
-        callContactAvatar = getCallContactAvatar()
-
+        val callerName = if (callContact != null && callContact!!.name.isNotEmpty()) callContact!!.name else getString(R.string.unknown_caller)
         val contentTextId = when (callState) {
             Call.STATE_RINGING -> R.string.state_call_ringing
             Call.STATE_DIALING -> R.string.status_call_dialing
@@ -520,8 +411,8 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
 
     private fun getCallContactAvatar(): Bitmap? {
         var bitmap: Bitmap? = null
-        if (contactDialer?.photoUri?.isNotEmpty() == true) {
-            val photoUri = Uri.parse(contactDialer!!.photoUri)
+        if (callContact?.photoUri?.isNotEmpty() == true) {
+            val photoUri = Uri.parse(callContact!!.photoUri)
             try {
                 bitmap = if (isQPlus()) {
                     val tmbSize = resources.getDimension(R.dimen.list_avatar_size).toInt()
@@ -559,32 +450,33 @@ class OngoingCallActivity : AppCompatActivity(), OnKeyDownListener {
     private val callCallback = object : Call.Callback() {
         override fun onStateChanged(call: Call, state: Int) {
             super.onStateChanged(call, state)
-            updateUi(state)
+            updateCallState(state)
         }
     }
 
-    @SuppressLint("SetTextI18n", "RestrictedApi")
-    private fun updateUi(state: Int) {
-
-        text_status.text = "${state.asString().toLowerCase().capitalize()}"
-        mStateText = "${state.asString().toLowerCase().capitalize()}"
-
-        if (state == Call.STATE_DIALING) {
-            swithToCallingUI()
+    private fun updateCallState(state: Int) {
+        when (state) {
+            Call.STATE_RINGING -> visibilityInomingCall()
+            Call.STATE_ACTIVE -> swithToCallingUI()
+            Call.STATE_DISCONNECTED -> endCall()
+            Call.STATE_CONNECTING, Call.STATE_DIALING -> swithToCallingUI()
         }
 
-        if (state == Call.STATE_RINGING) {
-            visibilityInomingCall()
+        if (state == Call.STATE_DISCONNECTED || state == Call.STATE_DISCONNECTING) {
+            callTimer.cancel()
         }
 
-        if (state == Call.STATE_ACTIVE) {
-            mCallTimeHandler.sendEmptyMessage(TIME_START)
+        val statusTextId = when (state) {
+            Call.STATE_RINGING -> R.string.state_call_ringing
+            Call.STATE_DIALING -> R.string.status_call_dialing
+            else -> 0
+        }
+
+        if (statusTextId != 0) {
+            text_status.text = getString(statusTextId)
         }
 
         setupNotification()
     }
-
-
-
 }
 

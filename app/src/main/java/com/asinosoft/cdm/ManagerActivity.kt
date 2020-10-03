@@ -2,19 +2,11 @@ package com.asinosoft.cdm
 
 import android.Manifest
 import android.app.Activity
-import android.app.Notification
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
-import android.graphics.*
-import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
-import android.provider.MediaStore
 import android.telecom.TelecomManager
 import android.util.Log
-import android.util.Size
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -23,9 +15,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.detail_contact.ContactDetailListElement
-import com.asinosoft.cdm.dialer.PreferenceUtils
 import com.asinosoft.cdm.dialer.Utilities
-import com.asinosoft.cdm.dialer.isQPlus
 import com.github.florent37.runtimepermission.RuntimePermission.askPermission
 import com.jaeger.library.StatusBarUtil
 import com.skydoves.powermenu.kotlin.powerMenu
