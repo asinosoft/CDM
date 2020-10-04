@@ -10,8 +10,8 @@ class NotificationActionReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val action: String? = intent.action
         when(action){
-            ACCEPT_CALL -> OngoingCall.answer()
-            DECLINE_CALL -> OngoingCall.reject()
+            ACCEPT_CALL -> CallManager.accept()
+            DECLINE_CALL -> CallManager.reject()
         }
     }
 
