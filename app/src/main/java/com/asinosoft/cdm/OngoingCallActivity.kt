@@ -102,10 +102,11 @@ class OngoingCallActivity : AppCompatActivity() {
             return
         }
 
-        text_status.text = if (callContact!!.name.isNotEmpty()) callContact!!.name else getString(R.string.unknown_caller)
-        if(callContact!!.name != ""){
+        text_status.text =
+            if (callContact!!.name.isNotEmpty()) callContact!!.name else getString(R.string.unknown_caller)
+        if (callContact!!.name != "") {
             text_caller.text = callContact!!.name
-        }else{
+        } else {
             text_caller.text = callContact!!.number
         }
 
@@ -124,7 +125,10 @@ class OngoingCallActivity : AppCompatActivity() {
         }
 
         if (isOreoPlus()) {
-            (getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager).requestDismissKeyguard(this, null)
+            (getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager).requestDismissKeyguard(
+                this,
+                null
+            )
         } else {
             window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
         }
@@ -132,7 +136,10 @@ class OngoingCallActivity : AppCompatActivity() {
 
     private fun initProximitySensor() {
         val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-        proximityWakeLock = powerManager.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "com.simplemobiletools.dialer.pro:wake_lock")
+        proximityWakeLock = powerManager.newWakeLock(
+            PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK,
+            "com.simplemobiletools.dialer.pro:wake_lock"
+        )
         proximityWakeLock!!.acquire(10 * MINUTE_SECONDS * 1000L)
     }
 
@@ -189,7 +196,8 @@ class OngoingCallActivity : AppCompatActivity() {
         isCallEnded = true
         if (callDuration > 0) {
             runOnUiThread {
-                text_status.text = "${callDuration.getFormattedDuration()} (${getString(R.string.status_call_disconnected)})"
+                text_stopwatch.text =
+                    "${callDuration.getFormattedDuration()}"
                 Handler().postDelayed({
                     finish()
                 }, 3000)
@@ -205,9 +213,16 @@ class OngoingCallActivity : AppCompatActivity() {
             callDuration++
             runOnUiThread {
                 if (!isCallEnded) {
-                    text_status.text = callDuration.getFormattedDuration()
+                    text_stopwatch.text = callDuration.getFormattedDuration()
                 }
             }
+        }
+    }
+
+    private fun callStarted() {
+        try {
+            callTimer.scheduleAtFixedRate(getCallTimerUpdateTask(), 1000, 1000)
+        } catch (ignored: Exception) {
         }
     }
 
@@ -259,19 +274,22 @@ class OngoingCallActivity : AppCompatActivity() {
     }
 
     private fun toggleMicrophone() {
-        isMicrophoneOn = !isMicrophoneOn
-        val drawable = if (isMicrophoneOn) R.drawable.ic_mic_black_24dp else R.drawable.outline_mic_off_24
+        Utilities().toggleViewActivation(button_mute)
+        audioManager.isMicrophoneMute = button_mute.isActivated
+        val drawable =
+            if (button_mute.isActivated) R.drawable.ic_mic_off_black_24dp else R.drawable.ic_mic_black_24dp
         button_mute.setImageDrawable(getDrawable(drawable))
-        audioManager.isMicrophoneMute = !isMicrophoneOn
-        CallManager.inCallService?.setMuted(!isMicrophoneOn)
+        CallManager.inCallService?.setMuted(button_mute.isActivated)
     }
-    private fun toggleSpeaker() {
-        isSpeakerOn = !isSpeakerOn
-        val drawable = if (isSpeakerOn) R.drawable.outline_volume_up_24 else R.drawable.ic_baseline_volume_off_24
-        button_speaker.setImageDrawable(getDrawable(drawable))
-        audioManager.isSpeakerphoneOn = isSpeakerOn
 
-        val newRoute = if (isSpeakerOn) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
+    private fun toggleSpeaker() {
+        Utilities().toggleViewActivation(button_speaker)
+        audioManager.isSpeakerphoneOn = button_speaker.isActivated
+        val drawable =
+            if (button_speaker.isActivated) R.drawable.ic_baseline_volume_off_24 else R.drawable.outline_volume_up_24
+        button_speaker.setImageDrawable(getDrawable(drawable))
+        val newRoute =
+            if (button_speaker.isActivated) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
         CallManager.inCallService?.setAudioRoute(newRoute)
     }
 
@@ -367,7 +385,10 @@ class OngoingCallActivity : AppCompatActivity() {
             PendingIntent.FLAG_CANCEL_CURRENT
         )
 
-        val callerName = if (callContact != null && callContact!!.name.isNotEmpty()) callContact!!.name else getString(R.string.unknown_caller)
+        val callerName =
+            if (callContact != null && callContact!!.name.isNotEmpty()) callContact!!.name else getString(
+                R.string.unknown_caller
+            )
         val contentTextId = when (callState) {
             Call.STATE_RINGING -> R.string.state_call_ringing
             Call.STATE_DIALING -> R.string.status_call_dialing
@@ -457,7 +478,10 @@ class OngoingCallActivity : AppCompatActivity() {
     private fun updateCallState(state: Int) {
         when (state) {
             Call.STATE_RINGING -> visibilityInomingCall()
-            Call.STATE_ACTIVE -> swithToCallingUI()
+            Call.STATE_ACTIVE -> {
+                callStarted()
+                swithToCallingUI()
+            }
             Call.STATE_DISCONNECTED -> endCall()
             Call.STATE_CONNECTING, Call.STATE_DIALING -> swithToCallingUI()
         }
@@ -469,6 +493,8 @@ class OngoingCallActivity : AppCompatActivity() {
         val statusTextId = when (state) {
             Call.STATE_RINGING -> R.string.state_call_ringing
             Call.STATE_DIALING -> R.string.status_call_dialing
+            Call.STATE_ACTIVE -> R.string.status_call_active
+            Call.STATE_HOLDING -> R.string.status_call_holding
             else -> 0
         }
 
