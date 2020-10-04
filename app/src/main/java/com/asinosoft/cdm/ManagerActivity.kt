@@ -71,7 +71,6 @@ class ManagerActivity : AppCompatActivity() {
     private fun checkPermission(@Nullable grantResults: IntArray?) {
         if (grantResults != null && Utilities().checkPermissionsGranted(grantResults)) {
             Utilities().checkPermissionsGranted(this, Utilities().MUST_HAVE_PERMISSIONS)
-            checkVersion()
         } else {
             Utilities().askForPermissions(this, Utilities().MUST_HAVE_PERMISSIONS)
         }
@@ -82,14 +81,6 @@ class ManagerActivity : AppCompatActivity() {
             Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
                 .putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
                 .let(::startActivity)
-        }
-    }
-
-    private fun checkVersion() {
-        val lastVersionCode = PreferenceUtils.getInstance().getInt(R.string.pref_last_version_key)
-        if (lastVersionCode < BuildConfig.VERSION_CODE) {
-            PreferenceUtils.getInstance()
-                .putInt(R.string.pref_last_version_key, BuildConfig.VERSION_CODE)
         }
     }
 
