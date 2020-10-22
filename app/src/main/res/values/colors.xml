@@ -4,20 +4,53 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="costomGray">#252525</color>
-    <color name="black">#0C0C0C</color>
-    <color name="white">#FFFFFF</color>
     <color name="white_gray">#e0dcdc</color>
     <color name="white_gray_light">#f5f3ed</color>
-
-
     <color name="nk_color_strike">#2E7D32</color>
     <color name="nk_color_pressed">#4cc552</color>
-
     <color name="gray">#9F9A9A</color>
-    <color name="icon_active_dark">#FFFFFF</color>
-
     <color name="red">#E80202</color>
     <color name="green">#51D50B</color>
-
     <color name="md_grey">#9E9E9E</color>
+
+    <!-- Темы -->
+    <color name="color_primary_light">@color/white</color>
+    <color name="color_primary_dark">@color/grey_850</color>
+    <color name="color_primary_amoled">@color/black</color>
+
+    <color name="color_accent_default">@color/color_accent_blue</color>
+    <color name="color_accent_blue">#79b8ff</color>
+    <color name="color_accent_green">#47A799</color>
+    <color name="color_accent_pink">#EC134E</color>
+    <color name="color_accent_cream">#F2E2B3</color>
+    <!--    <color name="color_accent_cream">#FE898A</color>-->
+
+    <color name="icon_active_light">#3D3D3D</color>
+    <color name="icon_active_dark">#FFFFFF</color>
+
+    <!-- Черные -->
+    <color name="black">#000000</color>
+    <color name="semi_black">#DA000000</color>
+
+    <color name="soft_black">#3D3D3D</color>
+
+    <!-- Белые -->
+    <color name="white">#ffffff</color>
+    <color name="semi_white">#DAFFFFFF</color>
+
+    <!-- Серые -->
+    <color name="grey_100">#F5F5F5</color>
+    <color name="grey_400">#BDBDBD</color>
+    <color name="grey_800">#424242</color>
+    <color name="grey_850">#303030</color>
+    <color name="semi_grey_850">#DA303030</color>
+
+    <!-- Зеленые -->
+    <color name="green_phone">#66bb6a</color>
+
+    <!-- Красные -->
+    <color name="red_phone">#ef5350</color>
+
+    <color name="star_yellow">#FFEB3B</color>
+
 </resources>

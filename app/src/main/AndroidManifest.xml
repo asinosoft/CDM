@@ -9,21 +9,15 @@
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
     <uses-permission android:name="android.permission.VIBRATE" />
-
-    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-
-    <uses-permission android:name="android.permission.START_ACTIVITIES_FROM_BACKGROUND" />
-    <uses-permission android:name="android.permission.REQUEST_COMPANION_RUN_IN_BACKGROUND" />
-    <uses-permission android:name="android.permission.REQUEST_COMPANION_USE_DATA_IN_BACKGROUND" />
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
-    <uses-permission android:name="android.permission.CALL_COMPANION_APP" />
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.telecom.action.CONFIGURE_PHONE_ACCOUNT" />
 
     <application
         android:allowBackup="true"
@@ -32,7 +26,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
-        <activity android:name=".OngoingCallActivity"></activity>
+        <activity android:name=".OngoingCallActivity" />
         <activity
             android:name=".ManagerActivity"
             android:screenOrientation="portrait">
@@ -137,6 +131,8 @@
             <intent-filter>
                 <action android:name="com.simplemobiletools.dialer.action.ACCEPT_CALL" />
                 <action android:name="com.simplemobiletools.dialer.action.DECLINE_CALL" />
+                <action android:name="com.simplemobiletools.dialer.action.MUTE_CALL" />
+                <action android:name="com.simplemobiletools.dialer.action.SPEAKER_CALL" />
             </intent-filter>
         </receiver>
 

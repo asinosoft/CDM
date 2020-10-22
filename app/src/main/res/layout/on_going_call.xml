@@ -66,6 +66,24 @@
         android:textColor="@color/black"
         android:textSize="25sp"
         android:textStyle="normal"
+        app:layout_constraintBottom_toTopOf="@+id/text_caller_number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Евгений" />
+
+    <TextView
+        android:id="@+id/text_caller_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="normal"
         app:layout_constraintBottom_toTopOf="@+id/text_status"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -76,13 +94,13 @@
         android:id="@+id/text_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="5dp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
         android:textColor="@color/red"
         app:layout_constraintBottom_toTopOf="@+id/guide_eye_level"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="@+id/text_caller"
+        app:layout_constraintStart_toStartOf="@+id/text_caller_number"
         tools:text="@string/status_call_active" />
 
     <androidx.constraintlayout.widget.Guideline
@@ -215,9 +233,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="40dp"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/red"
         android:src="@drawable/outline_call_end_24"
-        android:tint="@color/red"
+        android:tint="@color/white"
         android:visibility="visible"
         app:fabCustomSize="72dp"
         app:fabSize="normal"
@@ -226,44 +244,55 @@
         app:layout_constraintStart_toEndOf="@+id/answer_btn"
         app:maxImageSize="36dp" />
 
-    <com.agik.AGIKSwipeButton.View.Swipe_Button_View
-        android:id="@+id/start"
-        android:layout_width="180dp"
-        android:layout_height="50dp"
-        android:layout_below="@+id/stop"
+    <LinearLayout
+        android:id="@+id/answer_reject_buttons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="40dp"
-        android:layout_marginStart="4dp"
+        android:orientation="horizontal"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/stop"
-        app:layout_constraintStart_toStartOf="parent"
-        app:sb_swipe_animate_text="true"
-        app:sb_swipe_bg_color="@color/green"
-        app:sb_swipe_text="Ответить"
-        app:sb_swipe_text_color="@color/white"
-        app:sb_thumb_bg_color="@color/green"
-        app:sb_thumb_image="@drawable/outline_call_24"
-        tools:ignore="MissingConstraints,UnknownId" />
-
-    <com.agik.AGIKSwipeButton.View.Swipe_Button_View
-        android:id="@+id/stop"
-        android:layout_width="180dp"
-        android:layout_height="50dp"
-        android:layout_below="@+id/stop"
-        android:layout_marginBottom="40dp"
-        android:visibility="gone"
-        android:layout_marginEnd="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/reject_btn2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/start"
-        app:sb_swipe_animate_text="true"
-        app:sb_swipe_bg_color="@color/red"
-        app:sb_swipe_reverse="true"
-        app:sb_swipe_text="Отклонить"
-        app:sb_swipe_text_color="@color/white"
-        app:sb_thumb_bg_color="@color/red"
-        app:sb_thumb_image="@drawable/outline_call_24"
-        tools:ignore="MissingConstraints,NotSibling,UnknownId" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.agik.AGIKSwipeButton.View.Swipe_Button_View
+            android:id="@+id/start"
+            android:layout_width="180dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/stop"
+            android:layout_marginStart="4dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/stop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:sb_swipe_animate_text="true"
+            app:sb_swipe_bg_color="@color/green"
+            app:sb_swipe_text="Ответить"
+            app:sb_swipe_text_color="@color/white"
+            app:sb_thumb_bg_color="@color/green"
+            app:sb_thumb_image="@drawable/outline_call_24"
+            tools:ignore="MissingConstraints,UnknownId" />
+
+        <com.agik.AGIKSwipeButton.View.Swipe_Button_View
+            android:id="@+id/stop"
+            android:layout_width="180dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/stop"
+            android:layout_marginEnd="4dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/start"
+            app:sb_swipe_animate_text="true"
+            app:sb_swipe_bg_color="@color/red"
+            app:sb_swipe_reverse="true"
+            app:sb_swipe_text="Отклонить"
+            app:sb_swipe_text_color="@color/white"
+            app:sb_thumb_bg_color="@color/red"
+            app:sb_thumb_image="@drawable/outline_call_24"
+            tools:ignore="MissingConstraints,NotSibling,UnknownId" />
+
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

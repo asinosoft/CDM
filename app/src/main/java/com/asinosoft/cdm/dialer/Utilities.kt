@@ -1,32 +1,17 @@
 package com.asinosoft.cdm.dialer
 
 import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Rect
 import android.net.Uri
-import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.provider.ContactsContract
 import android.telecom.TelecomManager
-import android.util.DisplayMetrics
-import android.util.TypedValue
 import android.view.View
-import android.view.WindowManager
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import com.asinosoft.cdm.Funcs
-import com.asinosoft.cdm.R
 import com.asinosoft.cdm.detail_contact.Contact
-import com.skydoves.powermenu.kotlin.createPowerMenu
-import org.jetbrains.annotations.NotNull
-import timber.log.Timber
-import java.util.*
 
 class Utilities {
 
@@ -73,7 +58,7 @@ class Utilities {
         ActivityCompat.requestPermissions(activity!!, permissions!!, PERMISSION_RC)
     }
 
-    fun getNameFromPhoneNumber(context: Context?, number: String): String {
+    fun getNameFromPhoneNumber(context: Context, number: String): String? {
         val id = Funcs.getContactID(context, "$number")
         if (id != null) {
             if (context != null) {
@@ -81,7 +66,7 @@ class Utilities {
             }
         }
 
-        return contactDialer.name!!
+        return contactDialer.name
     }
 
     fun getPhotoUriFromPhoneNumber(context: Context?, number: String): String {
@@ -102,6 +87,18 @@ class Utilities {
         }
 
         return ""
+    }
+
+    fun hasNavBar(context: Context): Boolean {
+        val resources = context.resources
+        val id = resources.getIdentifier("config_showNavigationBar", "bool", "android")
+        return id > 0 && resources.getBoolean(id)
+    }
+
+    fun navBarHeight(context: Context): Int {
+        val resources = context.resources
+        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        return if (resourceId > 0) resources.getDimensionPixelSize(resourceId) else 0
     }
 
 }

@@ -4,15 +4,18 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.*
 import android.media.AudioManager
 import android.net.Uri
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.PowerManager
 import android.provider.MediaStore
 import android.telecom.Call
 import android.telecom.CallAudioState
 import android.util.Size
-import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.RemoteViews
@@ -24,14 +27,12 @@ import com.agik.AGIKSwipeButton.Controller.OnSwipeCompleteListener
 import com.agik.AGIKSwipeButton.View.Swipe_Button_View
 import com.asinosoft.cdm.detail_contact.Contact
 import com.asinosoft.cdm.dialer.*
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_ongoing_call.*
+import kotlinx.android.synthetic.main.call_notification_two.*
 import kotlinx.android.synthetic.main.keyboard.*
 import kotlinx.android.synthetic.main.on_going_call.*
 import org.jetbrains.anko.audioManager
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 class OngoingCallActivity : AppCompatActivity() {
 
@@ -56,6 +57,9 @@ class OngoingCallActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ongoing_call)
+        setTheme(ThemeUtils().TYPE_TRANSPARENT_STATUS_BAR)
+
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         clickToButtons()
         addLockScreenFlags()
@@ -69,6 +73,15 @@ class OngoingCallActivity : AppCompatActivity() {
                 setupNotification()
                 updateOtherPersonsInfo()
             }
+        }
+
+
+        //Detect a nav bar and adapt layout accordingly
+        val hasNavBar: Boolean = Utilities().hasNavBar(this)
+        val navBarHeight: Int = Utilities().navBarHeight(this)
+        if (hasNavBar) {
+            frame.setPadding(0, 0, 0, navBarHeight)
+
         }
 
         start.setOnSwipeCompleteListener_forward_reverse(object : OnSwipeCompleteListener {
@@ -104,10 +117,12 @@ class OngoingCallActivity : AppCompatActivity() {
 
         text_status.text =
             if (callContact!!.name.isNotEmpty()) callContact!!.name else getString(R.string.unknown_caller)
-        if (callContact!!.name != "") {
+        if (callContact!!.name != "null") {
             text_caller.text = callContact!!.name
+            text_caller_number.text = callContact!!.number
         } else {
             text_caller.text = callContact!!.number
+            text_caller_number.visibility = View.GONE
         }
 
         if (callContactAvatar != null) {
@@ -152,11 +167,6 @@ class OngoingCallActivity : AppCompatActivity() {
         } else {
             super.onBackPressed()
         }
-
-        if (CallManager.getState() == Call.STATE_DIALING) {
-            endCall()
-        }
-
     }
 
     override fun onDestroy() {
@@ -229,8 +239,7 @@ class OngoingCallActivity : AppCompatActivity() {
     @SuppressLint("RestrictedApi")
     fun swithToCallingUI() {
         // Change the buttons layout
-        start.visibility = View.GONE
-        stop.visibility = View.GONE
+        answer_reject_buttons.visibility = View.GONE
         text_status.visibility = View.VISIBLE
         text_caller.visibility = View.VISIBLE
         answer_btn.visibility = View.GONE
@@ -246,8 +255,7 @@ class OngoingCallActivity : AppCompatActivity() {
     @SuppressLint("RestrictedApi")
     private fun visibilityInomingCall() {
         // Change the buttons layout
-        start.visibility = View.VISIBLE
-        stop.visibility = View.VISIBLE
+        answer_reject_buttons.visibility = View.VISIBLE
         reject_btn2.visibility - View.GONE
         answer_btn.visibility = View.GONE
         reject_btn.visibility = View.GONE
@@ -259,8 +267,8 @@ class OngoingCallActivity : AppCompatActivity() {
     }
 
     private fun viewKeyboard() {
-        start.visibility = View.GONE
-        stop.visibility = View.GONE
+        answer_reject_buttons.visibility = View.GONE
+        text_caller_number.visibility = View.GONE
         text_status.visibility = View.GONE
         text_caller.visibility = View.GONE
         reject_btn2.visibility - View.GONE
@@ -293,10 +301,29 @@ class OngoingCallActivity : AppCompatActivity() {
         CallManager.inCallService?.setAudioRoute(newRoute)
     }
 
+    fun toggleMicOff() {
+        isMicrophoneOn = !isMicrophoneOn
+        val drawable = if (isMicrophoneOn) R.drawable.ic_microphone_vector else R.drawable.ic_microphone_off_vector
+        notification_mic_off.setImageDrawable(getDrawable(drawable))
+        audioManager.isMicrophoneMute = !isMicrophoneOn
+        CallManager.inCallService?.setMuted(!isMicrophoneOn)
+    }
+
+     fun toggleSpeakOff() {
+         isSpeakerOn = !isSpeakerOn
+         val drawable = if (isSpeakerOn) R.drawable.ic_speaker_on_vector else R.drawable.ic_speaker_off_vector
+         notification_speaker.setImageDrawable(getDrawable(drawable))
+         audioManager.isSpeakerphoneOn = isSpeakerOn
+         val newRoute = if (isSpeakerOn) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
+         CallManager.inCallService?.setAudioRoute(newRoute)
+    }
+
     private fun toggleHold() {
         Utilities().toggleViewActivation(button_hold)
         CallManager.hold(button_hold.isActivated)
     }
+
+
 
     @SuppressLint("ResourceAsColor")
     private fun clickToButtons() {
@@ -376,6 +403,14 @@ class OngoingCallActivity : AppCompatActivity() {
         val acceptPendingIntent =
             PendingIntent.getBroadcast(this, 0, acceptCallIntent, PendingIntent.FLAG_CANCEL_CURRENT)
 
+        val muteCallIntent = Intent(this, NotificationActionReceiver::class.java)
+        muteCallIntent.action = MUTE_CALL
+        val mutePendingIntent = PendingIntent.getActivity(this, 0, muteCallIntent, 0)
+
+        val speakerCallIntent = Intent(this, NotificationActionReceiver::class.java)
+        speakerCallIntent.action = SPEAKER_CALL
+        val speakerPendingIntent = PendingIntent.getActivity(this, 0, speakerCallIntent, 0)
+
         val declineCallIntent = Intent(this, NotificationActionReceiver::class.java)
         declineCallIntent.action = DECLINE_CALL
         val declinePendingIntent = PendingIntent.getBroadcast(
@@ -397,20 +432,18 @@ class OngoingCallActivity : AppCompatActivity() {
             else -> R.string.state_call_active
         }
 
-        val collapsedView = RemoteViews(packageName, R.layout.call_notification).apply {
+        val collapsedView = RemoteViews(packageName, R.layout.call_notification_two).apply {
             setText(R.id.notification_caller_name, callerName)
             setText(R.id.notification_call_status, getString(contentTextId))
             setVisibleIf(R.id.notification_accept_call, callState == Call.STATE_RINGING)
+            setVisibleIf(R.id.notification_mic_off, callState == Call.STATE_ACTIVE)
+            setVisibleIf(R.id.notification_speaker, callState == Call.STATE_ACTIVE)
 
             setOnClickPendingIntent(R.id.notification_decline_call, declinePendingIntent)
             setOnClickPendingIntent(R.id.notification_accept_call, acceptPendingIntent)
+            setOnClickPendingIntent(R.id.notification_speaker, speakerPendingIntent)
+            setOnClickPendingIntent(R.id.notification_mic_off, mutePendingIntent)
 
-            if (contactDialer.photoUri != null) {
-                setImageViewBitmap(
-                    R.id.notification_thumbnail,
-                    getCircularBitmap(callContactAvatar!!)
-                )
-            }
         }
 
         val builder = NotificationCompat.Builder(this, channelId)
@@ -424,6 +457,10 @@ class OngoingCallActivity : AppCompatActivity() {
             .setUsesChronometer(callState == Call.STATE_ACTIVE)
             .setChannelId(channelId)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+
+        if(contactDialer.photoUri != null) {
+            builder.setLargeIcon(getCircularBitmap(callContactAvatar!!))
+        }
 
         val notification = builder.build()
         notificationManager.notify(CALL_NOTIFICATION_ID, notification)

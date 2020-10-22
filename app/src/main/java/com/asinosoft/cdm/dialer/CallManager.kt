@@ -1,11 +1,16 @@
 package com.asinosoft.cdm.dialer
 
 import android.content.Context
+import android.media.AudioManager
 import android.net.Uri
 import android.telecom.Call
 import android.telecom.InCallService
 import android.telecom.VideoProfile
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.detail_contact.Contact
+import kotlinx.android.synthetic.main.call_notification_two.*
+import kotlinx.android.synthetic.main.on_going_call.*
+import org.jetbrains.anko.audioManager
 
 class CallManager {
 
@@ -67,7 +72,7 @@ class CallManager {
             if (uri.startsWith("tel:")) {
                 val number = uri.substringAfter("tel:")
                 callContact.number = number
-                callContact.name = Utilities().getNameFromPhoneNumber(context, number)
+                callContact.name = Utilities().getNameFromPhoneNumber(context, number).toString()
                 callContact.photoUri = Utilities().getPhotoUriFromPhoneNumber(context, number)
 
                 if (callContact.name != callContact.number) {
