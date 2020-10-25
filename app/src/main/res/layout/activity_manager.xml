@@ -68,13 +68,14 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/fabSearch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
+                    android:visibility="gone"
                     android:backgroundTint="@android:color/holo_orange_dark"
                     android:src="@drawable/baseline_call_made_black_48" />
 
@@ -82,6 +83,7 @@
                     android:id="@+id/fabSettings"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:backgroundTint="@android:color/holo_blue_dark"
                     android:src="@drawable/baseline_settings_black_48" />
 
@@ -90,6 +92,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
+                    android:visibility="gone"
                     android:backgroundTint="@android:color/holo_green_dark"
                     android:src="@drawable/pluswhite" />
 
@@ -121,7 +124,6 @@
 
     </com.asinosoft.cdm.LockableNestedScrollView>
 
-
     <com.asinosoft.cdm.CircularImageView
         android:id="@+id/deleteCir"
         android:layout_width="64dp"
@@ -142,10 +144,18 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="30dp"
         android:scaleType="centerInside"
-        android:src="@drawable/edit"
         android:visibility="invisible"
-        app:civ_circle_color="@android:color/holo_blue_light" />
+        android:src="@drawable/pluswhite"
+        app:civ_circle_color="@android:color/holo_green_dark" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewContact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/layout_keyboard"
+        android:layout_alignParentTop="true"
+        android:background="@color/white"
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/layout_keyboard"

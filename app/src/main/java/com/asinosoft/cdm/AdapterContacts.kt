@@ -3,7 +3,6 @@ package com.asinosoft.cdm
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
@@ -74,7 +73,7 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
             }
             contact.phoneNumbers.forEach{
                 if (it.normalizedNumber.isNullOrEmpty()) return@forEach
-                if (it.normalizedNumber.contains(nums, true)){
+                if (it.normalizedNumber.contains(nums, true)) {
                     r.add(contact)
                     return@forEach
                 }
@@ -83,7 +82,8 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
         return@async r
     }.await()
 
-    fun setFilter(nums: String = ""){
+    fun setFilter(nums: String = "", context: Context) {
+        this.context = context
         this.nums = nums
         regex = Regex(getPattern(nums.replace("1", ""), context), RegexOption.IGNORE_CASE)
         jobFilter = launch {

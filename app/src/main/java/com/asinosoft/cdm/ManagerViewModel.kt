@@ -3,8 +3,6 @@ package com.asinosoft.cdm
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Vibrator
 import android.provider.ContactsContract
 import android.util.Log
@@ -19,7 +17,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asinosoft.cdm.Metoths.Companion.dp
 import com.asinosoft.cdm.Metoths.Companion.setSize
-import com.asinosoft.cdm.Metoths.Companion.toggle
 import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.adapters.AdapterCallLogs
 import com.asinosoft.cdm.api.CursorApi.Companion.getHistoryListLatest
@@ -115,6 +112,10 @@ class ManagerViewModel : ViewModel() {
         }
     }
 
+    public fun filterCallLogs(num: String) {
+        adapterCallLogs.setFilter(num)
+    }
+
     private fun updateHistoryList() {
         setHistoryVisibleDown(settings.historyButtom)
         with(if (settings.historyButtom) v.recyclerViewHistoryBottom else v.recyclerViewHistory) {
@@ -154,6 +155,22 @@ class ManagerViewModel : ViewModel() {
         }
     }
 
+//    public fun addBtns(n: Int = 1) {
+//        newCir(settings, touchHelper).let { item ->
+//            (0..n).forEach {
+//                context.runOnUiThread {
+//                    (v.recyclerView.adapter as CirAdapter).addItem(item)
+//                }
+//            }
+//        }
+//    }
+
+    public fun addBtns(n: Int = 1) {
+        (0..n).forEach {
+            v.fab.callOnClick()
+        }
+    }
+
     private fun setHistoryVisibleDown(Visibility: Boolean) {
         v.rvDown.visibility = if (Visibility) VISIBLE else GONE
         v.rvTop.visibility = if (!Visibility) VISIBLE else GONE
@@ -169,7 +186,9 @@ class ManagerViewModel : ViewModel() {
                         r.add(newCir(settings, touchHelper, pair).also(onNext))
                     }
                 }
-                if (r.size == 0) r.add(newCir(settings, touchHelper).also(onNext))
+                if (r.size == 0) (1..9).forEach {
+                    r.add(newCir(settings, touchHelper).also(onNext))
+                }
                 return@withContext r
             }
             return@withContext null
@@ -183,18 +202,19 @@ class ManagerViewModel : ViewModel() {
 
     fun initViews(updateHistory: Boolean = true) {
         if (updateHistory) updateHistoryList()
-        listCirs.forEach {
-            it.size = settings.sizeCirs
-        }
-        v.recyclerView.layoutManager =
-            CirLayoutManager({ onChangeHeightCir(it) }, columns = settings.columnsCirs)
-        if (listCirs.isNotEmpty()) listCirs.updateItems(v.scrollView)
         v.recyclerView.adapter = CirAdapter(
             listCirs,
             context,
             settings,
             context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         )
+        listCirs.forEach {
+            it.size = settings.sizeCirs
+        }
+
+        v.recyclerView.layoutManager =
+            CirLayoutManager({ onChangeHeightCir(it) }, columns = settings.columnsCirs)
+        if (listCirs.isNotEmpty()) listCirs.updateItems(v.scrollView)
         v.recyclerView.itemAnimator = LandingAnimator(OvershootInterpolator())
         GlobalScope.launch { withTimeout(2_000L) { v.recyclerView.adapter?.notifyDataSetChanged() } }
         v.recyclerView.setChildDrawingOrderCallback { childCount, iteration ->
@@ -227,27 +247,34 @@ class ManagerViewModel : ViewModel() {
 
         }
 
-        v.editCir.apply {
-            setOnDragListener { view, event ->
-                when (event.action) {
-                    DragEvent.ACTION_DRAG_ENTERED -> {
-                        context.vibrator.vibrateSafety(VIBRO)
-                        (view as CircularImageView).imageTintList =
-                            ColorStateList.valueOf(Color.BLUE)
-                    }
-                    else -> {
-                        (view as CircularImageView).imageTintList =
-                            ColorStateList.valueOf(Color.TRANSPARENT)
-                    }
-                }
-                true
-            }
-        }
+//        v.editCir.apply {
+//            setOnDragListener { view, event ->
+//                when (event.action) {
+//                    DragEvent.ACTION_DRAG_ENTERED -> {
+//                        context.vibrator.vibrateSafety(VIBRO)
+//                        (view as CircularImageView).imageTintList =
+//                            ColorStateList.valueOf(Color.BLUE)
+//                    }
+//                    else -> {
+//                        (view as CircularImageView).imageTintList =
+//                            ColorStateList.valueOf(Color.TRANSPARENT)
+//                    }
+//                }
+//                true
+//            }
+//        }
 
         v.fab.setOnClickListener { fab ->
             newCir(settings, touchHelper).let {
                 (v.recyclerView.adapter as CirAdapter).addItem(it)
             }
+        }
+        v.editCir.setOnDragListener { _, event ->
+            if (event.action == DragEvent.ACTION_DRAG_ENTERED)
+                newCir(settings, touchHelper).let {
+                    (v.recyclerView.adapter as CirAdapter).addItem(it)
+                }
+            true
         }
         v.fabSettings.setOnClickListener { fab ->
             settingsOpen(settings)
@@ -258,15 +285,19 @@ class ManagerViewModel : ViewModel() {
         v.settingsButton.setOnClickListener {
             settingsOpen(settings)
         }
-        v.fabKeyboard.setOnClickListener {
-            v.layoutKeyboard.toggle()
-        }
         v.buttonRVDownUpdate.setOnClickListener {
             adapterCallLogs.upIntoBuffer()
         }
         v.buttonRVTopUpdate.setOnClickListener {
             adapterCallLogs.upIntoBuffer()
         }
+
+//        checkBtns()
+    }
+
+    private fun checkBtns() {
+        if (listCirs.count() == 0)
+            addBtns(9)
     }
 
     fun newCir(settings: Settings, touchHelper: ItemTouchHelper) = CircleImage(
