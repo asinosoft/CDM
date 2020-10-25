@@ -19,6 +19,8 @@ fun Cursor.getStringValue(key: String) = getString(getColumnIndex(key))
 private const val PATH = "com.asinosoft.cdm.dialer.action."
 const val ACCEPT_CALL = PATH + "accept_call"
 const val DECLINE_CALL = PATH + "decline_call"
+const val MUTE_CALL = PATH + "mute_call"
+const val SPEAKER_CALL = PATH + "speaker_call"
 
 fun Int.getFormattedDuration(): String {
     val sb = StringBuilder(8)

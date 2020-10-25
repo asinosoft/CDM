@@ -67,7 +67,7 @@ class CallManager {
             if (uri.startsWith("tel:")) {
                 val number = uri.substringAfter("tel:")
                 callContact.number = number
-                callContact.name = Utilities().getNameFromPhoneNumber(context, number)
+                callContact.name = Utilities().getNameFromPhoneNumber(context, number).toString()
                 callContact.photoUri = Utilities().getPhotoUriFromPhoneNumber(context, number)
 
                 if (callContact.name != callContact.number) {
