@@ -75,14 +75,8 @@ class ManagerActivity : AppCompatActivity() {
             } else View.VISIBLE
         }
         keyboard = supportFragmentManager.findFragmentById(R.id.keyboard) as Keyboard
-        val list = Contacts.getQuery().find().filter { !it.phoneNumbers.isNullOrEmpty() }
 
-        recyclerViewContact.layoutManager = LinearLayoutManager(this).apply {
-            orientation = LinearLayoutManager.VERTICAL
-            initialPrefetchItemCount = 11
-        }
 
-        recyclerViewContact.adapter = AdapterContacts(list, View.OnClickListener {}, false)
 
         keyboard.input_text.doOnTextChanged { text, start, count, after ->
             kotlin.runCatching {
@@ -93,6 +87,17 @@ class ManagerActivity : AppCompatActivity() {
 //                viewModel.filterCallLogs(text.toString())
             }.exceptionOrNull()?.printStackTrace()
         }
+    }
+
+    private fun initContacts(){
+        val list = Contacts.getQuery().find().filter { !it.phoneNumbers.isNullOrEmpty() }
+
+        recyclerViewContact.layoutManager = LinearLayoutManager(this).apply {
+            orientation = LinearLayoutManager.VERTICAL
+            initialPrefetchItemCount = 11
+        }
+
+        recyclerViewContact.adapter = AdapterContacts(list, View.OnClickListener {}, false)
     }
 
     override fun onRequestPermissionsResult(
@@ -139,7 +144,7 @@ class ManagerActivity : AppCompatActivity() {
     }
 
     private fun getPermission() {
-        askPermission(this).onDenied { getPermission() }.ask()
+        askPermission(this).onDenied { getPermission() }.onAccepted { initContacts() }.ask()
     }
 
 
@@ -188,6 +193,7 @@ class ManagerActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        scrollView.setScrollingEnabled(true)
         if (requestCode == ACTIVITY_PICK_CONTACT && resultCode == Activity.RESULT_OK) {
             viewModel.onResult(requestCode, requestCode, data)
         } else if (requestCode == ACTIVITY_SETTINGS && resultCode == Activity.RESULT_OK) {
