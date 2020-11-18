@@ -2,7 +2,9 @@ package com.asinosoft.cdm
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.telecom.TelecomManager
@@ -36,6 +38,7 @@ class ManagerActivity : AppCompatActivity() {
         const val ACTIVITY_PICK_CONTACT = 13
         const val ACTIVITY_SETTINGS = 12
         const val REQUEST_PERMISSION = 0
+        const val REQUEST_PERMISSION1 = 1
     }
 
     /**
@@ -49,12 +52,43 @@ class ManagerActivity : AppCompatActivity() {
     private lateinit var viewModel: ManagerViewModel
     private lateinit var keyboard: Keyboard
     private val moreMenu by powerMenu(MoreMenuFactory::class)
+    val PERMISSIONS = arrayOf(
+        Manifest.permission.READ_CONTACTS,
+        Manifest.permission.CALL_PHONE
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         v = ActivityManagerBinding.inflate(layoutInflater)
         setContentView(v.root)
-        getPermission()
+        Contacts.initialize(this)
+        //getPermission()
+        if (!hasPermissions(this, *PERMISSIONS)) {
+            requestAllPermisions()
+        } else {
+            initContacts()
+            initActivity()
+        }
+
+    }
+
+    private fun requestAllPermisions() {
+        ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION1)
+
+    }
+
+    fun hasPermissions(context: Context?, vararg permissions: String?): Boolean {
+        if (context != null && permissions != null) {
+            for (permission in permissions) {
+                if (checkSelfPermission(permission!!) != PackageManager.PERMISSION_GRANTED) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    private fun initActivity() {
         viewModel = ViewModelProvider(this).get(ManagerViewModel::class.java)
         StatusBarUtil.setTranslucentForImageView(this, v.container)
         startForView()
@@ -105,8 +139,9 @@ class ManagerActivity : AppCompatActivity() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if (requestCode == REQUEST_PERMISSION && PermissionChecker.PERMISSION_GRANTED in grantResults) {
-            makeCall()
+        when {
+            requestCode == REQUEST_PERMISSION && PermissionChecker.PERMISSION_GRANTED in grantResults -> makeCall()
+            requestCode == REQUEST_PERMISSION1 -> kotlin.run { initContacts();initActivity() }
         }
     }
 
@@ -144,7 +179,12 @@ class ManagerActivity : AppCompatActivity() {
     }
 
     private fun getPermission() {
-        askPermission(this).onDenied { getPermission() }.onAccepted { initContacts() }.ask()
+        askPermission(this).onAccepted {
+            initContacts()
+            initActivity()}
+            .ask {
+            if(it.isAccepted){initContacts();initActivity() }
+        }
     }
 
 
@@ -190,6 +230,8 @@ class ManagerActivity : AppCompatActivity() {
         offerReplacingDefaultDialer()
         super.onDestroy()
     }
+
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
