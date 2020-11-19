@@ -54,7 +54,9 @@ class ManagerActivity : AppCompatActivity() {
     private val moreMenu by powerMenu(MoreMenuFactory::class)
     val PERMISSIONS = arrayOf(
         Manifest.permission.READ_CONTACTS,
-        Manifest.permission.CALL_PHONE
+        Manifest.permission.CALL_PHONE,
+        Manifest.permission.READ_CALL_LOG,
+        Manifest.permission.WRITE_CALL_LOG
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
