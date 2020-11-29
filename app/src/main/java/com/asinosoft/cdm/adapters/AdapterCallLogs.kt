@@ -11,6 +11,7 @@ import com.asinosoft.cdm.*
 import com.asinosoft.cdm.Metoths.Companion.setColoredText
 import com.asinosoft.cdm.api.CursorApi.Companion.getDisplayPhoto
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
+import com.asinosoft.cdm.globals.Globals
 import com.zerobranch.layout.SwipeLayout
 import kotlinx.coroutines.*
 import org.jetbrains.anko.runOnUiThread
@@ -18,7 +19,7 @@ import kotlin.coroutines.CoroutineContext
 
 
 class AdapterCallLogs(
-    var items: ArrayList<HistoryItem>,
+    private var items: ArrayList<HistoryItem>,
     val onClick: Boolean = true,
     val context: Context,
     var onAdd: (Int) -> Unit = {}
@@ -31,6 +32,10 @@ class AdapterCallLogs(
     private var jobFilter: Job = Job()
     private val buffer = ArrayList<HistoryItem>()
     private var listBackup = items
+
+    init {
+        Globals.adapterLogs = this
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
         return HolderHistory(
@@ -57,7 +62,7 @@ class AdapterCallLogs(
     override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
-        holder.bind(items[position])
+        holder.bind(items[position],position)
     }
 
     private fun openDetail(item: HistoryItem) {
@@ -123,7 +128,7 @@ class AdapterCallLogs(
 
     inner class HolderHistory(val v: CalllogObjectBinding) : RecyclerView.ViewHolder(v.root) {
 
-        fun bind(item: HistoryItem) {
+        fun bind(item: HistoryItem, pos : Int) {
 
             with(v) {
                 if (!item.contactID.isNullOrBlank())
@@ -151,7 +156,7 @@ class AdapterCallLogs(
                     override fun onOpen(direction: Int, isContinuous: Boolean) {
                         when (direction) {
                             SwipeLayout.RIGHT -> {
-                                Metoths.callPhone(item.numberContact, context!!)
+                               Metoths.callPhone(item.numberContact, context!!)
                             }
                             SwipeLayout.LEFT -> {
                                 Metoths.openWhatsApp(item.numberContact, context!!)
@@ -161,7 +166,9 @@ class AdapterCallLogs(
                                 "SwipeLayout direction UNKNOWN = $direction"
                             )
                         }
+
                         swipeLayout.close()
+                        //notifyDataSetChanged()
                     }
 
                     override fun onClose() {

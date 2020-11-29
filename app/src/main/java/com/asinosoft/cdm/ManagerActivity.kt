@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
 import android.provider.ContactsContract
 import android.telecom.TelecomManager
 import android.util.Log
@@ -22,6 +23,7 @@ import com.asinosoft.cdm.Metoths.Companion.toggle
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.detail_contact.ContactDetailListElement
 import com.asinosoft.cdm.dialer.Utilities
+import com.asinosoft.cdm.globals.Globals
 import com.github.florent37.runtimepermission.RuntimePermission.askPermission
 import com.github.tamir7.contacts.Contacts
 import com.jaeger.library.StatusBarUtil
@@ -224,6 +226,23 @@ class ManagerActivity : AppCompatActivity() {
     override fun onStop() {
         viewModel.saveCirs()
         super.onStop()
+    }
+
+    val handler : Handler = Handler()
+
+    override fun onResume() {
+        super.onResume()
+        Globals.adapterLogs?.let {
+            it.notifyDataSetChanged()
+        }
+        if(Globals.firstLaunch){
+            Globals.firstLaunch = false
+            handler.postDelayed({
+                Globals.adapterLogs?.let {
+                    it.notifyDataSetChanged()
+                }
+            },2000)
+        }
     }
 
     override fun onDestroy() {
