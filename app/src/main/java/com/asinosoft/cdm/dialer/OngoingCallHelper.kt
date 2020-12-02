@@ -1,10 +1,23 @@
 package com.asinosoft.cdm.dialer
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.app.NotificationManager
+import android.app.role.RoleManager
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.Cursor
+import android.net.Uri
 import android.os.Build
 import android.telecom.Call
+import android.telecom.PhoneAccount
+import android.telecom.PhoneAccountHandle
+import android.telecom.TelecomManager
+import android.view.View
+import androidx.core.content.ContextCompat
+import org.jetbrains.anko.telecomManager
 import timber.log.Timber
 import java.util.*
 
@@ -13,6 +26,14 @@ val Context.notificationManager: NotificationManager get() = getSystemService(Co
 fun isOreoPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 fun isQPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 fun isOreoMr1Plus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1
+
+fun View.beVisible() {
+    visibility = View.VISIBLE
+}
+
+fun View.beGone() {
+    visibility = View.GONE
+}
 
 fun Cursor.getStringValue(key: String) = getString(getColumnIndex(key))
 
@@ -37,18 +58,5 @@ fun Int.getFormattedDuration(): String {
     return sb.toString()
 }
 
-fun Int.asString(): String = when (this) {
-    Call.STATE_NEW -> "Новый"
-    Call.STATE_RINGING -> "Входящий вызов"
-    Call.STATE_DIALING -> "Соединение"
-    Call.STATE_ACTIVE -> "Текущий звонок"
-    Call.STATE_HOLDING -> "Удержание"
-    Call.STATE_DISCONNECTED -> "Звонок завершен"
-    Call.STATE_CONNECTING -> "Соединение"
-    Call.STATE_DISCONNECTING -> "Отключение"
-    Call.STATE_SELECT_PHONE_ACCOUNT -> "SELECT_PHONE_ACCOUNT"
-    else -> {
-        Timber.w("Unknown state ${this}")
-        "UNKNOWN"
-    }
-}
+
+
