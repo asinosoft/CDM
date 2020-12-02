@@ -15,6 +15,35 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="24dp" />
 
+    <ImageView
+        android:id="@+id/call_sim_image"
+        android:layout_width="48dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="0dp"
+        android:alpha="0.8"
+        android:background="?selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_sim_vector"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/guide_eye_level"
+        app:layout_constraintEnd_toStartOf="@+id/text_status"
+        app:layout_constraintTop_toBottomOf="@+id/text_caller_number"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/call_sim_id"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:alpha="0.8"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/call_sim_image"
+        app:layout_constraintEnd_toEndOf="@+id/call_sim_image"
+        app:layout_constraintStart_toStartOf="@+id/call_sim_image"
+        app:layout_constraintTop_toTopOf="@+id/call_sim_image"
+        tools:text="1" />
+
     <TextView
         android:id="@+id/text_stopwatch"
         android:layout_width="wrap_content"
@@ -293,6 +322,51 @@
             tools:ignore="MissingConstraints,NotSibling,UnknownId" />
 
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/dialpad_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_status"
+        tools:layout_editor_absoluteX="0dp"
+        android:backgroundTint="@color/white">
+
+        <EditText
+            android:id="@+id/dialpad_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/dialpad_include"
+            android:layout_marginStart="60dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@+id/dialpad_close"
+            android:gravity="center"
+            android:inputType="phone"
+            android:textCursorDrawable="@null"
+            android:textSize="34sp"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/black"/>
+
+        <ImageView
+            android:id="@+id/dialpad_close"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignTop="@+id/dialpad_input"
+            android:layout_alignBottom="@+id/dialpad_input"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/ic_cross_vector" />
+
+        <include
+            android:id="@+id/dialpad_include"
+            layout="@layout/dialer_keyboard" />
+
+    </RelativeLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

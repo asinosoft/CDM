@@ -12,22 +12,4 @@
         android:id="@+id/ongoing_call_layout"
         layout="@layout/on_going_call" />
 
-    <LinearLayout
-        android:visibility="gone"
-        android:id="@+id/keyboard_wrapper"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/shape"
-        android:backgroundTint="@color/white"
-        android:paddingTop="10dp"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <fragment
-            android:id="@+id/keyboard"
-            android:name="com.asinosoft.cdm.Keyboard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
