@@ -28,10 +28,10 @@ import com.agik.AGIKSwipeButton.View.Swipe_Button_View
 import com.asinosoft.cdm.detail_contact.Contact
 import com.asinosoft.cdm.dialer.*
 import kotlinx.android.synthetic.main.activity_ongoing_call.*
-import kotlinx.android.synthetic.main.call_notification_two.*
-import kotlinx.android.synthetic.main.keyboard.*
+import kotlinx.android.synthetic.main.dialer_keyboard.*
 import kotlinx.android.synthetic.main.on_going_call.*
 import org.jetbrains.anko.audioManager
+import org.jetbrains.anko.telecomManager
 import java.util.*
 
 class OngoingCallActivity : AppCompatActivity() {
@@ -40,8 +40,6 @@ class OngoingCallActivity : AppCompatActivity() {
     val contactDialer = Contact()
 
     //bools
-    private var isSpeakerOn = false
-    private var isMicrophoneOn = true
     private var isCallEnded = false
     private var callDuration = 0
     private var callContact: CallContact? = null
@@ -72,6 +70,7 @@ class OngoingCallActivity : AppCompatActivity() {
             runOnUiThread {
                 setupNotification()
                 updateOtherPersonsInfo()
+                checkCalledSIMCard()
             }
         }
 
@@ -110,6 +109,23 @@ class OngoingCallActivity : AppCompatActivity() {
         updateCallState(CallManager.getState())
     }
 
+    @SuppressLint("MissingPermission")
+    private fun checkCalledSIMCard() {
+        try {
+            val accounts = telecomManager.callCapablePhoneAccounts
+            if (accounts.size > 1) {
+                accounts.forEachIndexed { index, account ->
+                    if (account == CallManager.call?.details?.accountHandle) {
+                        call_sim_id.text = "${index + 1}"
+                        call_sim_id.beVisible()
+                        call_sim_image.beVisible()
+                    }
+                }
+            }
+        } catch (ignored: Exception) {
+        }
+    }
+
     private fun updateOtherPersonsInfo() {
         if (callContact == null) {
             return
@@ -122,7 +138,7 @@ class OngoingCallActivity : AppCompatActivity() {
             text_caller_number.text = callContact!!.number
         } else {
             text_caller.text = callContact!!.number
-            text_caller_number.visibility = View.GONE
+            text_caller_number.visibility = View.VISIBLE
         }
 
         if (callContactAvatar != null) {
@@ -160,8 +176,8 @@ class OngoingCallActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         // In case the dialpad is opened, pressing the back button will close it
-        if (keyboard_wrapper.isVisible) {
-            keyboard_wrapper.visibility = View.GONE
+        if (dialpad_wrapper.isVisible) {
+            dialpad_wrapper.visibility = View.GONE
             swithToCallingUI()
             return
         } else {
@@ -268,9 +284,9 @@ class OngoingCallActivity : AppCompatActivity() {
 
     private fun viewKeyboard() {
         answer_reject_buttons.visibility = View.GONE
-        text_caller_number.visibility = View.GONE
-        text_status.visibility = View.GONE
-        text_caller.visibility = View.GONE
+        text_caller_number.visibility = View.VISIBLE
+        text_status.visibility = View.VISIBLE
+        text_caller.visibility = View.VISIBLE
         reject_btn2.visibility - View.GONE
         answer_btn.visibility = View.GONE
         reject_btn.visibility = View.GONE
@@ -299,23 +315,6 @@ class OngoingCallActivity : AppCompatActivity() {
         val newRoute =
             if (button_speaker.isActivated) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
         CallManager.inCallService?.setAudioRoute(newRoute)
-    }
-
-    fun toggleMicOff() {
-        isMicrophoneOn = !isMicrophoneOn
-        val drawable = if (isMicrophoneOn) R.drawable.ic_microphone_vector else R.drawable.ic_microphone_off_vector
-        notification_mic_off.setImageDrawable(getDrawable(drawable))
-        audioManager.isMicrophoneMute = !isMicrophoneOn
-        CallManager.inCallService?.setMuted(!isMicrophoneOn)
-    }
-
-     fun toggleSpeakOff() {
-         isSpeakerOn = !isSpeakerOn
-         val drawable = if (isSpeakerOn) R.drawable.ic_speaker_on_vector else R.drawable.ic_speaker_off_vector
-         notification_speaker.setImageDrawable(getDrawable(drawable))
-         audioManager.isSpeakerphoneOn = isSpeakerOn
-         val newRoute = if (isSpeakerOn) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
-         CallManager.inCallService?.setAudioRoute(newRoute)
     }
 
     private fun toggleHold() {
@@ -350,35 +349,42 @@ class OngoingCallActivity : AppCompatActivity() {
             toggleMicrophone()
         }
 
+        dialpad_close.setOnClickListener {
+            dialpad_wrapper.beGone()
+            swithToCallingUI()
+        }
+
         button_keypad.setOnClickListener {
-            if (keyboard_wrapper.isVisible) {
-                keyboard_wrapper.visibility = View.GONE
-                swithToCallingUI()
+            if (dialpad_wrapper.isVisible) {
+                dialpad_wrapper.visibility = View.GONE
             } else {
-                keyboard_wrapper.visibility = View.VISIBLE
+                dialpad_wrapper.visibility = View.VISIBLE
                 viewKeyboard()
             }
         }
 
-        ripple0.setOnClickListener { dialpadPressed('0') }
-        one_btn.setOnClickListener { dialpadPressed('1') }
-        two_btn.setOnClickListener { dialpadPressed('2') }
-        three_btn.setOnClickListener { dialpadPressed('3') }
-        four_btn.setOnClickListener { dialpadPressed('4') }
-        five_btn.setOnClickListener { dialpadPressed('5') }
-        six_btn.setOnClickListener { dialpadPressed('6') }
-        seven_btn.setOnClickListener { dialpadPressed('7') }
-        eight_btn.setOnClickListener { dialpadPressed('8') }
-        nine_btn.setOnClickListener { dialpadPressed('9') }
+        dialpad_0.setOnClickListener { dialpadPressed('0') }
+        dialpad_1.setOnClickListener { dialpadPressed('1') }
+        dialpad_2.setOnClickListener { dialpadPressed('2') }
+        dialpad_3.setOnClickListener { dialpadPressed('3') }
+        dialpad_4.setOnClickListener { dialpadPressed('4') }
+        dialpad_5.setOnClickListener { dialpadPressed('5') }
+        dialpad_6.setOnClickListener { dialpadPressed('6') }
+        dialpad_7.setOnClickListener { dialpadPressed('7') }
+        dialpad_8.setOnClickListener { dialpadPressed('8') }
+        dialpad_9.setOnClickListener { dialpadPressed('9') }
 
-        ripple0.setOnLongClickListener { dialpadPressed('+'); true }
+        dialpad_0.setOnLongClickListener { dialpadPressed('+'); true }
+        dialpad_asterisk.setOnClickListener { dialpadPressed('*') }
+        dialpad_hashtag.setOnClickListener { dialpadPressed('#') }
 
-        keyboard_wrapper.setBackgroundColor(R.color.white)
+        dialpad_wrapper.setBackgroundColor(R.color.black)
+
     }
 
     private fun dialpadPressed(char: Char) {
         CallManager.keypad(char)
-        input_text.addCharacter(char)
+        dialpad_input.addCharacter(char)
     }
 
     private fun setupNotification() {
@@ -436,8 +442,6 @@ class OngoingCallActivity : AppCompatActivity() {
             setText(R.id.notification_caller_name, callerName)
             setText(R.id.notification_call_status, getString(contentTextId))
             setVisibleIf(R.id.notification_accept_call, callState == Call.STATE_RINGING)
-            setVisibleIf(R.id.notification_mic_off, callState == Call.STATE_ACTIVE)
-            setVisibleIf(R.id.notification_speaker, callState == Call.STATE_ACTIVE)
 
             setOnClickPendingIntent(R.id.notification_decline_call, declinePendingIntent)
             setOnClickPendingIntent(R.id.notification_accept_call, acceptPendingIntent)
@@ -521,6 +525,7 @@ class OngoingCallActivity : AppCompatActivity() {
             }
             Call.STATE_DISCONNECTED -> endCall()
             Call.STATE_CONNECTING, Call.STATE_DIALING -> swithToCallingUI()
+            //Call.STATE_SELECT_PHONE_ACCOUNT -> showPhoneAccountPicker()
         }
 
         if (state == Call.STATE_DISCONNECTED || state == Call.STATE_DISCONNECTING) {

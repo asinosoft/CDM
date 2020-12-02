@@ -85,13 +85,13 @@ class ManagerActivity : AppCompatActivity() {
     }
 
     private fun makeCall() {
-        if (PermissionChecker.checkSelfPermission(
-                this,
-                Manifest.permission.CALL_PHONE
-            ) == PermissionChecker.PERMISSION_GRANTED
-        ) {
+
+        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.CALL_PHONE) == PermissionChecker.PERMISSION_GRANTED) {
             val uri = "tel:${ContactDetailListElement().active}".toUri()
-            startActivity(Intent(Intent.ACTION_CALL, uri))
+            val intent = Intent(Intent.ACTION_CALL, uri)
+            intent.putExtra("simSlot", 0); //For sim 1
+            intent.putExtra("simSlot", 1); //For sim 2
+            startActivity(intent)
         } else {
             ActivityCompat.requestPermissions(
                 this,

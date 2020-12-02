@@ -13,10 +13,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.PointF
 import android.net.Uri
-import android.os.Build
-import android.os.SystemClock
-import android.os.VibrationEffect
-import android.os.Vibrator
+import android.os.*
 import android.provider.ContactsContract
 import android.text.Spannable
 import android.text.SpannableString
@@ -24,13 +21,13 @@ import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.widget.*
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Actions.*
 import com.asinosoft.cdm.Metoths.Companion.Direction.*
 import com.github.tamir7.contacts.Contact
@@ -40,7 +37,6 @@ import org.jetbrains.anko.wrapContent
 import java.io.IOException
 import kotlin.math.absoluteValue
 import kotlin.math.sign
-import kotlin.math.withSign
 
 /**
  * Класс важный методов, представляет собой набор низкоуровневых методов.
@@ -57,7 +53,7 @@ class Metoths {
         fun getPattern(nums: String, context: Context): String {
             var r = ""
             nums.forEach {
-                getWords(it, context).replace("\n", "").let {words ->
+                getWords(it, context).replace("\n", "").let { words ->
                     if (words.isNotBlank()) r = r.plus("(?:[$words])")
                 }
             }
@@ -110,13 +106,19 @@ class Metoths {
 
         fun callWhatsApp(id: String, context: Context){
             val intent = Intent().setAction(Intent.ACTION_VIEW)
-            intent.setDataAndType(Uri.parse("content://com.android.contacts/data/$id"), "vnd.android.cursor.item/vnd.com.whatsapp.voip.call")
+            intent.setDataAndType(
+                Uri.parse("content://com.android.contacts/data/$id"),
+                "vnd.android.cursor.item/vnd.com.whatsapp.voip.call"
+            )
             intent.setPackage("com.whatsapp")
             context.startActivity(intent)
         }
         fun videoCallWhatsApp(id: String, context: Context){
             val intent = Intent().setAction(Intent.ACTION_VIEW)
-            intent.setDataAndType(Uri.parse("content://com.android.contacts/data/$id"), "vnd.android.cursor.item/vnd.com.whatsapp.video.call")
+            intent.setDataAndType(
+                Uri.parse("content://com.android.contacts/data/$id"),
+                "vnd.android.cursor.item/vnd.com.whatsapp.video.call"
+            )
             intent.setPackage("com.whatsapp")
             context.startActivity(intent)
         }
@@ -126,12 +128,17 @@ class Metoths {
             val sendIntent = Intent(Intent.ACTION_SENDTO, uri)
             sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             sendIntent.setPackage("com.whatsapp")
-            context.startActivity(Intent.createChooser(sendIntent, "").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            context.startActivity(
+                Intent.createChooser(sendIntent, "").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
         }
 
         fun viberMsg(id: String, context: Context){
             val intent = Intent().setAction(Intent.ACTION_VIEW)
-            intent.setDataAndType(Uri.parse("content://com.android.contacts/data/$id"), "vnd.android.cursor.item/vnd.com.viber.voip.viber_number_message")
+            intent.setDataAndType(
+                Uri.parse("content://com.android.contacts/data/$id"),
+                "vnd.android.cursor.item/vnd.com.viber.voip.viber_number_message"
+            )
             intent.setPackage("com.viber.voip")
             context.startActivity(intent)
         }
@@ -140,7 +147,10 @@ class Metoths {
             val intent = Intent()
             intent.action = Intent.ACTION_VIEW
             number.toUri().let { uri ->
-                intent.setDataAndType(uri, "vnd.android.cursor.item/vnd.com.viber.voip.viber_number_call")
+                intent.setDataAndType(
+                    uri,
+                    "vnd.android.cursor.item/vnd.com.viber.voip.viber_number_call"
+                )
                 intent.setPackage("com.viber.voip")
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
@@ -171,7 +181,13 @@ class Metoths {
             LEFT, RIGHT, TOP, DOWN, UNKNOWN
         }
 
-        fun View.makeTouch(action: Int, x: Float = 0f, y: Float = 0f, downTime: Long = SystemClock.uptimeMillis(), eventTime: Long = downTime + 100) {
+        fun View.makeTouch(
+            action: Int,
+            x: Float = 0f,
+            y: Float = 0f,
+            downTime: Long = SystemClock.uptimeMillis(),
+            eventTime: Long = downTime + 100
+        ) {
             this.dispatchTouchEvent(MotionEvent.obtain(downTime, eventTime, action, x, y, 0))
         }
 
@@ -204,7 +220,12 @@ class Metoths {
             this.layoutParams = this.layoutParams.apply { width = size; height = size}
         }
 
-        fun View.animateTranslation(cirStart: PointF, pointF: PointF, toPointF: PointF, duration: Long = 0L){
+        fun View.animateTranslation(
+            cirStart: PointF,
+            pointF: PointF,
+            toPointF: PointF,
+            duration: Long = 0L
+        ){
             this.animate()
                 .x(cirStart.x - (pointF.x - toPointF.x))
                 .y(cirStart.y - (pointF.y - toPointF.y))
@@ -216,7 +237,10 @@ class Metoths {
          * Открыть карточку контакта по его id
          */
         fun openCardContact(idContact: String, context: Context) {
-            Intent(Intent.ACTION_VIEW).apply { data = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, idContact) }.let(context::startActivity)
+            Intent(Intent.ACTION_VIEW).apply { data = Uri.withAppendedPath(
+                ContactsContract.Contacts.CONTENT_URI,
+                idContact
+            ) }.let(context::startActivity)
         }
 
         fun openDetailContact(num: String, context: Context){
@@ -263,10 +287,18 @@ class Metoths {
 
         fun PointF.diff(pointF: PointF) = PointF(this.x - pointF.x, this.y - pointF.y)
         fun View.diff(pointF: PointF) = PointF(this.x - pointF.x, this.y - pointF.y)
-        fun PointF.diff(event: MotionEvent, radius: Float? = null, dropX: Boolean = false, dropY: Boolean = false): PointF {
+        fun PointF.diff(
+            event: MotionEvent,
+            radius: Float? = null,
+            dropX: Boolean = false,
+            dropY: Boolean = false
+        ): PointF {
             val pointF = event.toPointF()
             var r = PointF(this.x - pointF.x, this.y - pointF.y)
-            radius?.let {r.set(if(r.x.absoluteValue > it) it * r.x.sign else r.x, if(r.y.absoluteValue > it) it * r.y.sign else r.y) }
+            radius?.let {r.set(
+                if (r.x.absoluteValue > it) it * r.x.sign else r.x,
+                if (r.y.absoluteValue > it) it * r.y.sign else r.y
+            ) }
             if (dropX) r.x = 0f
             if (dropY) r.y = 0f
             if (r.x.absoluteValue > r.y.absoluteValue) r.y = 0f
@@ -286,22 +318,24 @@ class Metoths {
         }
 
         fun DirectActions.action(direction: Direction) = when (direction){
-                LEFT -> this.left
-                RIGHT -> this.right
-                TOP -> this.top
-                DOWN -> this.down
-                UNKNOWN -> null
+            LEFT -> this.left
+            RIGHT -> this.right
+            TOP -> this.top
+            DOWN -> this.down
+            UNKNOWN -> null
         }
 
         fun ImageView.setImageAction(actions: Actions){
-            this.setImageResource(when(actions){
-                WhatsApp -> R.drawable.whatsapp_192
-                Viber -> R.drawable.viber
-                Telegram -> R.drawable.telegram
-                PhoneCall -> R.drawable.telephony_call_192
-                Email -> R.drawable.email_192
-                Sms -> R.drawable.sms_192
-            })
+            this.setImageResource(
+                when (actions) {
+                    WhatsApp -> R.drawable.whatsapp_192
+                    Viber -> R.drawable.viber
+                    Telegram -> R.drawable.telegram
+                    PhoneCall -> R.drawable.telephony_call_192
+                    Email -> R.drawable.email_192
+                    Sms -> R.drawable.sms_192
+                }
+            )
         }
 
         fun Boolean.toVisibility(gone: Boolean = false) = if (this) View.VISIBLE else if (!gone) View.INVISIBLE else View.GONE
@@ -311,13 +345,21 @@ class Metoths {
         }
 
         fun TextView.setColoredText(text: String, @ColorInt color: Int = Color.BLUE){
-            SpannableString(this.text).apply {setSpan(ForegroundColorSpan(color), this.indexOf(text), this.indexOf(text) +
-                    text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)}.let { this.text = it }
+            SpannableString(this.text).apply {setSpan(
+                ForegroundColorSpan(color), this.indexOf(text), this.indexOf(
+                    text
+                ) +
+                        text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )}.let { this.text = it }
         }
 
         fun String.setColorText(text: String, @ColorInt color: Int = Color.BLUE) =
-            SpannableString(this).apply {setSpan(ForegroundColorSpan(color), this.indexOf(text), this.indexOf(text) +
-                    text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)}
+            SpannableString(this).apply {setSpan(
+                ForegroundColorSpan(color), this.indexOf(text), this.indexOf(
+                    text
+                ) +
+                        text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )}
 
         fun View.toggle(duration: Long = 500L){
             ValueAnimator.ofInt(this.measuredHeight, if (this.height == 1) wrapContent else 1).apply {
@@ -329,7 +371,8 @@ class Metoths {
         fun getPhoto(contactId: Long, context: Context): Bitmap? {
             val contactUri =
                 ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId)
-            val displayPhotoUri = Uri.withAppendedPath(contactUri,
+            val displayPhotoUri = Uri.withAppendedPath(
+                contactUri,
                 ContactsContract.Contacts.Photo.DISPLAY_PHOTO
             )
             try {
@@ -367,14 +410,14 @@ class Metoths {
             return str
         }
 
+
+
         @SuppressLint("MissingPermission")
         fun callPhone(telNum: String, context: Context){
             val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$telNum"))
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.CALL_PHONE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
+            intent.putExtra("com.android.phone.force.slot", true);
+            intent.putExtra("Cdma_Supp", true);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                 return
             }
             context.startActivity(intent)
@@ -400,7 +443,10 @@ class Metoths {
             val isAppInstalled = appInstalledOrNot("org.telegram.messenger", context)
             if (isAppInstalled) {
                 val intent = Intent().setAction(Intent.ACTION_VIEW)
-                intent.setDataAndType(Uri.parse("content://com.android.contacts/data/$id"), "vnd.android.cursor.item/vnd.org.telegram.messenger.android.profile")
+                intent.setDataAndType(
+                    Uri.parse("content://com.android.contacts/data/$id"),
+                    "vnd.android.cursor.item/vnd.org.telegram.messenger.android.profile"
+                )
                 context.startActivity(intent)
             } else {
                 context.toast("Ошибка! Telegram не установлен!")
@@ -418,7 +464,10 @@ class Metoths {
         fun openWhatsApp(num: String, context: Context) {
             val isAppInstalled = appInstalledOrNot("com.whatsapp", context)
             if (isAppInstalled) {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://api.whatsapp.com/send?phone=$num"))
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://api.whatsapp.com/send?phone=$num")
+                )
                 context.startActivity(intent)
             } else {
                 context.toast("Ошибка! WhatsApp не установлен!")
