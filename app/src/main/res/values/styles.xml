@@ -42,4 +42,18 @@
         <item name="color">@color/drawerArrowColor</item>
     </style>
 
+    <style name="DialpadNumberStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:textSize">34sp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="DialpadLetterStyle">
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:alpha">0.8</item>
+    </style>
+
 </resources>

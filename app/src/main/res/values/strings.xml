@@ -65,6 +65,14 @@
     <string name="state_call_active">Текущий вызов</string>
     <string name="unknow_call">Неизвестный</string>
     <string name="unknown_caller">Неизвестный номер</string>
+    <string name="title_activity_settings_layout">SettingsLayout</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="title_activity_new_settings">NewSettingsActivity</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_settings2">Settings2</string>
+    <string name="select_sim">Выберите симкарту</string>
 
 
 </resources>
