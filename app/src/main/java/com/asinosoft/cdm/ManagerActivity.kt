@@ -10,6 +10,7 @@ import android.os.Handler
 import android.provider.ContactsContract
 import android.telecom.TelecomManager
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,7 @@ import androidx.core.net.toUri
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.asinosoft.cdm.Metoths.Companion.makeTouch
 import com.asinosoft.cdm.Metoths.Companion.toggle
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.detail_contact.ContactDetailListElement
@@ -232,6 +234,7 @@ class ManagerActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        recyclerViewHistory.makeTouch(MotionEvent.ACTION_UP)
         Globals.adapterLogs?.let {
             it.notifyDataSetChanged()
         }

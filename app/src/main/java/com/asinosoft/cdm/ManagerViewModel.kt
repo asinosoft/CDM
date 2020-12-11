@@ -366,6 +366,7 @@ class ManagerViewModel : ViewModel() {
         val contact = Contacts.getQuery().whereEqualTo(Contact.Field.ContactId, id).find()
         (v.recyclerView.adapter as CirAdapter).setContact(posPicker, contact.first())
     }
+
 }
 
 private fun ArrayList<CircleImage>.updateItems(lockableNestedScrollView: LockableNestedScrollView) {
