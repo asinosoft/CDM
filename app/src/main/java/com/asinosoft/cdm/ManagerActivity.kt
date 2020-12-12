@@ -235,6 +235,7 @@ class ManagerActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         recyclerViewHistory.makeTouch(MotionEvent.ACTION_UP)
+        recyclerViewHistoryBottom.makeTouch(MotionEvent.ACTION_UP)
         Globals.adapterLogs?.let {
             it.notifyDataSetChanged()
         }
