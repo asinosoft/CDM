@@ -24,10 +24,13 @@ import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.widget.*
 import androidx.annotation.ColorInt
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -319,11 +322,26 @@ class Metoths {
             SpannableString(this).apply {setSpan(ForegroundColorSpan(color), this.indexOf(text), this.indexOf(text) +
                     text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)}
 
-        fun View.toggle(duration: Long = 500L){
-            ValueAnimator.ofInt(this.measuredHeight, if (this.height == 1) wrapContent else 1).apply {
-                this.duration = duration
-                addUpdateListener { layoutParams = layoutParams.apply { height = animatedValue as Int } }
-            }.start()
+        fun View.colappsed() : Boolean {
+            return height < 10
+        }
+
+        fun View.toggle(duration: Long = 500L, animation : Boolean = true){
+            if(animation) {
+                ValueAnimator.ofInt(this.measuredHeight, if (this.height == 1) wrapContent else 1)
+                    .apply {
+                        this.duration = duration
+                        addUpdateListener {
+                            layoutParams = layoutParams.apply { height = animatedValue as Int }
+                        }
+                    }.start()
+            } else {
+                if(isVisible){
+                    visibility = INVISIBLE
+                } else {
+                    visibility = VISIBLE
+                }
+            }
         }
 
         fun getPhoto(contactId: Long, context: Context): Bitmap? {

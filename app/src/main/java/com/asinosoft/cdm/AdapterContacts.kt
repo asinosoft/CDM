@@ -1,6 +1,7 @@
 package com.asinosoft.cdm
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -30,9 +31,14 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         context = parent.context
+        val v = HistorySwipingItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return Holder(
-            HistorySwipingItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        )
+            v
+        ){
+            val pos = (parent as RecyclerView).getChildAdapterPosition(v.relativeL)
+            if(pos < 0)return@Holder
+            openDetail(contacts[pos])
+        }
     }
 
     fun getItems() = contacts
@@ -67,7 +73,7 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
     private suspend fun List<Contact>.filtered(nums: String) = async {
         val r = ArrayList<Contact>()
         this@filtered.forEach { contact ->
-            regex?.find( contact.displayName)?.let {
+            regex?.find(contact.displayName)?.let {
                 r.add(contact)
                 return@forEach
             }
@@ -79,6 +85,22 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
                 }
             }
         }
+        r.sortWith(compareBy{
+            val res = regex?.find(it.displayName)
+            if(res != null){
+                 it.displayName.indexOf(res?.value as String)
+            } else {
+                var index = 0
+                it.phoneNumbers.forEach{
+                    if (it.normalizedNumber.isNullOrEmpty()) return@forEach
+                    if (it.normalizedNumber.contains(nums, true)) {
+                        index = it.normalizedNumber.indexOf(nums)
+                        return@forEach
+                    }
+                }
+                index
+            }
+        })
         return@async r
     }.await()
 
@@ -107,7 +129,14 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
         holder.bind(contacts[position], itemClickListerner)
     }
 
-    inner class Holder(private val v: HistorySwipingItemBinding) : RecyclerView.ViewHolder(v.root) {
+    private fun openDetail(item: Contact) {
+        val intent = Intent(this.context, DetailHistoryActivity::class.java)
+        intent.putExtra(Keys.number, item.phoneNumbers.firstOrNull()?.number)
+        intent.putExtra(Keys.id, item.id)
+        context?.startActivity(intent)
+    }
+
+    inner class Holder(private val v: HistorySwipingItemBinding, val itemCallBack : () -> Unit) : RecyclerView.ViewHolder(v.root) {
 
         fun bind(item: Contact, itemClickListerner: View.OnClickListener) {
             item.photoUri?.let { v.imageContact.setImageURI(it.toUri()) }
@@ -124,6 +153,9 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
             v.timeContact.text = ""
             v.dateContact.text = ""
             v.typeCall.visibility = View.GONE
+            v.relativeL.setOnClickListener {
+                itemCallBack()
+            }
 
             if (onClick) v.dragLayout.setOnClickListener {
                 itemClickListerner.onClick(it)

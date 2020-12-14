@@ -3,6 +3,8 @@ package com.asinosoft.cdm
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -73,13 +75,40 @@ class Keyboard: Fragment() {
                 Handler().postDelayed({runOnUiThread { rootView.ripple0.stopRippleAnimation() }}, 500/3)
                 takeValue("0") }
         rootView.image_backspace.setOnClickListener {input_text.text = input_text.text.dropLast(1)}
-        rootView.image_clear.setOnClickListener { input_text.text = "" }
+        rootView.image_backspace.setOnLongClickListener {
+            input_text.text = ""
+            true
+        }
+        rootView.image_clear.setOnClickListener {
+            input_text.text = ""
+            activity?.onBackPressed()
+        }
+
         return rootView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        input_text.addTextChangedListener(texWatcher)
+    }
 
     private fun takeValue(num: String) {
         input_text.text = input_text.text.toString().plus(num)
+    }
+
+    val texWatcher = object : TextWatcher {
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+
+        }
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+        }
     }
 
 }

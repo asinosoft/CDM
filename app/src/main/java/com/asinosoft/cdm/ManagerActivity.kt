@@ -10,15 +10,21 @@ import android.os.Handler
 import android.provider.ContactsContract
 import android.telecom.TelecomManager
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.PermissionChecker
 import androidx.core.net.toUri
+import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.asinosoft.cdm.Metoths.Companion.colappsed
+import com.asinosoft.cdm.Metoths.Companion.makeTouch
 import com.asinosoft.cdm.Metoths.Companion.toggle
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.detail_contact.ContactDetailListElement
@@ -104,13 +110,7 @@ class ManagerActivity : AppCompatActivity() {
         }
 
         fabKeyboard.setOnClickListener {
-            v.layoutKeyboard.toggle()
-            recyclerViewContact.visibility = if (layout_keyboard.height != 1) {
-                kotlin.runCatching {
-                    keyboard.input_text.text = ""
-                }
-                View.GONE
-            } else View.VISIBLE
+            toggleContacts(it)
         }
         keyboard = supportFragmentManager.findFragmentById(R.id.keyboard) as Keyboard
 
@@ -127,6 +127,17 @@ class ManagerActivity : AppCompatActivity() {
         }
     }
 
+    private fun toggleContacts(keyButton : View){
+        v.layoutKeyboard.toggle()
+        keyButton.toggle(animation = false)
+        recyclerViewContact.visibility = if (layout_keyboard.height != 1) {
+            kotlin.runCatching {
+                keyboard.input_text.text = ""
+            }
+            View.GONE
+        } else View.VISIBLE
+    }
+
     private fun initContacts(){
         val list = Contacts.getQuery().find().filter { !it.phoneNumbers.isNullOrEmpty() }
 
@@ -136,6 +147,14 @@ class ManagerActivity : AppCompatActivity() {
         }
 
         recyclerViewContact.adapter = AdapterContacts(list, View.OnClickListener {}, false)
+    }
+
+    override fun onBackPressed() {
+        if(!v.layoutKeyboard.colappsed()){
+            toggleContacts(fabKeyboard)
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -232,6 +251,7 @@ class ManagerActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        recyclerViewHistory.makeTouch(MotionEvent.ACTION_UP)
         Globals.adapterLogs?.let {
             it.notifyDataSetChanged()
         }
