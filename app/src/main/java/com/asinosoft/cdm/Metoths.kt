@@ -326,7 +326,7 @@ class Metoths {
             return height < 10
         }
 
-        fun View.toggle(duration: Long = 500L, animation : Boolean = true){
+        fun View.toggle(duration: Long = 500L, animation : Boolean = false){
             if(animation) {
                 ValueAnimator.ofInt(this.measuredHeight, if (this.height == 1) wrapContent else 1)
                     .apply {

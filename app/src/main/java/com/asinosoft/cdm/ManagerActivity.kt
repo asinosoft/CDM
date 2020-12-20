@@ -103,7 +103,7 @@ class ManagerActivity : AppCompatActivity() {
         StatusBarUtil.setTranslucentForImageView(this, v.container)
         startForView()
 
-        layout_keyboard?.toggle()
+       // layout_keyboard?.toggle()
         val isDefaultDealer: Boolean = Utilities().checkDefaultDialer(this)
         if (isDefaultDealer) {
             checkPermission(null)
@@ -130,7 +130,7 @@ class ManagerActivity : AppCompatActivity() {
     private fun toggleContacts(keyButton : View){
         v.layoutKeyboard.toggle()
         keyButton.toggle(animation = false)
-        recyclerViewContact.visibility = if (layout_keyboard.height != 1) {
+        recyclerViewContact.visibility = if (recyclerViewContact.isVisible) {
             kotlin.runCatching {
                 keyboard.input_text.text = ""
             }
@@ -150,7 +150,7 @@ class ManagerActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if(!v.layoutKeyboard.colappsed()){
+        if(v.layoutKeyboard.isVisible){
             toggleContacts(fabKeyboard)
         } else {
             super.onBackPressed()
