@@ -18,7 +18,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="8dp"
-            android:src="@drawable/baseline_close_24" />
+            android:src="@drawable/ic_close_24px" />
 
         <TextView
             android:id="@+id/input_text"
@@ -34,7 +34,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="8dp"
-            android:src="@drawable/outline_backspace_24" />
+            android:src="@drawable/ic_backspace_24px" />
 
     </LinearLayout>
 
@@ -77,10 +77,12 @@
                         android:textColor="@color/costomGray"
                         android:text="@string/digit_one"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/digit_one_text"
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:alpha="0.4"
+                        android:src="@drawable/ic_voicemail_24px"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:textAppearance="?android:attr/textAppearanceSmall" />
                 </LinearLayout>
 
@@ -392,17 +394,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center">
-
-            <ImageButton
+            <LinearLayout
                 android:layout_width="@dimen/passcode_btn"
                 android:layout_height="@dimen/passcode_btn"
-                android:layout_margin="@dimen/passcode_btn_margin"
-                android:src="@drawable/ic_ok"
-                android:hapticFeedbackEnabled="true"
-                android:id="@+id/ok_btn"
-                android:background="@android:color/transparent"
-                android:visibility="invisible"
-                android:contentDescription="@string/ok" />
+                android:id="@+id/star"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/costomGray"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="*"/>
+                <TextView
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/costomGray"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="#"/>
+            </LinearLayout>
+
+
 
             <com.skyfishjy.library.RippleBackground
                 android:layout_width="match_parent"
@@ -438,16 +453,17 @@
             </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
-            <ImageButton
+            <ImageView
                 android:layout_width="@dimen/passcode_btn"
                 android:layout_height="@dimen/passcode_btn"
+                android:padding="5dp"
                 android:layout_margin="@dimen/passcode_btn_margin"
-                android:src="@drawable/ic_action_backspace"
+                android:src="@drawable/ic_phone_24px"
                 android:hapticFeedbackEnabled="true"
                 android:id="@+id/delete_btn"
                 android:background="@android:color/transparent"
-                android:visibility="invisible"
-                android:contentDescription="@string/clear" />
+                android:visibility="visible"
+                 />
         </TableRow>
 
     </TableLayout>

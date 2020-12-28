@@ -24,6 +24,9 @@ class Keyboard: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.keyboard, container, false)
+        rootView.setOnTouchListener { view, motionEvent ->
+            true
+        }
         rootView.findViewById<View>(R.id.one_btn)
             .setOnClickListener {
                 rootView.ripple1.startRippleAnimation()
@@ -69,6 +72,17 @@ class Keyboard: Fragment() {
                 rootView.ripple9.startRippleAnimation()
                 Handler().postDelayed({runOnUiThread { rootView.ripple9.stopRippleAnimation() }}, 500/3)
                 takeValue("9") }
+        rootView.findViewById<View>(R.id.zero_btn).setOnLongClickListener{
+            takeValue("+")
+            true
+        }
+        rootView.findViewById<View>(R.id.star).setOnClickListener {
+            takeValue("*")
+        }
+        rootView.findViewById<View>(R.id.star).setOnLongClickListener {
+            takeValue("#")
+            true
+        }
         rootView.findViewById<View>(R.id.zero_btn)
             .setOnClickListener {
                 rootView.ripple0.startRippleAnimation()

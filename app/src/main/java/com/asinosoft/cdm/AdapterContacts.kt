@@ -17,11 +17,7 @@ import kotlinx.coroutines.*
 import org.jetbrains.anko.runOnUiThread
 import kotlin.coroutines.CoroutineContext
 
-class AdapterContacts(
-    var contacts: List<Contact>,
-    val itemClickListerner: View.OnClickListener,
-    val onClick: Boolean = true
-) : RecyclerView.Adapter<AdapterContacts.Holder>(), CoroutineScope {
+class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.OnClickListener, val onClick: Boolean = true): RecyclerView.Adapter<AdapterContacts.Holder>(), CoroutineScope {
 
     private lateinit var context: Context
     private var nums = ""
@@ -35,20 +31,19 @@ class AdapterContacts(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         context = parent.context
-        val v =
-            HistorySwipingItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val v = HistorySwipingItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return Holder(
             v
-        ) {
+        ){
             val pos = (parent as RecyclerView).getChildAdapterPosition(v.relativeL)
-            if (pos < 0) return@Holder
+            if(pos < 0)return@Holder
             openDetail(contacts[pos])
         }
     }
 
     fun getItems() = contacts
 
-    fun setItems(list: List<Contact>, nums: String = "") {
+    fun setItems(list: List<Contact>, nums: String = ""){
         contacts = list
         this.nums = nums
         notifyDataSetChanged()
@@ -77,19 +72,12 @@ class AdapterContacts(
 
     private suspend fun List<Contact>.filtered(nums: String) = async {
         val r = ArrayList<Contact>()
-
-        val sortedByLength : MutableList<Contact> = this@filtered.toMutableList()
-        sortedByLength.sortWith(compareBy {
-            it.displayName.length
-        })
-
-
-        sortedByLength.forEach { contact ->
-            regex?.find(contact.displayName.replace(" ", ""))?.let {
+        this@filtered.forEach { contact ->
+            regex?.find(contact.displayName)?.let {
                 r.add(contact)
                 return@forEach
             }
-            contact.phoneNumbers.forEach {
+            contact.phoneNumbers.forEach{
                 if (it.normalizedNumber.isNullOrEmpty()) return@forEach
                 if (it.normalizedNumber.contains(nums, true)) {
                     r.add(contact)
@@ -97,13 +85,13 @@ class AdapterContacts(
                 }
             }
         }
-        r.sortWith(compareBy {
-            val res = regex?.find(it.displayName.replace(" ", ""))
-            if (res != null) {
-                it.displayName.replace(" ", "").indexOf(res?.value as String)
+        r.sortWith(compareBy{
+            val res = regex?.find(it.displayName)
+            if(res != null){
+                 it.displayName.indexOf(res?.value as String)
             } else {
                 var index = 0
-                it.phoneNumbers.forEach {
+                it.phoneNumbers.forEach{
                     if (it.normalizedNumber.isNullOrEmpty()) return@forEach
                     if (it.normalizedNumber.contains(nums, true)) {
                         index = it.normalizedNumber.indexOf(nums)
@@ -148,8 +136,7 @@ class AdapterContacts(
         context?.startActivity(intent)
     }
 
-    inner class Holder(private val v: HistorySwipingItemBinding, val itemCallBack: () -> Unit) :
-        RecyclerView.ViewHolder(v.root) {
+    inner class Holder(private val v: HistorySwipingItemBinding, val itemCallBack : () -> Unit) : RecyclerView.ViewHolder(v.root) {
 
         fun bind(item: Contact, itemClickListerner: View.OnClickListener) {
             item.photoUri?.let { v.imageContact.setImageURI(it.toUri()) }
@@ -201,6 +188,9 @@ class AdapterContacts(
                 }
 
             })
+
+            v.dragLayout.setOnClickListener {
+                openDetail(item) }
         }
 
         /**
@@ -211,18 +201,6 @@ class AdapterContacts(
             if (nums.isNotEmpty() && v.number.text.contains(nums)) v.number.setColoredText(nums)
             if (name) regex?.find(v.name.text.toString())?.let {
                 v.name.setColoredText(it.value)
-            } ?: regex?.find(v.name.text.toString().replace(" ", ""))?.let {
-                val name1 = v.name.text.toString().split(" ")[0]
-                val arrName: CharArray = name1.toCharArray()
-                val mArr = it.value.toCharArray()
-                val intersectionList = arrName.intersect(mArr.toList()).toList()
-
-                val withSpace = mArr.toList().toMutableList().apply {
-                    add(intersectionList.size, ' ')
-                }
-
-                val resStr = String(withSpace.toCharArray())
-                v.name.setColoredText(resStr)
             }
         }
     }
