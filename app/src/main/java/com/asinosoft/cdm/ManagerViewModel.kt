@@ -53,10 +53,17 @@ class ManagerViewModel : ViewModel() {
     private lateinit var logsManager: LogsManager
     private lateinit var activity: AppCompatActivity
     private var indexOfFrontChild = 0
-    private val listCirs: ArrayList<CircleImage> by lazy { // Ленивая загрузка кнопок избранных контактов
-        GlobalScope.launch { loadCirs { listCirs.add(it) }; context.runOnUiThread { v.recyclerView.adapter?.notifyDataSetChanged() } }
-        arrayListOf<CircleImage>()
-    }
+    private val listCirs: MutableList<CircleImage> = mutableListOf()
+//    private val listCirs: MutableList<CircleImage> by lazy { // Ленивая загрузка кнопок избранных контактов
+//        GlobalScope.launch {
+//
+//            listCirs.addAll(loadCirs() as List<CircleImage>)
+//            context.runOnUiThread {
+//                v.recyclerView.adapter?.notifyDataSetChanged()
+//            }
+//        }
+//        arrayListOf<CircleImage>()
+//    }
 
     private var cirLayoutHeight = 0
     private val adapterCallLogs: AdapterCallLogs by lazy {
@@ -194,6 +201,28 @@ class ManagerViewModel : ViewModel() {
             return@withContext null
         }
 
+    private  fun getCirs(): MutableList<CircleImage>?
+    {
+        val r = mutableListOf<CircleImage>()
+            sharedPreferences.getString(Keys.Cirs, null)?.let {
+                val list = it.split("<end>").dropLast(1)
+                list.forEach { item ->
+                    adapterCirMoshi.fromJson(item)?.let { pair ->
+                        r.add(newCir(settings, touchHelper, pair))
+                    }
+                }
+                if (r.size == 0) (1..9).forEach {
+                    r.add(newCir(settings, touchHelper))
+                }
+                return r
+            } ?: kotlin.run {
+                (1..9).forEach {
+                r.add(newCir(settings, touchHelper))
+            }
+            }
+            return r
+        }
+
 
     private fun onChangeHeightCir(h: Int) {
         cirLayoutHeight = h
@@ -214,7 +243,7 @@ class ManagerViewModel : ViewModel() {
 
         v.recyclerView.layoutManager =
             CirLayoutManager({ onChangeHeightCir(it) }, columns = settings.columnsCirs)
-        if (listCirs.isNotEmpty()) listCirs.updateItems(v.scrollView)
+        //if (listCirs.isNotEmpty()) listCirs.updateItems(v.scrollView)
         v.recyclerView.itemAnimator = LandingAnimator(OvershootInterpolator())
         GlobalScope.launch { withTimeout(2_000L) { v.recyclerView.adapter?.notifyDataSetChanged() } }
         v.recyclerView.setChildDrawingOrderCallback { childCount, iteration ->
@@ -228,6 +257,7 @@ class ManagerViewModel : ViewModel() {
             }
             childPos
         }
+        listCirs.addAll(getCirs() as List<CircleImage>)
         v.deleteCir.apply {
             setOnDragListener { view, event ->
                 try {

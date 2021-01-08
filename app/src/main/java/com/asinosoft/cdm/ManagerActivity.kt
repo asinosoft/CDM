@@ -164,7 +164,7 @@ class ManagerActivity : AppCompatActivity() {
     ) {
         when {
             requestCode == REQUEST_PERMISSION && PermissionChecker.PERMISSION_GRANTED in grantResults -> makeCall()
-            requestCode == REQUEST_PERMISSION1 -> kotlin.run { initContacts();initActivity() }
+            requestCode == REQUEST_PERMISSION1 -> kotlin.run { initContacts();initActivity(); updateLogs()}
         }
     }
 
@@ -256,14 +256,18 @@ class ManagerActivity : AppCompatActivity() {
         Globals.adapterLogs?.let {
             it.notifyDataSetChanged()
         }
-        if(Globals.firstLaunch){
-            Globals.firstLaunch = false
+        if(Globals.firstLaunch) {
+            updateLogs()
+        }
+    }
+
+    private fun updateLogs(){
+        Globals.firstLaunch = false
             handler.postDelayed({
                 Globals.adapterLogs?.let {
                     it.notifyDataSetChanged()
                 }
             },2000)
-        }
     }
 
     override fun onDestroy() {
