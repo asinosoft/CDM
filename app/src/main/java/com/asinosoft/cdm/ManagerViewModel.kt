@@ -43,7 +43,7 @@ class ManagerViewModel : ViewModel() {
 
     private var i = 0
     private var posPicker = -1
-    private lateinit var settings: Settings
+    lateinit var settings: Settings
     private lateinit var touchHelper: ItemTouchHelper
     private lateinit var v: ActivityManagerBinding
     private lateinit var context: Context
@@ -94,6 +94,7 @@ class ManagerViewModel : ViewModel() {
         activity: AppCompatActivity
     ) {
         this.v = v
+
         this.context = context
         this.lifecycle = lifecycle
         this.pickedContact = pickedContact

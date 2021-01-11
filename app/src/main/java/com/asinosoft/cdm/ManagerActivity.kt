@@ -40,7 +40,7 @@ import kotlinx.android.synthetic.main.keyboard.*
 /**
  * Основной класс приложения, отвечает за работу главного экрана (нового) приложения
  */
-class ManagerActivity : AppCompatActivity() {
+class ManagerActivity : AppCompatActivity(), KeyBoardListener {
 
     companion object {
         const val ACTIVITY_PICK_CONTACT = 13
@@ -277,7 +277,9 @@ class ManagerActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-
+    override fun onOpenSettings() {
+        settingOpen(viewModel.settings)
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

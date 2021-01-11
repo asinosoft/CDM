@@ -18,23 +18,52 @@ import java.io.IOException
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import com.asinosoft.cdm.detail_contact.ContactDetailFragment
+import com.asinosoft.cdm.fragments.ContactSettingsFragment
+import com.asinosoft.cdm.fragments.ScrollViewListener
 import com.jaeger.library.StatusBarUtil
+import github.chenupt.dragtoplayout.DragTopLayout
+import kotlinx.android.synthetic.main.activity_detail_history.*
+import kotlinx.android.synthetic.main.settings_layout.*
+import net.cachapa.expandablelayout.ExpandableLayout.State.COLLAPSED
+import net.cachapa.expandablelayout.ExpandableLayout.State.EXPANDED
 import java.lang.Exception
 
 
-class DetailHistoryActivity : AppCompatActivity() {
+class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener {
 
     lateinit var viewPager: ViewPager
+    lateinit var settingsFragment : ContactSettingsFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_history)
 
+        drag_layout.listener(object  : DragTopLayout.PanelListener{
+            override fun onPanelStateChanged(panelState: DragTopLayout.PanelState?) {
+                val state  = panelState
+                if(state?.toInt() == COLLAPSED){
+                    drag_layout.setTouchMode(false)
+                    scrollView.setScrollingEnabled(true)
+                }
+            }
+
+            override fun onRefresh() {
+
+            }
+
+            override fun onSliding(ratio: Float) {
+
+            }
+        }
+
+        )
+        settingsFragment =  ContactSettingsFragment()
         val adapter = FragmentPagerItemAdapter(
             supportFragmentManager, FragmentPagerItems.with(this)
                 .add("История", HistoryDetailFragment().javaClass)
 //                .add("Настройки", HistoryOptionFragment::class.java)
                 .add("Контакт", ContactDetailFragment().javaClass)
+                .add("Настройки", settingsFragment.javaClass)
                 .create()
         )
 
@@ -83,6 +112,8 @@ class DetailHistoryActivity : AppCompatActivity() {
 
     }
 
-
+    override fun onScrolledToTop() {
+        drag_layout.setTouchMode(true)
+    }
 }
 

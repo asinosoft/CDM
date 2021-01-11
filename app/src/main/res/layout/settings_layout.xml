@@ -278,8 +278,8 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/circleImageView"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="86dp"
+                android:layout_height="86dp"
                 android:layout_marginTop="20dp"
                 android:src="@drawable/contact_unfoto"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -635,8 +635,8 @@
 
                         <com.asinosoft.cdm.CircularImageView
                             android:id="@+id/contact"
-                            android:layout_width="64dp"
-                            android:layout_height="64dp"
+                            android:layout_width="86dp"
+                            android:layout_height="86dp"
                             android:layout_centerInParent="true"
                             android:src="@drawable/contact_unfoto"/>
 

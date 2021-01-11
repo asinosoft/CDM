@@ -16,6 +16,9 @@ import org.jetbrains.anko.support.v4.runOnUiThread
 /**
  * Класс кастомной клавиатуры.
  */
+interface KeyBoardListener{
+    fun onOpenSettings()
+}
 class Keyboard: Fragment() {
 
     override fun onCreateView(
@@ -96,6 +99,10 @@ class Keyboard: Fragment() {
         rootView.image_clear.setOnClickListener {
             input_text.text = ""
             activity?.onBackPressed()
+        }
+
+        rootView.settingsButton.setOnClickListener {
+            (activity as KeyBoardListener).onOpenSettings()
         }
 
         return rootView
