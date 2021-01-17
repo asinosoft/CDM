@@ -14,6 +14,7 @@ import com.asinosoft.cdm.databinding.CalllogObjectBinding
 import com.asinosoft.cdm.globals.Globals
 import com.zerobranch.layout.SwipeLayout
 import kotlinx.coroutines.*
+import org.jetbrains.anko.imageResource
 import org.jetbrains.anko.runOnUiThread
 import kotlin.coroutines.CoroutineContext
 
@@ -62,7 +63,7 @@ class AdapterCallLogs(
     override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
-        holder.bind(items[position],position)
+        holder.bind(items[position], position)
     }
 
     private fun openDetail(item: HistoryItem) {
@@ -128,7 +129,7 @@ class AdapterCallLogs(
 
     inner class HolderHistory(val v: CalllogObjectBinding) : RecyclerView.ViewHolder(v.root) {
 
-        fun bind(item: HistoryItem, pos : Int) {
+        fun bind(item: HistoryItem, pos: Int) {
 
             with(v) {
                 if (!item.contactID.isNullOrBlank())
@@ -142,6 +143,13 @@ class AdapterCallLogs(
                 number.text = "${item.numberContact}, ${Metoths.getFormatedTime(item.duration)}"
                 timeContact.text = item.time
                 dateContact.text = item.date
+                val settings = Loader(App.INSTANCE).loadContactSettings(item.numberContact)
+                imageLeftAction.imageResource =
+                    if (settings.leftButton != Actions.WhatsApp) R.drawable.telephony_call_192
+                    else R.drawable.whatsapp_192
+                imageRightAction.imageResource =
+                    if (settings.rightButton != Actions.WhatsApp) R.drawable.telephony_call_192
+                    else R.drawable.whatsapp_192
 
                 setColors(true)
 
@@ -156,10 +164,14 @@ class AdapterCallLogs(
                     override fun onOpen(direction: Int, isContinuous: Boolean) {
                         when (direction) {
                             SwipeLayout.RIGHT -> {
-                               Metoths.callPhone(item.numberContact, context!!)
+                                if (settings.rightButton == Actions.WhatsApp)
+                                    Metoths.callPhone(item.numberContact, context!!)
+                                else Metoths.openWhatsApp(item.numberContact, context!!)
                             }
                             SwipeLayout.LEFT -> {
-                                Metoths.openWhatsApp(item.numberContact, context!!)
+                                if (settings.leftButton == Actions.WhatsApp)
+                                    Metoths.callPhone(item.numberContact, context!!)
+                                else Metoths.openWhatsApp(item.numberContact, context!!)
                             }
                             else -> Log.e(
                                 "AdapterHistory.kt: ",

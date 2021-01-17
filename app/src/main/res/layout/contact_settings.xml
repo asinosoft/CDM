@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.asinosoft.cdm.LockableScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:id="@+id/scrollView">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+
+
+
+
+
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            android:visibility="gone"
+            android:layout_marginTop="40dp"
+            android:backgroundTint="@color/white_gray_light">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_view_text3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white_gray"
+                    app:cardCornerRadius="20dp"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:focusable="true"
+                    android:clickable="true">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="20dp"
+                        android:text="Стиль приложения:"
+                        android:textColor="@color/purple"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+
+                    <cdflynn.android.library.crossview.CrossView
+                        android:id="@+id/cross3"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:padding="20dp"
+                        android:backgroundTint="@color/purple"
+                        app:lineColor="@android:color/black"
+                        android:layout_gravity="end|center" />
+
+
+                </androidx.cardview.widget.CardView>
+
+                <net.cachapa.expandablelayout.ExpandableLayout
+                    android:id="@+id/expandable3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/card_view_text3"
+                    app:el_expanded="true">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/content3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true"
+                        android:paddingTop="20dp"
+                        android:paddingBottom="20dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/card_view_text4"/>
+                </net.cachapa.expandablelayout.ExpandableLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            android:layout_marginTop="40dp"
+            android:backgroundTint="@color/white_gray_light">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+
+                <net.cachapa.expandablelayout.ExpandableLayout
+                    android:id="@+id/expandable4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/card_view_text4"
+                    app:el_expanded="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:id="@+id/content4"
+                            android:layout_width="match_parent"
+                            android:layout_height="350dp"
+                            android:animateLayoutChanges="true"
+                            android:paddingTop="20dp"
+                            android:paddingBottom="20dp">
+
+                            <com.asinosoft.cdm.CircularImageView
+                                android:id="@+id/contact"
+                                android:layout_width="86dp"
+                                android:layout_height="86dp"
+                                android:layout_centerInParent="true"
+                                android:src="@drawable/contact_unfoto"/>
+
+                            <com.asinosoft.cdm.CircularImageView
+                                android:id="@+id/cirTop"
+                                android:layout_width="86dp"
+                                android:layout_height="86dp"
+                                android:layout_centerHorizontal="true"
+                                android:layout_above="@id/contact"
+                                android:layout_marginBottom="10dp"
+                                android:src="@drawable/contact_unfoto"/>
+
+                            <com.asinosoft.cdm.CircularImageView
+                                android:id="@+id/cirBottom"
+                                android:layout_width="86dp"
+                                android:layout_height="86dp"
+                                android:layout_centerHorizontal="true"
+                                android:layout_below="@id/contact"
+                                android:layout_marginTop="10dp"
+                                android:src="@drawable/contact_unfoto"/>
+
+                            <com.asinosoft.cdm.CircularImageView
+                                android:id="@+id/cirLeft"
+                                android:layout_width="86dp"
+                                android:layout_height="86dp"
+                                android:layout_centerVertical="true"
+                                android:layout_toStartOf="@id/contact"
+                                android:layout_marginEnd="10dp"
+                                android:src="@drawable/contact_unfoto"/>
+
+                            <com.asinosoft.cdm.CircularImageView
+                                android:id="@+id/cirRight"
+                                android:layout_width="86dp"
+                                android:layout_height="86dp"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@id/contact"
+                                android:layout_marginStart="10dp"
+                                android:src="@drawable/contact_unfoto"/>
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="20dp"
+                            android:gravity="center">
+
+                            <com.asinosoft.cdm.CircularImageView
+                                android:id="@+id/cirChoose1"
+                                android:layout_width="86dp"
+                                android:layout_height="86dp"
+                                android:src="@drawable/contact_unfoto"
+                                android:layout_marginHorizontal="10dp"/>
+
+                            <com.asinosoft.cdm.CircularImageView
+                                android:id="@+id/cirChoose2"
+                                android:layout_width="86dp"
+                                android:layout_height="86dp"
+                                android:layout_toEndOf="@id/cirChoose1"
+                                android:src="@drawable/contact_unfoto"
+                                android:layout_marginHorizontal="10dp"/>
+
+                            <com.asinosoft.cdm.CircularImageView
+                                android:id="@+id/cirChoose3"
+                                android:layout_width="86dp"
+                                android:layout_height="86dp"
+                                android:src="@drawable/contact_unfoto"
+                                android:visibility="gone"/>
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+                </net.cachapa.expandablelayout.ExpandableLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.cardview.widget.CardView>
+
+
+
+    </LinearLayout>
+
+</com.asinosoft.cdm.LockableScrollView>

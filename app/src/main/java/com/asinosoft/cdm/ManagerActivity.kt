@@ -284,7 +284,11 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         scrollView.setScrollingEnabled(true)
+        Globals.adapterLogs?.let {
+            it.notifyDataSetChanged()
+        }
         if (requestCode == ACTIVITY_PICK_CONTACT && resultCode == Activity.RESULT_OK) {
+
             viewModel.onResult(requestCode, requestCode, data)
         } else if (requestCode == ACTIVITY_SETTINGS && resultCode == Activity.RESULT_OK) {
             viewModel.start(

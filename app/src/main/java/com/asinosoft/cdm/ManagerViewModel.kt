@@ -36,7 +36,7 @@ import org.jetbrains.anko.vibrator
  * Класс фоновой логики главного экрана
  */
 class ManagerViewModel : ViewModel() {
-
+    var slectedContactsLoaded = false
     companion object {
         const val VIBRO = 30L
     }
@@ -258,7 +258,10 @@ class ManagerViewModel : ViewModel() {
             }
             childPos
         }
-        listCirs.addAll(getCirs() as List<CircleImage>)
+        if(!slectedContactsLoaded) {
+            listCirs.addAll(getCirs() as List<CircleImage>)
+            slectedContactsLoaded = true
+        }
         v.deleteCir.apply {
             setOnDragListener { view, event ->
                 try {

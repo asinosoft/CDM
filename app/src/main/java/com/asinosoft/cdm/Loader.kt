@@ -47,12 +47,27 @@ class Loader(contextBase: Context) {
         return settingMoshi.fromJson(settings)?: Settings()
     }
 
+    fun loadContactSettings(contactNumber : String): Settings{
+        val settings = myPref.getString(contactNumber, null)
+        if (settings == null) {
+            //Toast.makeText(context, "Настройки не обнаружены!", Toast.LENGTH_SHORT).show()
+            return  Settings()
+        }
+        return settingMoshi.fromJson(settings)?: Settings()
+    }
+
     /**
      * Сохранение настроек
      */
     fun saveSettings(settings: Settings){
         val e = myPref.edit()
         e.putString(Keys.Settings, settingMoshi.toJson(settings))
+        e.apply()
+    }
+
+    fun saveContactSettings(contactNumber : String, settings: Settings){
+        val e = myPref.edit()
+        e.putString(contactNumber, settingMoshi.toJson(settings))
         e.apply()
     }
 

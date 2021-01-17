@@ -19,6 +19,7 @@ import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import com.asinosoft.cdm.detail_contact.ContactDetailFragment
 import com.asinosoft.cdm.fragments.ContactSettingsFragment
+import com.asinosoft.cdm.fragments.NumberGetter
 import com.asinosoft.cdm.fragments.ScrollViewListener
 import com.jaeger.library.StatusBarUtil
 import github.chenupt.dragtoplayout.DragTopLayout
@@ -29,21 +30,28 @@ import net.cachapa.expandablelayout.ExpandableLayout.State.EXPANDED
 import java.lang.Exception
 
 
-class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener {
+class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener, NumberGetter {
 
     lateinit var viewPager: ViewPager
     lateinit var settingsFragment : ContactSettingsFragment
+    var contacNumber : String? = null
+
+    override fun getNumber(): String? = contacNumber
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_history)
+        contacNumber = intent.getStringExtra(Keys.number)
+
 
         drag_layout.listener(object  : DragTopLayout.PanelListener{
             override fun onPanelStateChanged(panelState: DragTopLayout.PanelState?) {
                 val state  = panelState
                 if(state?.toInt() == COLLAPSED){
-                    drag_layout.setTouchMode(false)
-                    scrollView.setScrollingEnabled(true)
+//                    drag_layout.setTouchMode(false)
+//                    scrollView?.let {
+//                        it.setScrollingEnabled(true)
+//                    }
                 }
             }
 
