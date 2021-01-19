@@ -46,7 +46,13 @@ class CirAdapter(var items: MutableList<CircleImage>, val context: Context, val 
                 if (cir.parent != null) (cir.parent as ViewGroup).removeView(cir)
                 it.addView(cir.apply {
                     setActionImage(v.actionView)
-                    this.directActions = settings.toDirectActions()
+                    val number = cir.contact?.phoneNumbers?.first()?.number
+                    number?.let {
+                        this.directActions = Loader(v.root.context).loadContactSettings(it).toDirectActions()
+
+                    } ?: kotlin.run {
+                        this.directActions = settings.toDirectActions()
+                    }
                     deleteListener = {
                         items.removeAt(absoluteAdapterPosition)
                         notifyItemRemoved(absoluteAdapterPosition)

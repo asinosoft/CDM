@@ -51,7 +51,7 @@ class Loader(contextBase: Context) {
         val settings = myPref.getString(contactNumber, null)
         if (settings == null) {
             //Toast.makeText(context, "Настройки не обнаружены!", Toast.LENGTH_SHORT).show()
-            return  Settings()
+            return loadSettings()
         }
         return settingMoshi.fromJson(settings)?: Settings()
     }

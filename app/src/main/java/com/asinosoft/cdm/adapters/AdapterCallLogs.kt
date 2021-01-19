@@ -5,6 +5,7 @@ import android.content.Intent
 import android.provider.CallLog
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent.ACTION_DOWN
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.*
@@ -129,6 +130,19 @@ class AdapterCallLogs(
 
     inner class HolderHistory(val v: CalllogObjectBinding) : RecyclerView.ViewHolder(v.root) {
 
+        private fun setIcons(
+            settings: Settings,
+            imageLeftAction: CircularImageView,
+            imageRightAction: CircularImageView
+        ) {
+            imageLeftAction.imageResource =
+                if (settings.leftButton == Actions.WhatsApp) R.drawable.telephony_call_192
+                else R.drawable.whatsapp_192
+            imageRightAction.imageResource =
+                if (settings.rightButton == Actions.WhatsApp) R.drawable.telephony_call_192
+                else R.drawable.whatsapp_192
+        }
+
         fun bind(item: HistoryItem, pos: Int) {
 
             with(v) {
@@ -145,10 +159,10 @@ class AdapterCallLogs(
                 dateContact.text = item.date
                 val settings = Loader(App.INSTANCE).loadContactSettings(item.numberContact)
                 imageLeftAction.imageResource =
-                    if (settings.leftButton != Actions.WhatsApp) R.drawable.telephony_call_192
+                    if (settings.leftButton == Actions.WhatsApp) R.drawable.telephony_call_192
                     else R.drawable.whatsapp_192
                 imageRightAction.imageResource =
-                    if (settings.rightButton != Actions.WhatsApp) R.drawable.telephony_call_192
+                    if (settings.rightButton == Actions.WhatsApp) R.drawable.telephony_call_192
                     else R.drawable.whatsapp_192
 
                 setColors(true)
@@ -160,16 +174,26 @@ class AdapterCallLogs(
                     CallLog.Calls.BLOCKED_TYPE -> typeCall.setImageResource(R.drawable.baseline_call_canceled_24)
                 }
 
+                dragLayout.setOnTouchListener { view, motionEvent ->
+                    if(motionEvent.action == ACTION_DOWN){
+                        val settings = Loader(App.INSTANCE).loadContactSettings(item.numberContact)
+                        setIcons(settings, imageLeftAction, imageRightAction)
+                    }
+                    false
+                }
+
                 swipeLayout.setOnActionsListener(object : SwipeLayout.SwipeActionsListener {
                     override fun onOpen(direction: Int, isContinuous: Boolean) {
+                        val settings = Loader(App.INSTANCE).loadContactSettings(item.numberContact)
+                        setIcons(settings, imageLeftAction, imageRightAction)
                         when (direction) {
                             SwipeLayout.RIGHT -> {
-                                if (settings.rightButton == Actions.WhatsApp)
+                                if (settings.rightButton != Actions.WhatsApp)
                                     Metoths.callPhone(item.numberContact, context!!)
                                 else Metoths.openWhatsApp(item.numberContact, context!!)
                             }
                             SwipeLayout.LEFT -> {
-                                if (settings.leftButton == Actions.WhatsApp)
+                                if (settings.leftButton != Actions.WhatsApp)
                                     Metoths.callPhone(item.numberContact, context!!)
                                 else Metoths.openWhatsApp(item.numberContact, context!!)
                             }

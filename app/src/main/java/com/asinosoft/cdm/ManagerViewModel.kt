@@ -85,6 +85,11 @@ class ManagerViewModel : ViewModel() {
         activity.supportFragmentManager.findFragmentById(R.id.keyboard) as Keyboard
     }
 
+    fun updateLists(){
+        this.v.recyclerView.adapter?.notifyDataSetChanged()
+        adapterCallLogs.notifyDataSetChanged()
+    }
+
     fun start(
         v: ActivityManagerBinding,
         context: Context,

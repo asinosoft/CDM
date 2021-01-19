@@ -256,6 +256,9 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         Globals.adapterLogs?.let {
             it.notifyDataSetChanged()
         }
+        viewModel?.let {
+            it.updateLists()
+        }
         if(Globals.firstLaunch) {
             updateLogs()
         }
