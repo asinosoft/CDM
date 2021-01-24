@@ -380,7 +380,7 @@ class ManagerViewModel : ViewModel() {
     fun saveCirs() {
         var str = ""
         listCirs.forEach {
-            str += adapterCirMoshi.toJson(CirPairData(it.contact, it.contactSettings)) + "<end>"
+            str += adapterCirMoshi.toJson(CirPairData(it.contact, it.contactSettings,it.selectedNumber)) + "<end>"
         }
         sharedPreferences.edit().apply {
             putString(Keys.Cirs, str)
@@ -404,6 +404,10 @@ class ManagerViewModel : ViewModel() {
         cursor?.close()
         val contact = Contacts.getQuery().whereEqualTo(Contact.Field.ContactId, id).find()
         (v.recyclerView.adapter as CirAdapter).setContact(posPicker, contact.first())
+    }
+
+    fun onResult(contact: Contact, number : String? = null){
+        (v.recyclerView.adapter as CirAdapter).setContact(posPicker, contact)
     }
 
 }

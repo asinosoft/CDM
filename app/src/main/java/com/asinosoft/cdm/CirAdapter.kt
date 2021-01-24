@@ -23,8 +23,9 @@ class CirAdapter(var items: MutableList<CircleImage>, val context: Context, val 
 
     override fun getItemCount() = items.size
 
-    fun setContact(pos: Int, contact: Contact){
+    fun setContact(pos: Int, contact: Contact, number : String? = null){
         items[pos].contact = contact
+        items[pos].selectedNumber = number
         notifyItemChanged(pos)
     }
 

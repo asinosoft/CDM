@@ -69,7 +69,8 @@ class CircleImage@JvmOverloads constructor(
     var openEdit: (Int, Contact, ContactSettings) -> Unit = {_, _, _ -> },
     var touchDownForIndex: () -> Unit = {},
     var touchDown: (Int) -> Unit = {},
-    var lockableNestedScrollView: LockableNestedScrollView? = null
+    var lockableNestedScrollView: LockableNestedScrollView? = null,
+    var selectedNumber : String? = null
 ): CircularImageView(context, attrs, defStyleAttr) {//TODO: Добавь в настройках изменение типа управления кнопками (перетаскивание, меню)
 
     companion object{
@@ -258,6 +259,10 @@ class CircleImage@JvmOverloads constructor(
 
     private fun onTouchDown(event: MotionEvent) {
         Log.d("CircleImage", "Action TouchDown -> (${this.x}; ${this.y}) --> (${event.rawX}; ${event.rawY}) ")
+        val number = contact?.phoneNumbers?.first()?.number
+        number?.let {
+            this.directActions = Loader(this.context).loadContactSettings(it).toDirectActions()
+        }
         touchDownForIndex()
         touchStart = event.toPointF()
         cirStart = this.toPointF()
