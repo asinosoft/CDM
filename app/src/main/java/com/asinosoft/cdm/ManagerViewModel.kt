@@ -365,6 +365,9 @@ class ManagerViewModel : ViewModel() {
 
     fun newCir(settings: Settings, touchHelper: ItemTouchHelper, pair: CirPairData) =
         newCir(settings, touchHelper).apply {
+            pair.selectedNumber?.let {
+                selectedNumber = it
+            }
             pair.contact?.let {
                 contact = it
             }
@@ -407,7 +410,7 @@ class ManagerViewModel : ViewModel() {
     }
 
     fun onResult(contact: Contact, number : String? = null){
-        (v.recyclerView.adapter as CirAdapter).setContact(posPicker, contact)
+        (v.recyclerView.adapter as CirAdapter).setContact(posPicker, contact, number)
     }
 
 }

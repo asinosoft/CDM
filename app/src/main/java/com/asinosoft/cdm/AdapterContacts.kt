@@ -140,6 +140,7 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
 
         fun bind(item: Contact, itemClickListerner: View.OnClickListener) {
             item.photoUri?.let { v.imageContact.setImageURI(it.toUri()) }
+                ?: v.imageContact.setImageResource(R.drawable.contact_unfoto)
             v.name.text = item.displayName
             val t = item.phoneNumbers
             var tNum = ""

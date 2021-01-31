@@ -61,7 +61,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     /**
      * ViewModel главного экрана, отвечает за всю фоновую логику
      */
-    private lateinit var viewModel: ManagerViewModel
+    private  var viewModel: ManagerViewModel? =null
     private lateinit var keyboard: Keyboard
     private val moreMenu by powerMenu(MoreMenuFactory::class)
     val PERMISSIONS = arrayOf(
@@ -219,7 +219,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
 
 
     fun startForView() {
-        viewModel.start(
+        viewModel?.start(
             v,
             this,
             lifecycle,
@@ -227,7 +227,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
             settingsOpen = { settingOpen(it) },
             activity = this
         )
-        viewModel.initViews()
+        viewModel?.initViews()
     }
 
     private fun pickContact() {
@@ -250,7 +250,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     }
 
     override fun onStop() {
-        viewModel.saveCirs()
+        viewModel?.saveCirs()
         super.onStop()
     }
 
@@ -282,13 +282,13 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
 
     override fun onDestroy() {
         Log.d("${this.javaClass}", "onDestroy: Destroy!")
-        viewModel.onDestroy()
+        viewModel?.onDestroy()
         offerReplacingDefaultDialer()
         super.onDestroy()
     }
 
     override fun onOpenSettings() {
-        settingOpen(viewModel.settings)
+        settingOpen(viewModel?.settings as Settings)
     }
 
     fun showNumberDialog(contact: Contact) {
@@ -300,7 +300,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
             }
             val dialog = AlertDialogUtils.dialogListWithoutConfirm(this, "Выберите номер")
             val adapter = NumbeAdapter {
-                viewModel.onResult(contact)
+                viewModel?.onResult(contact, number = it)
                 dialog.dismiss()
             }
             val recyclerView = dialog.findViewById<RecyclerView>(R.id.recycler_popup)
@@ -324,7 +324,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
             }
 
         } else if (requestCode == ACTIVITY_SETTINGS && resultCode == Activity.RESULT_OK) {
-            viewModel.start(
+            viewModel?.start(
                 v,
                 this,
                 lifecycle,
@@ -332,7 +332,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
                 settingsOpen = { settingOpen(it) },
                 activity = this
             )
-            viewModel.initViews(false)
+            viewModel?.initViews(false)
         }
     }
 

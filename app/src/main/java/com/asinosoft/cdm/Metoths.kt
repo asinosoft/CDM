@@ -222,10 +222,14 @@ class Metoths {
             Intent(Intent.ACTION_VIEW).apply { data = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, idContact) }.let(context::startActivity)
         }
 
-        fun openDetailContact(num: String, context: Context){
+        fun openDetailContact(num: String, item: Contact? = null, context: Context){
 
             Intent(context, DetailHistoryActivity::class.java).apply {
                 putExtra(Keys.number, num)
+                item?.let {
+                    putExtra(Keys.id, it.id)
+                }
+
             }.let(context::startActivity)
         }
 

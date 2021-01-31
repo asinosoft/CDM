@@ -134,7 +134,7 @@ class CircleImage@JvmOverloads constructor(
             if (!isMoving) {
                 if (contact == null) {
                     pickContactForNum()
-                } else openDetailContact(contact!!.phoneNumbers.first().normalizedNumber, context)
+                } else openDetailContact(selectedNumber as String, contact, context = context)
             }
         }
     }
@@ -259,7 +259,7 @@ class CircleImage@JvmOverloads constructor(
 
     private fun onTouchDown(event: MotionEvent) {
         Log.d("CircleImage", "Action TouchDown -> (${this.x}; ${this.y}) --> (${event.rawX}; ${event.rawY}) ")
-        val number = contact?.phoneNumbers?.first()?.number
+        val number = selectedNumber
         number?.let {
             this.directActions = Loader(this.context).loadContactSettings(it).toDirectActions()
         }

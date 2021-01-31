@@ -15,7 +15,15 @@ import androidx.annotation.ColorInt
 import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
 import com.asinosoft.cdm.*
+import kotlinx.android.synthetic.main.contact_settings.*
 import kotlinx.android.synthetic.main.settings_layout.*
+import kotlinx.android.synthetic.main.settings_layout.cirBottom
+import kotlinx.android.synthetic.main.settings_layout.cirChoose1
+import kotlinx.android.synthetic.main.settings_layout.cirChoose2
+import kotlinx.android.synthetic.main.settings_layout.cirChoose3
+import kotlinx.android.synthetic.main.settings_layout.cirLeft
+import kotlinx.android.synthetic.main.settings_layout.cirRight
+import kotlinx.android.synthetic.main.settings_layout.cirTop
 import org.jetbrains.anko.image
 
 interface ScrollViewListener {
@@ -48,6 +56,7 @@ class ContactSettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         scrollView = view.findViewById(R.id.scrollView)
         scrollView.setScrollingEnabled(false)
+        number.text = contacNumber
 
         scrollView.setOnScrollChangeListener { view, scrollX, scrollY, oldScrollX, oldScrollY ->
             if (oldScrollY > 0 && scrollY == 0) {

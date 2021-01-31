@@ -84,7 +84,8 @@ class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener, NumberGet
         val imageView = findViewById<ImageView>(R.id.image)
         StatusBarUtil.setTranslucentForImageView(this, imageView)
         try {
-        imageView.setImageDrawable(getPhotoSaffety(intent.getStringExtra(Keys.id)!!.toLong()))
+        val id = intent.getStringExtra(Keys.id)
+        imageView.setImageDrawable(getPhotoSaffety(id!!.toLong()))
         }catch (e: Exception){}
 
     }

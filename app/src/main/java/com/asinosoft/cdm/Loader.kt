@@ -41,7 +41,7 @@ class Loader(contextBase: Context) {
     fun loadSettings(): Settings{
         val settings = myPref.getString(Keys.Settings, null)
         if (settings == null) {
-            Toast.makeText(context, "Настройки не обнаружены!", Toast.LENGTH_SHORT).show()
+           // Toast.makeText(context, "Настройки не обнаружены!", Toast.LENGTH_SHORT).show()
             return  Settings()
         }
         return settingMoshi.fromJson(settings)?: Settings()

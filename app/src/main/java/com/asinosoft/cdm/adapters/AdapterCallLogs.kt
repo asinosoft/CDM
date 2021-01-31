@@ -152,6 +152,7 @@ class AdapterCallLogs(
                             imageContact.setImageBitmap(bitmap)
                         }
                     }
+
 //                imageContact.setImageDrawable(item.image)
                 name.text = item.nameContact
                 number.text = "${item.numberContact}, ${Metoths.getFormatedTime(item.duration)}"
