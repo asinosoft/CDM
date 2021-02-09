@@ -320,7 +320,11 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         if (requestCode == ACTIVITY_PICK_CONTACT && resultCode == Activity.RESULT_OK) {
             val contact = Ut.getContactFromIntent(data)
             contact?.let {
-                showNumberDialog(it)
+                if(it.phoneNumbers.size > 1) {
+                    showNumberDialog(it)
+                } else {
+                    viewModel?.onResult(contact, number = it.phoneNumbers.first().number)
+                }
             }
 
         } else if (requestCode == ACTIVITY_SETTINGS && resultCode == Activity.RESULT_OK) {

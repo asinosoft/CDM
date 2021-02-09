@@ -36,6 +36,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Actions.*
 import com.asinosoft.cdm.Metoths.Companion.Direction.*
+import com.asinosoft.cdm.globals.Globals.passedContactId
 import com.github.tamir7.contacts.Contact
 import net.cachapa.expandablelayout.util.FastOutSlowInInterpolator
 import org.jetbrains.anko.toast
@@ -227,6 +228,7 @@ class Metoths {
             Intent(context, DetailHistoryActivity::class.java).apply {
                 putExtra(Keys.number, num)
                 item?.let {
+                    passedContactId = it.id
                     putExtra(Keys.id, it.id)
                 }
 

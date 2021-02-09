@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
@@ -241,20 +242,40 @@ class CircleImage@JvmOverloads constructor(
         }
     }
 
-    private fun startAction(action: Actions) {
 
-        val num = contact!!.phoneNumbers[if (contactSettings?.usedNum != null) contactSettings?.usedNum!! else 0].normalizedNumber
-        when (action){
-            WhatsApp -> Metoths.openWhatsApp(num, context)
-            Viber -> openViber(num, context)
-            Telegram -> openTelegram(num, context)
-            PhoneCall -> callPhone(num, context)
-            Email -> {
-                if (!contact!!.emails.isNullOrEmpty()) contact!!.emails.first()?.let { mailToEmail(it.address, context) }
-                else Snackbar.make(rootView, "Контакт без почты!", Snackbar.LENGTH_SHORT).show()
-            }
-            Sms -> sendSMS(num, context)
+
+    private fun   startAction(action: Actions) {
+
+       // val num = contact!!.phoneNumbers[if (contactSettings?.usedNum != null) contactSettings?.usedNum!! else 0].normalizedNumber
+        val errorMes = fun(){
+            Toast.makeText(context,"Not correct number", Toast.LENGTH_LONG).show()
+            return
         }
+        var num : String? = null
+        contact?.phoneNumbers?.firstOrNull {
+            it.number == selectedNumber
+        } ?.let {
+
+           it.normalizedNumber
+               ?.let {
+               num = it
+           } ?: errorMes()
+
+        } ?: errorMes()
+        num?.let {
+            when (action){
+                WhatsApp -> Metoths.openWhatsApp(it, context)
+                Viber -> openViber(it, context)
+                Telegram -> openTelegram(it, context)
+                PhoneCall -> callPhone(it, context)
+                Email -> {
+                    if (!contact!!.emails.isNullOrEmpty()) contact!!.emails.first()?.let { mailToEmail(it.address, context) }
+                    else Snackbar.make(rootView, "Контакт без почты!", Snackbar.LENGTH_SHORT).show()
+                }
+                Sms -> sendSMS(it, context)
+            }
+        }
+
     }
 
     private fun onTouchDown(event: MotionEvent) {

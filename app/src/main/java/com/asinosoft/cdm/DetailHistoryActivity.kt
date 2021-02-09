@@ -21,6 +21,7 @@ import com.asinosoft.cdm.detail_contact.ContactDetailFragment
 import com.asinosoft.cdm.fragments.ContactSettingsFragment
 import com.asinosoft.cdm.fragments.NumberGetter
 import com.asinosoft.cdm.fragments.ScrollViewListener
+import com.asinosoft.cdm.globals.Globals
 import com.jaeger.library.StatusBarUtil
 import github.chenupt.dragtoplayout.DragTopLayout
 import kotlinx.android.synthetic.main.activity_detail_history.*
@@ -33,8 +34,8 @@ import java.lang.Exception
 class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener, NumberGetter {
 
     lateinit var viewPager: ViewPager
-    lateinit var settingsFragment : ContactSettingsFragment
-    var contacNumber : String? = null
+    lateinit var settingsFragment: ContactSettingsFragment
+    var contacNumber: String? = null
 
     override fun getNumber(): String? = contacNumber
 
@@ -44,10 +45,10 @@ class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener, NumberGet
         contacNumber = intent.getStringExtra(Keys.number)
 
 
-        drag_layout.listener(object  : DragTopLayout.PanelListener{
+        drag_layout.listener(object : DragTopLayout.PanelListener {
             override fun onPanelStateChanged(panelState: DragTopLayout.PanelState?) {
-                val state  = panelState
-                if(state?.toInt() == COLLAPSED){
+                val state = panelState
+                if (state?.toInt() == COLLAPSED) {
 //                    drag_layout.setTouchMode(false)
 //                    scrollView?.let {
 //                        it.setScrollingEnabled(true)
@@ -65,7 +66,7 @@ class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener, NumberGet
         }
 
         )
-        settingsFragment =  ContactSettingsFragment()
+        settingsFragment = ContactSettingsFragment()
         val adapter = FragmentPagerItemAdapter(
             supportFragmentManager, FragmentPagerItems.with(this)
                 .add("История", HistoryDetailFragment().javaClass)
@@ -84,9 +85,11 @@ class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener, NumberGet
         val imageView = findViewById<ImageView>(R.id.image)
         StatusBarUtil.setTranslucentForImageView(this, imageView)
         try {
-        val id = intent.getStringExtra(Keys.id)
-        imageView.setImageDrawable(getPhotoSaffety(id!!.toLong()))
-        }catch (e: Exception){}
+            var id: Long? = intent.getStringExtra(Keys.id)?.toLong()
+            if (id == null) id = Globals.passedContactId
+            imageView.setImageDrawable(getPhotoSaffety(id!!.toLong()))
+        } catch (e: Exception) {
+        }
 
     }
 
@@ -108,8 +111,10 @@ class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener, NumberGet
     private fun getPhotoNow(id: Long): Bitmap? = openDisplayPhoto(contactId = id)
 
     private fun openDisplayPhoto(contactId: Long): Bitmap? {
-        val contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId)
-        val displayPhotoUri = Uri.withAppendedPath(contactUri,
+        val contactUri =
+            ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId)
+        val displayPhotoUri = Uri.withAppendedPath(
+            contactUri,
             ContactsContract.Contacts.Photo.DISPLAY_PHOTO
         )
         try {
