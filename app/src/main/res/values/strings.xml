@@ -75,4 +75,11 @@
     <string name="select_sim">Выберите симкарту</string>
 
 
+    <string name="send_v_card_text">Как vCard</string>
+    <string name="send_text">Как текст</string>
+    <string name="share_contact_text">Поделиться</string>
+    <string name="phone_text">Телефон</string>
+    <string name="shared_via_text">Отправить по...</string>
+
+
 </resources>

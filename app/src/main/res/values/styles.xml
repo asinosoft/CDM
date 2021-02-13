@@ -56,4 +56,11 @@
         <item name="android:alpha">0.8</item>
     </style>
 
+    <style name="Toolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
 </resources>
