@@ -21,7 +21,7 @@ import kotlin.coroutines.CoroutineContext
 
 
 class AdapterCallLogs(
-    private var items: ArrayList<HistoryItem>,
+    var items: ArrayList<HistoryItem>,
     val onClick: Boolean = true,
     val context: Context,
     var onAdd: (Int) -> Unit = {}
@@ -32,7 +32,7 @@ class AdapterCallLogs(
     private var nums = ""
     private var regex: Regex? = null
     private var jobFilter: Job = Job()
-    private val buffer = ArrayList<HistoryItem>()
+    val buffer = ArrayList<HistoryItem>()
     private var listBackup = items
 
     init {
@@ -84,6 +84,7 @@ class AdapterCallLogs(
         val lastIndex = items.lastIndex
         items.addAll(buffer)
         notifyItemRangeInserted(lastIndex, items.lastIndex)
+        notifyDataSetChanged()
         buffer.clear()
     }
 

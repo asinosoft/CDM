@@ -29,6 +29,67 @@ class CursorApi {
     companion object {
 
         @SuppressLint("MissingPermission")
+         fun getHistoryItemLatest(context: Context) : HistoryItem?? {
+            var res : HistoryItem? = null
+            val proj = arrayOf(
+                CallLog.Calls.CACHED_NAME,
+                CallLog.Calls.NUMBER,
+                CallLog.Calls.TYPE,
+                CallLog.Calls.DATE,
+                CallLog.Calls._ID,
+                CallLog.Calls.DURATION,
+                CallLog.Calls.CACHED_PHOTO_ID
+            )
+            context.contentResolver.query(
+                CallLog.Calls.CONTENT_URI,
+                proj,
+                null,
+                null,
+                android.provider.CallLog.Calls.DATE + " DESC limit 1;"
+            )?.let { cursor ->
+                val number = cursor.getColumnIndex(CallLog.Calls.NUMBER)
+                val type = cursor.getColumnIndex(CallLog.Calls.TYPE)
+                val dateI = cursor.getColumnIndex(CallLog.Calls.DATE)
+                val name = cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)
+                val id = cursor.getColumnIndex(CallLog.Calls._ID)
+                val dur = cursor.getColumnIndex(CallLog.Calls.DURATION)
+                var photo = cursor.getColumnIndex(CallLog.Calls.CACHED_PHOTO_ID)
+                cursor.moveToFirst()
+                var callDayTime: Long = cursor.getLong(dateI)
+                var date = Date(callDayTime)
+                var sdf =
+                    java.text.SimpleDateFormat(
+                        "HH:mm",
+                        Locale.getDefault(Locale.Category.DISPLAY)
+                    )
+                var formattedDate = sdf.format(date)
+                sdf =
+                    java.text.SimpleDateFormat(
+                        "dd.MM",
+                        Locale.getDefault(Locale.Category.DISPLAY)
+                    )
+                var num = cursor.getString(number)
+                res = HistoryItem(
+                    numberContact = num,
+                    typeCall = cursor.getInt(type),
+                    time = formattedDate,
+//                                image = ContextCompat.getDrawable(context, R.drawable.contact_unfoto)!!,
+                    nameContact = cursor.getString(name) ?: num,
+                    contactID = Funcs.getContactID(context, num) ?: "",
+                    _ID = cursor.getLongOrNull(id),
+                    duration = cursor.getString(dur),
+                    _PhotoID = cursor.getIntOrNull(photo),
+                    //date =  sdf.format(date)
+                    date = if (sdf.format(date) == sdf.format(Calendar.getInstance().time)) "Сегодня" else sdf.format(
+                        date
+                    )
+                )
+            }
+            return res
+        }
+
+
+        @SuppressLint("MissingPermission")
         suspend fun getHistoryListLatest(
             context: Context,
             count: Int = -1,
@@ -74,7 +135,10 @@ class CursorApi {
                             }) && if (i == -1) true else --i >= 0
                         ) {
                             var num = cursor.getString(number)
-                            if (num == "" || (num != numFilter && numFilter != null) || (numUnique && list.containsNumber(num))) continue
+                            if (num == "" || (num != numFilter && numFilter != null) || (numUnique && list.containsNumber(
+                                    num
+                                ))
+                            ) continue
 
                             var callDayTime: Long = cursor.getLong(date)
                             var date = Date(callDayTime)
@@ -104,14 +168,13 @@ class CursorApi {
                                     date
                                 )
                             )
-                                onNext(historyItem)
+                            onNext(historyItem)
 //            Log.d("History: ", "$i = ${historyCell.nameContact} / ${historyCell.date}")
                             list.add(historyItem)
                         }
                     }
                 return@withContext list//if(b) list.reversed() as ArrayList<HistoryCell> else list
             }
-
 
 
         suspend fun getCallLogs(
@@ -154,14 +217,18 @@ class CursorApi {
                         ) {
                             var num = cursor.getString(number)
                             if (num == "") continue
-                            list.add(getDifferCursor(cursor,
-                                context,
-                                number,
-                                type,
-                                date,
-                                name,
-                                id,
-                                dur))
+                            list.add(
+                                getDifferCursor(
+                                    cursor,
+                                    context,
+                                    number,
+                                    type,
+                                    date,
+                                    name,
+                                    id,
+                                    dur
+                                )
+                            )
                         }
                     }
                 return@withContext list
@@ -222,17 +289,19 @@ class CursorApi {
                 moveToFirst()
             }
             return if (list.count() > 1)
-             (list[0] < list[1])
+                (list[0] < list[1])
             else true
         }
 
         fun getPhotoFromID(id: Int, context: Context): Bitmap? {
             val c: Cursor? = context.contentResolver
-                .query(ContactsContract.Data.CONTENT_URI, arrayOf(
-                    ContactsContract.CommonDataKinds.Photo.PHOTO
-                ), ContactsContract.Data._ID + "=?", arrayOf(
-                    id.toString()
-                ), null)
+                .query(
+                    ContactsContract.Data.CONTENT_URI, arrayOf(
+                        ContactsContract.CommonDataKinds.Photo.PHOTO
+                    ), ContactsContract.Data._ID + "=?", arrayOf(
+                        id.toString()
+                    ), null
+                )
             var imageBytes: ByteArray? = null
             if (c != null) {
                 if (c.moveToFirst()) {
@@ -246,8 +315,10 @@ class CursorApi {
         fun getDisplayPhoto(contactId: Long, context: Context): Bitmap? {
             val contactUri =
                 ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId)
-            val displayPhotoUri = Uri.withAppendedPath(contactUri,
-                ContactsContract.Contacts.Photo.DISPLAY_PHOTO)
+            val displayPhotoUri = Uri.withAppendedPath(
+                contactUri,
+                ContactsContract.Contacts.Photo.DISPLAY_PHOTO
+            )
             try {
                 val fd = context.contentResolver.openAssetFileDescriptor(displayPhotoUri, "r")
                 return BitmapFactory.decodeStream(fd!!.createInputStream())

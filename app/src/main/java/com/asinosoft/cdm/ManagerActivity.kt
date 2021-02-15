@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths.Companion.makeTouch
 import com.asinosoft.cdm.Metoths.Companion.toggle
 import com.asinosoft.cdm.adapters.NumbeAdapter
+import com.asinosoft.cdm.api.CursorApi
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.detail_contact.ContactDetailListElement
 import com.asinosoft.cdm.dialer.Utilities
@@ -35,6 +36,7 @@ import com.asinosoft.cdm.globals.Ut
 import com.github.florent37.runtimepermission.RuntimePermission.askPermission
 import com.github.tamir7.contacts.Contact
 import com.github.tamir7.contacts.Contacts
+import com.github.tamir7.contacts.PhoneNumber
 import com.jaeger.library.StatusBarUtil
 import com.skydoves.powermenu.kotlin.powerMenu
 import kotlinx.android.synthetic.main.activity_manager.*
@@ -45,6 +47,7 @@ import kotlinx.android.synthetic.main.keyboard.*
  * Основной класс приложения, отвечает за работу главного экрана (нового) приложения
  */
 class ManagerActivity : AppCompatActivity(), KeyBoardListener {
+    val TAG : String = ManagerActivity.javaClass.simpleName
 
     companion object {
         const val ACTIVITY_PICK_CONTACT = 13
@@ -61,7 +64,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     /**
      * ViewModel главного экрана, отвечает за всю фоновую логику
      */
-    private  var viewModel: ManagerViewModel? =null
+    private var viewModel: ManagerViewModel? = null
     private lateinit var keyboard: Keyboard
     private val moreMenu by powerMenu(MoreMenuFactory::class)
     val PERMISSIONS = arrayOf(
@@ -256,6 +259,17 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
 
     val handler: Handler = Handler()
 
+    private fun showLastCall(){
+        val lastItem = CursorApi.getHistoryItemLatest(this)
+        Log.d(TAG,"showLastCall time: "+lastItem?.time)
+        if(viewModel?.adapterCallLogs?.items?.first()?.time!=lastItem?.time) {
+            viewModel?.adapterCallLogs?.items?.add(0, lastItem as HistoryItem)
+        }
+
+        viewModel?.adapterCallLogs?.notifyDataSetChanged()
+
+    }
+
     override fun onResume() {
         super.onResume()
         recyclerViewHistory.makeTouch(MotionEvent.ACTION_UP)
@@ -263,6 +277,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         Globals.adapterLogs?.let {
             it.notifyDataSetChanged()
         }
+        handler.postDelayed(Runnable { showLastCall() },2000)
         viewModel?.let {
             it.updateLists()
         }
@@ -311,6 +326,19 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         }
     }
 
+    private fun clearDublicateNumbers(numbers: MutableList<PhoneNumber>)
+            : List<PhoneNumber> {
+        val res: MutableList<PhoneNumber> = mutableListOf()
+        numbers.forEach {
+            val number = it
+            val cleanedNumber = it.number.replace(" ", "")
+                .replace("-", "").trim()
+            res?.firstOrNull { it.number == cleanedNumber }
+                ?: res.add(number)
+        }
+        return  res
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         scrollView.setScrollingEnabled(true)
@@ -320,7 +348,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         if (requestCode == ACTIVITY_PICK_CONTACT && resultCode == Activity.RESULT_OK) {
             val contact = Ut.getContactFromIntent(data)
             contact?.let {
-                if(it.phoneNumbers.size > 1) {
+                if (clearDublicateNumbers(it.phoneNumbers).size > 1) {
                     showNumberDialog(it)
                 } else {
                     viewModel?.onResult(contact, number = it.phoneNumbers.first().number)

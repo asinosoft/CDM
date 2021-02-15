@@ -66,7 +66,7 @@ class ManagerViewModel : ViewModel() {
 //    }
 
     private var cirLayoutHeight = 0
-    private val adapterCallLogs: AdapterCallLogs by lazy {
+    val adapterCallLogs: AdapterCallLogs by lazy {
         AdapterCallLogs(
             arrayListOf(),
             context = context,
@@ -87,7 +87,7 @@ class ManagerViewModel : ViewModel() {
 
     fun updateLists(){
         this.v.recyclerView.adapter?.notifyDataSetChanged()
-        adapterCallLogs.notifyDataSetChanged()
+        //adapterCallLogs.notifyDataSetChanged()
     }
 
     fun start(
@@ -129,7 +129,7 @@ class ManagerViewModel : ViewModel() {
         adapterCallLogs.setFilter(num)
     }
 
-    private fun updateHistoryList() {
+     fun updateHistoryList() {
         setHistoryVisibleDown(settings.historyButtom)
         with(if (settings.historyButtom) v.recyclerViewHistoryBottom else v.recyclerViewHistory) {
             layoutManager = object : LinearLayoutManager(
@@ -156,8 +156,9 @@ class ManagerViewModel : ViewModel() {
                                 (adapter as AdapterCallLogs?)?.apply {
                                     if (itemCount <= 20)
                                         addItemByCorutine(it, -1)
-                                    else
+                                    else {
                                         addBuffer(it)
+                                    }
                                 }
                             }
                         },
