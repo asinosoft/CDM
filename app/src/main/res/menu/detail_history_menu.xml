@@ -16,5 +16,11 @@
 
     </item>
 
+    <item
+        android:id="@+id/contactDel"
+        android:title="Удалить"
+        app:showAsAction="withText">
+    </item>
+
 
 </menu>

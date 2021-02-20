@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/delete_dialog_title"
+        android:layout_alignParentTop="true"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:layout_marginBottom="@dimen/cardMarginVertical"
+        android:layout_marginTop="@dimen/cardMarginVertical"
+        android:layout_marginLeft="@dimen/cardMarginHorizontal"
+        android:layout_marginStart="@dimen/cardMarginHorizontal"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:text="@string/delete_contact_title" />
+
+    <!--<View
+        android:id="@+id/dialog_divider_id"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_gravity="center_vertical"
+        android:layout_below="@id/delete_dialog_title"
+        android:background="@android:color/darker_gray"/>-->
+
+    <TextView
+        android:id="@+id/delete_dialog_message"
+        android:layout_below="@id/delete_dialog_title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:layout_marginBottom="@dimen/cardMarginVertical"
+        android:layout_marginTop="@dimen/cardMarginVertical"
+        android:layout_marginLeft="@dimen/cardMarginHorizontal"
+        android:layout_marginStart="@dimen/cardMarginHorizontal"
+        android:textSize="16sp"
+        android:textColor="@android:color/tertiary_text_light"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:text="@string/delete_contact_text" />
+
+    <RelativeLayout
+        android:id="@+id/btn_line_id"
+        android:orientation="horizontal"
+        android:layout_below="@id/delete_dialog_message"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/dialog_ok_btn_id"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryDark"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:text="@android:string/ok"/>
+
+        <Button
+            android:id="@+id/dialog_cancel_btn_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/dialog_ok_btn_id"
+            android:layout_toStartOf="@id/dialog_ok_btn_id"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="@android:string/cancel"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
+    </RelativeLayout>
+
+</RelativeLayout>

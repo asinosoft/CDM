@@ -1,5 +1,6 @@
 package com.asinosoft.cdm
 
+import android.app.Dialog
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
@@ -14,6 +15,8 @@ import android.provider.ContactsContract
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.Window
+import android.widget.Button
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import com.asinosoft.cdm.detail_contact.Contact
 import com.asinosoft.cdm.detail_contact.ContactDetailFragment
+import com.asinosoft.cdm.detail_contact.DeleteContact
 import com.asinosoft.cdm.detail_contact.VCardLoader
 import com.jaeger.library.StatusBarUtil
 import com.ogaclejapan.smarttablayout.SmartTabLayout
@@ -79,11 +83,11 @@ class DetailHistoryActivity : AppCompatActivity() {
         return true
     }
 
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.redContact -> editContact()
             R.id.shareContact -> showShareContactDialog()
+            R.id.contactDel -> showDeletingDialog()
 
             else -> ""
         }
@@ -153,6 +157,38 @@ class DetailHistoryActivity : AppCompatActivity() {
         }
 
         return name
+    }
+
+    private fun showDeletingDialog() {
+        try{
+            val mContactId = intent.getStringExtra(Keys.id)!!.toString()
+
+            val pDialog = Dialog(this)
+            pDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            pDialog.setContentView(R.layout.delete_contact_dialog)
+
+            val cancelBtn = pDialog.findViewById<Button>(R.id.dialog_cancel_btn_id)
+            if(null != cancelBtn){
+                cancelBtn.setOnClickListener {
+                    pDialog.dismiss()
+                }
+            }
+            val okBtn = pDialog.findViewById<Button>(R.id.dialog_ok_btn_id)
+            if(null != okBtn) {
+                okBtn.setOnClickListener {
+                    if(null != mContactId) {
+                        val deleter = DeleteContact(baseContext, mContactId)
+                        deleter.makeRequest()
+                    }
+                    pDialog.dismiss()
+                }
+            }
+
+            pDialog.show()
+
+        }catch (e: java.lang.Exception) {
+            Log.e("DetailContactLog", "FullContactDetail showDeletingDialog", e)
+        }
     }
 
     private fun editContact() {
