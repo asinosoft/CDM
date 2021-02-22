@@ -41,35 +41,6 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
         }
     }
 
-    fun getItems() = contacts
-
-    fun setItems(list: List<Contact>, nums: String = ""){
-        contacts = list
-        this.nums = nums
-        notifyDataSetChanged()
-    }
-
-/*
-    private suspend fun List<Contact>.filtered(nums: String) = async {
-        var name: String? = null
-        var phone: String? = null
-        val r: ArrayList<Pair<Contact, Pair<String?, String?>>> = ArrayList()
-        this@filtered.forEach { contact ->
-            regex?.find( contact.displayName)?.let {
-                contact.displayName
-            }
-            contact.phoneNumbers.forEach{
-                if (it.normalizedNumber.contains(nums, true)){
-                    phone = nums
-                    return@forEach
-                }
-            }
-            if (name != null && phone != null) r.add(Pair(contact, Pair(name, phone)))
-        }
-        return@async r
-    }.await()
-*/
-
     private suspend fun List<Contact>.filtered(nums: String) = async {
         val r = ArrayList<Contact>()
         this@filtered.forEach { contact ->
@@ -133,6 +104,7 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
         val intent = Intent(this.context, DetailHistoryActivity::class.java)
         intent.putExtra(Keys.number, item.phoneNumbers.firstOrNull()?.number)
         intent.putExtra(Keys.id, item.id)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context?.startActivity(intent)
     }
 

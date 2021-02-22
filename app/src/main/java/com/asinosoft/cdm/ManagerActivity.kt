@@ -9,10 +9,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.provider.ContactsContract
 import android.telecom.TelecomManager
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.widget.ArrayAdapter
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -33,15 +31,14 @@ import com.asinosoft.cdm.dialer.Utilities
 import com.asinosoft.cdm.globals.AlertDialogUtils
 import com.asinosoft.cdm.globals.Globals
 import com.asinosoft.cdm.globals.Ut
-import com.github.florent37.runtimepermission.RuntimePermission.askPermission
 import com.github.tamir7.contacts.Contact
 import com.github.tamir7.contacts.Contacts
 import com.github.tamir7.contacts.PhoneNumber
 import com.jaeger.library.StatusBarUtil
 import com.skydoves.powermenu.kotlin.powerMenu
 import kotlinx.android.synthetic.main.activity_manager.*
-import kotlinx.android.synthetic.main.alert_dialog_product_search_without_confirm.*
 import kotlinx.android.synthetic.main.keyboard.*
+import timber.log.Timber
 
 /**
  * Основной класс приложения, отвечает за работу главного экрана (нового) приложения
@@ -78,23 +75,28 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         super.onCreate(savedInstanceState)
         v = ActivityManagerBinding.inflate(layoutInflater)
         setContentView(v.root)
-        Contacts.initialize(this)
-        //getPermission()
         if (!hasPermissions(this, *PERMISSIONS)) {
-            requestAllPermisions()
-        } else {
-            initContacts()
-            initActivity()
+            requestAllPermissions()
         }
-
     }
 
-    private fun requestAllPermisions() {
+    override fun onStart() {
+        super.onStart()
+        if(PackageManager.PERMISSION_GRANTED != checkSelfPermission(Manifest.permission.READ_CONTACTS)) {
+            Timber.d("%s NOT PERMITTED!", Manifest.permission.READ_CONTACTS)
+            return
+        }
+
+        initContacts()
+        initActivity()
+    }
+
+    private fun requestAllPermissions() {
         ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION1)
 
     }
 
-    fun hasPermissions(context: Context?, vararg permissions: String?): Boolean {
+    private fun hasPermissions(context: Context?, vararg permissions: String?): Boolean {
         if (context != null && permissions != null) {
             for (permission in permissions) {
                 if (checkSelfPermission(permission!!) != PackageManager.PERMISSION_GRANTED) {
@@ -146,7 +148,10 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     }
 
     private fun initContacts() {
-        val list = Contacts.getQuery().find().filter { !it.phoneNumbers.isNullOrEmpty() }
+        Timber.d("initContacts")
+        Contacts.initialize(this)
+        val list = Contacts.getQuery().hasPhoneNumber().find();
+        Timber.d("%s contacts found", list.size.toString())
 
         recyclerViewContact.layoutManager = LinearLayoutManager(this).apply {
             orientation = LinearLayoutManager.VERTICAL
@@ -169,10 +174,9 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        when {
-            requestCode == REQUEST_PERMISSION && PermissionChecker.PERMISSION_GRANTED in grantResults -> makeCall()
-            requestCode == REQUEST_PERMISSION1 -> kotlin.run { initContacts();initActivity(); updateLogs() }
-        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Timber.i(grantResults.toString());
+        this.onStart()
     }
 
     private fun checkPermission(@Nullable grantResults: IntArray?) {
@@ -207,19 +211,6 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
             )
         }
     }
-
-    private fun getPermission() {
-        askPermission(this).onAccepted {
-            initContacts()
-            initActivity()
-        }
-            .ask {
-                if (it.isAccepted) {
-                    initContacts();initActivity()
-                }
-            }
-    }
-
 
     fun startForView() {
         viewModel?.start(
@@ -261,7 +252,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
 
     private fun showLastCall(){
         val lastItem = CursorApi.getHistoryItemLatest(this)
-        Log.d(TAG,"showLastCall time: "+lastItem?.time)
+        Timber.d("showLastCall time: %s", lastItem?.time)
         if(viewModel?.adapterCallLogs?.items?.first()?.time!=lastItem?.time) {
             viewModel?.adapterCallLogs?.items?.add(0, lastItem as HistoryItem)
         }
@@ -296,7 +287,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     }
 
     override fun onDestroy() {
-        Log.d("${this.javaClass}", "onDestroy: Destroy!")
+        Timber.d("onDestroy: Destroy!")
         viewModel?.onDestroy()
         offerReplacingDefaultDialer()
         super.onDestroy()

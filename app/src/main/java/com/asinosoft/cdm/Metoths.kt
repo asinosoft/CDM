@@ -21,7 +21,6 @@ import android.provider.ContactsContract
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.INVISIBLE
@@ -33,7 +32,6 @@ import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Actions.*
 import com.asinosoft.cdm.Metoths.Companion.Direction.*
 import com.asinosoft.cdm.globals.Globals.passedContactId
@@ -41,10 +39,10 @@ import com.github.tamir7.contacts.Contact
 import net.cachapa.expandablelayout.util.FastOutSlowInInterpolator
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.wrapContent
+import timber.log.Timber
 import java.io.IOException
 import kotlin.math.absoluteValue
 import kotlin.math.sign
-import kotlin.math.withSign
 
 /**
  * Класс важный методов, представляет собой набор низкоуровневых методов.
@@ -88,20 +86,22 @@ class Metoths {
         }
 
         fun sendMsg(telNum: String, context: Context){
+            Timber.i("sendMsg: %s", telNum)
             val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$telNum"))
             context.startActivity(intent)
         }
 
         fun sendEmail(email: String, context: Context){
+            Timber.i("sendEmail: %s", email)
             val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$email"))
             context.startActivity(intent)
         }
 
         fun skypeCall(userName: String, context: Context){
+            Timber.i("skypeCall: %s", userName)
             val sky = Intent("android.intent.action.VIEW")
             sky.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             sky.data = Uri.parse("skype:$userName")
-            Log.d("UTILS", "tel:$userName")
             context.startActivity(sky)
         }
 
@@ -376,7 +376,7 @@ class Metoths {
             try {
                 str = "${duration.toInt() / 60}:${duration.toInt() % 60}"
             } catch (e: Exception) {
-                Log.e("Exception ", e.message ?: "")
+                Timber.e(e)
             }
             return str
         }
@@ -386,13 +386,14 @@ class Metoths {
             try {
                 str = "${duration / 60}:${duration % 60}"
             } catch (e: Exception) {
-                Log.e("Exception ", e.message ?: "")
+                Timber.e(e)
             }
             return str
         }
 
         @SuppressLint("MissingPermission")
         fun callPhone(telNum: String, context: Context){
+            Timber.i("callPhone: %s", telNum)
             val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$telNum"))
             if (ActivityCompat.checkSelfPermission(
                     context,
@@ -405,49 +406,58 @@ class Metoths {
         }
 
         fun sendSMS(phone: String, context: Context) {
+            Timber.i("sendSMS: %s", phone)
             context.startActivity(Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phone, null)))
         }
 
         fun mailToEmail(email: String, context: Context) {
+            Timber.i("mailToEmail: %s", email)
             val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", email, null))
+            emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(Intent.createChooser(emailIntent, "Send email..."))
         }
 
 
         fun openTelegram(phone: String, context: Context) {
+            Timber.i("openTelegram: %s", phone)
             val telegram =
                 Intent(Intent.ACTION_VIEW, Uri.parse("https://telegram.me/InfotechAvl_bot"))
+            telegram.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(telegram)
         }
 
         fun openTelegramNow(id: String, context: Context){
+            Timber.i("openTelegramNow: %s", id)
             val isAppInstalled = appInstalledOrNot("org.telegram.messenger", context)
             if (isAppInstalled) {
-                val intent = Intent().setAction(Intent.ACTION_VIEW)
+                val intent = Intent(Intent.ACTION_VIEW)
                 intent.setDataAndType(Uri.parse("content://com.android.contacts/data/$id"), "vnd.android.cursor.item/vnd.org.telegram.messenger.android.profile")
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
             } else {
                 context.toast("Ошибка! Telegram не установлен!")
             }
-            Log.e("Action: ", "Telegram open!")
         }
 
         fun openViber(phone: String, context: Context) {
-            val intent = Intent("android.intent.action.VIEW")
+            Timber.i("openViber: %s", phone)
+            val intent = Intent(Intent.ACTION_VIEW)
             intent.setClassName("com.viber.voip", "com.viber.voip.WelcomeActivity")
             intent.data = "tel:$phone".toUri()
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
         }
 
         fun openWhatsApp(num: String, context: Context) {
+            Timber.i("openWhatsApp: %s", num)
             val isAppInstalled = appInstalledOrNot("com.whatsapp", context)
             if (isAppInstalled) {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://api.whatsapp.com/send?phone=$num"))
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
             } else {
                 context.toast("Ошибка! WhatsApp не установлен!")
             }
-            Log.e("Action: ", "WhatsApp open!")
         }
 
         private fun appInstalledOrNot(uri: String, context: Context): Boolean {

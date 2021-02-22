@@ -10,13 +10,14 @@
         android:id="@+id/linear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:layout_marginLeft="8dp"
             android:id="@+id/image_clear"
             android:layout_width="32dp"
             android:layout_height="32dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:src="@drawable/ic_close_24px" />
 
@@ -25,15 +26,15 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="36sp"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:textSize="36sp" />
 
         <ImageView
-            android:layout_marginRight="8dp"
             android:id="@+id/image_backspace"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
             android:src="@drawable/ic_backspace_24px" />
 
     </LinearLayout>
