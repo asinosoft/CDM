@@ -38,7 +38,7 @@ class HistoryItemCursorAdapter(
         numberContact = cursor.getString(colNumber),
         typeCall = cursor.getInt(colType),
         time = timeFormat.format(cursor.getLong(colDate)),
-        nameContact = cursor.getString(colName),
+        nameContact = cursor.getString(colName) ?: cursor.getString(colNumber),
         contactID = Funcs.getContactID(context, cursor.getString(colNumber)) ?: "",
         duration = cursor.getString(colDuration),
         _PhotoID = cursor.getIntOrNull(colPhoto),
