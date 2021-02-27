@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.*
 import com.asinosoft.cdm.Metoths.Companion.setColoredText
-import com.asinosoft.cdm.api.CursorApi.Companion.getDisplayPhoto
+import com.asinosoft.cdm.api.CursorApi.getDisplayPhoto
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
 import com.asinosoft.cdm.globals.Globals
 import com.zerobranch.layout.SwipeLayout
@@ -49,9 +49,9 @@ class AdapterCallLogs(
         )
     }
 
-    fun setList(list: ArrayList<HistoryItem>) {
-        this.items = list
-        listBackup = list
+    fun setList(list: List<HistoryItem>) {
+        this.items = ArrayList(list)
+        listBackup = ArrayList(list)
         notifyDataSetChanged()
     }
 

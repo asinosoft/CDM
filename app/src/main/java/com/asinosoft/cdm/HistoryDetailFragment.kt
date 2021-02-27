@@ -43,8 +43,12 @@ class HistoryDetailFragment : Fragment() {
         recyclerView.layoutManager = lim
         recyclerView.adapter = AdapterCallLogs(list,false, context!!)
         GlobalScope.launch(Dispatchers.IO) {
-            CursorApi.getHistoryListLatest(context!!, numFilter = getNum(context!!), onNext = {context?.runOnUiThread {(recyclerView.adapter as AdapterCallLogs).addItem(it)}})
-            context?.runOnUiThread {recyclerView.adapter?.notifyDataSetChanged()}}
+            CursorApi.getContactCallLog(context!!, num)?.let {
+                context?.runOnUiThread {
+                    (recyclerView.adapter as AdapterCallLogs).setList(it)
+                }
+            }
+        }
     }
 
     private fun getNum(context: Context): String {

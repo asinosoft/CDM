@@ -16,6 +16,5 @@ data class HistoryItem(
     var date: String = "",
     var contactID: String = "",
     var photoUrl: String? = null,
-    var _ID: Long? = null,
     var _PhotoID: Int? = null
 )
