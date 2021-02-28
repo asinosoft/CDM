@@ -20,8 +20,7 @@ object CursorApi {
         CallLog.Calls.NUMBER,
         CallLog.Calls.TYPE,
         CallLog.Calls.DATE,
-        CallLog.Calls.DURATION,
-        CallLog.Calls.CACHED_PHOTO_ID
+        CallLog.Calls.DURATION
     )
 
     /**
@@ -35,7 +34,7 @@ object CursorApi {
         "${CallLog.Calls.DATE} DESC"
     )?.let {
         // По каждому контакту показываем только последний звонок
-        HistoryItemCursorAdapter(context, it).getAll().distinctBy { c -> c.contactID }
+        HistoryItemCursorAdapter(context, it).getUnique { c -> c.numberContact }
     }
 
     /**

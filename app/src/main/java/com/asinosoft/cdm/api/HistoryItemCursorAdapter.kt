@@ -3,11 +3,11 @@ package com.asinosoft.cdm.api
 import android.content.Context
 import android.database.Cursor
 import android.provider.CallLog
-import androidx.core.database.getIntOrNull
-import androidx.core.database.getLongOrNull
+import androidx.core.database.getStringOrNull
 import com.asinosoft.cdm.Funcs
 import com.asinosoft.cdm.HistoryItem
 import java.util.*
+import kotlin.collections.HashSet
 
 /**
  * Адаптер для преобразования записей истории звонков в HistoryItem
@@ -24,25 +24,50 @@ class HistoryItemCursorAdapter(
     private val colDate = cursor.getColumnIndex(CallLog.Calls.DATE)
     private val colName = cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)
     private val colDuration = cursor.getColumnIndex(CallLog.Calls.DURATION)
-    private var colPhoto = cursor.getColumnIndex(CallLog.Calls.CACHED_PHOTO_ID)
 
-    fun getAll() : ArrayList<HistoryItem> {
+    // Соответствие контактов и номеров телефононов
+    private val phoneNumberToContactId = HashMap<String, String>()
+
+    fun getAll(): ArrayList<HistoryItem> {
         val result = ArrayList<HistoryItem>()
-        while(cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             result.add(getOne())
         }
         return result
     }
 
-    private fun getOne() = HistoryItem(
-        numberContact = cursor.getString(colNumber),
-        typeCall = cursor.getInt(colType),
-        time = timeFormat.format(cursor.getLong(colDate)),
-        nameContact = cursor.getString(colName) ?: cursor.getString(colNumber),
-        contactID = Funcs.getContactID(context, cursor.getString(colNumber)) ?: "",
-        duration = cursor.getString(colDuration),
-        _PhotoID = cursor.getIntOrNull(colPhoto),
-        date = dateFormat.format(cursor.getLong(colDate))
-    )
+    fun <T> getUnique(distinctBy: (HistoryItem) -> T): ArrayList<HistoryItem> {
+        val set = HashSet<T>()
+        val result = ArrayList<HistoryItem>()
+        while (cursor.moveToNext()) {
+            val item = getOne()
+            if (set.add(distinctBy(item))) {
+                result.add(getOne())
+            }
+        }
+        return result
+    }
 
+    private fun getOne(): HistoryItem {
+        val phoneNumber = cursor.getString(colNumber)
+        val name = cursor.getStringOrNull(colName)
+        val date = cursor.getLong(colDate)
+        val contactID = getContactId(phoneNumber)
+
+        return HistoryItem(
+            numberContact = phoneNumber,
+            typeCall = cursor.getInt(colType),
+            time = timeFormat.format(date),
+            nameContact = when {
+                name.isNullOrEmpty() -> phoneNumber
+                else -> name
+            },
+            contactID = contactID,
+            duration = cursor.getString(colDuration),
+            date = dateFormat.format(date)
+        )
+    }
+
+    private fun getContactId(phoneNumber: String) =
+        phoneNumberToContactId.getOrPut(phoneNumber, { Funcs.getContactID(context, phoneNumber) ?: "" })
 }

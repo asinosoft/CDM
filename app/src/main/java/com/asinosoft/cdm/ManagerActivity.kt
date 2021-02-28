@@ -75,11 +75,6 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         if (!hasPermissions(this, *PERMISSIONS)) {
             requestAllPermissions()
         }
-    }
-
-    override fun onStart() {
-        Timber.d("ManagerActivity.onStart")
-        super.onStart()
         initActivity()
     }
 
@@ -173,7 +168,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Timber.i(grantResults.toString());
-        this.onStart()
+        initActivity()
         this.onResume()
     }
 
