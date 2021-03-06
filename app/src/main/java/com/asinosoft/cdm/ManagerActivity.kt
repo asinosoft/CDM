@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths.Companion.makeTouch
 import com.asinosoft.cdm.Metoths.Companion.toggle
 import com.asinosoft.cdm.adapters.NumbeAdapter
-import com.asinosoft.cdm.api.CursorApi
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.detail_contact.ContactDetailListElement
 import com.asinosoft.cdm.dialer.Utilities
@@ -44,8 +43,6 @@ import timber.log.Timber
  * Основной класс приложения, отвечает за работу главного экрана (нового) приложения
  */
 class ManagerActivity : AppCompatActivity(), KeyBoardListener {
-    val TAG : String = ManagerActivity.javaClass.simpleName
-
     companion object {
         const val ACTIVITY_PICK_CONTACT = 13
         const val ACTIVITY_SETTINGS = 12
@@ -78,16 +75,6 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         if (!hasPermissions(this, *PERMISSIONS)) {
             requestAllPermissions()
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        if(PackageManager.PERMISSION_GRANTED != checkSelfPermission(Manifest.permission.READ_CONTACTS)) {
-            Timber.d("%s NOT PERMITTED!", Manifest.permission.READ_CONTACTS)
-            return
-        }
-
-        initContacts()
         initActivity()
     }
 
@@ -108,6 +95,11 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     }
 
     private fun initActivity() {
+        if(PackageManager.PERMISSION_GRANTED != checkSelfPermission(Manifest.permission.READ_CONTACTS)) {
+            Timber.d("%s NOT PERMITTED!", Manifest.permission.READ_CONTACTS)
+            return
+        }
+
         viewModel = ViewModelProvider(this).get(ManagerViewModel::class.java)
         StatusBarUtil.setTranslucentForImageView(this, v.container)
         startForView()
@@ -176,7 +168,8 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Timber.i(grantResults.toString());
-        this.onStart()
+        initActivity()
+        this.onResume()
     }
 
     private fun checkPermission(@Nullable grantResults: IntArray?) {
@@ -250,40 +243,23 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
 
     val handler: Handler = Handler()
 
-    private fun showLastCall(){
-        val lastItem = CursorApi.getHistoryItemLatest(this)
-        Timber.d("showLastCall time: %s", lastItem?.time)
-        if(viewModel?.adapterCallLogs?.items?.first()?.time!=lastItem?.time) {
-            viewModel?.adapterCallLogs?.items?.add(0, lastItem as HistoryItem)
-        }
-
-        viewModel?.adapterCallLogs?.notifyDataSetChanged()
-
-    }
-
     override fun onResume() {
         super.onResume()
+        if(PackageManager.PERMISSION_GRANTED != checkSelfPermission(Manifest.permission.READ_CONTACTS)) {
+            Timber.d("%s NOT PERMITTED!", Manifest.permission.READ_CONTACTS)
+            return
+        }
+
+        Timber.d("ManagerActivity.onResume")
+        initContacts()
         recyclerViewHistory.makeTouch(MotionEvent.ACTION_UP)
         recyclerViewHistoryBottom.makeTouch(MotionEvent.ACTION_UP)
         Globals.adapterLogs?.let {
             it.notifyDataSetChanged()
         }
-        handler.postDelayed(Runnable { showLastCall() },2000)
         viewModel?.let {
             it.updateLists()
         }
-        if (Globals.firstLaunch) {
-            updateLogs()
-        }
-    }
-
-    private fun updateLogs() {
-        Globals.firstLaunch = false
-        handler.postDelayed({
-            Globals.adapterLogs?.let {
-                it.notifyDataSetChanged()
-            }
-        }, 2000)
     }
 
     override fun onDestroy() {

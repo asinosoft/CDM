@@ -395,6 +395,7 @@ class Metoths {
         fun callPhone(telNum: String, context: Context){
             Timber.i("callPhone: %s", telNum)
             val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$telNum"))
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             if (ActivityCompat.checkSelfPermission(
                     context,
                     Manifest.permission.CALL_PHONE

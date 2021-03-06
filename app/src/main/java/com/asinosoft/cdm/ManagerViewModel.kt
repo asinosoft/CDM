@@ -19,7 +19,7 @@ import com.asinosoft.cdm.Metoths.Companion.dp
 import com.asinosoft.cdm.Metoths.Companion.setSize
 import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.adapters.AdapterCallLogs
-import com.asinosoft.cdm.api.CursorApi.Companion.getHistoryListLatest
+import com.asinosoft.cdm.api.CursorApi.getHistoryListLatest
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.github.tamir7.contacts.Contact
 import com.github.tamir7.contacts.Contacts
@@ -31,6 +31,7 @@ import jp.wasabeef.recyclerview.animators.LandingAnimator
 import kotlinx.coroutines.*
 import org.jetbrains.anko.runOnUiThread
 import org.jetbrains.anko.vibrator
+import timber.log.Timber
 
 /**
  * Класс фоновой логики главного экрана
@@ -129,7 +130,7 @@ class ManagerViewModel : ViewModel() {
         adapterCallLogs.setFilter(num)
     }
 
-     fun updateHistoryList() {
+     private fun updateHistoryList() {
         setHistoryVisibleDown(settings.historyButtom)
         with(if (settings.historyButtom) v.recyclerViewHistoryBottom else v.recyclerViewHistory) {
             layoutManager = object : LinearLayoutManager(
@@ -147,23 +148,13 @@ class ManagerViewModel : ViewModel() {
 
             this.setItemViewCacheSize(20)
 
-            GlobalScope.launch {
-                withContext(Dispatchers.Unconfined) {
-                    getHistoryListLatest(
-                        context,
-                        onNext = {
-                            launch {
-                                (adapter as AdapterCallLogs?)?.apply {
-                                    if (itemCount <= 20)
-                                        addItemByCorutine(it, -1)
-                                    else {
-                                        addBuffer(it)
-                                    }
-                                }
-                            }
-                        },
-                        numUnique = true
-                    )
+            GlobalScope.launch(Dispatchers.IO) {
+                Timber.d("getHistoryListLatest")
+                getHistoryListLatest(context!!)?.let {
+                    context?.runOnUiThread {
+                        Timber.d("adapterCallLogs.setList %d records", it.size)
+                        adapterCallLogs.setList(it)
+                    }
                 }
             }
         }
@@ -237,6 +228,8 @@ class ManagerViewModel : ViewModel() {
     }
 
     fun initViews(updateHistory: Boolean = true) {
+        Timber.d("initViews %s", updateHistory)
+
         if (updateHistory) updateHistoryList()
         v.recyclerView.adapter = CirAdapter(
             listCirs,
