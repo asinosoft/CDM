@@ -9,11 +9,8 @@ import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
-import android.widget.ScrollView
 import androidx.annotation.ColorInt
 import androidx.fragment.app.Fragment
-import androidx.viewpager.widget.ViewPager
 import com.asinosoft.cdm.*
 import kotlinx.android.synthetic.main.contact_settings.*
 import kotlinx.android.synthetic.main.settings_layout.*
@@ -61,7 +58,6 @@ class ContactSettingsFragment : Fragment() {
         scrollView.setOnScrollChangeListener { view, scrollX, scrollY, oldScrollX, oldScrollY ->
             if (oldScrollY > 0 && scrollY == 0) {
                 (activity as ScrollViewListener).onScrolledToTop()
-                //scrollView.setScrollingEnabled(false)
             }
         }
         val loader = Loader(activity as Context)
@@ -183,12 +179,6 @@ class ContactSettingsFragment : Fragment() {
         cirChoose1.let(this@ContactSettingsFragment::setDragListener)
         cirChoose2.let(this@ContactSettingsFragment::setDragListener)
 
-    }
-
-    fun enableScroll(enable: Boolean) {
-        scrollView?.let {
-            it.setScrollingEnabled(enable)
-        }
     }
 
     private fun saveAll() {

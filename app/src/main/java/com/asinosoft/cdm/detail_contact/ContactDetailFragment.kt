@@ -39,7 +39,7 @@ class ContactDetailFragment : Fragment() {
         return sharedpreferences.getString("TAG_NUM", "")!!
     }
 
-    fun getInfoForContact(){
+    private fun getInfoForContact(){
         val id = Funcs.getContactID(this.context!!, getNumber(this.context!!))
         contact.parseDataCursor(id, this.context!!)
     }

@@ -23,54 +23,27 @@ import com.asinosoft.cdm.fragments.NumberGetter
 import com.asinosoft.cdm.fragments.ScrollViewListener
 import com.asinosoft.cdm.globals.Globals
 import com.jaeger.library.StatusBarUtil
-import github.chenupt.dragtoplayout.DragTopLayout
 import kotlinx.android.synthetic.main.activity_detail_history.*
-import kotlinx.android.synthetic.main.settings_layout.*
-import net.cachapa.expandablelayout.ExpandableLayout.State.COLLAPSED
-import net.cachapa.expandablelayout.ExpandableLayout.State.EXPANDED
 import java.lang.Exception
-
 
 class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener, NumberGetter {
 
     lateinit var viewPager: ViewPager
     lateinit var settingsFragment: ContactSettingsFragment
-    var contacNumber: String? = null
+    var contactNumber: String? = null
 
-    override fun getNumber(): String? = contacNumber
+    override fun getNumber(): String? = contactNumber
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_history)
-        contacNumber = intent.getStringExtra(Keys.number)
+        contactNumber = intent.getStringExtra(Keys.number)
 
 
-        drag_layout.listener(object : DragTopLayout.PanelListener {
-            override fun onPanelStateChanged(panelState: DragTopLayout.PanelState?) {
-                val state = panelState
-                if (state?.toInt() == COLLAPSED) {
-//                    drag_layout.setTouchMode(false)
-//                    scrollView?.let {
-//                        it.setScrollingEnabled(true)
-//                    }
-                }
-            }
-
-            override fun onRefresh() {
-
-            }
-
-            override fun onSliding(ratio: Float) {
-
-            }
-        }
-
-        )
         settingsFragment = ContactSettingsFragment()
         val adapter = FragmentPagerItemAdapter(
             supportFragmentManager, FragmentPagerItems.with(this)
                 .add("История", HistoryDetailFragment().javaClass)
-//                .add("Настройки", HistoryOptionFragment::class.java)
                 .add("Контакт", ContactDetailFragment().javaClass)
                 .add("Настройки", settingsFragment.javaClass)
                 .create()
@@ -87,20 +60,20 @@ class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener, NumberGet
         try {
             var id: Long? = intent.getStringExtra(Keys.id)?.toLong()
             if (id == null) id = Globals.passedContactId
-            imageView.setImageDrawable(getPhotoSaffety(id!!.toLong()))
+            imageView.setImageDrawable(getPhotoSafety(id!!.toLong()))
         } catch (e: Exception) {
         }
 
     }
 
     private fun setNum() {
-        val sharedpreferences = getSharedPreferences(Keys.SharedNum, Context.MODE_PRIVATE)
-        val editor = sharedpreferences.edit()
+        val sharedPreferences = getSharedPreferences(Keys.SharedNum, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
         editor.putString("TAG_NUM", intent.getStringExtra(Keys.number))
         editor.apply()
     }
 
-    private fun getPhotoSaffety(id: Long): Drawable {
+    private fun getPhotoSafety(id: Long): Drawable {
         val photo = getPhotoNow(id)
         return if (photo != null) BitmapDrawable(photo) else ContextCompat.getDrawable(
             this,

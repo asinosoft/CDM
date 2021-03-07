@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
 import android.provider.ContactsContract
 import android.telecom.TelecomManager
 import android.view.MotionEvent
@@ -14,8 +13,6 @@ import android.view.View
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.PermissionChecker
-import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
@@ -25,7 +22,6 @@ import com.asinosoft.cdm.Metoths.Companion.makeTouch
 import com.asinosoft.cdm.Metoths.Companion.toggle
 import com.asinosoft.cdm.adapters.NumbeAdapter
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
-import com.asinosoft.cdm.detail_contact.ContactDetailListElement
 import com.asinosoft.cdm.dialer.Utilities
 import com.asinosoft.cdm.globals.AlertDialogUtils
 import com.asinosoft.cdm.globals.Globals
@@ -46,7 +42,6 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     companion object {
         const val ACTIVITY_PICK_CONTACT = 13
         const val ACTIVITY_SETTINGS = 12
-        const val REQUEST_PERMISSION = 0
         const val REQUEST_PERMISSION1 = 1
     }
 
@@ -60,7 +55,6 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
      */
     private var viewModel: ManagerViewModel? = null
     private lateinit var keyboard: Keyboard
-    private val moreMenu by powerMenu(MoreMenuFactory::class)
     val PERMISSIONS = arrayOf(
         Manifest.permission.READ_CONTACTS,
         Manifest.permission.CALL_PHONE,
@@ -104,7 +98,6 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         StatusBarUtil.setTranslucentForImageView(this, v.container)
         startForView()
 
-        // layout_keyboard?.toggle()
         val isDefaultDealer: Boolean = Utilities().checkDefaultDialer(this)
         if (isDefaultDealer) {
             checkPermission(null)
@@ -123,7 +116,6 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
                     text.toString(),
                     context = baseContext
                 )
-//                viewModel.filterCallLogs(text.toString())
             }.exceptionOrNull()?.printStackTrace()
         }
     }
@@ -142,7 +134,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     private fun initContacts() {
         Timber.d("initContacts")
         Contacts.initialize(this)
-        val list = Contacts.getQuery().hasPhoneNumber().find();
+        val list = Contacts.getQuery().hasPhoneNumber().find()
         Timber.d("%s contacts found", list.size.toString())
 
         recyclerViewContact.layoutManager = LinearLayoutManager(this).apply {
@@ -167,7 +159,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        Timber.i(grantResults.toString());
+        Timber.i(grantResults.toString())
         initActivity()
         this.onResume()
     }
@@ -188,24 +180,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         }
     }
 
-    private fun makeCall() {
-        if (PermissionChecker.checkSelfPermission(
-                this,
-                Manifest.permission.CALL_PHONE
-            ) == PermissionChecker.PERMISSION_GRANTED
-        ) {
-            val uri = "tel:${ContactDetailListElement().active}".toUri()
-            startActivity(Intent(Intent.ACTION_CALL, uri))
-        } else {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CALL_PHONE),
-                REQUEST_PERMISSION
-            )
-        }
-    }
-
-    fun startForView() {
+    private fun startForView() {
         viewModel?.start(
             v,
             this,
@@ -241,8 +216,6 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         super.onStop()
     }
 
-    val handler: Handler = Handler()
-
     override fun onResume() {
         super.onResume()
         if(PackageManager.PERMISSION_GRANTED != checkSelfPermission(Manifest.permission.READ_CONTACTS)) {
@@ -273,8 +246,8 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         settingOpen(viewModel?.settings as Settings)
     }
 
-    fun showNumberDialog(contact: Contact) {
-        contact?.let {
+    private fun showNumberDialog(contact: Contact) {
+        contact.let {
             val numbersStr = mutableListOf<String>().apply {
                 contact.phoneNumbers.forEach {
                     add(it.number)
@@ -293,14 +266,14 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         }
     }
 
-    private fun clearDublicateNumbers(numbers: MutableList<PhoneNumber>)
+    private fun clearDuplicateNumbers(numbers: MutableList<PhoneNumber>)
             : List<PhoneNumber> {
         val res: MutableList<PhoneNumber> = mutableListOf()
         numbers.forEach {
             val number = it
             val cleanedNumber = it.number.replace(" ", "")
                 .replace("-", "").trim()
-            res?.firstOrNull { it.number == cleanedNumber }
+            res.firstOrNull { it.number == cleanedNumber }
                 ?: res.add(number)
         }
         return  res
@@ -315,7 +288,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         if (requestCode == ACTIVITY_PICK_CONTACT && resultCode == Activity.RESULT_OK) {
             val contact = Ut.getContactFromIntent(data)
             contact?.let {
-                if (clearDublicateNumbers(it.phoneNumbers).size > 1) {
+                if (clearDuplicateNumbers(it.phoneNumbers).size > 1) {
                     showNumberDialog(it)
                 } else {
                     viewModel?.onResult(contact, number = it.phoneNumbers.first().number)

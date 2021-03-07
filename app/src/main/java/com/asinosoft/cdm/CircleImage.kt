@@ -1,18 +1,11 @@
 package com.asinosoft.cdm
 
-import android.content.ClipData
 import android.content.Context
-import android.content.Intent
-import android.graphics.Color
 import android.graphics.PointF
 import android.net.Uri
-import android.provider.ContactsContract
-import android.support.v4.media.session.PlaybackStateCompat
 import android.util.AttributeSet
 import android.util.Log
-import android.view.Gravity
 import android.view.MotionEvent
-import android.view.View
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.net.toUri
@@ -22,34 +15,30 @@ import com.asinosoft.cdm.Actions.*
 import com.asinosoft.cdm.Metoths.Companion.action
 import com.asinosoft.cdm.Metoths.Companion.callPhone
 import com.asinosoft.cdm.Metoths.Companion.checkMoving
-import com.github.tamir7.contacts.Contact
-import com.asinosoft.cdm.Metoths.Companion.setSize
 import com.asinosoft.cdm.Metoths.Companion.diff
 import com.asinosoft.cdm.Metoths.Companion.diffAction
 import com.asinosoft.cdm.Metoths.Companion.diffVisible
-import com.asinosoft.cdm.Metoths.Companion.dp
 import com.asinosoft.cdm.Metoths.Companion.mailToEmail
 import com.asinosoft.cdm.Metoths.Companion.makeTouch
-import com.asinosoft.cdm.Metoths.Companion.openCardContact
 import com.asinosoft.cdm.Metoths.Companion.openDetailContact
 import com.asinosoft.cdm.Metoths.Companion.openTelegram
 import com.asinosoft.cdm.Metoths.Companion.openViber
 import com.asinosoft.cdm.Metoths.Companion.sendSMS
 import com.asinosoft.cdm.Metoths.Companion.setImageAction
+import com.asinosoft.cdm.Metoths.Companion.setSize
 import com.asinosoft.cdm.Metoths.Companion.setTranslate
 import com.asinosoft.cdm.Metoths.Companion.toPointF
 import com.asinosoft.cdm.Metoths.Companion.toVisibility
 import com.asinosoft.cdm.Metoths.Companion.translateDiff
 import com.asinosoft.cdm.Metoths.Companion.translateTo
 import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
+import com.github.tamir7.contacts.Contact
 import com.google.android.material.snackbar.Snackbar
 import com.skydoves.powermenu.PowerMenu
-import de.hdodenhof.circleimageview.CircleImageView
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.onLongClick
 import org.jetbrains.anko.sdk27.coroutines.onTouch
 import org.jetbrains.anko.vibrator
-import java.net.URL
 
 class CircleImage@JvmOverloads constructor(
     context: Context,
@@ -66,8 +55,6 @@ class CircleImage@JvmOverloads constructor(
     var dragListener: () -> Unit = {},
     var deleteCir: CircularImageView? = null,
     var editCir: CircularImageView? = null,
-    var openEditForPos: (Contact, ContactSettings) -> Unit = { _, _ -> },
-    var openEdit: (Int, Contact, ContactSettings) -> Unit = {_, _, _ -> },
     var touchDownForIndex: () -> Unit = {},
     var touchDown: (Int) -> Unit = {},
     var lockableNestedScrollView: LockableNestedScrollView? = null,
@@ -156,7 +143,7 @@ class CircleImage@JvmOverloads constructor(
     }
 
     private fun initLongClickWithMenu() {
-        powerMenu?.setOnMenuItemClickListener { position, item ->
+        powerMenu?.setOnMenuItemClickListener { position, _ ->
             when(position){
                 0 -> replaceListenerForHolder()
                 2 -> deleteListener()
@@ -176,7 +163,7 @@ class CircleImage@JvmOverloads constructor(
         actionImage?.setSize((size - shadowRadius * 2).toInt())
     }
 
-    fun updateRadius(){
+    private fun updateRadius(){
         animationRadius = size.toFloat() * 0.9f
     }
 
@@ -221,7 +208,6 @@ class CircleImage@JvmOverloads constructor(
                 }catch (e: Exception){e.printStackTrace()}
             }
             actionImage?.isVisible = false
-//            isMoving = false
         }
         lockableNestedScrollView?.setScrollingEnabled(true)
     }
@@ -245,8 +231,6 @@ class CircleImage@JvmOverloads constructor(
 
 
     private fun   startAction(action: Actions) {
-
-       // val num = contact!!.phoneNumbers[if (contactSettings?.usedNum != null) contactSettings?.usedNum!! else 0].normalizedNumber
         val errorMes = fun(){
             Toast.makeText(context,"Not correct number", Toast.LENGTH_LONG).show()
             return

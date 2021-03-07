@@ -6,7 +6,7 @@ import android.provider.ContactsContract
 import android.util.Log
 import kotlin.collections.ArrayList
 
-class Contact () {
+class Contact {
 
     val MIME_TYPE_PHONE = "vnd.android.cursor.item/phone_v2"
     val MIME_TYPE_E_MAIL = "vnd.android.cursor.item/email_v2"
@@ -52,7 +52,7 @@ class Contact () {
             ContactsContract.Data.CONTACT_ID + "=?", arrayOf(id),null)!!
 
         cursor.moveToFirst()
-        while(!cursor.isAfterLast()){
+        while(!cursor.isAfterLast){
              val _id =
                  cursor.getString(cursor.getColumnIndex(ContactsContract.Data._ID))
              val contactId =
@@ -137,7 +137,7 @@ class Contact () {
             val date = stHelper.parseDateToddMMyyyy(data)
             val date1 = stHelper.parseToMillis(data)
             mBirthDay.add(date!!)
-            mAge.add(date1!!)
+            mAge.add(date1)
             if(null != data2){
                 val type = Integer.parseInt(data2)
                 this.mBirthDayType.add(type)

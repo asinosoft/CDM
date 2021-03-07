@@ -55,7 +55,7 @@ class Utilities {
     }
 
     fun askForPermissions(activity: FragmentActivity?, permissions: Array<String>) {
-        ActivityCompat.requestPermissions(activity!!, permissions!!, PERMISSION_RC)
+        ActivityCompat.requestPermissions(activity!!, permissions, PERMISSION_RC)
     }
 
     fun getNameFromPhoneNumber(context: Context, number: String): String? {

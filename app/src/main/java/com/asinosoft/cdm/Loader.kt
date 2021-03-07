@@ -2,9 +2,6 @@ package com.asinosoft.cdm
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.widget.Toast
-import com.google.gson.Gson
-import com.google.gson.internal.LinkedTreeMap
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -41,7 +38,6 @@ class Loader(contextBase: Context) {
     fun loadSettings(): Settings{
         val settings = myPref.getString(Keys.Settings, null)
         if (settings == null) {
-           // Toast.makeText(context, "Настройки не обнаружены!", Toast.LENGTH_SHORT).show()
             return  Settings()
         }
         return settingMoshi.fromJson(settings)?: Settings()
@@ -50,7 +46,6 @@ class Loader(contextBase: Context) {
     fun loadContactSettings(contactNumber : String): Settings{
         val settings = myPref.getString(contactNumber, null)
         if (settings == null) {
-            //Toast.makeText(context, "Настройки не обнаружены!", Toast.LENGTH_SHORT).show()
             return loadSettings()
         }
         return settingMoshi.fromJson(settings)?: Settings()

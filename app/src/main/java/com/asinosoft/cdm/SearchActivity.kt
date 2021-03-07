@@ -59,7 +59,7 @@ class SearchActivity : AppCompatActivity() {
 
         v.fab.setOnClickListener { v.layoutKeyboard.toggle() }
 
-        keyboard.input_text.doOnTextChanged { text, start, count, after ->
+        keyboard.input_text.doOnTextChanged { text, _, _, _ ->
             (v.recyclerView.adapter as AdapterContacts).setFilter(text.toString(), baseContext)
         }
 

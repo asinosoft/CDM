@@ -330,7 +330,7 @@ class OngoingCallActivity : AppCompatActivity() {
     @SuppressLint("ResourceAsColor")
     private fun clickToButtons() {
 
-        answer_btn.setOnClickListener() {
+        answer_btn.setOnClickListener {
             activateCall()
         }
         reject_btn2.setOnClickListener {
@@ -435,11 +435,20 @@ class OngoingCallActivity : AppCompatActivity() {
         }
 
         val collapsedView = RemoteViews(packageName, R.layout.call_notification_two).apply {
-            setText(R.id.notification_caller_name, callerName)
-            setText(R.id.notification_call_status, getString(contentTextId))
-            setVisibleIf(R.id.notification_accept_call, callState == Call.STATE_RINGING)
-            setVisibleIf(R.id.notification_mic_off, callState == Call.STATE_ACTIVE)
-            setVisibleIf(R.id.notification_speaker, callState == Call.STATE_ACTIVE)
+            setTextViewText(R.id.notification_caller_name, callerName)
+            setTextViewText(R.id.notification_call_status, getString(contentTextId))
+            setViewVisibility(
+                R.id.notification_accept_call,
+                if (callState == Call.STATE_RINGING) View.VISIBLE else View.GONE
+            )
+            setViewVisibility(
+                R.id.notification_mic_off,
+                if (callState == Call.STATE_ACTIVE) View.VISIBLE else View.GONE
+            )
+            setViewVisibility(
+                R.id.notification_speaker,
+                if (callState == Call.STATE_ACTIVE) View.VISIBLE else View.GONE
+            )
 
             setOnClickPendingIntent(R.id.notification_decline_call, declinePendingIntent)
             setOnClickPendingIntent(R.id.notification_accept_call, acceptPendingIntent)

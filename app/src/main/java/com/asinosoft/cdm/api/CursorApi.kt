@@ -8,7 +8,6 @@ import android.net.Uri
 import android.provider.CallLog
 import android.provider.ContactsContract
 import java.io.IOException
-import java.util.*
 
 /**
  * Класс потокового парсера истории.

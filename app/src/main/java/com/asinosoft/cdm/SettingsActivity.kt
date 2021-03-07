@@ -323,7 +323,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         })
 
         v.colorPicker.setOnClickListener {
-            ColorPickerDialog.newBuilder().setColor(Color.RED).show(this);
+            ColorPickerDialog.newBuilder().setColor(Color.RED).show(this)
         }
     }
 

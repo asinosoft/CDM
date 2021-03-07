@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Vibrator
-import android.provider.ContactsContract
 import android.util.Log
 import android.view.DragEvent
 import android.view.View.GONE
@@ -37,7 +36,7 @@ import timber.log.Timber
  * Класс фоновой логики главного экрана
  */
 class ManagerViewModel : ViewModel() {
-    var slectedContactsLoaded = false
+    var selectedContactsLoaded = false
     companion object {
         const val VIBRO = 30L
     }
@@ -55,19 +54,9 @@ class ManagerViewModel : ViewModel() {
     private lateinit var activity: AppCompatActivity
     private var indexOfFrontChild = 0
     private val listCirs: MutableList<CircleImage> = mutableListOf()
-//    private val listCirs: MutableList<CircleImage> by lazy { // Ленивая загрузка кнопок избранных контактов
-//        GlobalScope.launch {
-//
-//            listCirs.addAll(loadCirs() as List<CircleImage>)
-//            context.runOnUiThread {
-//                v.recyclerView.adapter?.notifyDataSetChanged()
-//            }
-//        }
-//        arrayListOf<CircleImage>()
-//    }
 
     private var cirLayoutHeight = 0
-    val adapterCallLogs: AdapterCallLogs by lazy {
+    private val adapterCallLogs: AdapterCallLogs by lazy {
         AdapterCallLogs(
             arrayListOf(),
             context = context,
@@ -82,13 +71,8 @@ class ManagerViewModel : ViewModel() {
     private val adapterCirMoshi: JsonAdapter<CirPairData> by lazy {
         moshi.adapter(CirPairData().javaClass)
     }
-    private val keyboard: Keyboard by lazy {
-        activity.supportFragmentManager.findFragmentById(R.id.keyboard) as Keyboard
-    }
-
     fun updateLists(){
         this.v.recyclerView.adapter?.notifyDataSetChanged()
-        //adapterCallLogs.notifyDataSetChanged()
     }
 
     fun start(
@@ -126,11 +110,7 @@ class ManagerViewModel : ViewModel() {
         }
     }
 
-    public fun filterCallLogs(num: String) {
-        adapterCallLogs.setFilter(num)
-    }
-
-     private fun updateHistoryList() {
+    private fun updateHistoryList() {
         setHistoryVisibleDown(settings.historyButtom)
         with(if (settings.historyButtom) v.recyclerViewHistoryBottom else v.recyclerViewHistory) {
             layoutManager = object : LinearLayoutManager(
@@ -143,7 +123,6 @@ class ManagerViewModel : ViewModel() {
                 }
             }
             isNestedScrollingEnabled = true
-//            itemAnimator = LandingAnimator(OvershootInterpolator())
             adapter = adapterCallLogs.apply { if (settings.historyButtom) onAdd = {} }
 
             this.setItemViewCacheSize(20)
@@ -157,22 +136,6 @@ class ManagerViewModel : ViewModel() {
                     }
                 }
             }
-        }
-    }
-
-//    public fun addBtns(n: Int = 1) {
-//        newCir(settings, touchHelper).let { item ->
-//            (0..n).forEach {
-//                context.runOnUiThread {
-//                    (v.recyclerView.adapter as CirAdapter).addItem(item)
-//                }
-//            }
-//        }
-//    }
-
-    public fun addBtns(n: Int = 1) {
-        (0..n).forEach {
-            v.fab.callOnClick()
         }
     }
 
@@ -243,7 +206,6 @@ class ManagerViewModel : ViewModel() {
 
         v.recyclerView.layoutManager =
             CirLayoutManager({ onChangeHeightCir(it) }, columns = settings.columnsCirs)
-        //if (listCirs.isNotEmpty()) listCirs.updateItems(v.scrollView)
         v.recyclerView.itemAnimator = LandingAnimator(OvershootInterpolator())
         GlobalScope.launch { withTimeout(2_000L) { v.recyclerView.adapter?.notifyDataSetChanged() } }
         v.recyclerView.setChildDrawingOrderCallback { childCount, iteration ->
@@ -257,9 +219,9 @@ class ManagerViewModel : ViewModel() {
             }
             childPos
         }
-        if(!slectedContactsLoaded) {
+        if(!selectedContactsLoaded) {
             listCirs.addAll(getCirs() as List<CircleImage>)
-            slectedContactsLoaded = true
+            selectedContactsLoaded = true
         }
         v.deleteCir.apply {
             setOnDragListener { view, event ->
@@ -279,23 +241,6 @@ class ManagerViewModel : ViewModel() {
             }
 
         }
-
-//        v.editCir.apply {
-//            setOnDragListener { view, event ->
-//                when (event.action) {
-//                    DragEvent.ACTION_DRAG_ENTERED -> {
-//                        context.vibrator.vibrateSafety(VIBRO)
-//                        (view as CircularImageView).imageTintList =
-//                            ColorStateList.valueOf(Color.BLUE)
-//                    }
-//                    else -> {
-//                        (view as CircularImageView).imageTintList =
-//                            ColorStateList.valueOf(Color.TRANSPARENT)
-//                    }
-//                }
-//                true
-//            }
-//        }
 
         v.fab.setOnClickListener { fab ->
             newCir(settings, touchHelper).let {
@@ -324,13 +269,6 @@ class ManagerViewModel : ViewModel() {
         v.buttonRVTopUpdate.setOnClickListener {
             adapterCallLogs.upIntoBuffer()
         }
-
-//        checkBtns()
-    }
-
-    private fun checkBtns() {
-        if (listCirs.count() == 0)
-            addBtns(9)
     }
 
     fun newCir(settings: Settings, touchHelper: ItemTouchHelper) = CircleImage(
@@ -389,28 +327,8 @@ class ManagerViewModel : ViewModel() {
         saveCirs()
     }
 
-    fun onResult(requestCode: Int, requestCode1: Int, data: Intent?) {
-        val uri = data!!.data
-        val projections = arrayOf(ContactsContract.Contacts._ID)
-        val cursor = context.contentResolver.query(uri!!, projections, null, null, null)
-        var id = 0L
-        if (cursor != null && cursor.moveToFirst()) {
-            val i = cursor.getColumnIndex(projections[0])
-            id = cursor.getLong(i)
-        }
-        cursor?.close()
-        val contact = Contacts.getQuery().whereEqualTo(Contact.Field.ContactId, id).find()
-        (v.recyclerView.adapter as CirAdapter).setContact(posPicker, contact.first())
-    }
-
     fun onResult(contact: Contact, number : String? = null){
         (v.recyclerView.adapter as CirAdapter).setContact(posPicker, contact, number)
     }
 
-}
-
-private fun ArrayList<CircleImage>.updateItems(lockableNestedScrollView: LockableNestedScrollView) {
-    forEach {
-        it.lockableNestedScrollView = lockableNestedScrollView
-    }
 }

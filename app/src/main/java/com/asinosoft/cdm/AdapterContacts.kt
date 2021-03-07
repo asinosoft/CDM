@@ -59,7 +59,7 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
         r.sortWith(compareBy{
             val res = regex?.find(it.displayName)
             if(res != null){
-                 it.displayName.indexOf(res?.value as String)
+                 it.displayName.indexOf(res.value)
             } else {
                 var index = 0
                 it.phoneNumbers.forEach{
@@ -105,7 +105,7 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
         intent.putExtra(Keys.number, item.phoneNumbers.firstOrNull()?.number)
         intent.putExtra(Keys.id, item.id)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context?.startActivity(intent)
+        context.startActivity(intent)
     }
 
     inner class Holder(private val v: HistorySwipingItemBinding, val itemCallBack : () -> Unit) : RecyclerView.ViewHolder(v.root) {

@@ -14,6 +14,6 @@ class NumberHolder (view : View, callBack : ()->Unit) : RecyclerView.ViewHolder(
     }
 
     fun bind(number : String){
-        numberTxt.setText(number)
+        numberTxt.text = number
     }
 }

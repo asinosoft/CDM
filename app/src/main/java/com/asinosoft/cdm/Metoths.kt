@@ -157,8 +157,6 @@ class Metoths {
          */
         private fun getWords(it: Char, context: Context): String {
             return when (it){
-//                '0' -> context.getString(R.string.digit_zero_text)
-//                '1' -> context.getString(R.string.digit_one_text)
                 '2' -> context.getString(R.string.digit_two_text)
                 '3' -> context.getString(R.string.digit_three_text)
                 '4' -> context.getString(R.string.digit_four_text)
@@ -244,14 +242,6 @@ class Metoths {
                 .start()
         }
 
-        fun View.translateTo(toPointF: PointF, duration: Long = 0L){
-            this.animate()
-                .x(toPointF.x)
-                .y(toPointF.y)
-                .setDuration(duration)
-                .start()
-        }
-
         fun View.translateTo(view: View, offset: Float = 0f, duration: Long = 0L){
             this.animate()
                 .x(view.x + offset)
@@ -270,8 +260,6 @@ class Metoths {
         }
 
 
-        fun PointF.diff(pointF: PointF) = PointF(this.x - pointF.x, this.y - pointF.y)
-        fun View.diff(pointF: PointF) = PointF(this.x - pointF.x, this.y - pointF.y)
         fun PointF.diff(event: MotionEvent, radius: Float? = null, dropX: Boolean = false, dropY: Boolean = false): PointF {
             val pointF = event.toPointF()
             var r = PointF(this.x - pointF.x, this.y - pointF.y)
@@ -315,21 +303,9 @@ class Metoths {
 
         fun Boolean.toVisibility(gone: Boolean = false) = if (this) View.VISIBLE else if (!gone) View.INVISIBLE else View.GONE
 
-        fun TextView.plus(text: String){
-            this.text = this.text.toString().plus(text)
-        }
-
         fun TextView.setColoredText(text: String, @ColorInt color: Int = Color.BLUE){
             SpannableString(this.text).apply {setSpan(ForegroundColorSpan(color), this.indexOf(text), this.indexOf(text) +
                     text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)}.let { this.text = it }
-        }
-
-        fun String.setColorText(text: String, @ColorInt color: Int = Color.BLUE) =
-            SpannableString(this).apply {setSpan(ForegroundColorSpan(color), this.indexOf(text), this.indexOf(text) +
-                    text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)}
-
-        fun View.colappsed() : Boolean {
-            return height < 10
         }
 
         fun View.toggle(duration: Long = 500L, animation : Boolean = false){
@@ -350,21 +326,6 @@ class Metoths {
             }
         }
 
-        fun getPhoto(contactId: Long, context: Context): Bitmap? {
-            val contactUri =
-                ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId)
-            val displayPhotoUri = Uri.withAppendedPath(contactUri,
-                ContactsContract.Contacts.Photo.DISPLAY_PHOTO
-            )
-            try {
-                val fd = context.contentResolver.openAssetFileDescriptor(displayPhotoUri, "r")
-                return BitmapFactory.decodeStream(fd!!.createInputStream())
-            } catch (e: IOException) {
-                return null
-            }
-
-        }
-
         fun Vibrator.vibrateSafety(ms: Long){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.EFFECT_HEAVY_CLICK))
@@ -375,16 +336,6 @@ class Metoths {
             var str = "0:00"
             try {
                 str = "${duration.toInt() / 60}:${duration.toInt() % 60}"
-            } catch (e: Exception) {
-                Timber.e(e)
-            }
-            return str
-        }
-
-        fun getFormatedTime(duration: Int): String {
-            var str = "0:00"
-            try {
-                str = "${duration / 60}:${duration % 60}"
             } catch (e: Exception) {
                 Timber.e(e)
             }

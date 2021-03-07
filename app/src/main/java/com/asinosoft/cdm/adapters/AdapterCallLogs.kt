@@ -27,8 +27,6 @@ class AdapterCallLogs(
     var onAdd: (Int) -> Unit = {}
 ) : RecyclerView.Adapter<AdapterCallLogs.HolderHistory>(), CoroutineScope {
 
-    private var pos = 0
-    private var job: Job? = null
     private var nums = ""
     private var regex: Regex? = null
     private var jobFilter: Job = Job()
@@ -55,12 +53,6 @@ class AdapterCallLogs(
         notifyDataSetChanged()
     }
 
-    fun addItem(item: HistoryItem) {
-        items.add(item)
-        listBackup.add(item)
-        notifyItemInserted(itemCount - 1)
-    }
-
     override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
@@ -71,13 +63,7 @@ class AdapterCallLogs(
         val intent = Intent(this.context, DetailHistoryActivity::class.java)
         intent.putExtra(Keys.number, item.numberContact)
         intent.putExtra(Keys.id, item.contactID)
-        context?.startActivity(intent)
-    }
-
-    suspend fun addBuffer(item: HistoryItem) {
-        withContext(Dispatchers.IO) {
-            buffer.add(item)
-        }
+        context.startActivity(intent)
     }
 
     fun upIntoBuffer() {
@@ -86,15 +72,6 @@ class AdapterCallLogs(
         notifyItemRangeInserted(lastIndex, items.lastIndex)
         notifyDataSetChanged()
         buffer.clear()
-    }
-
-    suspend fun addItemByCorutine(it: HistoryItem, i: Int = -1) {
-        withContext(Dispatchers.IO) {
-            items.add(it)
-            withContext(Dispatchers.Main) {
-                notifyItemInserted(itemCount - 1)
-            }
-        }
     }
 
     private suspend fun List<HistoryItem>.filtered(nums: String): ArrayList<HistoryItem> =
@@ -148,13 +125,12 @@ class AdapterCallLogs(
 
             with(v) {
                 if (!item.contactID.isNullOrBlank())
-                    item.contactID.toLong()?.let {
-                        if (it > 0) getDisplayPhoto(it, context!!)?.let { bitmap ->
+                    item.contactID.toLong().let {
+                        if (it > 0) getDisplayPhoto(it, context)?.let { bitmap ->
                             imageContact.setImageBitmap(bitmap)
                         }
                     }
 
-//                imageContact.setImageDrawable(item.image)
                 name.text = item.nameContact
                 number.text = "${item.numberContact}, ${Metoths.getFormatedTime(item.duration)}"
                 timeContact.text = item.time
@@ -191,13 +167,13 @@ class AdapterCallLogs(
                         when (direction) {
                             SwipeLayout.RIGHT -> {
                                 if (settings.rightButton != Actions.WhatsApp)
-                                    Metoths.callPhone(item.numberContact, context!!)
-                                else Metoths.openWhatsApp(item.numberContact, context!!)
+                                    Metoths.callPhone(item.numberContact, context)
+                                else Metoths.openWhatsApp(item.numberContact, context)
                             }
                             SwipeLayout.LEFT -> {
                                 if (settings.leftButton != Actions.WhatsApp)
-                                    Metoths.callPhone(item.numberContact, context!!)
-                                else Metoths.openWhatsApp(item.numberContact, context!!)
+                                    Metoths.callPhone(item.numberContact, context)
+                                else Metoths.openWhatsApp(item.numberContact, context)
                             }
                             else -> Log.e(
                                 "AdapterHistory.kt: ",
@@ -206,7 +182,6 @@ class AdapterCallLogs(
                         }
 
                         swipeLayout.close()
-                        //notifyDataSetChanged()
                     }
 
                     override fun onClose() {

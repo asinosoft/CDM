@@ -16,7 +16,7 @@ public class LockableScrollView extends ScrollView {
     // false if we cannot scroll (locked)
     private boolean mScrollable = false;
 
-    private PointF point = new PointF();
+    private final PointF point = new PointF();
 
     public LockableScrollView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
