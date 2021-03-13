@@ -108,7 +108,7 @@ class DetailHistoryActivity : AppCompatActivity() {
         val photo = getPhotoNow(id)
         return if (photo != null) BitmapDrawable(photo) else ContextCompat.getDrawable(
             this,
-            R.drawable.ic_baseline_person_24
+            R.drawable.contact_unfoto
         ) as Drawable
     }
 
