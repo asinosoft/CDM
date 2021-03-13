@@ -1,5 +1,6 @@
 package com.asinosoft.cdm
 
+import android.R.attr
 import android.app.Dialog
 import android.content.ContentUris
 import android.content.Context
@@ -23,10 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
-import com.asinosoft.cdm.detail_contact.Contact
-import com.asinosoft.cdm.detail_contact.ContactDetailFragment
-import com.asinosoft.cdm.detail_contact.DeleteContact
-import com.asinosoft.cdm.detail_contact.VCardLoader
+import com.asinosoft.cdm.detail_contact.*
 import com.jaeger.library.StatusBarUtil
 import com.ogaclejapan.smarttablayout.SmartTabLayout
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter
@@ -41,6 +39,9 @@ class DetailHistoryActivity : AppCompatActivity() {
     lateinit var toolbar: Toolbar
 
     lateinit var mContact: Contact
+    lateinit var context: Context
+
+    lateinit var item: HistoryItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,8 +74,9 @@ class DetailHistoryActivity : AppCompatActivity() {
         val imageView = findViewById<ImageView>(R.id.image)
         StatusBarUtil.setTranslucentForImageView(this, imageView)
         try {
-        imageView.setImageDrawable(getPhotoSaffety(intent.getStringExtra(Keys.id)!!.toLong()))
-        }catch (e: Exception){}
+            imageView.setImageDrawable(getPhotoSaffety(intent.getStringExtra(Keys.id)!!.toLong()))
+        } catch (e: Exception) {
+        }
 
     }
 
@@ -84,7 +86,7 @@ class DetailHistoryActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.redContact -> editContact()
             R.id.shareContact -> showShareContactDialog()
             R.id.contactDel -> showDeletingDialog()
@@ -106,7 +108,7 @@ class DetailHistoryActivity : AppCompatActivity() {
         val photo = getPhotoNow(id)
         return if (photo != null) BitmapDrawable(photo) else ContextCompat.getDrawable(
             this,
-            R.drawable.contact_unfoto
+            R.drawable.ic_baseline_person_24
         ) as Drawable
     }
 
@@ -130,7 +132,32 @@ class DetailHistoryActivity : AppCompatActivity() {
 
     }
 
-    private fun getContactName(id: String):String {
+    private fun setPhoto(number1: String) {
+
+        val redIcon = 0..19
+        val bluIcon = 20..39
+        val orangIcon = 40..59
+        val greenIcon = 60..79
+        val filIcon = 80..99
+
+        if (number1.substring(number1.length - 2).toInt() in redIcon) {
+            image.backgroundTintList = ContextCompat.getColorStateList(context, R.color.red_icon)
+        }
+        if (number1.substring(number1.length - 2).toInt() in bluIcon) {
+            image.backgroundTintList = ContextCompat.getColorStateList(context, R.color.blue_icon)
+        }
+        if (number1.substring(number1.length - 2).toInt() in orangIcon) {
+            image.backgroundTintList = ContextCompat.getColorStateList(context, R.color.orange_icon)
+        }
+        if (number1.substring(number1.length - 2).toInt() in greenIcon) {
+            image.backgroundTintList = ContextCompat.getColorStateList(context, R.color.green_icon)
+        }
+        if (number1.substring(number1.length - 2).toInt() in filIcon) {
+            image.backgroundTintList = ContextCompat.getColorStateList(context, R.color.fiol_icon)
+        }
+    }
+
+    private fun getContactName(id: String): String {
 
         var name = ""
 
@@ -142,13 +169,12 @@ class DetailHistoryActivity : AppCompatActivity() {
         )!!
 
         cursor.moveToFirst()
-        while(!cursor.isAfterLast()){
+        while (!cursor.isAfterLast()) {
 
             val displayName =
                 cursor.getString(cursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME))
 
-
-            if(isFirst){
+            if (isFirst) {
                 isFirst = false
                 name = displayName
             }
@@ -160,7 +186,7 @@ class DetailHistoryActivity : AppCompatActivity() {
     }
 
     private fun showDeletingDialog() {
-        try{
+        try {
             val mContactId = intent.getStringExtra(Keys.id)!!.toString()
 
             val pDialog = Dialog(this)
@@ -168,15 +194,15 @@ class DetailHistoryActivity : AppCompatActivity() {
             pDialog.setContentView(R.layout.delete_contact_dialog)
 
             val cancelBtn = pDialog.findViewById<Button>(R.id.dialog_cancel_btn_id)
-            if(null != cancelBtn){
+            if (null != cancelBtn) {
                 cancelBtn.setOnClickListener {
                     pDialog.dismiss()
                 }
             }
             val okBtn = pDialog.findViewById<Button>(R.id.dialog_ok_btn_id)
-            if(null != okBtn) {
+            if (null != okBtn) {
                 okBtn.setOnClickListener {
-                    if(null != mContactId) {
+                    if (null != mContactId) {
                         val deleter = DeleteContact(baseContext, mContactId)
                         deleter.makeRequest()
                     }
@@ -186,7 +212,7 @@ class DetailHistoryActivity : AppCompatActivity() {
 
             pDialog.show()
 
-        }catch (e: java.lang.Exception) {
+        } catch (e: java.lang.Exception) {
             Log.e("DetailContactLog", "FullContactDetail showDeletingDialog", e)
         }
     }
@@ -223,7 +249,7 @@ class DetailHistoryActivity : AppCompatActivity() {
                 }
             }
             builder.show()
-        }catch (e: java.lang.Exception) {
+        } catch (e: java.lang.Exception) {
             Log.e("DetailContactLog", "FullContactDetail showShareContactDialog", e)
         }
     }
@@ -231,10 +257,10 @@ class DetailHistoryActivity : AppCompatActivity() {
     private fun sendVCard() {
         var contactId = intent.getStringExtra(Keys.id)!!.toLong()
         var contactName = getContactName(intent.getStringExtra(Keys.id)!!.toString())
-        if(null != contactId) {
+        if (null != contactId) {
             val loader = VCardLoader(baseContext, contactId.toString(), contactName)
             loader.makeRequest()
-        }else{
+        } else {
             Log.e("DetailContactLog", "sendVCard: contactId = null")
         }
     }

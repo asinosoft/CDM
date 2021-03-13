@@ -13,6 +13,7 @@ import javax.security.auth.callback.Callback
 import android.widget.TextView
 import android.widget.ImageView
 import android.widget.RelativeLayout
+import androidx.core.content.ContextCompat
 import com.zerobranch.layout.SwipeLayout
 import org.jetbrains.anko.find
 import java.util.*
@@ -51,6 +52,7 @@ class AdapterHistory(var items: ArrayList<HistoryItem>, val callback: Callback?,
 
 
     inner class HolderHistory(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
 
         private val imageCon = itemView.findViewById<CircleImageView>(R.id.imageContact)
         private val imageLeft = itemView.findViewById<CircleImageView>(R.id.imageLeftAction)

@@ -26,6 +26,8 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
     private var regex: Regex? = null
     private var listBackup = contacts
 
+    lateinit var t: Contact
+
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default + job
 
@@ -167,6 +169,9 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
             if (name) regex?.find(v.name.text.toString())?.let {
                 v.name.setColoredText(it.value)
             }
+
+
+
         }
     }
 

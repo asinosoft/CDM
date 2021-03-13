@@ -20,7 +20,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/contact_unfoto" />
+                android:src="@drawable/ic_baseline_person_24"
+                android:background="@color/grey_400"/>
 
 
             <include
