@@ -18,7 +18,6 @@ class Utilities {
     val DEFAULT_DIALER_RC = 11
     val PERMISSION_RC = 10
     val MUST_HAVE_PERMISSIONS = arrayOf(Manifest.permission.CALL_PHONE)
-    var contactDialer = Contact()
 
     fun toggleViewActivation(view: View) {
         view.isActivated = !view.isActivated
@@ -56,37 +55,6 @@ class Utilities {
 
     fun askForPermissions(activity: FragmentActivity?, permissions: Array<String>) {
         ActivityCompat.requestPermissions(activity!!, permissions, PERMISSION_RC)
-    }
-
-    fun getNameFromPhoneNumber(context: Context, number: String): String? {
-        val id = Funcs.getContactID(context, "$number")
-        if (id != null) {
-            if (context != null) {
-                contactDialer.parseDataCursor(id, context)
-            }
-        }
-
-        return contactDialer.name
-    }
-
-    fun getPhotoUriFromPhoneNumber(context: Context?, number: String): String {
-
-        val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number))
-        val projection = arrayOf(
-            ContactsContract.PhoneLookup.PHOTO_URI
-        )
-
-        try {
-            val cursor = context!!.contentResolver.query(uri, projection, null, null, null)
-            cursor.use {
-                if (cursor?.moveToFirst() == true) {
-                    return cursor.getStringValue(ContactsContract.PhoneLookup.PHOTO_URI) ?: ""
-                }
-            }
-        } catch (e: Exception) {
-        }
-
-        return ""
     }
 
     fun hasNavBar(context: Context): Boolean {

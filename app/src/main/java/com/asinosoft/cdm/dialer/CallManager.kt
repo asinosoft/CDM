@@ -1,18 +1,18 @@
 package com.asinosoft.cdm.dialer
 
-import android.content.Context
 import android.net.Uri
 import android.telecom.Call
 import android.telecom.InCallService
 import android.telecom.VideoProfile
+import com.asinosoft.cdm.api.ContactRepository
 import com.asinosoft.cdm.detail_contact.Contact
 
 class CallManager {
 
     companion object {
         var call: Call? = null
-        var callDialer = Contact()
         var inCallService: InCallService? = null
+        val contactRepository = ContactRepository()
 
         fun accept() {
             call?.answer(VideoProfile.STATE_AUDIO_ONLY)
@@ -56,19 +56,21 @@ class CallManager {
             }
         }
 
-        fun getCallContact(context: Context, callback: (CallContact?) -> Unit) {
-            val callContact = CallContact("", "", "")
+        fun getCallContact(callback: (CallContact) -> Unit) {
             if (call == null || call!!.details == null || call!!.details!!.handle == null) {
-                callback(callContact)
+                callback(CallContact())
                 return
             }
 
             val uri = Uri.decode(call!!.details.handle.toString())
             if (uri.startsWith("tel:")) {
                 val number = uri.substringAfter("tel:")
-                callContact.number = number
-                callContact.name = Utilities().getNameFromPhoneNumber(context, number).toString()
-                callContact.photoUri = Utilities().getPhotoUriFromPhoneNumber(context, number)
+                var callContact = CallContact(number)
+                contactRepository.contactPhones[number]?.let {
+                    callContact.name = it.name ?: number
+                    callContact.photoUri = it.photoUri ?: ""
+
+                }
 
                 if (callContact.name != callContact.number) {
                     callback(callContact)

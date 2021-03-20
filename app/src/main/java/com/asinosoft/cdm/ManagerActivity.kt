@@ -10,27 +10,23 @@ import android.provider.ContactsContract
 import android.telecom.TelecomManager
 import android.view.MotionEvent
 import android.view.View
+import androidx.activity.viewModels
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths.Companion.makeTouch
 import com.asinosoft.cdm.Metoths.Companion.toggle
 import com.asinosoft.cdm.adapters.NumbeAdapter
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
+import com.asinosoft.cdm.detail_contact.Contact
 import com.asinosoft.cdm.dialer.Utilities
 import com.asinosoft.cdm.globals.AlertDialogUtils
 import com.asinosoft.cdm.globals.Globals
-import com.asinosoft.cdm.globals.Ut
-import com.github.tamir7.contacts.Contact
-import com.github.tamir7.contacts.Contacts
-import com.github.tamir7.contacts.PhoneNumber
 import com.jaeger.library.StatusBarUtil
-import com.skydoves.powermenu.kotlin.powerMenu
 import kotlinx.android.synthetic.main.activity_manager.*
 import kotlinx.android.synthetic.main.keyboard.*
 import timber.log.Timber
@@ -53,7 +49,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     /**
      * ViewModel главного экрана, отвечает за всю фоновую логику
      */
-    private var viewModel: ManagerViewModel? = null
+    private val viewModel: ManagerViewModel by viewModels()
     private lateinit var keyboard: Keyboard
     val PERMISSIONS = arrayOf(
         Manifest.permission.READ_CONTACTS,
@@ -94,7 +90,6 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
             return
         }
 
-        viewModel = ViewModelProvider(this).get(ManagerViewModel::class.java)
         StatusBarUtil.setTranslucentForImageView(this, v.container)
         startForView()
 
@@ -133,16 +128,12 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
 
     private fun initContacts() {
         Timber.d("initContacts")
-        Contacts.initialize(this)
-        val list = Contacts.getQuery().hasPhoneNumber().find()
-        Timber.d("%s contacts found", list.size.toString())
-
         recyclerViewContact.layoutManager = LinearLayoutManager(this).apply {
             orientation = LinearLayoutManager.VERTICAL
             initialPrefetchItemCount = 11
         }
 
-        recyclerViewContact.adapter = AdapterContacts(list, View.OnClickListener {}, false)
+        recyclerViewContact.adapter = AdapterContacts(viewModel.getContacts().toList(), View.OnClickListener {}, false)
     }
 
     override fun onBackPressed() {
@@ -181,7 +172,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     }
 
     private fun startForView() {
-        viewModel?.start(
+        viewModel.start(
             v,
             this,
             lifecycle,
@@ -189,7 +180,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
             settingsOpen = { settingOpen(it) },
             activity = this
         )
-        viewModel?.initViews()
+        viewModel.initViews()
     }
 
     private fun pickContact() {
@@ -212,7 +203,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     }
 
     override fun onStop() {
-        viewModel?.saveCirs()
+        viewModel.saveCirs()
         super.onStop()
     }
 
@@ -227,53 +218,44 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         initContacts()
         recyclerViewHistory.makeTouch(MotionEvent.ACTION_UP)
         recyclerViewHistoryBottom.makeTouch(MotionEvent.ACTION_UP)
-        Globals.adapterLogs?.let {
-            it.notifyDataSetChanged()
-        }
-        viewModel?.let {
-            it.updateLists()
-        }
+        Globals.adapterLogs?.notifyDataSetChanged()
+        viewModel.updateLists()
     }
 
     override fun onDestroy() {
         Timber.d("onDestroy: Destroy!")
-        viewModel?.onDestroy()
+        viewModel.onDestroy()
         offerReplacingDefaultDialer()
         super.onDestroy()
     }
 
     override fun onOpenSettings() {
-        settingOpen(viewModel?.settings as Settings)
+        settingOpen(viewModel.settings)
     }
 
     private fun showNumberDialog(contact: Contact) {
         contact.let {
-            val numbersStr = mutableListOf<String>().apply {
-                contact.phoneNumbers.forEach {
-                    add(it.number)
-                }
-            }
             val dialog = AlertDialogUtils.dialogListWithoutConfirm(this, "Выберите номер")
             val adapter = NumbeAdapter {
-                viewModel?.onResult(contact, number = it)
+                viewModel.onResult(contact, number = it)
                 dialog.dismiss()
             }
             val recyclerView = dialog.findViewById<RecyclerView>(R.id.recycler_popup)
             recyclerView.layoutManager = LinearLayoutManager(this)
             recyclerView.adapter = adapter
-            adapter.setData(numbersStr)
+            adapter.setData(contact.mPhoneNumbers)
             dialog.show()
         }
     }
 
-    private fun clearDuplicateNumbers(numbers: MutableList<PhoneNumber>)
-            : List<PhoneNumber> {
-        val res: MutableList<PhoneNumber> = mutableListOf()
+    private fun clearDuplicateNumbers(numbers: MutableList<String>)
+            : List<String> {
+        val res: MutableList<String> = mutableListOf()
         numbers.forEach {
             val number = it
-            val cleanedNumber = it.number.replace(" ", "")
+            val cleanedNumber = it.replace(" ", "")
                 .replace("-", "").trim()
-            res.firstOrNull { it.number == cleanedNumber }
+            res.firstOrNull { it == cleanedNumber }
                 ?: res.add(number)
         }
         return  res
@@ -282,21 +264,19 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         scrollView.setScrollingEnabled(true)
-        Globals.adapterLogs?.let {
-            it.notifyDataSetChanged()
-        }
+        Globals.adapterLogs?.notifyDataSetChanged()
         if (requestCode == ACTIVITY_PICK_CONTACT && resultCode == Activity.RESULT_OK) {
-            val contact = Ut.getContactFromIntent(data)
+            val contact = viewModel.getContactIdFromIntent(data!!)
             contact?.let {
-                if (clearDuplicateNumbers(it.phoneNumbers).size > 1) {
+                if (clearDuplicateNumbers(it.mPhoneNumbers).size > 1) {
                     showNumberDialog(it)
                 } else {
-                    viewModel?.onResult(contact, number = it.phoneNumbers.first().number)
+                    viewModel.onResult(contact, number = it.mPhoneNumbers.first())
                 }
             }
 
         } else if (requestCode == ACTIVITY_SETTINGS && resultCode == Activity.RESULT_OK) {
-            viewModel?.start(
+            viewModel.start(
                 v,
                 this,
                 lifecycle,
@@ -304,8 +284,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
                 settingsOpen = { settingOpen(it) },
                 activity = this
             )
-            viewModel?.initViews(false)
+            viewModel.initViews(false)
         }
     }
-
 }

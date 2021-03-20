@@ -2,28 +2,15 @@ package com.asinosoft.cdm
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-
+import com.google.gson.Gson
 
 /**
  * Класс загрузчика настроек.
  */
-class Loader(contextBase: Context) {
+object Loader {
 
-    private var context: Context = contextBase
-    private var myPref: SharedPreferences
-    private val moshi: Moshi by lazy {
-        Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-    }
-    private val settingMoshi: JsonAdapter<Settings> by lazy {
-        moshi.adapter(Settings().javaClass)
-    }
-
-    init {
-        myPref = context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
-    }
+    private var myPref: SharedPreferences =
+        App.INSTANCE.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
 
     /**
      * Проверка на наличие настроек
@@ -40,7 +27,7 @@ class Loader(contextBase: Context) {
         if (settings == null) {
             return  Settings()
         }
-        return settingMoshi.fromJson(settings)?: Settings()
+        return Gson().fromJson(settings!!, Settings().javaClass)?: Settings()
     }
 
     fun loadContactSettings(contactNumber : String): Settings{
@@ -48,7 +35,7 @@ class Loader(contextBase: Context) {
         if (settings == null) {
             return loadSettings()
         }
-        return settingMoshi.fromJson(settings)?: Settings()
+        return Gson().fromJson(settings!!, Settings().javaClass)?: Settings()
     }
 
     /**
@@ -56,13 +43,13 @@ class Loader(contextBase: Context) {
      */
     fun saveSettings(settings: Settings){
         val e = myPref.edit()
-        e.putString(Keys.Settings, settingMoshi.toJson(settings))
+        e.putString(Keys.Settings, Gson().toJson(settings))
         e.apply()
     }
 
     fun saveContactSettings(contactNumber : String, settings: Settings){
         val e = myPref.edit()
-        e.putString(contactNumber, settingMoshi.toJson(settings))
+        e.putString(contactNumber, Gson().toJson(settings))
         e.apply()
     }
 

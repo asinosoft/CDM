@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths.Companion.setSize
 import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.databinding.ItemCirBinding
-import com.github.tamir7.contacts.Contact
+import com.asinosoft.cdm.detail_contact.Contact
 import java.util.Collections.swap
 
 class CirAdapter(var items: MutableList<CircleImage>, val context: Context, val settings: Settings, val vibrator: Vibrator): RecyclerView.Adapter<CirAdapter.Holder>(){
@@ -49,7 +49,7 @@ class CirAdapter(var items: MutableList<CircleImage>, val context: Context, val 
                     setActionImage(v.actionView)
                     val number = selectedNumber
                     number?.let {
-                        this.directActions = Loader(v.root.context).loadContactSettings(it).toDirectActions()
+                        this.directActions = Loader.loadContactSettings(it).toDirectActions()
 
                     } ?: kotlin.run {
                         this.directActions = settings.toDirectActions()

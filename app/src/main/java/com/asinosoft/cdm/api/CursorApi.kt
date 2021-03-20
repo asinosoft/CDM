@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.CallLog
 import android.provider.ContactsContract
+import com.asinosoft.cdm.HistoryItem
 import java.io.IOException
 
 /**
@@ -15,12 +16,14 @@ import java.io.IOException
 object CursorApi {
     // Список колонок, получаемых из истории звонков
     private val projection = arrayOf(
-        CallLog.Calls.CACHED_NAME,
         CallLog.Calls.NUMBER,
         CallLog.Calls.TYPE,
         CallLog.Calls.DATE,
         CallLog.Calls.DURATION
     )
+
+    // База контактов для поиска по номеру телефона
+    private val contactRepository = ContactRepository()
 
     /**
      * Получение истории последних звонков
@@ -32,21 +35,28 @@ object CursorApi {
         null,
         "${CallLog.Calls.DATE} DESC"
     )?.let {
-        // По каждому контакту показываем только последний звонок
-        HistoryItemCursorAdapter(context, it).getUnique { c -> c.numberContact }
+        // По каждому контакту показываем только последний звонок (первый, с учетом сортировки DESC)
+        HistoryItemCursorAdapter(it, contactRepository).getUnique { item ->
+            when (item.contact.id) {
+                0L -> item.numberContact
+                else -> item.contact.id.toString()
+            }
+        }
     }
 
     /**
      * Получение истории звонков по конкретноку контакту
      */
-    fun getContactCallLog(context: Context, phone: String) = context.contentResolver.query(
-        CallLog.Calls.CONTENT_URI,
-        projection,
-        "${CallLog.Calls.NUMBER} = ?",
-        arrayOf(phone),
-        "${CallLog.Calls.DATE} DESC"
-    )?.let {
-        HistoryItemCursorAdapter(context, it).getAll()
+    fun getContactCallLog(context: Context, phone: String): List<HistoryItem> {
+        return context.contentResolver.query(
+            CallLog.Calls.CONTENT_URI,
+            projection,
+            "${CallLog.Calls.NUMBER} = ?",
+            arrayOf(phone),
+            "${CallLog.Calls.DATE} DESC"
+        )?.let {
+            HistoryItemCursorAdapter(it, contactRepository).getAll()
+        } ?: ArrayList()
     }
 
     fun getDisplayPhoto(contactId: Long, context: Context): Bitmap? {
@@ -56,11 +66,11 @@ object CursorApi {
             contactUri,
             ContactsContract.Contacts.Photo.DISPLAY_PHOTO
         )
-        try {
+        return try {
             val fd = context.contentResolver.openAssetFileDescriptor(displayPhotoUri, "r")
-            return BitmapFactory.decodeStream(fd!!.createInputStream())
+            BitmapFactory.decodeStream(fd!!.createInputStream())
         } catch (e: IOException) {
-            return null
+            null
         }
 
     }

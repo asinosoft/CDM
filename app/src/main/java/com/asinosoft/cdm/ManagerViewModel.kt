@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Vibrator
+import android.provider.ContactsContract
 import android.util.Log
 import android.view.DragEvent
 import android.view.View.GONE
@@ -18,13 +19,11 @@ import com.asinosoft.cdm.Metoths.Companion.dp
 import com.asinosoft.cdm.Metoths.Companion.setSize
 import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.adapters.AdapterCallLogs
+import com.asinosoft.cdm.api.ContactRepository
 import com.asinosoft.cdm.api.CursorApi.getHistoryListLatest
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
-import com.github.tamir7.contacts.Contact
-import com.github.tamir7.contacts.Contacts
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.asinosoft.cdm.detail_contact.Contact
+import com.google.gson.Gson
 import com.wickerlabs.logmanager.LogsManager
 import jp.wasabeef.recyclerview.animators.LandingAnimator
 import kotlinx.coroutines.*
@@ -54,6 +53,7 @@ class ManagerViewModel : ViewModel() {
     private lateinit var activity: AppCompatActivity
     private var indexOfFrontChild = 0
     private val listCirs: MutableList<CircleImage> = mutableListOf()
+    private val contactReporitory = ContactRepository()
 
     private var cirLayoutHeight = 0
     private val adapterCallLogs: AdapterCallLogs by lazy {
@@ -64,12 +64,6 @@ class ManagerViewModel : ViewModel() {
     }
     private val sharedPreferences: SharedPreferences by lazy {
         context.getSharedPreferences(Keys.ManagerPreference, Context.MODE_PRIVATE)
-    }
-    private val moshi: Moshi by lazy {
-        Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-    }
-    private val adapterCirMoshi: JsonAdapter<CirPairData> by lazy {
-        moshi.adapter(CirPairData().javaClass)
     }
     fun updateLists(){
         this.v.recyclerView.adapter?.notifyDataSetChanged()
@@ -89,8 +83,7 @@ class ManagerViewModel : ViewModel() {
         this.lifecycle = lifecycle
         this.pickedContact = pickedContact
         this.settingsOpen = settingsOpen
-        Contacts.initialize(context)
-        settings = Loader(context).loadSettings()
+        settings = Loader.loadSettings()
         touchHelper = ItemTouchHelper(ItemTouchCallbackCir())
         touchHelper.attachToRecyclerView(v.recyclerView)
         logsManager = LogsManager(context)
@@ -150,7 +143,7 @@ class ManagerViewModel : ViewModel() {
                 val list = it.split("<end>").dropLast(1)
                 val r = ArrayList<CircleImage>()
                 list.forEach { item ->
-                    adapterCirMoshi.fromJson(item)?.let { pair ->
+                    Gson().fromJson(item, CirPairData().javaClass)?.let { pair ->
                         r.add(newCir(settings, touchHelper, pair).also(onNext))
                     }
                 }
@@ -168,7 +161,7 @@ class ManagerViewModel : ViewModel() {
             sharedPreferences.getString(Keys.Cirs, null)?.let {
                 val list = it.split("<end>").dropLast(1)
                 list.forEach { item ->
-                    adapterCirMoshi.fromJson(item)?.let { pair ->
+                    Gson().fromJson(item, CirPairData().javaClass)?.let { pair ->
                         r.add(newCir(settings, touchHelper, pair))
                     }
                 }
@@ -315,7 +308,7 @@ class ManagerViewModel : ViewModel() {
     fun saveCirs() {
         var str = ""
         listCirs.forEach {
-            str += adapterCirMoshi.toJson(CirPairData(it.contact, it.contactSettings,it.selectedNumber)) + "<end>"
+            str += Gson().toJson(CirPairData(it.contact, it.contactSettings,it.selectedNumber)) + "<end>"
         }
         sharedPreferences.edit().apply {
             putString(Keys.Cirs, str)
@@ -331,4 +324,17 @@ class ManagerViewModel : ViewModel() {
         (v.recyclerView.adapter as CirAdapter).setContact(posPicker, contact, number)
     }
 
+    fun getContacts() = contactReporitory.contacts.values
+
+    fun getContactIdFromIntent(intent: Intent): Contact? {
+        val projections = arrayOf(ContactsContract.Contacts._ID)
+        val cursor = App.INSTANCE.contentResolver.query(intent.data!!, projections, null, null, null)
+        var id = 0L
+        if (cursor != null && cursor.moveToFirst()) {
+            val i = cursor.getColumnIndex(projections[0])
+            id = cursor.getLong(i)
+        }
+        cursor?.close()
+        return contactReporitory.contacts.get(id)
+    }
 }

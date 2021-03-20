@@ -34,7 +34,6 @@ import org.jetbrains.anko.image
 class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
 
     lateinit var settings: Settings
-    lateinit var loader: Loader
     lateinit var v: SettingsLayoutBinding
     lateinit var draggedCir: CircularImageView
     var filePathPhoto = ""
@@ -67,7 +66,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
 
     private fun initAll() {
         settings = Gson().fromJson(intent.getStringExtra(Keys.Settings), Settings::class.java)
-        loader = Loader(this)
         initSeek1()
         initSeek2()
         initSeek3()
@@ -87,7 +85,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     }
 
     private fun saveAll() {
-        loader.saveSettings(settings.copy(countCirs = v.seekBarCountButtons.progress, sizeCirs = v.seekBarSizeButtons.progress, rightButton = v.cirRight.action,
+        Loader.saveSettings(settings.copy(countCirs = v.seekBarCountButtons.progress, sizeCirs = v.seekBarSizeButtons.progress, rightButton = v.cirRight.action,
         leftButton = v.cirLeft.action, topButton = v.cirTop.action, bottomButton = v.cirBottom.action, chooserButton1 = v.cirChoose1.action, chooserButton2 = v.cirChoose2.action,
         cirMenu = v.menu.isChecked, historyButtom = v.hisButtom.isChecked, columnsCirs = v.seekBarColumnsButtons.progress, borderWidthCirs = v.seekBarBorderButtons.progress))
     }

@@ -1,12 +1,10 @@
 package com.asinosoft.cdm
 
 import android.graphics.Color
-import com.squareup.moshi.JsonClass
 
 /**
  * Информационный класс настроек
  */
-@JsonClass(generateAdapter = true)
 data class Settings(
     var sizeCirs: Int = 200,
     var countCirs: Int = 10,

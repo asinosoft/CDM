@@ -2,7 +2,6 @@ package com.asinosoft.cdm.fragments
 
 import android.content.ClipData
 import android.content.ClipDescription
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.DragEvent
@@ -11,7 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.asinosoft.cdm.*
+import com.asinosoft.cdm.detail_contact.DetailHistoryViewModel
 import kotlinx.android.synthetic.main.contact_settings.*
 import kotlinx.android.synthetic.main.settings_layout.*
 import kotlinx.android.synthetic.main.settings_layout.cirBottom
@@ -27,15 +28,10 @@ interface ScrollViewListener {
     fun onScrolledToTop()
 }
 
-interface NumberGetter {
-    fun getNumber(): String?
-}
-
 class ContactSettingsFragment : Fragment() {
+    private val model: DetailHistoryViewModel by activityViewModels()
     lateinit var scrollView: LockableScrollView
     lateinit var draggedCir: CircularImageView
-    var contacNumber: String? = null
-    var contactSettins: Settings? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,27 +40,22 @@ class ContactSettingsFragment : Fragment() {
         return inflater.inflate(R.layout.contact_settings, container, false)
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        contacNumber = (activity as NumberGetter).getNumber()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         scrollView = view.findViewById(R.id.scrollView)
         scrollView.setScrollingEnabled(false)
-        number.text = contacNumber
 
         scrollView.setOnScrollChangeListener { view, scrollX, scrollY, oldScrollX, oldScrollY ->
             if (oldScrollY > 0 && scrollY == 0) {
                 (activity as ScrollViewListener).onScrolledToTop()
             }
         }
-        val loader = Loader(activity as Context)
-        contactSettins = Loader(activity as Context).loadContactSettings(contacNumber as String)
-        if(contactSettins == null) contactSettins = loader.loadSettings()
-        setAllCirs(contactSettins?.borderWidthCirs, contactSettins?.colorBorder)
-        setData(contactSettins as Settings)
+
+        number.text = model.phoneNumber
+        model.getContactSettings().let {
+            setAllCirs(it.borderWidthCirs, it.colorBorder)
+            setData(it)
+        }
     }
 
     private fun setCirData(cir: CircularImageView) {
@@ -148,8 +139,17 @@ class ContactSettingsFragment : Fragment() {
     }
 
     override fun onStop() {
+        model.saveContactSettings(
+            Settings(
+                rightButton = cirRight.action,
+                leftButton = cirLeft.action,
+                topButton = cirTop.action,
+                bottomButton = cirBottom.action,
+                chooserButton1 = cirChoose1.action,
+                chooserButton2 = cirChoose2.action
+            )
+        )
         super.onStop()
-        saveAll()
     }
 
     private fun CircularImageView.swapCir(c: CircularImageView) {
@@ -179,19 +179,6 @@ class ContactSettingsFragment : Fragment() {
         cirChoose1.let(this@ContactSettingsFragment::setDragListener)
         cirChoose2.let(this@ContactSettingsFragment::setDragListener)
 
-    }
-
-    private fun saveAll() {
-        Loader(activity as Context).saveContactSettings(
-            contacNumber as String, contactSettins?.copy(
-                rightButton = cirRight.action,
-                leftButton = cirLeft.action,
-                topButton = cirTop.action,
-                bottomButton = cirBottom.action,
-                chooserButton1 = cirChoose1.action,
-                chooserButton2 = cirChoose2.action
-            ) as Settings
-        )
     }
 
     private fun setAllCirs(width: Int? = null, @ColorInt color: Int? = null) {

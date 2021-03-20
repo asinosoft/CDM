@@ -32,7 +32,7 @@ import com.asinosoft.cdm.Metoths.Companion.toVisibility
 import com.asinosoft.cdm.Metoths.Companion.translateDiff
 import com.asinosoft.cdm.Metoths.Companion.translateTo
 import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
-import com.github.tamir7.contacts.Contact
+import com.asinosoft.cdm.detail_contact.Contact
 import com.google.android.material.snackbar.Snackbar
 import com.skydoves.powermenu.PowerMenu
 import org.jetbrains.anko.sdk27.coroutines.onClick
@@ -73,7 +73,7 @@ class CircleImage@JvmOverloads constructor(
     var contact: Contact? = null
     set(value) {
         field = value
-        if (value != null && value.photoUri != null) updatePhoto(value.photoUri.toUri())
+        if (value != null && value.photoUri != null) updatePhoto(value.photoUri!!.toUri())
         else setImageResource(CONTACT_UNFOTO)
     }
 
@@ -122,7 +122,7 @@ class CircleImage@JvmOverloads constructor(
             if (!isMoving) {
                 if (contact == null) {
                     pickContactForNum()
-                } else openDetailContact(selectedNumber as String, contact, context = context)
+                } else openDetailContact(selectedNumber as String, contact!!, context = context)
             }
         }
     }
@@ -236,12 +236,11 @@ class CircleImage@JvmOverloads constructor(
             return
         }
         var num : String? = null
-        contact?.phoneNumbers?.firstOrNull {
-            it.number == selectedNumber
+        contact?.mPhoneNumbers?.firstOrNull {
+            it == selectedNumber
         } ?.let {
 
-           it.normalizedNumber
-               ?.let {
+           it?.let {
                num = it
            } ?: errorMes()
 
@@ -253,7 +252,7 @@ class CircleImage@JvmOverloads constructor(
                 Telegram -> openTelegram(it, context)
                 PhoneCall -> callPhone(it, context)
                 Email -> {
-                    if (!contact!!.emails.isNullOrEmpty()) contact!!.emails.first()?.let { mailToEmail(it.address, context) }
+                    if (!contact!!.mEmailAdress.isNullOrEmpty()) contact!!.mEmailAdress.first()?.let { mailToEmail(it, context) }
                     else Snackbar.make(rootView, "Контакт без почты!", Snackbar.LENGTH_SHORT).show()
                 }
                 Sms -> sendSMS(it, context)
@@ -266,7 +265,7 @@ class CircleImage@JvmOverloads constructor(
         Log.d("CircleImage", "Action TouchDown -> (${this.x}; ${this.y}) --> (${event.rawX}; ${event.rawY}) ")
         val number = selectedNumber
         number?.let {
-            this.directActions = Loader(this.context).loadContactSettings(it).toDirectActions()
+            this.directActions = Loader.loadContactSettings(it).toDirectActions()
         }
         touchDownForIndex()
         touchStart = event.toPointF()

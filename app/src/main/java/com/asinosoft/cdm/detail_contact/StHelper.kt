@@ -8,7 +8,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class StHelper {
+object StHelper {
 
     fun convertNumber(number: String): String{
         var numberStr: String
@@ -51,7 +51,4 @@ class StHelper {
         val age = ageInMillis/1000/60/60/24/366
         return age.toString()
     }
-
-
-
 }

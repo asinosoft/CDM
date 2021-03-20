@@ -11,11 +11,9 @@ import com.asinosoft.cdm.Metoths
 import com.asinosoft.cdm.R
 import kotlin.collections.ArrayList
 
-class AdapterContact(val elements: ArrayList<ContactDetailListElement>): RecyclerView.Adapter<AdapterContact.ViewContactInfo>() {
+class AdapterContact(private val elements: ArrayList<ContactDetailListElement>): RecyclerView.Adapter<AdapterContact.ViewContactInfo>() {
 
     private lateinit var context: Context
-    val mContact = Contact()
-    val stHelper = StHelper()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewContactInfo {
@@ -65,12 +63,12 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
                     18 -> numberType.text = context.getString(R.string.type_work_pager)
                     19 -> numberType.text = context.getString(R.string.type_assistant)
                     20 -> numberType.text = context.getString(R.string.type_mms)
-                    mContact.TYPE_EMAIL -> numberType.text = context.getString(R.string.type_e_mail)
-                    mContact.TYPE_WHATSAPP -> numberType.text = context.getString(R.string.type_whatsapp)
-                    mContact.TYPE_VIBER -> numberType.text = context.getString(R.string.type_viber)
-                    mContact.TYPE_TELEGRAM -> numberType.text = context.getString(R.string.type_telegram)
-                    mContact.TYPE_SKYPE -> numberType.text = context.getString(R.string.type_skype)
-                    mContact.TYPE_BIRTHDAY -> numberType.text = context.getString(R.string.type_birthday)
+                    Contact.TYPE_EMAIL -> numberType.text = context.getString(R.string.type_e_mail)
+                    Contact.TYPE_WHATSAPP -> numberType.text = context.getString(R.string.type_whatsapp)
+                    Contact.TYPE_VIBER -> numberType.text = context.getString(R.string.type_viber)
+                    Contact.TYPE_TELEGRAM -> numberType.text = context.getString(R.string.type_telegram)
+                    Contact.TYPE_SKYPE -> numberType.text = context.getString(R.string.type_skype)
+                    Contact.TYPE_BIRTHDAY -> numberType.text = context.getString(R.string.type_birthday)
                 }
             }else{
                 numberType.text = " "
@@ -100,16 +98,16 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
                     number.text = item.active
                     mCustomLeft.visibility = View.INVISIBLE
                     bText.visibility = View.GONE
-                    mCustomMiddle.setOnClickListener(View.OnClickListener { v ->
+                    mCustomMiddle.setOnClickListener { v ->
                         Metoths.callPhone(item.active!!, context)
-                    })
+                    }
                     mCustomRight.setBackgroundResource(R.drawable.message)
-                    mCustomRight.setOnClickListener(View.OnClickListener { v ->
+                    mCustomRight.setOnClickListener { v ->
                         Metoths.sendMsg(item.active!!, context)
-                    })
+                    }
                 }
                 1 -> {
-                    number.text = stHelper.convertNumber(item.active!!)
+                    number.text = StHelper.convertNumber(item.active!!)
                     mCustomLeft.setBackgroundResource(R.drawable.whatsapp_message)
                     mCustomMiddle.setBackgroundResource(R.drawable.whatsapp_call)
                     bText.visibility = View.GONE
@@ -124,7 +122,7 @@ class AdapterContact(val elements: ArrayList<ContactDetailListElement>): Recycle
                     }
                 }
                 2 -> {
-                    number.text = stHelper.convertNumber(item.active!!)
+                    number.text = StHelper.convertNumber(item.active!!)
                     mCustomMiddle.setBackgroundResource(R.drawable.viber_message)
                     mCustomRight.setBackgroundResource(R.drawable.viber)
                     mCustomLeft.visibility = View.INVISIBLE

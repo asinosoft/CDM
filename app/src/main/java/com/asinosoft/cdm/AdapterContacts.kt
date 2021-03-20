@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths.Companion.getPattern
 import com.asinosoft.cdm.Metoths.Companion.setColoredText
 import com.asinosoft.cdm.databinding.HistorySwipingItemBinding
-import com.github.tamir7.contacts.Contact
+import com.asinosoft.cdm.detail_contact.Contact
 import com.zerobranch.layout.SwipeLayout
 import kotlinx.coroutines.*
 import org.jetbrains.anko.runOnUiThread
@@ -44,28 +44,28 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
     private suspend fun List<Contact>.filtered(nums: String) = async {
         val r = ArrayList<Contact>()
         this@filtered.forEach { contact ->
-            regex?.find(contact.displayName)?.let {
+            regex?.find(contact.name ?: "")?.let {
                 r.add(contact)
                 return@forEach
             }
-            contact.phoneNumbers.forEach{
-                if (it.normalizedNumber.isNullOrEmpty()) return@forEach
-                if (it.normalizedNumber.contains(nums, true)) {
+            contact.mPhoneNumbers.forEach{
+                if (it.isNullOrEmpty()) return@forEach
+                if (it.contains(nums, true)) {
                     r.add(contact)
                     return@forEach
                 }
             }
         }
         r.sortWith(compareBy{
-            val res = regex?.find(it.displayName)
+            val res = regex?.find(it.name ?: "")
             if(res != null){
-                 it.displayName.indexOf(res.value)
+                 it.name?.indexOf(res.value)
             } else {
                 var index = 0
-                it.phoneNumbers.forEach{
-                    if (it.normalizedNumber.isNullOrEmpty()) return@forEach
-                    if (it.normalizedNumber.contains(nums, true)) {
-                        index = it.normalizedNumber.indexOf(nums)
+                it.mPhoneNumbers.forEach{
+                    if (it.isNullOrEmpty()) return@forEach
+                    if (it.contains(nums, true)) {
+                        index = it.indexOf(nums)
                         return@forEach
                     }
                 }
@@ -102,7 +102,7 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
 
     private fun openDetail(item: Contact) {
         val intent = Intent(this.context, DetailHistoryActivity::class.java)
-        intent.putExtra(Keys.number, item.phoneNumbers.firstOrNull()?.number)
+        intent.putExtra(Keys.number, item.mPhoneNumbers.firstOrNull())
         intent.putExtra(Keys.id, item.id)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
@@ -113,13 +113,13 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
         fun bind(item: Contact, itemClickListerner: View.OnClickListener) {
             item.photoUri?.let { v.imageContact.setImageURI(it.toUri()) }
                 ?: v.imageContact.setImageResource(R.drawable.contact_unfoto)
-            v.name.text = item.displayName
-            val t = item.phoneNumbers
+            v.name.text = item.name
+            val t = item.mPhoneNumbers
             var tNum = ""
             if (t.isNotEmpty()) {
-                t.filter { !it.normalizedNumber.isNullOrEmpty() }.forEach {
-                    if (!tNum.contains(it.normalizedNumber)) tNum =
-                        tNum.plus("${it.normalizedNumber}, ")
+                t.filter { !it.isNullOrEmpty() }.forEach {
+                    if (!tNum.contains(it)) tNum =
+                        tNum.plus("${it}, ")
                 }
             }
             v.number.text = tNum.dropLast(2)
@@ -143,11 +143,11 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
                 override fun onOpen(direction: Int, isContinuous: Boolean) {
                     when (direction) {
                         SwipeLayout.RIGHT -> {
-                            Metoths.callPhone(item.phoneNumbers[0].normalizedNumber, context)
+                            Metoths.callPhone(item.mPhoneNumbers[0], context)
                         }
                         SwipeLayout.LEFT -> {
 //                            imageRight.visibility = View.VISIBLE
-                            Metoths.openWhatsApp(item.phoneNumbers[0].normalizedNumber, context)
+                            Metoths.openWhatsApp(item.mPhoneNumbers[0], context)
                         }
                         else -> Log.e(
                             "AdapterHistory.kt: ",

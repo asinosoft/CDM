@@ -37,7 +37,7 @@ import java.util.*
 class OngoingCallActivity : AppCompatActivity() {
 
     lateinit var context: Context
-    val contactDialer = Contact()
+    var contactDialer: Contact? = null
 
     //bools
     private var isSpeakerOn = false
@@ -66,7 +66,7 @@ class OngoingCallActivity : AppCompatActivity() {
         initProximitySensor()
 
         audioManager.mode = AudioManager.MODE_IN_CALL
-        CallManager.getCallContact(applicationContext) { contact ->
+        CallManager.getCallContact { contact ->
             callContact = contact
             callContactAvatar = getCallContactAvatar()
             runOnUiThread {
@@ -469,7 +469,7 @@ class OngoingCallActivity : AppCompatActivity() {
             .setChannelId(channelId)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
 
-        if (contactDialer.photoUri != null) {
+        if (contactDialer?.photoUri != null) {
             builder.setLargeIcon(getCircularBitmap(callContactAvatar!!))
         }
 

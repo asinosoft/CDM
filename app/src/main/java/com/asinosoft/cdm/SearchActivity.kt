@@ -10,9 +10,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asinosoft.cdm.Metoths.Companion.toggle
+import com.asinosoft.cdm.api.ContactRepository
 import com.asinosoft.cdm.databinding.ActivitySearchBinding
-import com.github.tamir7.contacts.Contact
-import com.github.tamir7.contacts.Contacts
+import com.asinosoft.cdm.detail_contact.Contact
 import com.jaeger.library.StatusBarUtil
 import kotlinx.android.synthetic.main.activity_search.*
 import kotlinx.android.synthetic.main.keyboard.*
@@ -25,13 +25,13 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var v: ActivitySearchBinding
     private lateinit var keyboard: Keyboard
     private var list = listOf<Contact>()
+    private val contactRepository = ContactRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         v = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(v.root)
         StatusBarUtil.setTranslucentForImageView(this, recyclerView)
-        Contacts.initialize(this)
         keyboard = supportFragmentManager.findFragmentById(R.id.keyboard) as Keyboard
         setListens()
     }
@@ -42,8 +42,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setListens() {
-        list = Contacts.getQuery().find().filter { !it.phoneNumbers.isNullOrEmpty() }
-
+        list = contactRepository.contacts.values.filter { !it.mPhoneNumbers.isNullOrEmpty() }
 
         v.recyclerView.layoutManager = LinearLayoutManager(this).apply {
             orientation = LinearLayoutManager.VERTICAL

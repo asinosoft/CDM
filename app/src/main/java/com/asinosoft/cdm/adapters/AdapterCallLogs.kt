@@ -62,7 +62,7 @@ class AdapterCallLogs(
     private fun openDetail(item: HistoryItem) {
         val intent = Intent(this.context, DetailHistoryActivity::class.java)
         intent.putExtra(Keys.number, item.numberContact)
-        intent.putExtra(Keys.id, item.contactID)
+        intent.putExtra(Keys.id, item.contact.id)
         context.startActivity(intent)
     }
 
@@ -79,7 +79,7 @@ class AdapterCallLogs(
             val r = ArrayList<HistoryItem>()
             this@filtered.forEach { item ->
                 if (item.numberContact.isNullOrEmpty()) return@forEach
-                if (item.nameContact.contains(nums, true)) {
+                if (item.contact.name.contains(nums, true)) {
                     r.add(item)
                     return@forEach
                 }
@@ -124,18 +124,17 @@ class AdapterCallLogs(
         fun bind(item: HistoryItem, pos: Int) {
 
             with(v) {
-                if (!item.contactID.isNullOrBlank())
-                    item.contactID.toLong().let {
-                        if (it > 0) getDisplayPhoto(it, context)?.let { bitmap ->
-                            imageContact.setImageBitmap(bitmap)
-                        }
+                item.contact.id.let {
+                    if (it > 0) getDisplayPhoto(it, context)?.let { bitmap ->
+                        imageContact.setImageBitmap(bitmap)
                     }
-
-                name.text = item.nameContact
+                }
+                imageContact.setImageDrawable(item.contact.photo)
+                name.text = item.contact.name
                 number.text = "${item.numberContact}, ${Metoths.getFormatedTime(item.duration)}"
                 timeContact.text = item.time
                 dateContact.text = item.date
-                val settings = Loader(App.INSTANCE).loadContactSettings(item.numberContact)
+                val settings = Loader.loadContactSettings(item.numberContact)
                 imageLeftAction.imageResource =
                     if (settings.leftButton == Actions.WhatsApp) R.drawable.telephony_call_192
                     else R.drawable.whatsapp_192
@@ -154,7 +153,7 @@ class AdapterCallLogs(
 
                 dragLayout.setOnTouchListener { view, motionEvent ->
                     if(motionEvent.action == ACTION_DOWN){
-                        val settings = Loader(App.INSTANCE).loadContactSettings(item.numberContact)
+                        val settings = Loader.loadContactSettings(item.numberContact)
                         setIcons(settings, imageLeftAction, imageRightAction)
                     }
                     false
@@ -162,7 +161,7 @@ class AdapterCallLogs(
 
                 swipeLayout.setOnActionsListener(object : SwipeLayout.SwipeActionsListener {
                     override fun onOpen(direction: Int, isContinuous: Boolean) {
-                        val settings = Loader(App.INSTANCE).loadContactSettings(item.numberContact)
+                        val settings = Loader.loadContactSettings(item.numberContact)
                         setIcons(settings, imageLeftAction, imageRightAction)
                         when (direction) {
                             SwipeLayout.RIGHT -> {

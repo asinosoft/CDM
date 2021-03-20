@@ -1,11 +1,10 @@
 package com.asinosoft.cdm.api
 
-import android.content.Context
 import android.database.Cursor
 import android.provider.CallLog
-import androidx.core.database.getStringOrNull
-import com.asinosoft.cdm.Funcs
 import com.asinosoft.cdm.HistoryItem
+import com.asinosoft.cdm.detail_contact.Contact
+import com.asinosoft.cdm.detail_contact.StHelper
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -13,8 +12,8 @@ import kotlin.collections.HashSet
  * Адаптер для преобразования записей истории звонков в HistoryItem
  */
 class HistoryItemCursorAdapter(
-    val context: Context,
-    val cursor: Cursor
+    private val cursor: Cursor,
+    private val contactRepository: ContactRepository
 ) {
     private val dateFormat = java.text.SimpleDateFormat("dd.MM", Locale.getDefault())
     private val timeFormat = java.text.SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -22,11 +21,7 @@ class HistoryItemCursorAdapter(
     private val colNumber = cursor.getColumnIndex(CallLog.Calls.NUMBER)
     private val colType = cursor.getColumnIndex(CallLog.Calls.TYPE)
     private val colDate = cursor.getColumnIndex(CallLog.Calls.DATE)
-    private val colName = cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)
     private val colDuration = cursor.getColumnIndex(CallLog.Calls.DURATION)
-
-    // Соответствие контактов и номеров телефононов
-    private val phoneNumberToContactId = HashMap<String, String>()
 
     fun getAll(): ArrayList<HistoryItem> {
         val result = ArrayList<HistoryItem>()
@@ -50,24 +45,15 @@ class HistoryItemCursorAdapter(
 
     private fun getOne(): HistoryItem {
         val phoneNumber = cursor.getString(colNumber)
-        val name = cursor.getStringOrNull(colName)
         val date = cursor.getLong(colDate)
-        val contactID = getContactId(phoneNumber)
 
         return HistoryItem(
             numberContact = phoneNumber,
             typeCall = cursor.getInt(colType),
             time = timeFormat.format(date),
-            nameContact = when {
-                name.isNullOrEmpty() -> phoneNumber
-                else -> name
-            },
-            contactID = contactID,
             duration = cursor.getString(colDuration),
-            date = dateFormat.format(date)
+            date = dateFormat.format(date),
+            contact = contactRepository.contactPhones[phoneNumber] ?: Contact(0, phoneNumber)
         )
     }
-
-    private fun getContactId(phoneNumber: String) =
-        phoneNumberToContactId.getOrPut(phoneNumber, { Funcs.getContactID(context, phoneNumber) ?: "" })
 }
