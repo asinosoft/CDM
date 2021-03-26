@@ -3,7 +3,6 @@ package com.asinosoft.cdm
 import android.content.Context
 import android.graphics.PointF
 import android.net.Uri
-import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.widget.Toast
@@ -42,24 +41,21 @@ import org.jetbrains.anko.vibrator
 
 class CircleImage@JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    private val powerMenu: PowerMenu? = null,
-    private val swiping: Boolean = false,
-    var deleteListener: () -> Unit = {},
-    var replaceListenerForHolder: () -> Unit = {},
-    var replaceListener: (RecyclerView.ViewHolder) -> Unit = {},
-    var pickContactForNum: () -> Unit = {},
-    var pickContact: (Int) -> Unit = {},
-    var menuEnable: Boolean = false,
-    var dragListener: () -> Unit = {},
-    var deleteCir: CircularImageView? = null,
-    var editCir: CircularImageView? = null,
-    var touchDownForIndex: () -> Unit = {},
-    var touchDown: (Int) -> Unit = {},
-    var lockableNestedScrollView: LockableNestedScrollView? = null,
+): CircularImageView(context, null, 0) {//TODO: Добавь в настройках изменение типа управления кнопками (перетаскивание, меню)
+    var powerMenu: PowerMenu? = null
+    var menuEnable: Boolean = false
+    var deleteListener: () -> Unit = {}
+    var replaceListenerForHolder: () -> Unit = {}
+    var replaceListener: (RecyclerView.ViewHolder) -> Unit = {}
+    var pickContactForNum: () -> Unit = {}
+    var pickContact: (Int) -> Unit = {}
+    var dragListener: () -> Unit = {}
+    var deleteCir: CircularImageView? = null
+    var editCir: CircularImageView? = null
+    var touchDownForIndex: () -> Unit = {}
+    var touchDown: (Int) -> Unit = {}
     var selectedNumber : String? = null
-): CircularImageView(context, attrs, defStyleAttr) {//TODO: Добавь в настройках изменение типа управления кнопками (перетаскивание, меню)
+    var lockableNestedScrollView: LockableNestedScrollView? = null
 
     companion object{
         const val CONTACT_UNFOTO = R.drawable.contact_unfoto
@@ -94,7 +90,7 @@ class CircleImage@JvmOverloads constructor(
 
     init {
         initClick()
-        if (swiping) initTouch()
+        initTouch()
         if (menuEnable) initLongClickWithMenu()
         else initLongClickWithDrag()
         if(contact == null) setImageResource(R.drawable.plus)

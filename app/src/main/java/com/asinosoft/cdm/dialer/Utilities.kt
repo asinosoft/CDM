@@ -4,14 +4,10 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.provider.ContactsContract
 import android.telecom.TelecomManager
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
-import com.asinosoft.cdm.Funcs
-import com.asinosoft.cdm.detail_contact.Contact
 
 class Utilities {
 

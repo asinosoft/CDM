@@ -67,7 +67,7 @@ class CallManager {
                 val number = uri.substringAfter("tel:")
                 var callContact = CallContact(number)
                 contactRepository.contactPhones[number]?.let {
-                    callContact.name = it.name ?: number
+                    callContact.name = it.name
                     callContact.photoUri = it.photoUri ?: ""
 
                 }

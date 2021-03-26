@@ -27,7 +27,7 @@ object Loader {
         if (settings == null) {
             return  Settings()
         }
-        return Gson().fromJson(settings!!, Settings().javaClass)?: Settings()
+        return Gson().fromJson(settings, Settings().javaClass)?: Settings()
     }
 
     fun loadContactSettings(contactNumber : String): Settings{
@@ -35,7 +35,7 @@ object Loader {
         if (settings == null) {
             return loadSettings()
         }
-        return Gson().fromJson(settings!!, Settings().javaClass)?: Settings()
+        return Gson().fromJson(settings, Settings().javaClass)?: Settings()
     }
 
     /**

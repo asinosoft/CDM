@@ -50,10 +50,16 @@ class Contact(
     var mBirthDayType = ArrayList<Int>()
     var mAge = ArrayList<String>()
 
-    val photo: Drawable by lazy {
-        photoUri?.let {
-            getPhotoByUri(it)
-        } ?: defaultPhoto
+    @Transient
+    private var cachedPhoto: Drawable? = null
+
+    fun getPhoto(): Drawable {
+        if(null == cachedPhoto) {
+            cachedPhoto = photoUri?.let {
+                getPhotoByUri(it)
+            } ?: defaultPhoto
+        }
+        return cachedPhoto!!
     }
 
     private fun getPhotoByUri(photoUri: String): Drawable? {

@@ -2,6 +2,7 @@ package com.asinosoft.cdm.api
 
 import android.database.Cursor
 import android.provider.ContactsContract
+import androidx.core.database.getStringOrNull
 import com.asinosoft.cdm.App
 import com.asinosoft.cdm.detail_contact.Contact
 import com.asinosoft.cdm.detail_contact.StHelper
@@ -59,7 +60,7 @@ class ContactRepository {
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(contactId)
                 result.getOrPut(id, {
-                    Contact(id, cursor.getString(this@ContactCursorAdapter.displayName))
+                    Contact(id, cursor.getStringOrNull(this@ContactCursorAdapter.displayName) ?: "")
                 }).let { contact ->
                     contact.photoUri = cursor.getString(this@ContactCursorAdapter.photoUri)
                     when (cursor.getString(mimeType)) {
@@ -137,11 +138,15 @@ class ContactRepository {
 
         private fun parseBirthday(contact: Contact) {
             val value = cursor.getString(data1)
-            val date = StHelper.parseDateToddMMyyyy(value)
-            val age = StHelper.parseToMillis(value)
-            contact.mBirthDay.add(date!!)
-            contact.mAge.add(age)
-            contact.mBirthDayType.add(cursor.getInt(data2))
+            try {
+                val date = StHelper.parseDateToddMMyyyy(value)
+                val age = StHelper.parseToMillis(value)
+                contact.mBirthDay.add(date!!)
+                contact.mAge.add(age)
+                contact.mBirthDayType.add(cursor.getInt(data2))
+            } catch(ex: java.text.ParseException) {
+                Timber.e(ex)
+            }
         }
 
         /**

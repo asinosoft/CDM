@@ -1,14 +1,8 @@
 package com.asinosoft.cdm.api
 
-import android.content.ContentUris
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.provider.CallLog
-import android.provider.ContactsContract
 import com.asinosoft.cdm.HistoryItem
-import java.io.IOException
 
 /**
  * Класс потокового парсера истории.
@@ -28,7 +22,7 @@ object CursorApi {
     /**
      * Получение истории последних звонков
      */
-    fun getHistoryListLatest(context: Context) = context.contentResolver.query(
+    fun getHistoryListLatest(context: Context): List<HistoryItem> = context.contentResolver.query(
         CallLog.Calls.CONTENT_URI,
         projection,
         null,
@@ -42,7 +36,7 @@ object CursorApi {
                 else -> item.contact.id.toString()
             }
         }
-    }
+    } ?: ArrayList()
 
     /**
      * Получение истории звонков по конкретноку контакту
@@ -57,21 +51,5 @@ object CursorApi {
         )?.let {
             HistoryItemCursorAdapter(it, contactRepository).getAll()
         } ?: ArrayList()
-    }
-
-    fun getDisplayPhoto(contactId: Long, context: Context): Bitmap? {
-        val contactUri =
-            ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId)
-        val displayPhotoUri = Uri.withAppendedPath(
-            contactUri,
-            ContactsContract.Contacts.Photo.DISPLAY_PHOTO
-        )
-        return try {
-            val fd = context.contentResolver.openAssetFileDescriptor(displayPhotoUri, "r")
-            BitmapFactory.decodeStream(fd!!.createInputStream())
-        } catch (e: IOException) {
-            null
-        }
-
     }
 }

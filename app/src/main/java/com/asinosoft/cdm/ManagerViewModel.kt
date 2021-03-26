@@ -10,7 +10,6 @@ import android.view.DragEvent
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.OvershootInterpolator
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -23,13 +22,12 @@ import com.asinosoft.cdm.api.ContactRepository
 import com.asinosoft.cdm.api.CursorApi.getHistoryListLatest
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.detail_contact.Contact
-import com.google.gson.Gson
-import com.wickerlabs.logmanager.LogsManager
+import com.google.gson.*
 import jp.wasabeef.recyclerview.animators.LandingAnimator
 import kotlinx.coroutines.*
-import org.jetbrains.anko.runOnUiThread
 import org.jetbrains.anko.vibrator
 import timber.log.Timber
+import java.lang.reflect.Type
 
 /**
  * Класс фоновой логики главного экрана
@@ -49,23 +47,21 @@ class ManagerViewModel : ViewModel() {
     private lateinit var lifecycle: Lifecycle
     private lateinit var pickedContact: () -> Unit
     private lateinit var settingsOpen: (Settings) -> Unit
-    private lateinit var logsManager: LogsManager
-    private lateinit var activity: AppCompatActivity
     private var indexOfFrontChild = 0
     private val listCirs: MutableList<CircleImage> = mutableListOf()
-    private val contactReporitory = ContactRepository()
+    private val contactRepository = ContactRepository()
 
     private var cirLayoutHeight = 0
     private val adapterCallLogs: AdapterCallLogs by lazy {
         AdapterCallLogs(
-            arrayListOf(),
             context = context,
             onAdd = { v.scrollView.scrollBy(65.dp * it, 65.dp * it) })
     }
     private val sharedPreferences: SharedPreferences by lazy {
         context.getSharedPreferences(Keys.ManagerPreference, Context.MODE_PRIVATE)
     }
-    fun updateLists(){
+
+    fun updateLists() {
         this.v.recyclerView.adapter?.notifyDataSetChanged()
     }
 
@@ -74,8 +70,7 @@ class ManagerViewModel : ViewModel() {
         context: Context,
         lifecycle: Lifecycle,
         pickedContact: () -> Unit,
-        settingsOpen: (Settings) -> Unit,
-        activity: AppCompatActivity
+        settingsOpen: (Settings) -> Unit
     ) {
         this.v = v
 
@@ -86,21 +81,6 @@ class ManagerViewModel : ViewModel() {
         settings = Loader.loadSettings()
         touchHelper = ItemTouchHelper(ItemTouchCallbackCir())
         touchHelper.attachToRecyclerView(v.recyclerView)
-        logsManager = LogsManager(context)
-        this.activity = activity
-    }
-
-    private suspend fun updateRvHistoryHeight() {
-        withContext(Dispatchers.Default) {
-            with(if (settings.historyButtom) v.recyclerViewHistoryBottom else v.recyclerViewHistory) {
-                adapter?.let { adapterThis ->
-                    val h = adapterThis.itemCount * 65.dp
-                    withContext(Dispatchers.Main) {
-                        setSize(height = h)
-                    }
-                }
-            }
-        }
     }
 
     private fun updateHistoryList() {
@@ -120,15 +100,7 @@ class ManagerViewModel : ViewModel() {
 
             this.setItemViewCacheSize(20)
 
-            GlobalScope.launch(Dispatchers.IO) {
-                Timber.d("getHistoryListLatest")
-                getHistoryListLatest(context!!)?.let {
-                    context?.runOnUiThread {
-                        Timber.d("adapterCallLogs.setList %d records", it.size)
-                        adapterCallLogs.setList(it)
-                    }
-                }
-            }
+            adapterCallLogs.setList(getHistoryListLatest(context))
         }
     }
 
@@ -137,26 +109,7 @@ class ManagerViewModel : ViewModel() {
         v.rvTop.visibility = if (!Visibility) VISIBLE else GONE
     }
 
-    private suspend fun loadCirs(onNext: (CircleImage) -> Unit = {}): ArrayList<CircleImage>? =
-        withContext(Dispatchers.IO) {
-            sharedPreferences.getString(Keys.Cirs, null)?.let {
-                val list = it.split("<end>").dropLast(1)
-                val r = ArrayList<CircleImage>()
-                list.forEach { item ->
-                    Gson().fromJson(item, CirPairData().javaClass)?.let { pair ->
-                        r.add(newCir(settings, touchHelper, pair).also(onNext))
-                    }
-                }
-                if (r.size == 0) (1..9).forEach {
-                    r.add(newCir(settings, touchHelper).also(onNext))
-                }
-                return@withContext r
-            }
-            return@withContext null
-        }
-
-    private  fun getCirs(): MutableList<CircleImage>?
-    {
+    private fun getCirs(): List<CircleImage> {
         val r = mutableListOf<CircleImage>()
             sharedPreferences.getString(Keys.Cirs, null)?.let {
                 val list = it.split("<end>").dropLast(1)
@@ -173,10 +126,9 @@ class ManagerViewModel : ViewModel() {
                 (1..9).forEach {
                 r.add(newCir(settings, touchHelper))
             }
-            }
-            return r
         }
-
+        return r
+    }
 
     private fun onChangeHeightCir(h: Int) {
         cirLayoutHeight = h
@@ -212,8 +164,8 @@ class ManagerViewModel : ViewModel() {
             }
             childPos
         }
-        if(!selectedContactsLoaded) {
-            listCirs.addAll(getCirs() as List<CircleImage>)
+        if (!selectedContactsLoaded) {
+            listCirs.addAll(getCirs())
             selectedContactsLoaded = true
         }
         v.deleteCir.apply {
@@ -235,7 +187,7 @@ class ManagerViewModel : ViewModel() {
 
         }
 
-        v.fab.setOnClickListener { fab ->
+        v.fab.setOnClickListener {
             newCir(settings, touchHelper).let {
                 (v.recyclerView.adapter as CirAdapter).addItem(it)
             }
@@ -247,30 +199,25 @@ class ManagerViewModel : ViewModel() {
                 }
             true
         }
-        v.fabSettings.setOnClickListener { fab ->
+        v.fabSettings.setOnClickListener {
             settingsOpen(settings)
         }
-        v.fabSearch.setOnClickListener { fab ->
+        v.fabSearch.setOnClickListener {
             Intent(context, SearchActivity::class.java).let(context::startActivity)
         }
         v.settingsButton.setOnClickListener {
             settingsOpen(settings)
         }
-        v.buttonRVDownUpdate.setOnClickListener {
-            adapterCallLogs.upIntoBuffer()
-        }
-        v.buttonRVTopUpdate.setOnClickListener {
-            adapterCallLogs.upIntoBuffer()
-        }
     }
 
     fun newCir(settings: Settings, touchHelper: ItemTouchHelper) = CircleImage(
         context,
-        powerMenu = MoreMenuFactory().create(context) { return@create lifecycle }, swiping = true,
-        lockableNestedScrollView = v.scrollView,
-        menuEnable = settings.cirMenu,
-        deleteCir = v.deleteCir, editCir = v.editCir
     ).apply {
+        powerMenu = MoreMenuFactory().create(context) { return@create lifecycle }
+        lockableNestedScrollView = v.scrollView
+        menuEnable = settings.cirMenu
+        deleteCir = v.deleteCir
+        editCir = v.editCir
         size = settings.sizeCirs
         id = Keys.idCir
         tag = i++
@@ -293,9 +240,7 @@ class ManagerViewModel : ViewModel() {
             pair.selectedNumber?.let {
                 selectedNumber = it
             }
-            pair.contact?.let {
-                contact = it
-            }
+            contactRepository.contacts[pair.contactID]?.let { contact = it }
             replaceListener = {
                 touchHelper.startDrag(it)
             }
@@ -308,7 +253,13 @@ class ManagerViewModel : ViewModel() {
     fun saveCirs() {
         var str = ""
         listCirs.forEach {
-            str += Gson().toJson(CirPairData(it.contact, it.contactSettings,it.selectedNumber)) + "<end>"
+            str += Gson().toJson(
+                CirPairData(
+                    it.contact?.id ?: 0,
+                    it.contactSettings,
+                    it.selectedNumber
+                )
+            ) + "<end>"
         }
         sharedPreferences.edit().apply {
             putString(Keys.Cirs, str)
@@ -320,21 +271,22 @@ class ManagerViewModel : ViewModel() {
         saveCirs()
     }
 
-    fun onResult(contact: Contact, number : String? = null){
+    fun onResult(contact: Contact, number: String? = null) {
         (v.recyclerView.adapter as CirAdapter).setContact(posPicker, contact, number)
     }
 
-    fun getContacts() = contactReporitory.contacts.values
+    fun getContacts() = contactRepository.contacts.values.sortedBy { it.name }
 
     fun getContactIdFromIntent(intent: Intent): Contact? {
         val projections = arrayOf(ContactsContract.Contacts._ID)
-        val cursor = App.INSTANCE.contentResolver.query(intent.data!!, projections, null, null, null)
+        val cursor =
+            App.INSTANCE.contentResolver.query(intent.data!!, projections, null, null, null)
         var id = 0L
         if (cursor != null && cursor.moveToFirst()) {
             val i = cursor.getColumnIndex(projections[0])
             id = cursor.getLong(i)
         }
         cursor?.close()
-        return contactReporitory.contacts.get(id)
+        return contactRepository.contacts.get(id)
     }
 }

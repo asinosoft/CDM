@@ -1,9 +1,10 @@
 package com.asinosoft.cdm
 
-import com.asinosoft.cdm.detail_contact.Contact
-
+/**
+ * Вспомогательный класс для сохранения/восстановления настроек панели избранных контактов
+ */
 data class CirPairData(
-    val contact: Contact? = null,
+    var contactID: Long = 0,
     val contactSettings: ContactSettings? = null,
     val selectedNumber : String? = null
 )

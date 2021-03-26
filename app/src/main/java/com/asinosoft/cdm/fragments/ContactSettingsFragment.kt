@@ -29,7 +29,7 @@ interface ScrollViewListener {
 }
 
 class ContactSettingsFragment : Fragment() {
-    private val model: DetailHistoryViewModel by activityViewModels()
+    private val viewModel: DetailHistoryViewModel by activityViewModels()
     lateinit var scrollView: LockableScrollView
     lateinit var draggedCir: CircularImageView
 
@@ -51,8 +51,8 @@ class ContactSettingsFragment : Fragment() {
             }
         }
 
-        number.text = model.phoneNumber
-        model.getContactSettings().let {
+        number.text = viewModel.getPhoneNumber()
+        viewModel.getContactSettings().let {
             setAllCirs(it.borderWidthCirs, it.colorBorder)
             setData(it)
         }
@@ -139,7 +139,7 @@ class ContactSettingsFragment : Fragment() {
     }
 
     override fun onStop() {
-        model.saveContactSettings(
+        viewModel.saveContactSettings(
             Settings(
                 rightButton = cirRight.action,
                 leftButton = cirLeft.action,

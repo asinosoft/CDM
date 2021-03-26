@@ -10,32 +10,19 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.*
 import com.asinosoft.cdm.Metoths.Companion.setColoredText
-import com.asinosoft.cdm.api.CursorApi.getDisplayPhoto
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
-import com.asinosoft.cdm.globals.Globals
 import com.zerobranch.layout.SwipeLayout
-import kotlinx.coroutines.*
 import org.jetbrains.anko.imageResource
-import org.jetbrains.anko.runOnUiThread
-import kotlin.coroutines.CoroutineContext
 
 
 class AdapterCallLogs(
-    var items: ArrayList<HistoryItem>,
     val onClick: Boolean = true,
     val context: Context,
     var onAdd: (Int) -> Unit = {}
-) : RecyclerView.Adapter<AdapterCallLogs.HolderHistory>(), CoroutineScope {
-
+) : RecyclerView.Adapter<AdapterCallLogs.HolderHistory>() {
+    private var items = ArrayList<HistoryItem>()
     private var nums = ""
     private var regex: Regex? = null
-    private var jobFilter: Job = Job()
-    val buffer = ArrayList<HistoryItem>()
-    private var listBackup = items
-
-    init {
-        Globals.adapterLogs = this
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
         return HolderHistory(
@@ -48,15 +35,14 @@ class AdapterCallLogs(
     }
 
     fun setList(list: List<HistoryItem>) {
-        this.items = ArrayList(list)
-        listBackup = ArrayList(list)
+        items = ArrayList(list)
         notifyDataSetChanged()
     }
 
     override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
-        holder.bind(items[position], position)
+        holder.bind(items[position])
     }
 
     private fun openDetail(item: HistoryItem) {
@@ -65,46 +51,6 @@ class AdapterCallLogs(
         intent.putExtra(Keys.id, item.contact.id)
         context.startActivity(intent)
     }
-
-    fun upIntoBuffer() {
-        val lastIndex = items.lastIndex
-        items.addAll(buffer)
-        notifyItemRangeInserted(lastIndex, items.lastIndex)
-        notifyDataSetChanged()
-        buffer.clear()
-    }
-
-    private suspend fun List<HistoryItem>.filtered(nums: String): ArrayList<HistoryItem> =
-        coroutineScope {
-            val r = ArrayList<HistoryItem>()
-            this@filtered.forEach { item ->
-                if (item.numberContact.isNullOrEmpty()) return@forEach
-                if (item.contact.name.contains(nums, true)) {
-                    r.add(item)
-                    return@forEach
-                }
-            }
-            return@coroutineScope r
-        }
-
-    fun setFilter(nums: String = "") {
-        this.nums = nums
-        regex = Regex(Metoths.getPattern(nums.replace("1", ""), context), RegexOption.IGNORE_CASE)
-        jobFilter = launch {
-            runBlocking {
-                items = listBackup.filtered(nums)
-                Log.d(
-                    "AdapterContact",
-                    "Contacts filtered! -> Contacts = ${items.size}; Nums = $nums"
-                )
-
-                context.runOnUiThread {
-                    notifyDataSetChanged()
-                }
-            }
-        }
-    }
-
 
     inner class HolderHistory(val v: CalllogObjectBinding) : RecyclerView.ViewHolder(v.root) {
 
@@ -121,15 +67,9 @@ class AdapterCallLogs(
                 else R.drawable.whatsapp_192
         }
 
-        fun bind(item: HistoryItem, pos: Int) {
-
+        fun bind(item: HistoryItem) {
             with(v) {
-                item.contact.id.let {
-                    if (it > 0) getDisplayPhoto(it, context)?.let { bitmap ->
-                        imageContact.setImageBitmap(bitmap)
-                    }
-                }
-                imageContact.setImageDrawable(item.contact.photo)
+                imageContact.setImageDrawable(item.contact.getPhoto())
                 name.text = item.contact.name
                 number.text = "${item.numberContact}, ${Metoths.getFormatedTime(item.duration)}"
                 timeContact.text = item.time
@@ -203,9 +143,5 @@ class AdapterCallLogs(
             }
         }
     }
-
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default + Job()
-
 }
 

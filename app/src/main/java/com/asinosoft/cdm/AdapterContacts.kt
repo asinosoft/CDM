@@ -34,9 +34,9 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
         val v = HistorySwipingItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return Holder(
             v
-        ){
+        ) {
             val pos = (parent as RecyclerView).getChildAdapterPosition(v.relativeL)
-            if(pos < 0)return@Holder
+            if (pos < 0) return@Holder
             openDetail(contacts[pos])
         }
     }
@@ -44,11 +44,11 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
     private suspend fun List<Contact>.filtered(nums: String) = async {
         val r = ArrayList<Contact>()
         this@filtered.forEach { contact ->
-            regex?.find(contact.name ?: "")?.let {
+            regex?.find(contact.name)?.let {
                 r.add(contact)
                 return@forEach
             }
-            contact.mPhoneNumbers.forEach{
+            contact.mPhoneNumbers.forEach {
                 if (it.isNullOrEmpty()) return@forEach
                 if (it.contains(nums, true)) {
                     r.add(contact)
@@ -56,13 +56,13 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
                 }
             }
         }
-        r.sortWith(compareBy{
-            val res = regex?.find(it.name ?: "")
-            if(res != null){
-                 it.name?.indexOf(res.value)
+        r.sortWith(compareBy {
+            val res = regex?.find(it.name)
+            if (res != null) {
+                it.name.indexOf(res.value)
             } else {
                 var index = 0
-                it.mPhoneNumbers.forEach{
+                it.mPhoneNumbers.forEach {
                     if (it.isNullOrEmpty()) return@forEach
                     if (it.contains(nums, true)) {
                         index = it.indexOf(nums)

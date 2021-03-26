@@ -18,13 +18,17 @@ import kotlinx.android.synthetic.main.activity_detail_history.*
 class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener {
 
     lateinit var viewPager: ViewPager
-    private val model: DetailHistoryViewModel by viewModels()
+    private val viewModel: DetailHistoryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_history)
-        model.phoneNumber = intent.getStringExtra(Keys.number)!!
-        model.contactId = intent.getLongExtra(Keys.id, 0)
+
+        viewModel.initialize(
+            context = this,
+            phoneNumber = intent.getStringExtra(Keys.number) ?: "",
+            contactID = intent.getLongExtra(Keys.id, 0)
+        )
 
         val adapter = FragmentPagerItemAdapter(
             supportFragmentManager, FragmentPagerItems.with(this)
@@ -41,7 +45,7 @@ class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener {
         val imageView = findViewById<ImageView>(R.id.image)
         StatusBarUtil.setTranslucentForImageView(this, imageView)
 
-        imageView.setImageDrawable(model.getContactPhoto())
+        imageView.setImageDrawable(viewModel.getContactPhoto())
     }
 
     override fun onScrolledToTop() {

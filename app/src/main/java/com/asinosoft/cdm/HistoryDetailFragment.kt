@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.adapters.AdapterCallLogs
@@ -15,8 +16,7 @@ import com.asinosoft.cdm.detail_contact.DetailHistoryViewModel
  * Фрагмент вкладки "Истории" в детальной информации по элементу истории
  */
 class HistoryDetailFragment : Fragment() {
-    private val model: DetailHistoryViewModel by activityViewModels()
-    private var callsAdapter = AdapterCallLogs(ArrayList(), false, App.INSTANCE)
+    private val viewModel: DetailHistoryViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,8 +32,12 @@ class HistoryDetailFragment : Fragment() {
         var lim = LinearLayoutManager(requireContext())
         lim.orientation = LinearLayoutManager.VERTICAL
         recyclerView.layoutManager = lim
+
+        val callsAdapter = AdapterCallLogs(false, requireContext())
         recyclerView.adapter = callsAdapter
 
-        callsAdapter.setList(model.getContactCallHistory(requireContext()))
+        viewModel.callHistory.observe(requireActivity(), Observer<List<HistoryItem>> {
+            callsAdapter.setList(it)
+        })
     }
 }

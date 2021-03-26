@@ -17,7 +17,14 @@ data class Settings(
     var bottomButton: Actions = Actions.Sms,
     var chooserButton1: Actions = Actions.Telegram,
     var chooserButton2: Actions = Actions.Viber,
+
+    /**
+     * Режим главного окна:
+     * true: в верхней части находятся избранные контакты, в нижней - история звонков (начиная с недавних звонков)
+     * false: в верхней части находится история звонков (заканчивается недавними звонками), в нижней - избранные контакты
+     */
     var historyButtom: Boolean = true,
+
     var cirMenu: Boolean = false,
     var columnsCirs: Int = 3,
     var colorBorder: Int = Color.CYAN,

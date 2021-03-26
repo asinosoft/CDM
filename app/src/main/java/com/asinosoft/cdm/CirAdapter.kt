@@ -2,6 +2,7 @@ package com.asinosoft.cdm
 
 import android.content.ClipData
 import android.content.Context
+import android.os.Build
 import android.os.Vibrator
 import android.view.DragEvent
 import android.view.LayoutInflater
@@ -65,9 +66,16 @@ class CirAdapter(var items: MutableList<CircleImage>, val context: Context, val 
                         replaceListener(this@Holder)
                     }
                     dragListener = {
-                        posDrag = absoluteAdapterPosition
-                        startDragAndDrop(ClipData.newPlainText(Keys.adapterPos, absoluteAdapterPosition.toString()),
-                            View.DragShadowBuilder(this), 0, View.DRAG_FLAG_GLOBAL)
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            posDrag = absoluteAdapterPosition
+                            startDragAndDrop(
+                                ClipData.newPlainText(
+                                    Keys.adapterPos,
+                                    absoluteAdapterPosition.toString()
+                                ),
+                                View.DragShadowBuilder(this), 0, View.DRAG_FLAG_GLOBAL
+                            )
+                        }
                     }
                     pickContactForNum = {
                         pickContact(absoluteAdapterPosition)
@@ -76,7 +84,7 @@ class CirAdapter(var items: MutableList<CircleImage>, val context: Context, val 
                         touchDown(absoluteAdapterPosition)
                     }
 
-                    setOnDragListener { v, event ->
+                    setOnDragListener { _, event ->
                         when(event.action){
                             DragEvent.ACTION_DRAG_ENTERED -> {
                                 vibrator.vibrateSafety(ManagerViewModel.VIBRO)
