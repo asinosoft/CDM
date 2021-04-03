@@ -4,15 +4,13 @@ import android.net.Uri
 import android.telecom.Call
 import android.telecom.InCallService
 import android.telecom.VideoProfile
-import com.asinosoft.cdm.api.ContactRepository
-import com.asinosoft.cdm.detail_contact.Contact
+import com.asinosoft.cdm.App
 
 class CallManager {
 
     companion object {
         var call: Call? = null
         var inCallService: InCallService? = null
-        val contactRepository = ContactRepository()
 
         fun accept() {
             call?.answer(VideoProfile.STATE_AUDIO_ONLY)
@@ -51,7 +49,7 @@ class CallManager {
 
         fun hold(hold: Boolean) {
             if (call != null) {
-                if(hold) call!!.hold()
+                if (hold) call!!.hold()
                 else call!!.unhold()
             }
         }
@@ -66,10 +64,9 @@ class CallManager {
             if (uri.startsWith("tel:")) {
                 val number = uri.substringAfter("tel:")
                 var callContact = CallContact(number)
-                contactRepository.contactPhones[number]?.let {
+                App.contactRepository.getContactByPhone(number)?.let {
                     callContact.name = it.name
                     callContact.photoUri = it.photoUri ?: ""
-
                 }
 
                 if (callContact.name != callContact.number) {
@@ -77,6 +74,5 @@ class CallManager {
                 }
             }
         }
-
     }
 }

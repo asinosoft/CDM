@@ -3,6 +3,7 @@ package com.asinosoft.cdm
 import android.content.Context
 import android.graphics.PointF
 import android.net.Uri
+import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.widget.Toast
@@ -33,17 +34,16 @@ import com.asinosoft.cdm.Metoths.Companion.translateTo
 import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.detail_contact.Contact
 import com.google.android.material.snackbar.Snackbar
-import com.skydoves.powermenu.PowerMenu
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.onLongClick
 import org.jetbrains.anko.sdk27.coroutines.onTouch
 import org.jetbrains.anko.vibrator
 
-class CircleImage@JvmOverloads constructor(
+class CircleImage @JvmOverloads constructor(
     context: Context,
-): CircularImageView(context, null, 0) {//TODO: Добавь в настройках изменение типа управления кнопками (перетаскивание, меню)
-    var powerMenu: PowerMenu? = null
-    var menuEnable: Boolean = false
+    attrs: AttributeSet? = null
+) : CircularImageView(context, attrs, 0) {
+    // TODO: Добавь в настройках изменение типа управления кнопками (перетаскивание, меню)
     var deleteListener: () -> Unit = {}
     var replaceListenerForHolder: () -> Unit = {}
     var replaceListener: (RecyclerView.ViewHolder) -> Unit = {}
@@ -54,46 +54,45 @@ class CircleImage@JvmOverloads constructor(
     var editCir: CircularImageView? = null
     var touchDownForIndex: () -> Unit = {}
     var touchDown: (Int) -> Unit = {}
-    var selectedNumber : String? = null
+    var selectedNumber: String? = null
     var lockableNestedScrollView: LockableNestedScrollView? = null
 
-    companion object{
+    companion object {
         const val CONTACT_UNFOTO = R.drawable.contact_unfoto
     }
 
     var contactSettings: ContactSettings? = null
-    set(value) {
-        field = value
-        if (value != null) updateSetting(value)
-    }
+        set(value) {
+            field = value
+            if (value != null) updateSetting(value)
+        }
     var contact: Contact? = null
-    set(value) {
-        field = value
-        if (value != null && value.photoUri != null) updatePhoto(value.photoUri!!.toUri())
-        else setImageResource(CONTACT_UNFOTO)
-    }
+        set(value) {
+            field = value
+            if (value?.photoUri != null) updatePhoto(value.photoUri!!.toUri())
+            else setImageResource(CONTACT_UNFOTO)
+        }
 
     var size: Int = this.width
-    set(value) {
-        field = value
-        updateRadius()
-        onChangeSize(value)
-    }
+        set(value) {
+            field = value
+            updateRadius()
+            onChangeSize(value)
+        }
     private var actionImage: CircularImageView? = null
     var animationRadius: Float = size.toFloat()
     private var touchStart: PointF? = null
     private var cirStart: PointF? = null
     var directActions: DirectActions? = null
-    var animationDuration = 0L
+    private var animationDuration = 0L
     private var isMoving = false
     private var isLongClick = false
 
     init {
         initClick()
         initTouch()
-        if (menuEnable) initLongClickWithMenu()
-        else initLongClickWithDrag()
-        if(contact == null) setImageResource(R.drawable.plus)
+        initLongClickWithDrag()
+        if (contact == null) setImageResource(R.drawable.plus)
         contactSettings?.let {
             updateSetting(it)
         }
@@ -104,14 +103,18 @@ class CircleImage@JvmOverloads constructor(
         borderColor = settings.borderColor
     }
 
-    fun setOptionalCirsVisible(b: Boolean){
-        deleteCir?.apply { visibility = b.toVisibility(); bringToFront(); setSize(animationRadius.toInt())}
-        editCir?.apply { visibility = b.toVisibility(); bringToFront(); setSize(animationRadius.toInt())}
+    fun setOptionalCirsVisible(b: Boolean) {
+        deleteCir?.apply {
+            visibility = b.toVisibility(); bringToFront(); setSize(animationRadius.toInt())
+        }
+        editCir?.apply {
+            visibility = b.toVisibility(); bringToFront(); setSize(animationRadius.toInt())
+        }
     }
 
     private fun initClick() {
         onClick {
-            if (isLongClick){
+            if (isLongClick) {
                 isLongClick = false
                 return@onClick
             }
@@ -138,28 +141,12 @@ class CircleImage@JvmOverloads constructor(
         setImageURI(uri)
     }
 
-    private fun initLongClickWithMenu() {
-        powerMenu?.setOnMenuItemClickListener { position, _ ->
-            when(position){
-                0 -> replaceListenerForHolder()
-                2 -> deleteListener()
-            }
-        }
-        onLongClick {
-            if (!isMoving) {
-                powerMenu?.showAsAnchorCenter(this@CircleImage, 200, 200)
-                isLongClick = true
-                makeTouch(MotionEvent.ACTION_UP)
-            }
-        }
-    }
-
-    fun setActionImage(view: CircularImageView){
+    fun setActionImage(view: CircularImageView) {
         actionImage = view
         actionImage?.setSize((size - shadowRadius * 2).toInt())
     }
 
-    private fun updateRadius(){
+    private fun updateRadius() {
         animationRadius = size.toFloat() * 0.9f
     }
 
@@ -176,32 +163,37 @@ class CircleImage@JvmOverloads constructor(
         }
     }
 
-    private fun initTouch(){
-        onTouch { _, event -> if (contact != null)
-            touchEvent(event)
+    private fun initTouch() {
+        onTouch { _, event ->
+            if (contact != null)
+                touchEvent(event)
         }
     }
 
-
-     private fun touchEvent(event: MotionEvent) {
-         when (event.action) {
-             MotionEvent.ACTION_DOWN -> onTouchDown(event)
-             MotionEvent.ACTION_MOVE -> onTouchMove(event)
-             MotionEvent.ACTION_UP -> onTouchUp(event)
-         }
+    private fun touchEvent(event: MotionEvent) {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> onTouchDown(event)
+            MotionEvent.ACTION_MOVE -> onTouchMove(event)
+            MotionEvent.ACTION_UP -> onTouchUp(event)
+        }
     }
 
     private fun onTouchUp(event: MotionEvent) {
         touchStart?.let {
-            Log.d("CircleImage", "Action TouchUp -> (${this.x}; ${this.y}) --> (${event.rawX}; ${event.rawY}) ")
+            Log.d(
+                "CircleImage",
+                "Action TouchUp -> (${this.x}; ${this.y}) --> (${event.rawX}; ${event.rawY}) "
+            )
             var diff = it.diff(event, animationRadius)
             this.setTranslate(cirStart!!, 500L)
             touchStart = null
             cirStart = null
-            directActions?.action(diff.diffAction(animationRadius))?.let{action ->
+            directActions?.action(diff.diffAction(animationRadius))?.let { action ->
                 if (actionImage?.isVisible == true) try {
                     startAction(action)
-                }catch (e: Exception){e.printStackTrace()}
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
             actionImage?.isVisible = false
         }
@@ -210,55 +202,60 @@ class CircleImage@JvmOverloads constructor(
 
     private fun onTouchMove(event: MotionEvent) {
         touchStart?.let {
-            Log.d("CircleImage", "Action Move -> (${this.x}; ${this.y}) --> start = (${it.x}; ${it.y}); end = (${event.rawX}; ${event.rawY}), radius = $animationRadius ")
+            Log.d(
+                "CircleImage",
+                "Action Move -> (${this.x}; ${this.y}) --> start = (${it.x}; ${it.y}); end = (${event.rawX}; ${event.rawY}), radius = $animationRadius "
+            )
             var diff = it.diff(event, animationRadius)
             isMoving = !diff.checkMoving(size / 10f)
             Log.d("${this.javaClass}", "onTouchMove: isMoving = $isMoving")
             this.translateDiff(cirStart!!, diff, animationDuration)
             actionImage?.apply {
-                isVisible = diff.diffVisible(animationRadius).also {vis -> if (vis && !isVisible) context.vibrator.vibrateSafety(ManagerViewModel.VIBRO) }
-                directActions?.action(diff.diffAction(animationRadius))?.let {action ->
+                isVisible = diff.diffVisible(animationRadius).also { vis ->
+                    if (vis && !isVisible) context.vibrator.vibrateSafety(ManagerViewModel.VIBRO)
+                }
+                directActions?.action(diff.diffAction(animationRadius))?.let { action ->
                     this.setImageAction(action)
                 }
             }
         }
     }
 
-
-
-    private fun   startAction(action: Actions) {
-        val errorMes = fun(){
-            Toast.makeText(context,"Not correct number", Toast.LENGTH_LONG).show()
+    private fun startAction(action: Actions) {
+        val errorMes = fun() {
+            Toast.makeText(context, "Not correct number", Toast.LENGTH_LONG).show()
             return
         }
-        var num : String? = null
+        var num: String? = null
         contact?.mPhoneNumbers?.firstOrNull {
             it == selectedNumber
-        } ?.let {
+        }?.let {
 
-           it?.let {
-               num = it
-           } ?: errorMes()
-
+            it?.let {
+                num = it
+            } ?: errorMes()
         } ?: errorMes()
         num?.let {
-            when (action){
+            when (action) {
                 WhatsApp -> Metoths.openWhatsApp(it, context)
                 Viber -> openViber(it, context)
                 Telegram -> openTelegram(it, context)
                 PhoneCall -> callPhone(it, context)
                 Email -> {
-                    if (!contact!!.mEmailAdress.isNullOrEmpty()) contact!!.mEmailAdress.first()?.let { mailToEmail(it, context) }
+                    if (!contact!!.mEmailAdress.isNullOrEmpty()) contact!!.mEmailAdress.first()
+                        ?.let { mailToEmail(it, context) }
                     else Snackbar.make(rootView, "Контакт без почты!", Snackbar.LENGTH_SHORT).show()
                 }
                 Sms -> sendSMS(it, context)
             }
         }
-
     }
 
     private fun onTouchDown(event: MotionEvent) {
-        Log.d("CircleImage", "Action TouchDown -> (${this.x}; ${this.y}) --> (${event.rawX}; ${event.rawY}) ")
+        Log.d(
+            "CircleImage",
+            "Action TouchDown -> (${this.x}; ${this.y}) --> (${event.rawX}; ${event.rawY}) "
+        )
         val number = selectedNumber
         number?.let {
             this.directActions = Loader.loadContactSettings(it).toDirectActions()
@@ -268,7 +265,7 @@ class CircleImage@JvmOverloads constructor(
         cirStart = this.toPointF()
         isLongClick = false
         actionImage?.apply {
-            setSize((size*0.8f).toInt())
+            setSize((size * 0.8f).toInt())
             translateTo(this@CircleImage, size * 0.1f)
             isVisible = false
         }

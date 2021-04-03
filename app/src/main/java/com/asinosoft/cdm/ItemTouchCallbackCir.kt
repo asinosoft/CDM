@@ -7,7 +7,7 @@ import java.util.*
 /**
  * Обработчик перетаскивания кнопок избранных контактов
  */
-class ItemTouchCallbackCir: ItemTouchHelper.Callback() {
+class ItemTouchCallbackCir : ItemTouchHelper.Callback() {
 
     /**
      * Настройка возможности автоматического включения по долгому нажатию
@@ -22,7 +22,10 @@ class ItemTouchCallbackCir: ItemTouchHelper.Callback() {
     override fun getMovementFlags(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
-    ): Int = makeFlag(ItemTouchHelper.ACTION_STATE_DRAG, ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
+    ): Int = makeFlag(
+        ItemTouchHelper.ACTION_STATE_DRAG,
+        ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+    )
 
     /**
      * Обработчик смещения кнопки на интерактивный объект
@@ -32,9 +35,10 @@ class ItemTouchCallbackCir: ItemTouchHelper.Callback() {
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        val adapter = recyclerView.adapter as CirAdapter
-        Collections.swap(adapter.items, viewHolder.absoluteAdapterPosition, target.absoluteAdapterPosition)
-        adapter.notifyItemMoved(viewHolder.absoluteAdapterPosition, target.absoluteAdapterPosition)
+        (recyclerView.adapter as CirAdapter).swapItems(
+            viewHolder.absoluteAdapterPosition,
+            target.absoluteAdapterPosition
+        )
         return true
     }
 

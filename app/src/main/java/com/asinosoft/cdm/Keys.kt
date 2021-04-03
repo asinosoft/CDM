@@ -4,7 +4,7 @@ package com.asinosoft.cdm
  * Класс, хранящий константные значения ключей.
  */
 class Keys {
-    companion object{
+    companion object {
         val idCir: Int = 1123456
         val adapterPos = "adapterPosition"
         val id = "ID"

@@ -8,109 +8,168 @@ import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.contains
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths.Companion.setSize
 import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
+import com.asinosoft.cdm.api.FavoriteContact
+import com.asinosoft.cdm.api.FavoriteContactRepository
 import com.asinosoft.cdm.databinding.ItemCirBinding
-import com.asinosoft.cdm.detail_contact.Contact
-import java.util.Collections.swap
+import kotlinx.android.synthetic.main.item_cir.view.*
 
-class CirAdapter(var items: MutableList<CircleImage>, val context: Context, val settings: Settings, val vibrator: Vibrator): RecyclerView.Adapter<CirAdapter.Holder>(){
-
+class CirAdapter(
+    val favorites: FavoriteContactRepository,
+    val scrollView: LockableNestedScrollView,
+    val deleteButton: CircularImageView,
+    val editButton: CircularImageView,
+    val pickedContact: (Int) -> Unit,
+    val context: Context,
+    val settings: Settings,
+    val vibrator: Vibrator
+) : RecyclerView.Adapter<CirAdapter.Holder>() {
     var posDrag = -1
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = Holder(ItemCirBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+    private val touchHelper = ItemTouchHelper(ItemTouchCallbackCir())
 
-    override fun getItemCount() = items.size
-
-    fun setContact(pos: Int, contact: Contact, number : String? = null){
-        items[pos].contact = contact
-        items[pos].selectedNumber = number
-        notifyItemChanged(pos)
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        touchHelper.attachToRecyclerView(recyclerView)
     }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        Holder(ItemCirBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+
+    override fun getItemCount() = favorites.getContacts().size
 
     override fun onBindViewHolder(holder: CirAdapter.Holder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(position, favorites.getContacts()[position])
     }
 
-    fun addItem(item: CircleImage){
-        items.add(item)
-        notifyItemInserted(items.lastIndex)
+    fun addItem(contact: FavoriteContact) {
+        favorites.addContact(contact)
+        notifyItemInserted(favorites.getContacts().lastIndex)
     }
 
-    inner class Holder(val v: ItemCirBinding): RecyclerView.ViewHolder(v.root){
+    fun deleteItem(position: Int) {
+        favorites.removeContact(position)
+        notifyItemRemoved(position)
+    }
 
-        fun bind(cir: CircleImage){
+    fun setItem(position: Int, contact: FavoriteContact) {
+        favorites.replaceContact(position, contact)
+        notifyItemChanged(position)
+    }
 
-            v.root.let {
-                if (it.contains(cir)) it.removeView(cir)
-                if (cir.parent != null) (cir.parent as ViewGroup).removeView(cir)
-                it.addView(cir.apply {
-                    setActionImage(v.actionView)
-                    val number = selectedNumber
-                    number?.let {
-                        this.directActions = Loader.loadContactSettings(it).toDirectActions()
+    fun swapItems(pos: Int, adapterPosition: Int) {
+        favorites.swapContacts(pos, adapterPosition)
+        notifyItemMoved(pos, adapterPosition)
+    }
 
-                    } ?: kotlin.run {
-                        this.directActions = settings.toDirectActions()
+    inner class Holder(val v: ItemCirBinding) : RecyclerView.ViewHolder(v.root) {
+
+        fun bind(n: Int, favorite: FavoriteContact) {
+            v.actionView.setSize(settings.sizeCirs)
+            v.circleImage.apply {
+                selectedNumber = favorite.phone
+                contact = favorite.contact
+
+                setActionImage(v.actionView)
+                if (null == contact) {
+                    setImageResource(R.drawable.plus)
+                } else {
+                    setImageDrawable(contact!!.getPhoto())
+                }
+                lockableNestedScrollView = scrollView
+                deleteCir = deleteButton
+                editCir = editButton
+                size = settings.sizeCirs
+                id = Keys.idCir
+                tag = n
+                borderWidth = settings.borderWidthCirs.toFloat()
+                borderColor = settings.colorBorder
+                replaceListener = {
+                    touchHelper.startDrag(it)
+                }
+                pickContact = { pos ->
+                    pickedContact(pos)
+                }
+
+                directActions = getCircleDirectActions(selectedNumber)
+                deleteListener = {
+                    favorites.removeContact(absoluteAdapterPosition)
+                    notifyItemRemoved(absoluteAdapterPosition)
+                    posDrag = -1
+                }
+                borderWidth = settings.borderWidthCirs.toFloat()
+                borderColor = settings.colorBorder
+                replaceListenerForHolder = {
+                    replaceListener(this@Holder)
+                }
+                dragListener = {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        posDrag = absoluteAdapterPosition
+                        startDragAndDrop(
+                            ClipData.newPlainText(
+                                Keys.adapterPos,
+                                absoluteAdapterPosition.toString()
+                            ),
+                            View.DragShadowBuilder(this), 0, View.DRAG_FLAG_GLOBAL
+                        )
                     }
-                    deleteListener = {
-                        items.removeAt(absoluteAdapterPosition)
-                        notifyItemRemoved(absoluteAdapterPosition)
-                        posDrag = -1
-                    }
-                    borderWidth = settings.borderWidthCirs.toFloat()
-                    borderColor = settings.colorBorder
-                    replaceListenerForHolder = {
-                        replaceListener(this@Holder)
-                    }
-                    dragListener = {
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            posDrag = absoluteAdapterPosition
-                            startDragAndDrop(
-                                ClipData.newPlainText(
-                                    Keys.adapterPos,
-                                    absoluteAdapterPosition.toString()
-                                ),
-                                View.DragShadowBuilder(this), 0, View.DRAG_FLAG_GLOBAL
-                            )
+                }
+                pickContactForNum = {
+                    pickContact(absoluteAdapterPosition)
+                }
+                touchDownForIndex = {
+                    touchDown(absoluteAdapterPosition)
+                }
+
+                setOnDragListener { _, event ->
+                    when (event.action) {
+                        DragEvent.ACTION_DRAG_ENTERED -> {
+                            vibrator.vibrateSafety(ManagerViewModel.VIBRO)
+                            /*setImageDrawable(
+                                items[posDrag].drawable.also {
+                                    items[posDrag].setImageDrawable(
+                                        this.drawable
+                                    )
+                                }
+                            )*/
+                        }
+                        DragEvent.ACTION_DRAG_EXITED -> {
+                            /*setImageDrawable(
+                                items[posDrag].drawable.also {
+                                    items[posDrag].setImageDrawable(
+                                        this.drawable
+                                    )
+                                }
+                            )*/
+                        }
+                        DragEvent.ACTION_DRAG_ENDED -> setOptionalCirsVisible(false)
+                        DragEvent.ACTION_DROP -> {
+                            /*setImageDrawable(
+                                items[posDrag].drawable.also {
+                                    items[posDrag].setImageDrawable(
+                                        this.drawable
+                                    )
+                                }
+                            )*/
+                            // TODO: val startPosition = event.clipData.getItemAt(0).text.toString().toInt()
+                            swapItems(posDrag, absoluteAdapterPosition)
                         }
                     }
-                    pickContactForNum = {
-                        pickContact(absoluteAdapterPosition)
-                    }
-                    touchDownForIndex = {
-                        touchDown(absoluteAdapterPosition)
-                    }
-
-                    setOnDragListener { _, event ->
-                        when(event.action){
-                            DragEvent.ACTION_DRAG_ENTERED -> {
-                                vibrator.vibrateSafety(ManagerViewModel.VIBRO)
-                                setImageDrawable(items[posDrag].drawable.also { items[posDrag].setImageDrawable(this.drawable) })
-                            }
-                            DragEvent.ACTION_DRAG_EXITED -> {
-                                setImageDrawable(items[posDrag].drawable.also { items[posDrag].setImageDrawable(this.drawable) })
-                            }
-                            DragEvent.ACTION_DRAG_ENDED -> setOptionalCirsVisible(false)
-                            DragEvent.ACTION_DROP -> {
-                                setImageDrawable(items[posDrag].drawable.also { items[posDrag].setImageDrawable(this.drawable) })
-                                swapItems(posDrag, absoluteAdapterPosition)
-                                return@setOnDragListener true}
-                        }
-                        true
-                    }
-//                    Log.d("CirAdapter", "Bind --> pos = $adapterPosition; holder = ${this@Holder}")
-            })
-                it.setSize((cir.size + cir.animationRadius * 2).toInt())
+                    true
+                }
             }
+            v.root.setSize((v.circleImage.size + v.circleImage.animationRadius * 2).toInt())
         }
+    }
 
-        private fun swapItems(pos: Int, adapterPosition: Int) {
-            swap(items, pos, adapterPosition)
-            notifyItemChanged(pos)
-            notifyItemChanged(adapterPosition)
+    private fun getCircleDirectActions(phone: String?): DirectActions {
+        return if (null == phone) {
+            settings.toDirectActions()
+        } else {
+            Loader.loadContactSettings(phone).toDirectActions()
         }
     }
 }

@@ -15,6 +15,9 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems
 import kotlinx.android.synthetic.main.activity_detail_history.*
 
+/**
+ * Активномть "Просмотр контакта"
+ */
 class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener {
 
     lateinit var viewPager: ViewPager
@@ -25,13 +28,13 @@ class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener {
         setContentView(R.layout.activity_detail_history)
 
         viewModel.initialize(
-            context = this,
             phoneNumber = intent.getStringExtra(Keys.number) ?: "",
             contactID = intent.getLongExtra(Keys.id, 0)
         )
 
         val adapter = FragmentPagerItemAdapter(
-            supportFragmentManager, FragmentPagerItems.with(this)
+            supportFragmentManager,
+            FragmentPagerItems.with(this)
                 .add("История", HistoryDetailFragment().javaClass)
                 .add("Контакт", ContactDetailFragment().javaClass)
                 .add("Настройки", ContactSettingsFragment().javaClass)
@@ -52,4 +55,3 @@ class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener {
         drag_layout.setTouchMode(true)
     }
 }
-

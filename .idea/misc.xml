@@ -4,15 +4,22 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_detail_history.xml" value="0.4642210144927536" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4361413043478261" />
         <entry key="app/src/main/res/layout/activity_manager.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/activity_search.xml" value="0.4370471014492754" />
         <entry key="app/src/main/res/layout/alert_dialog_product_search_without_confirm.xml" value="0.43931159420289856" />
         <entry key="app/src/main/res/layout/calllog_object.xml" value="0.42980072463768115" />
+        <entry key="app/src/main/res/layout/contact_detail_element.xml" value="0.4642210144927536" />
+        <entry key="app/src/main/res/layout/contact_detail_fragment.xml" value="0.4642210144927536" />
         <entry key="app/src/main/res/layout/content_main.xml" value="0.4361413043478261" />
         <entry key="app/src/main/res/layout/favorites.xml" value="0.42980072463768115" />
         <entry key="app/src/main/res/layout/fragment_favorites.xml" value="0.3641304347826087" />
         <entry key="app/src/main/res/layout/fragment_first.xml" value="0.4361413043478261" />
         <entry key="app/src/main/res/layout/fragment_second.xml" value="0.4361413043478261" />
+        <entry key="app/src/main/res/layout/history_detail_fragment.xml" value="0.4533514492753623" />
+        <entry key="app/src/main/res/layout/item_cir.xml" value="0.5108695652173914" />
+        <entry key="app/src/main/res/layout/keyboard.xml" value="0.4370471014492754" />
         <entry key="app/src/main/res/layout/main_activiry.xml" value="0.4361413043478261" />
         <entry key="app/src/main/res/layout/main_activity.xml" value="0.4361413043478261" />
         <entry key="app/src/main/res/menu/menu.xml" value="0.5526041666666667" />

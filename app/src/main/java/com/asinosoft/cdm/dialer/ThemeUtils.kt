@@ -96,5 +96,4 @@ class ThemeUtils {
         a.recycle()
         return color
     }
-
 }

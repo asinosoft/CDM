@@ -6,10 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.adapters.AdapterCallLogs
+import com.asinosoft.cdm.adapters.HistoryDetailsCallsAdapter
+import com.asinosoft.cdm.databinding.HistoryDetailFragmentBinding
 import com.asinosoft.cdm.detail_contact.DetailHistoryViewModel
 
 /**
@@ -17,27 +15,24 @@ import com.asinosoft.cdm.detail_contact.DetailHistoryViewModel
  */
 class HistoryDetailFragment : Fragment() {
     private val viewModel: DetailHistoryViewModel by activityViewModels()
+    private lateinit var callsAdapter: HistoryDetailsCallsAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.history_detail_fragment, container, false)
-    }
+        val bindings = HistoryDetailFragmentBinding.inflate(inflater)
+        callsAdapter = HistoryDetailsCallsAdapter(requireContext())
+        bindings.rvContactCalls.adapter = callsAdapter
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        viewModel.callHistory.observe(
+            requireActivity(),
+            {
+                callsAdapter.setList(it)
+            }
+        )
 
-        val recyclerView = requireView().findViewById<RecyclerView>(R.id.recyclerView)
-        var lim = LinearLayoutManager(requireContext())
-        lim.orientation = LinearLayoutManager.VERTICAL
-        recyclerView.layoutManager = lim
-
-        val callsAdapter = AdapterCallLogs(false, requireContext())
-        recyclerView.adapter = callsAdapter
-
-        viewModel.callHistory.observe(requireActivity(), Observer<List<HistoryItem>> {
-            callsAdapter.setList(it)
-        })
+        return bindings.root
     }
 }

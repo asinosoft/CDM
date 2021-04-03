@@ -39,7 +39,7 @@ class OngoingCallActivity : AppCompatActivity() {
     lateinit var context: Context
     var contactDialer: Contact? = null
 
-    //bools
+    // bools
     private var isSpeakerOn = false
     private var isMicrophoneOn = true
     private var isCallEnded = false
@@ -75,13 +75,11 @@ class OngoingCallActivity : AppCompatActivity() {
             }
         }
 
-
-        //Detect a nav bar and adapt layout accordingly
+        // Detect a nav bar and adapt layout accordingly
         val hasNavBar: Boolean = Utilities().hasNavBar(this)
         val navBarHeight: Int = Utilities().navBarHeight(this)
         if (hasNavBar) {
             frame.setPadding(0, 0, 0, navBarHeight)
-
         }
 
         start.setOnSwipeCompleteListener_forward_reverse(object : OnSwipeCompleteListener {
@@ -181,7 +179,6 @@ class OngoingCallActivity : AppCompatActivity() {
         endCall()
     }
 
-
     fun activateCall() {
         CallManager.accept()
         swithToCallingUI()
@@ -208,9 +205,10 @@ class OngoingCallActivity : AppCompatActivity() {
             runOnUiThread {
                 text_stopwatch.text =
                     "${callDuration.getFormattedDuration()}"
-                Handler().postDelayed({
-                    finish()
-                }, 3000)
+                Handler().postDelayed(
+                    { finish() },
+                    3000
+                )
             }
         } else {
             text_status.text = getString(R.string.status_call_disconnected)
@@ -250,7 +248,6 @@ class OngoingCallActivity : AppCompatActivity() {
         button_keypad.visibility = View.VISIBLE
         button_speaker.visibility = View.VISIBLE
     }
-
 
     @SuppressLint("RestrictedApi")
     private fun visibilityInomingCall() {
@@ -325,7 +322,6 @@ class OngoingCallActivity : AppCompatActivity() {
         Utilities().toggleViewActivation(button_hold)
         CallManager.hold(button_hold.isActivated)
     }
-
 
     @SuppressLint("ResourceAsColor")
     private fun clickToButtons() {
@@ -454,7 +450,6 @@ class OngoingCallActivity : AppCompatActivity() {
             setOnClickPendingIntent(R.id.notification_accept_call, acceptPendingIntent)
             setOnClickPendingIntent(R.id.notification_speaker, speakerPendingIntent)
             setOnClickPendingIntent(R.id.notification_mic_off, mutePendingIntent)
-
         }
 
         val builder = NotificationCompat.Builder(this, channelId)
@@ -475,7 +470,6 @@ class OngoingCallActivity : AppCompatActivity() {
 
         val notification = builder.build()
         notificationManager.notify(CALL_NOTIFICATION_ID, notification)
-
     }
 
     private fun getCallContactAvatar(): Bitmap? {
@@ -488,7 +482,6 @@ class OngoingCallActivity : AppCompatActivity() {
                     contentResolver.loadThumbnail(photoUri, Size(tmbSize, tmbSize), null)
                 } else {
                     MediaStore.Images.Media.getBitmap(contentResolver, photoUri)
-
                 }
 
                 bitmap = getCircularBitmap(bitmap!!)
@@ -553,4 +546,3 @@ class OngoingCallActivity : AppCompatActivity() {
         setupNotification()
     }
 }
-

@@ -14,4 +14,14 @@
         android:visibility="invisible"
         tools:ignore="MissingConstraints" />
 
+    <com.asinosoft.cdm.CircleImage
+        android:id="@+id/circleImage"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/actionView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

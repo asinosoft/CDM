@@ -11,14 +11,13 @@ import com.asinosoft.cdm.Metoths
 import com.asinosoft.cdm.R
 import kotlin.collections.ArrayList
 
-class AdapterContact(private val elements: ArrayList<ContactDetailListElement>): RecyclerView.Adapter<AdapterContact.ViewContactInfo>() {
+class AdapterContact(private val elements: ArrayList<ContactDetailListElement>) : RecyclerView.Adapter<AdapterContact.ViewContactInfo>() {
 
     private lateinit var context: Context
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewContactInfo {
         context = parent.context
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.contact_detail_element,parent, false)!!
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.contact_detail_element, parent, false)!!
         return ViewContactInfo(view)
     }
 
@@ -30,7 +29,7 @@ class AdapterContact(private val elements: ArrayList<ContactDetailListElement>):
         holder.bind(elements[position])
     }
 
-    inner class ViewContactInfo(val view: View): RecyclerView.ViewHolder(view){
+    inner class ViewContactInfo(val view: View) : RecyclerView.ViewHolder(view) {
 
         private val mCustomLeft = itemView.findViewById<ImageButton>(R.id.callBtnNumber)
         private var mCustomMiddle = itemView.findViewById<ImageButton>(R.id.msgBtnNumber)
@@ -39,10 +38,10 @@ class AdapterContact(private val elements: ArrayList<ContactDetailListElement>):
         private var number = itemView.findViewById<TextView>(R.id.number_id)
         private var bText = itemView.findViewById<TextView>(R.id.bText)
 
-        fun bind(item: ContactDetailListElement){
+        fun bind(item: ContactDetailListElement) {
 
-            if(null != item.numberType){
-                when(item.numberType){
+            if (null != item.numberType) {
+                when (item.numberType) {
                     1 -> numberType.text = context.getString(R.string.type_home)
                     2 -> numberType.text = context.getString(R.string.type_mobile)
                     3 -> numberType.text = context.getString(R.string.type_work)
@@ -70,12 +69,12 @@ class AdapterContact(private val elements: ArrayList<ContactDetailListElement>):
                     Contact.TYPE_SKYPE -> numberType.text = context.getString(R.string.type_skype)
                     Contact.TYPE_BIRTHDAY -> numberType.text = context.getString(R.string.type_birthday)
                 }
-            }else{
+            } else {
                 numberType.text = " "
             }
 
-            if(null != item.emailType){
-                when(item.emailType){
+            if (null != item.emailType) {
+                when (item.emailType) {
                     1 -> numberType.text = context.getString(R.string.type_work)
                     2 -> numberType.text = context.getString(R.string.type_my)
                     3 -> numberType.text = context.getString(R.string.type_other)
@@ -175,7 +174,6 @@ class AdapterContact(private val elements: ArrayList<ContactDetailListElement>):
                     mCustomMiddle.visibility = View.GONE
                     mCustomRight.visibility = View.GONE
                 }
-
             }
         }
     }

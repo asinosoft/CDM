@@ -28,8 +28,6 @@ import androidx.annotation.ColorInt
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.asinosoft.cdm.Actions.*
 import com.asinosoft.cdm.Metoths.Companion.Direction.*
 import com.asinosoft.cdm.detail_contact.Contact
@@ -60,25 +58,6 @@ class Metoths {
                 }
             }
             return r
-        }
-
-        fun <T : ViewModel, A> singleArgViewModelFactory(constructor: (A) -> T):
-                    (A) -> ViewModelProvider.NewInstanceFactory {
-            return { arg: A ->
-                object : ViewModelProvider.NewInstanceFactory() {
-                    @Suppress("UNCHECKED_CAST")
-                    override fun <V : ViewModel> create(modelClass: Class<V>): V {
-                        return constructor(arg) as V
-                    }
-                }
-            }
-        }
-
-        fun ArrayList<HistoryItem>.containsNumber(num: String): Boolean {
-            forEach {
-                if (it.numberContact == num) return true
-            }
-            return false
         }
 
         fun sendMsg(telNum: String, context: Context) {
@@ -160,7 +139,6 @@ class Metoths {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
             }
-
         }
 
         /**
@@ -281,7 +259,6 @@ class Metoths {
                 .start()
         }
 
-
         fun PointF.diff(
             event: MotionEvent,
             radius: Float? = null,
@@ -344,8 +321,10 @@ class Metoths {
         fun TextView.setColoredText(text: String, @ColorInt color: Int = Color.BLUE) {
             SpannableString(this.text).apply {
                 setSpan(
-                    ForegroundColorSpan(color), this.indexOf(text), this.indexOf(text) +
-                            text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    ForegroundColorSpan(color),
+                    this.indexOf(text),
+                    this.indexOf(text) + text.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
             }.let { this.text = it }
         }
@@ -374,10 +353,10 @@ class Metoths {
             } else vibrate(ms)
         }
 
-        fun getFormatedTime(duration: String): String {
+        fun getFormattedTime(duration: Long): String {
             var str = "0:00"
             try {
-                str = "${duration.toInt() / 60}:${duration.toInt() % 60}"
+                str = "${duration / 60}:${duration % 60}"
             } catch (e: Exception) {
                 Timber.e(e)
             }
@@ -410,7 +389,6 @@ class Metoths {
             emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(Intent.createChooser(emailIntent, "Send email..."))
         }
-
 
         fun openTelegram(phone: String, context: Context) {
             Timber.i("openTelegram: %s", phone)

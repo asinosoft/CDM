@@ -34,7 +34,8 @@ class ContactSettingsFragment : Fragment() {
     lateinit var draggedCir: CircularImageView
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.contact_settings, container, false)
@@ -86,10 +87,10 @@ class ContactSettingsFragment : Fragment() {
             val myShadow = View.DragShadowBuilder(it)
 
             it.startDrag(
-                dragData,   // the data to be dragged
-                myShadow,   // the drag shadow builder
-                null,       // no need to use local data
-                0           // flags (not currently used, set to 0)
+                dragData,
+                myShadow,
+                null,
+                0
             )
         }
 
@@ -178,7 +179,6 @@ class ContactSettingsFragment : Fragment() {
         cirRight.let(this@ContactSettingsFragment::setDragListener)
         cirChoose1.let(this@ContactSettingsFragment::setDragListener)
         cirChoose2.let(this@ContactSettingsFragment::setDragListener)
-
     }
 
     private fun setAllCirs(width: Int? = null, @ColorInt color: Int? = null) {
@@ -190,7 +190,6 @@ class ContactSettingsFragment : Fragment() {
             cirTop.borderWidth = it.toFloat()
             cirRight.borderWidth = it.toFloat()
             cirLeft.borderWidth = it.toFloat()
-
         }
 
         color?.let {

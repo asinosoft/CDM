@@ -17,7 +17,11 @@ import kotlinx.coroutines.*
 import org.jetbrains.anko.runOnUiThread
 import kotlin.coroutines.CoroutineContext
 
-class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.OnClickListener, val onClick: Boolean = true): RecyclerView.Adapter<AdapterContacts.Holder>(), CoroutineScope {
+class AdapterContacts(
+    var contacts: List<Contact>,
+    val itemClickListerner: View.OnClickListener,
+    val onClick: Boolean = true
+) : RecyclerView.Adapter<AdapterContacts.Holder>(), CoroutineScope {
 
     private lateinit var context: Context
     private var nums = ""
@@ -31,7 +35,8 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         context = parent.context
-        val v = HistorySwipingItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val v =
+            HistorySwipingItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return Holder(
             v
         ) {
@@ -56,22 +61,24 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
                 }
             }
         }
-        r.sortWith(compareBy {
-            val res = regex?.find(it.name)
-            if (res != null) {
-                it.name.indexOf(res.value)
-            } else {
-                var index = 0
-                it.mPhoneNumbers.forEach {
-                    if (it.isNullOrEmpty()) return@forEach
-                    if (it.contains(nums, true)) {
-                        index = it.indexOf(nums)
-                        return@forEach
+        r.sortWith(
+            compareBy {
+                val res = regex?.find(it.name)
+                if (res != null) {
+                    it.name.indexOf(res.value)
+                } else {
+                    var index = 0
+                    it.mPhoneNumbers.forEach {
+                        if (it.isNullOrEmpty()) return@forEach
+                        if (it.contains(nums, true)) {
+                            index = it.indexOf(nums)
+                            return@forEach
+                        }
                     }
+                    index
                 }
-                index
             }
-        })
+        )
         return@async r
     }.await()
 
@@ -108,7 +115,8 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
         context.startActivity(intent)
     }
 
-    inner class Holder(private val v: HistorySwipingItemBinding, val itemCallBack : () -> Unit) : RecyclerView.ViewHolder(v.root) {
+    inner class Holder(private val v: HistorySwipingItemBinding, val itemCallBack: () -> Unit) :
+        RecyclerView.ViewHolder(v.root) {
 
         fun bind(item: Contact, itemClickListerner: View.OnClickListener) {
             item.photoUri?.let { v.imageContact.setImageURI(it.toUri()) }
@@ -119,7 +127,7 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
             if (t.isNotEmpty()) {
                 t.filter { !it.isNullOrEmpty() }.forEach {
                     if (!tNum.contains(it)) tNum =
-                        tNum.plus("${it}, ")
+                        tNum.plus("$it, ")
                 }
             }
             v.number.text = tNum.dropLast(2)
@@ -159,11 +167,11 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
 
                 override fun onClose() {
                 }
-
             })
 
             v.dragLayout.setOnClickListener {
-                openDetail(item) }
+                openDetail(item)
+            }
         }
 
         /**
@@ -177,6 +185,4 @@ class AdapterContacts(var contacts: List<Contact>, val itemClickListerner: View.
             }
         }
     }
-
 }
-

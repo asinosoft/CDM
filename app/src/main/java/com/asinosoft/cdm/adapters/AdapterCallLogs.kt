@@ -9,20 +9,24 @@ import android.view.MotionEvent.ACTION_DOWN
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.*
-import com.asinosoft.cdm.Metoths.Companion.setColoredText
+import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
 import com.zerobranch.layout.SwipeLayout
 import org.jetbrains.anko.imageResource
+import timber.log.Timber
 
-
+/**
+ * Адаптер списка последних звонков, который показывается в активности "Просмотр контакта"
+ */
 class AdapterCallLogs(
     val onClick: Boolean = true,
     val context: Context,
     var onAdd: (Int) -> Unit = {}
 ) : RecyclerView.Adapter<AdapterCallLogs.HolderHistory>() {
-    private var items = ArrayList<HistoryItem>()
-    private var nums = ""
-    private var regex: Regex? = null
+    private val VISIBLE_ITEMS_LIMIT = 21
+
+    private var items: List<CallHistoryItem> = listOf()
+    private var hiddenItems: List<CallHistoryItem> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
         return HolderHistory(
@@ -34,9 +38,29 @@ class AdapterCallLogs(
         )
     }
 
-    fun setList(list: List<HistoryItem>) {
-        items = ArrayList(list)
+    /**
+     * Заменяет список звонков
+     */
+    fun setList(list: List<CallHistoryItem>) {
+        // Список звонков разделяется на две части: одна показывается сразу, а вторая - только после нажатия на кнопку "Показать ещё"
+        // Это сделано, чтобы ускорить отрисовку при запуске активности
+        // А тормозит она потому, что там RecyclerView растянуют на всю высоту внутри NestedScrollView
+        // FIXME: Чтобы решить эту проблему, нужно показывать блок избранных контактов, как (не)обычный элемент внутри списка звонков
+        items = list.take(VISIBLE_ITEMS_LIMIT)
+        hiddenItems = list.subList(VISIBLE_ITEMS_LIMIT, list.size)
         notifyDataSetChanged()
+        Timber.d("AdapterCallLogs получил %d звонков/контактов", list.size)
+    }
+
+    /**
+     * Добавление вкрытых звонков в список (реакция на кнопку "Показать ещё")
+     */
+    fun showHiddenItems() {
+        val positionStart = items.size
+        val itemCount = hiddenItems.size
+        items = items.plus(hiddenItems)
+        hiddenItems = listOf()
+        notifyItemRangeInserted(positionStart, itemCount)
     }
 
     override fun getItemCount() = items.size
@@ -45,9 +69,9 @@ class AdapterCallLogs(
         holder.bind(items[position])
     }
 
-    private fun openDetail(item: HistoryItem) {
+    private fun openDetail(item: CallHistoryItem) {
         val intent = Intent(this.context, DetailHistoryActivity::class.java)
-        intent.putExtra(Keys.number, item.numberContact)
+        intent.putExtra(Keys.number, item.phone)
         intent.putExtra(Keys.id, item.contact.id)
         context.startActivity(intent)
     }
@@ -67,22 +91,20 @@ class AdapterCallLogs(
                 else R.drawable.whatsapp_192
         }
 
-        fun bind(item: HistoryItem) {
+        fun bind(item: CallHistoryItem) {
             with(v) {
                 imageContact.setImageDrawable(item.contact.getPhoto())
                 name.text = item.contact.name
-                number.text = "${item.numberContact}, ${Metoths.getFormatedTime(item.duration)}"
+                number.text = "${item.phone}, ${Metoths.getFormattedTime(item.duration)}"
                 timeContact.text = item.time
                 dateContact.text = item.date
-                val settings = Loader.loadContactSettings(item.numberContact)
+                val settings = Loader.loadContactSettings(item.phone)
                 imageLeftAction.imageResource =
                     if (settings.leftButton == Actions.WhatsApp) R.drawable.telephony_call_192
                     else R.drawable.whatsapp_192
                 imageRightAction.imageResource =
                     if (settings.rightButton == Actions.WhatsApp) R.drawable.telephony_call_192
                     else R.drawable.whatsapp_192
-
-                setColors(true)
 
                 when (item.typeCall) {
                     CallLog.Calls.OUTGOING_TYPE -> typeCall.setImageResource(R.drawable.baseline_call_made_24)
@@ -92,8 +114,8 @@ class AdapterCallLogs(
                 }
 
                 dragLayout.setOnTouchListener { view, motionEvent ->
-                    if(motionEvent.action == ACTION_DOWN){
-                        val settings = Loader.loadContactSettings(item.numberContact)
+                    if (motionEvent.action == ACTION_DOWN) {
+                        val settings = Loader.loadContactSettings(item.phone)
                         setIcons(settings, imageLeftAction, imageRightAction)
                     }
                     false
@@ -101,18 +123,18 @@ class AdapterCallLogs(
 
                 swipeLayout.setOnActionsListener(object : SwipeLayout.SwipeActionsListener {
                     override fun onOpen(direction: Int, isContinuous: Boolean) {
-                        val settings = Loader.loadContactSettings(item.numberContact)
+                        val settings = Loader.loadContactSettings(item.phone)
                         setIcons(settings, imageLeftAction, imageRightAction)
                         when (direction) {
                             SwipeLayout.RIGHT -> {
                                 if (settings.rightButton != Actions.WhatsApp)
-                                    Metoths.callPhone(item.numberContact, context)
-                                else Metoths.openWhatsApp(item.numberContact, context)
+                                    Metoths.callPhone(item.phone, context)
+                                else Metoths.openWhatsApp(item.phone, context)
                             }
                             SwipeLayout.LEFT -> {
                                 if (settings.leftButton != Actions.WhatsApp)
-                                    Metoths.callPhone(item.numberContact, context)
-                                else Metoths.openWhatsApp(item.numberContact, context)
+                                    Metoths.callPhone(item.phone, context)
+                                else Metoths.openWhatsApp(item.phone, context)
                             }
                             else -> Log.e(
                                 "AdapterHistory.kt: ",
@@ -125,23 +147,10 @@ class AdapterCallLogs(
 
                     override fun onClose() {
                     }
-
                 })
+
                 if (onClick) dragLayout.setOnClickListener { openDetail(item) }
-
-            }
-        }
-
-        /**
-         * Установка выделения текста по номеру телефона.
-         * @param name Установка выделения текста также по имени
-         */
-        private fun setColors(name: Boolean = false) {
-            if (nums.isNotEmpty() && v.number.text.contains(nums)) v.number.setColoredText(nums)
-            if (name) regex?.find(v.name.text.toString())?.let {
-                v.name.setColoredText(it.value)
             }
         }
     }
 }
-

@@ -15,7 +15,6 @@ class ContactDetailFragment : Fragment() {
     private val model: DetailHistoryViewModel by activityViewModels()
     private lateinit var recyclerView: RecyclerView
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,5 +32,4 @@ class ContactDetailFragment : Fragment() {
         recyclerView.layoutManager = lim
         recyclerView.adapter = AdapterContact(model.getContact().getContactListForDetail())
     }
-
 }

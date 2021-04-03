@@ -29,13 +29,13 @@ data class Settings(
     var columnsCirs: Int = 3,
     var colorBorder: Int = Color.CYAN,
     var borderWidthCirs: Int = 5
-){
+) {
 
     fun toDirectActions() = DirectActions(leftButton, rightButton, topButton, bottomButton)
 }
 
 data class DirectActions(val left: Actions = Actions.WhatsApp, val right: Actions = Actions.PhoneCall, val top: Actions = Actions.Email, val down: Actions = Actions.Sms)
 
-enum class Actions{
+enum class Actions {
     WhatsApp, Viber, Telegram, PhoneCall, Email, Sms
 }

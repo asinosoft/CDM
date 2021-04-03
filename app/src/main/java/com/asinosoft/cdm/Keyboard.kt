@@ -15,10 +15,11 @@ import org.jetbrains.anko.support.v4.runOnUiThread
 /**
  * Класс кастомной клавиатуры.
  */
-interface KeyBoardListener{
+interface KeyBoardListener {
     fun onOpenSettings()
 }
-class Keyboard: Fragment() {
+
+class Keyboard : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,49 +33,85 @@ class Keyboard: Fragment() {
         rootView.findViewById<View>(R.id.one_btn)
             .setOnClickListener {
                 rootView.ripple1.startRippleAnimation()
-                Handler().postDelayed({runOnUiThread { rootView.ripple1.stopRippleAnimation() }}, 500/3)
-                takeValue("1") }
+                Handler().postDelayed(
+                    { runOnUiThread { rootView.ripple1.stopRippleAnimation() } },
+                    500 / 3
+                )
+                takeValue("1")
+            }
         rootView.findViewById<View>(R.id.two_btn)
             .setOnClickListener {
                 rootView.ripple2.startRippleAnimation()
-                Handler().postDelayed({runOnUiThread { rootView.ripple2.stopRippleAnimation() }}, 500/3)
-                takeValue("2") }
+                Handler().postDelayed(
+                    { runOnUiThread { rootView.ripple2.stopRippleAnimation() } },
+                    500 / 3
+                )
+                takeValue("2")
+            }
         rootView.findViewById<View>(R.id.three_btn)
             .setOnClickListener {
                 rootView.ripple3.startRippleAnimation()
-                Handler().postDelayed({runOnUiThread { rootView.ripple3.stopRippleAnimation() }}, 500/3)
-                takeValue("3") }
+                Handler().postDelayed(
+                    { runOnUiThread { rootView.ripple3.stopRippleAnimation() } },
+                    500 / 3
+                )
+                takeValue("3")
+            }
         rootView.findViewById<View>(R.id.four_btn)
             .setOnClickListener {
                 rootView.ripple4.startRippleAnimation()
-                Handler().postDelayed({runOnUiThread { rootView.ripple4.stopRippleAnimation() }}, 500/3)
-                takeValue("4") }
+                Handler().postDelayed(
+                    { runOnUiThread { rootView.ripple4.stopRippleAnimation() } },
+                    500 / 3
+                )
+                takeValue("4")
+            }
         rootView.findViewById<View>(R.id.five_btn)
             .setOnClickListener {
                 rootView.ripple5.startRippleAnimation()
-                Handler().postDelayed({runOnUiThread { rootView.ripple5.stopRippleAnimation() }}, 500/3)
-                takeValue("5") }
+                Handler().postDelayed(
+                    { runOnUiThread { rootView.ripple5.stopRippleAnimation() } },
+                    500 / 3
+                )
+                takeValue("5")
+            }
         rootView.findViewById<View>(R.id.six_btn)
             .setOnClickListener {
                 rootView.ripple6.startRippleAnimation()
-                Handler().postDelayed({runOnUiThread { rootView.ripple6.stopRippleAnimation() }}, 500/3)
-                takeValue("6") }
+                Handler().postDelayed(
+                    { runOnUiThread { rootView.ripple6.stopRippleAnimation() } },
+                    500 / 3
+                )
+                takeValue("6")
+            }
         rootView.findViewById<View>(R.id.seven_btn)
             .setOnClickListener {
                 rootView.ripple7.startRippleAnimation()
-                Handler().postDelayed({runOnUiThread { rootView.ripple7.stopRippleAnimation() }}, 500/3)
-                takeValue("7") }
+                Handler().postDelayed(
+                    { runOnUiThread { rootView.ripple7.stopRippleAnimation() } },
+                    500 / 3
+                )
+                takeValue("7")
+            }
         rootView.findViewById<View>(R.id.eight_btn)
             .setOnClickListener {
                 rootView.ripple8.startRippleAnimation()
-                Handler().postDelayed({runOnUiThread { rootView.ripple8.stopRippleAnimation() }}, 500/3)
-                takeValue("8") }
+                Handler().postDelayed(
+                    { runOnUiThread { rootView.ripple8.stopRippleAnimation() } },
+                    500 / 3
+                )
+                takeValue("8")
+            }
         rootView.findViewById<View>(R.id.nine_btn)
             .setOnClickListener {
                 rootView.ripple9.startRippleAnimation()
-                Handler().postDelayed({runOnUiThread { rootView.ripple9.stopRippleAnimation() }}, 500/3)
-                takeValue("9") }
-        rootView.findViewById<View>(R.id.zero_btn).setOnLongClickListener{
+                Handler().postDelayed(
+                    { runOnUiThread { rootView.ripple9.stopRippleAnimation() } },
+                    500 / 3
+                )
+                takeValue("9")
+            }
+        rootView.findViewById<View>(R.id.zero_btn).setOnLongClickListener {
             takeValue("+")
             true
         }
@@ -88,9 +125,19 @@ class Keyboard: Fragment() {
         rootView.findViewById<View>(R.id.zero_btn)
             .setOnClickListener {
                 rootView.ripple0.startRippleAnimation()
-                Handler().postDelayed({runOnUiThread { rootView.ripple0.stopRippleAnimation() }}, 500/3)
-                takeValue("0") }
-        rootView.image_backspace.setOnClickListener {input_text.text = input_text.text.dropLast(1)}
+                Handler().postDelayed(
+                    {
+                        runOnUiThread {
+                            rootView.ripple0.stopRippleAnimation()
+                        }
+                    },
+                    500 / 3
+                )
+                takeValue("0")
+            }
+        rootView.image_backspace.setOnClickListener {
+            input_text.text = input_text.text.dropLast(1)
+        }
         rootView.image_backspace.setOnLongClickListener {
             input_text.text = ""
             true
@@ -119,16 +166,12 @@ class Keyboard: Fragment() {
     val texWatcher = object : TextWatcher {
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
         }
 
         override fun afterTextChanged(s: Editable?) {
-
         }
 
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
         }
     }
-
 }

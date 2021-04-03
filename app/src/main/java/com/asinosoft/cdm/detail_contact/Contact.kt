@@ -54,7 +54,7 @@ class Contact(
     private var cachedPhoto: Drawable? = null
 
     fun getPhoto(): Drawable {
-        if(null == cachedPhoto) {
+        if (null == cachedPhoto) {
             cachedPhoto = photoUri?.let {
                 getPhotoByUri(it)
             } ?: defaultPhoto
@@ -82,7 +82,7 @@ class Contact(
         ) as Drawable
     }
 
-    fun getContactListForDetail(): ArrayList<ContactDetailListElement>{
+    fun getContactListForDetail(): ArrayList<ContactDetailListElement> {
 
         var result = ArrayList<ContactDetailListElement>()
 
@@ -92,42 +92,42 @@ class Contact(
             result.add(element)
         }
 
-        if(mWhatsAppNumbers.size > 0){
-            for(i in mWhatsAppNumbers.indices){
+        if (mWhatsAppNumbers.size > 0) {
+            for (i in mWhatsAppNumbers.indices) {
                 val numberStr = mWhatsAppNumbers[i]
                 val element = ContactDetailListElement(1, numberStr, TYPE_WHATSAPP, mWhatsAppCallId[i], mWhatsAppVideoId[i], mPhoneNumbers[i])
                 result.add(element)
             }
         }
-        if(mViberNumbers.size > 0){
-            for(i in mViberNumbers.indices){
+        if (mViberNumbers.size > 0) {
+            for (i in mViberNumbers.indices) {
                 val numberStr = mViberNumbers[i]
                 val element = ContactDetailListElement(2, numberStr, TYPE_VIBER, mViberId[i], null, mPhoneNumbers[i])
                 result.add(element)
             }
         }
-        if(mTelegramId.size > 0){
-            for(i in mTelegramId.indices){
+        if (mTelegramId.size > 0) {
+            for (i in mTelegramId.indices) {
                 val numberStr = mTelegramId[i]
                 val element = ContactDetailListElement(3, numberStr, TYPE_TELEGRAM, null, null, mPhoneNumbers[i])
                 result.add(element)
             }
         }
-        if(mSkypeName != null){
+        if (mSkypeName != null) {
             val numberStr = mSkypeName
             val element = ContactDetailListElement(4, numberStr, TYPE_SKYPE, null, null, name)
             result.add(element)
         }
-        if(mEmailAdress.size > 0){
-            for(i in mEmailAdress.indices){
+        if (mEmailAdress.size > 0) {
+            for (i in mEmailAdress.indices) {
                 val numberStr = mEmailAdress[i]
                 val element = ContactDetailListElement(5, numberStr, null, null, null, null, mEmailType[i])
                 result.add(element)
             }
         }
 
-        if(mBirthDay.size > 0){
-            for(i in mBirthDay.indices){
+        if (mBirthDay.size > 0) {
+            for (i in mBirthDay.indices) {
                 val numberStr = mBirthDay[i]
                 val element = ContactDetailListElement(6, numberStr, TYPE_BIRTHDAY, mAge[i])
                 result.add(element)

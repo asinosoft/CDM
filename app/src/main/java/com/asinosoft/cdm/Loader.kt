@@ -15,42 +15,41 @@ object Loader {
     /**
      * Проверка на наличие настроек
      */
-    fun settingsExists(): Boolean{
+    fun settingsExists(): Boolean {
         return myPref.getString(Keys.Settings, null) != null
     }
 
     /**
      * Загрузка настроек
      */
-    fun loadSettings(): Settings{
+    fun loadSettings(): Settings {
         val settings = myPref.getString(Keys.Settings, null)
         if (settings == null) {
-            return  Settings()
+            return Settings()
         }
-        return Gson().fromJson(settings, Settings().javaClass)?: Settings()
+        return Gson().fromJson(settings, Settings().javaClass) ?: Settings()
     }
 
-    fun loadContactSettings(contactNumber : String): Settings{
+    fun loadContactSettings(contactNumber: String): Settings {
         val settings = myPref.getString(contactNumber, null)
         if (settings == null) {
             return loadSettings()
         }
-        return Gson().fromJson(settings, Settings().javaClass)?: Settings()
+        return Gson().fromJson(settings, Settings().javaClass) ?: Settings()
     }
 
     /**
      * Сохранение настроек
      */
-    fun saveSettings(settings: Settings){
+    fun saveSettings(settings: Settings) {
         val e = myPref.edit()
         e.putString(Keys.Settings, Gson().toJson(settings))
         e.apply()
     }
 
-    fun saveContactSettings(contactNumber : String, settings: Settings){
+    fun saveContactSettings(contactNumber: String, settings: Settings) {
         val e = myPref.edit()
         e.putString(contactNumber, Gson().toJson(settings))
         e.apply()
     }
-
 }

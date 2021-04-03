@@ -5,7 +5,7 @@ import android.telecom.Call
 import android.telecom.InCallService
 import com.asinosoft.cdm.OngoingCallActivity
 
-class CallService: InCallService() {
+class CallService : InCallService() {
 
     override fun onCallAdded(call: Call) {
         super.onCallAdded(call)
@@ -21,5 +21,4 @@ class CallService: InCallService() {
         CallManager.call = null
         CallManager.inCallService = null
     }
-
 }

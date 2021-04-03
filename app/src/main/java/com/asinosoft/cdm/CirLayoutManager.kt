@@ -1,34 +1,26 @@
 package com.asinosoft.cdm
 
-import android.util.Log
-import android.util.Log.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlin.IndexOutOfBoundsException
-import kotlin.properties.Delegates
 
 /**
  * Менеджер макета для кнопок избранных контактов.
  */
-class   CirLayoutManager(var onChangeHeight: (Int) -> Unit, var offsetCirs: Int = -1, var columns: Int = 2): RecyclerView.LayoutManager() {
-
-    var heightUsed: Int by Delegates.observable(0, { _, _, newVal ->
-        onChangeHeight(newVal)
-    })
+class CirLayoutManager(
+    var onChangeHeight: (Int) -> Unit,
+    var columns: Int = 2
+) : RecyclerView.LayoutManager() {
 
     override fun generateDefaultLayoutParams(): RecyclerView.LayoutParams {
         return RecyclerView.LayoutParams(
-            RecyclerView.LayoutParams.WRAP_CONTENT,
+            RecyclerView.LayoutParams.MATCH_PARENT,
             RecyclerView.LayoutParams.WRAP_CONTENT
         )
     }
 
     override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
         recycler?.let(this::detachAndScrapAttachedViews)
+        var totalHeight = 0
         (0 until itemCount).forEach { i ->
             (recycler?.getViewForPosition(i))?.let {
                 addView(it)
@@ -45,10 +37,10 @@ class   CirLayoutManager(var onChangeHeight: (Int) -> Unit, var offsetCirs: Int 
                     sizeSpec + marginLeft.toInt(),
                     sizeSpec + marginTop.toInt()
                 )
-                if (i == itemCount-1)
-                    heightUsed = it.measuredHeight + marginTop.toInt()
+                totalHeight = it.measuredHeight + marginTop.toInt()
             }
         }
+        onChangeHeight(totalHeight)
     }
 
     private fun getHorizontalCirs(i: Int, columns: Int): Float = when (columns) {
@@ -72,5 +64,4 @@ class   CirLayoutManager(var onChangeHeight: (Int) -> Unit, var offsetCirs: Int 
         4 -> 0.15f
         else -> throw IndexOutOfBoundsException()
     }
-
 }

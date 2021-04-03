@@ -11,14 +11,11 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.DragEvent
 import android.view.View
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.RadioButton
 import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
 import com.asinosoft.cdm.Metoths.Companion.setSize
 import com.asinosoft.cdm.databinding.SettingsLayoutBinding
-import com.google.gson.Gson
 import com.jaeger.library.StatusBarUtil
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
@@ -26,7 +23,6 @@ import com.xw.repo.BubbleSeekBar
 import com.xw.repo.BubbleSeekBar.OnProgressChangedListener
 import kotlinx.android.synthetic.main.settings_layout.*
 import org.jetbrains.anko.image
-
 
 /**
  * Класс экрана настроек приложения
@@ -38,11 +34,11 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     lateinit var draggedCir: CircularImageView
     var filePathPhoto = ""
     var widthScreen: Int? = null
-    set(value) {
-        field = value
-        updateSeekSize()
-        v.seekBarSizeButtons.setProgress(settings.sizeCirs.toFloat())
-    }
+        set(value) {
+            field = value
+            updateSeekSize()
+            v.seekBarSizeButtons.setProgress(settings.sizeCirs.toFloat())
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +61,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     }
 
     private fun initAll() {
-        settings = Gson().fromJson(intent.getStringExtra(Keys.Settings), Settings::class.java)
+        settings = Loader.loadSettings()
         initSeek1()
         initSeek2()
         initSeek3()
@@ -85,9 +81,22 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     }
 
     private fun saveAll() {
-        Loader.saveSettings(settings.copy(countCirs = v.seekBarCountButtons.progress, sizeCirs = v.seekBarSizeButtons.progress, rightButton = v.cirRight.action,
-        leftButton = v.cirLeft.action, topButton = v.cirTop.action, bottomButton = v.cirBottom.action, chooserButton1 = v.cirChoose1.action, chooserButton2 = v.cirChoose2.action,
-        cirMenu = v.menu.isChecked, historyButtom = v.hisButtom.isChecked, columnsCirs = v.seekBarColumnsButtons.progress, borderWidthCirs = v.seekBarBorderButtons.progress))
+        Loader.saveSettings(
+            settings.copy(
+                countCirs = v.seekBarCountButtons.progress,
+                sizeCirs = v.seekBarSizeButtons.progress,
+                rightButton = v.cirRight.action,
+                leftButton = v.cirLeft.action,
+                topButton = v.cirTop.action,
+                bottomButton = v.cirBottom.action,
+                chooserButton1 = v.cirChoose1.action,
+                chooserButton2 = v.cirChoose2.action,
+                cirMenu = v.menu.isChecked,
+                historyButtom = v.hisButtom.isChecked,
+                columnsCirs = v.seekBarColumnsButtons.progress,
+                borderWidthCirs = v.seekBarBorderButtons.progress
+            )
+        )
     }
 
     private fun setData() {
@@ -119,7 +128,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     }
 
     private fun getResDrawable(action: Actions): Int {
-        return when (action){
+        return when (action) {
             Actions.WhatsApp -> R.drawable.whatsapp_192
             Actions.Sms -> R.drawable.sms_192
             Actions.Email -> R.drawable.email_192
@@ -130,7 +139,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     }
 
     private fun initSeek4() {
-        if(v.expandable4.isExpanded) v.cross4.cross() else v.cross4.plus()
+        if (v.expandable4.isExpanded) v.cross4.cross() else v.cross4.plus()
         v.cardViewText4.setOnClickListener {
             v.expandable4.toggle(true)
             v.cross4.toggle(500L)
@@ -148,14 +157,18 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
             it.bringToFront()
             draggedCir = cir
             val item = ClipData.Item(it.tag as? CharSequence)
-            val dragData = ClipData(it.tag as? CharSequence, arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN), item)
+            val dragData = ClipData(
+                it.tag as? CharSequence,
+                arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
+                item
+            )
             val myShadow = View.DragShadowBuilder(it)
 
             it.startDrag(
-                dragData,   // the data to be dragged
-                myShadow,   // the drag shadow builder
-                null,       // no need to use local data
-                0           // flags (not currently used, set to 0)
+                dragData,
+                myShadow,
+                null,
+                0
             )
         }
 
@@ -204,13 +217,13 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         }
     }
 
-    private fun CircularImageView.swapCir(c: CircularImageView){
+    private fun CircularImageView.swapCir(c: CircularImageView) {
         this.image = c.image.also { c.image = this.image }
         this.action = c.action.also { c.action = this.action }
     }
 
     private fun initSeek3() {
-        if(v.expandable3.isExpanded) v.cross3.cross() else v.cross3.plus()
+        if (v.expandable3.isExpanded) v.cross3.cross() else v.cross3.plus()
         v.cardViewText3.setOnClickListener {
             v.expandable3.toggle(true)
             v.cross3.toggle(500L)
@@ -218,7 +231,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     }
 
     private fun initSeek5() {
-        if(v.expandable1.isExpanded) v.cross5.cross() else v.cross5.plus()
+        if (v.expandable1.isExpanded) v.cross5.cross() else v.cross5.plus()
         v.cardViewText5.setOnClickListener {
             v.expandable5.toggle(true)
             v.cross5.toggle(500L)
@@ -226,7 +239,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     }
 
     private fun initSeek6() {
-        if(v.expandable6.isExpanded) v.cross6.cross() else v.cross6.plus()
+        if (v.expandable6.isExpanded) v.cross6.cross() else v.cross6.plus()
         v.cardViewText6.setOnClickListener {
             v.expandable6.toggle(true)
             v.cross6.toggle(500L)
@@ -234,14 +247,14 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     }
 
     private fun initSeek1() {
-        if(v.expandable1.isExpanded) v.cross1.cross() else v.cross1.plus()
+        if (v.expandable1.isExpanded) v.cross1.cross() else v.cross1.plus()
         v.cardViewText1.setOnClickListener {
             v.expandable1.toggle(true)
             v.cross1.toggle(500L)
         }
-       updateSeekSize()
+        updateSeekSize()
 
-        seekBarBorderButtons.onProgressChangedListener = object : OnProgressChangedListener{
+        seekBarBorderButtons.onProgressChangedListener = object : OnProgressChangedListener {
             override fun onProgressChanged(
                 bubbleSeekBar: BubbleSeekBar?,
                 progress: Int,
@@ -266,59 +279,59 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
                 fromUser: Boolean
             ) {
             }
-
         }
 
-       v.seekBarColumnsButtons.onProgressChangedListener = object : OnProgressChangedListener{
-           override fun onProgressChanged(
-               bubbleSeekBar: BubbleSeekBar?,
-               progress: Int,
-               progressFloat: Float,
-               fromUser: Boolean
-           ) {
-               updateSeekSize()
-           }
+        v.seekBarColumnsButtons.onProgressChangedListener = object : OnProgressChangedListener {
+            override fun onProgressChanged(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float,
+                fromUser: Boolean
+            ) {
+                updateSeekSize()
+            }
 
-           override fun getProgressOnActionUp(
-               bubbleSeekBar: BubbleSeekBar?,
-               progress: Int,
-               progressFloat: Float
-           ) {
-           }
+            override fun getProgressOnActionUp(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float
+            ) {
+            }
 
-           override fun getProgressOnFinally(
-               bubbleSeekBar: BubbleSeekBar?,
-               progress: Int,
-               progressFloat: Float,
-               fromUser: Boolean
-           ) {
-           }
-
-       }
+            override fun getProgressOnFinally(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float,
+                fromUser: Boolean
+            ) {
+            }
+        }
     }
 
     private fun updateSeekSize() {
-        if(widthScreen == null) return
-        val maxSize = widthScreen!! * when(v.seekBarColumnsButtons.progress){
+        if (widthScreen == null) return
+        val maxSize = widthScreen!! * when (v.seekBarColumnsButtons.progress) {
             1 -> 0.4f
             2 -> 0.4f
             3 -> 0.28f
             4 -> 0.23f
             else -> 0f
         }
-        val minSize = widthScreen!! /7
+        val minSize = widthScreen!! / 7
         Log.d("${this.javaClass}", "updateSeekSize: min = $minSize; max = $maxSize")
         v.seekBarSizeButtons.configBuilder.apply {
             max(maxSize.toFloat())
             min(minSize.toFloat())
         }.build()
-        v.seekBarSizeButtons.setProgress(widthScreen!! * when(v.seekBarColumnsButtons.progress){
-            1 -> 0.3f
-            2 -> 0.25f
-            3 -> 0.19f
-            4 -> 0.16f
-            else -> 0f
-        })
+        v.seekBarSizeButtons.setProgress(
+            widthScreen!! * when (v.seekBarColumnsButtons.progress) {
+                1 -> 0.3f
+                2 -> 0.25f
+                3 -> 0.19f
+                4 -> 0.16f
+                else -> 0f
+            }
+        )
 
         v.colorPicker.setOnClickListener {
             ColorPickerDialog.newBuilder().setColor(Color.RED).show(this)
@@ -395,7 +408,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         setAllCirs(color = color)
     }
 
-    private fun setAllCirs(width: Int? = null, @ColorInt color: Int ? = null) {
+    private fun setAllCirs(width: Int? = null, @ColorInt color: Int? = null) {
         width?.let {
             cirBottom.borderWidth = it.toFloat()
             cirChoose1.borderWidth = it.toFloat()

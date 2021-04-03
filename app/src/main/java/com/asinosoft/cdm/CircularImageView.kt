@@ -535,5 +535,4 @@ open class CircularImageView @JvmOverloads constructor(
         TOP_TO_BOTTOM(3),
         BOTTOM_TO_TOP(4)
     }
-
 }

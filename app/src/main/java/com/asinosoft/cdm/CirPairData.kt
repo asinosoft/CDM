@@ -6,5 +6,5 @@ package com.asinosoft.cdm
 data class CirPairData(
     var contactID: Long = 0,
     val contactSettings: ContactSettings? = null,
-    val selectedNumber : String? = null
+    val selectedNumber: String? = null
 )
