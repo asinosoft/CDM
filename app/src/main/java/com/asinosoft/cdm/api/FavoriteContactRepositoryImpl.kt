@@ -42,7 +42,7 @@ class FavoriteContactRepositoryImpl(
 
     private fun loadContacts(): MutableList<FavoriteContact> {
         sharedPreferences.getString(Keys.Cirs, null)?.let {
-            val list = it.split("<end>").dropLast(1)
+            val list = it.split("<end>")
             val contacts = list.map {
                 FavoriteContact.fromJson(it, contactRepository)
             }

@@ -62,7 +62,8 @@ class CirAdapter(
 
     fun swapItems(pos: Int, adapterPosition: Int) {
         favorites.swapContacts(pos, adapterPosition)
-        notifyItemMoved(pos, adapterPosition)
+        notifyItemChanged(pos)
+        notifyItemChanged(adapterPosition)
     }
 
     inner class Holder(val v: ItemCirBinding) : RecyclerView.ViewHolder(v.root) {
