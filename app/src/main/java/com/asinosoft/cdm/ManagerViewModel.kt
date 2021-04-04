@@ -10,8 +10,6 @@ import android.view.View.VISIBLE
 import android.view.animation.OvershootInterpolator
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.asinosoft.cdm.Metoths.Companion.dp
-import com.asinosoft.cdm.Metoths.Companion.setSize
 import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.adapters.AdapterCallLogs
 import com.asinosoft.cdm.api.FavoriteContact
@@ -30,16 +28,13 @@ class ManagerViewModel : ViewModel() {
         const val VIBRO = 30L
     }
 
-    private var settings = Loader.loadSettings()
+    private lateinit var settings: Settings
     private lateinit var v: ActivityManagerBinding
     private lateinit var context: Context
     private lateinit var pickContact: (Int) -> Unit
 
     private val adapterCallLogs: AdapterCallLogs by lazy {
-        AdapterCallLogs(
-            context = context,
-            onAdd = { v.scrollView.scrollBy(65.dp * it, 65.dp * it) }
-        )
+        AdapterCallLogs(context)
     }
     private val favoritesAdapter: CirAdapter by lazy {
         CirAdapter(
@@ -73,6 +68,7 @@ class ManagerViewModel : ViewModel() {
         this.v = v
         this.context = context
         this.pickContact = pickContact
+        this.settings = Loader.loadSettings()
         initViews()
     }
 
@@ -104,17 +100,13 @@ class ManagerViewModel : ViewModel() {
                 }
             }
             isNestedScrollingEnabled = true
-            adapter = adapterCallLogs.apply { if (settings.historyButtom) onAdd = {} }
+            adapter = adapterCallLogs
         }
     }
 
     private fun initRecyclerViewFavorites() {
         v.rvFavorites.adapter = favoritesAdapter
-        v.rvFavorites.layoutManager =
-            CirLayoutManager(
-                { v.rvFavorites.setSize(height = it) },
-                columns = settings.columnsCirs
-            )
+        v.rvFavorites.layoutManager = CirLayoutManager(columns = settings.columnsCirs)
         v.rvFavorites.itemAnimator = LandingAnimator(OvershootInterpolator())
     }
 

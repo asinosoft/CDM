@@ -1,9 +1,7 @@
 package com.asinosoft.cdm.api
 
 import android.content.SharedPreferences
-import com.asinosoft.cdm.CirPairData
 import com.asinosoft.cdm.Keys
-import com.google.gson.Gson
 import java.util.Collections.swap
 
 /**
@@ -61,12 +59,7 @@ class FavoriteContactRepositoryImpl(
 
     private fun saveContacts() {
         favoriteContacts.map {
-            Gson().toJson(
-                CirPairData(
-                    it.contact?.id ?: 0,
-                    selectedNumber = it.phone
-                )
-            )
+            it.toJson()
         }.joinToString("<end>").let {
             sharedPreferences
                 .edit()

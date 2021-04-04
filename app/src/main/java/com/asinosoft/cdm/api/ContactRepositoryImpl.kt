@@ -9,7 +9,7 @@ import com.asinosoft.cdm.detail_contact.StHelper
 import timber.log.Timber
 
 /**
- * Доступ к контактам пользователя
+ * Доступ к контактам
  */
 class ContactRepositoryImpl(context: Context) : ContactRepository {
 
@@ -58,7 +58,7 @@ class ContactRepositoryImpl(context: Context) : ContactRepository {
         index
     }
 
-    inner class ContactCursorAdapter(val cursor: Cursor) {
+    inner class ContactCursorAdapter(private val cursor: Cursor) {
         private val _id = cursor.getColumnIndex(ContactsContract.Data._ID)
         private val contactId = cursor.getColumnIndex(ContactsContract.Data.CONTACT_ID)
         private val photoUri = cursor.getColumnIndex(ContactsContract.Data.PHOTO_URI)

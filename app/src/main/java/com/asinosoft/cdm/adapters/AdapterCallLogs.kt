@@ -19,9 +19,7 @@ import timber.log.Timber
  * Адаптер списка последних звонков, который показывается в активности "Просмотр контакта"
  */
 class AdapterCallLogs(
-    val onClick: Boolean = true,
     val context: Context,
-    var onAdd: (Int) -> Unit = {}
 ) : RecyclerView.Adapter<AdapterCallLogs.HolderHistory>() {
     private val VISIBLE_ITEMS_LIMIT = 21
 
@@ -149,7 +147,7 @@ class AdapterCallLogs(
                     }
                 })
 
-                if (onClick) dragLayout.setOnClickListener { openDetail(item) }
+                dragLayout.setOnClickListener { openDetail(item) }
             }
         }
     }

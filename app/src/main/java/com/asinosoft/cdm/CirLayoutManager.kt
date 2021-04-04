@@ -7,22 +7,26 @@ import androidx.recyclerview.widget.RecyclerView
  * Менеджер макета для кнопок избранных контактов.
  */
 class CirLayoutManager(
-    var onChangeHeight: (Int) -> Unit,
     var columns: Int = 2
 ) : RecyclerView.LayoutManager() {
 
     override fun generateDefaultLayoutParams(): RecyclerView.LayoutParams {
         return RecyclerView.LayoutParams(
-            RecyclerView.LayoutParams.MATCH_PARENT,
+            RecyclerView.LayoutParams.WRAP_CONTENT,
             RecyclerView.LayoutParams.WRAP_CONTENT
         )
     }
 
+    override fun isAutoMeasureEnabled(): Boolean {
+        return true
+    }
+
     override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
-        recycler?.let(this::detachAndScrapAttachedViews)
-        var totalHeight = 0
+        if (null == recycler) return
+
+        detachAndScrapAttachedViews(recycler)
         (0 until itemCount).forEach { i ->
-            (recycler?.getViewForPosition(i))?.let {
+            (recycler.getViewForPosition(i)).let {
                 addView(it)
                 val cir = (it as ConstraintLayout).findViewById<CircleImage>(Keys.idCir)
                 val sizeSpec = (cir.size + cir.animationRadius * 2).toInt()
@@ -37,10 +41,8 @@ class CirLayoutManager(
                     sizeSpec + marginLeft.toInt(),
                     sizeSpec + marginTop.toInt()
                 )
-                totalHeight = it.measuredHeight + marginTop.toInt()
             }
         }
-        onChangeHeight(totalHeight)
     }
 
     private fun getHorizontalCirs(i: Int, columns: Int): Float = when (columns) {

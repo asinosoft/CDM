@@ -3,7 +3,7 @@ package com.asinosoft.cdm.api
 import com.asinosoft.cdm.detail_contact.Contact
 
 /**
- * Доступ к контактам пользователя
+ * Доступ к контактам
  */
 interface ContactRepository {
     fun getContacts(): Collection<Contact>

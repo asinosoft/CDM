@@ -1,7 +1,7 @@
 package com.asinosoft.cdm.api
 
 /**
- * Доступ к историии звонков
+ * Доступ к истории звонков
  */
 interface CallHistoryRepository {
     /**
