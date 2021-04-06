@@ -23,6 +23,7 @@ class CirAdapter(
     val deleteButton: CircularImageView,
     val editButton: CircularImageView,
     val pickedContact: (Int) -> Unit,
+    val onTouch: (Int) -> Unit, // Через колбэк передаётся позиция контакта, на котором находится палец пользователя
     val context: Context,
     val settings: Settings,
     val vibrator: Vibrator
@@ -123,6 +124,7 @@ class CirAdapter(
                 }
                 touchDownForIndex = {
                     touchDown(absoluteAdapterPosition)
+                    onTouch(absoluteAdapterPosition)
                 }
 
                 setOnDragListener { _, event ->

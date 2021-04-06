@@ -46,11 +46,15 @@ class ManagerViewModel : ViewModel() {
             v.deleteCir,
             v.editCir,
             pickContact,
+            { indexOfFrontChild = it },
             context,
             settings,
             context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         )
     }
+
+    // Номер избранного контакта, на котором находится палец пользователя - чтобы отрисовать его в последнюю очередь (поверх остальных)
+    private var indexOfFrontChild: Int = 0
 
     fun showHiddenCallHistoryItems() {
         adapterCallLogs.showHiddenItems()
@@ -108,6 +112,20 @@ class ManagerViewModel : ViewModel() {
         v.rvFavorites.adapter = favoritesAdapter
         v.rvFavorites.layoutManager = CirLayoutManager(columns = settings.columnsCirs)
         v.rvFavorites.itemAnimator = LandingAnimator(OvershootInterpolator())
+        v.rvFavorites.setChildDrawingOrderCallback { childCount, iteration ->
+            // Изменяем порядок отрисовки избранных контактов, чтобы контакт
+            // на котором находится палец пользователя, отрисовывался в последнюю очередь,
+            // поверх остальных контактов
+            var childPos: Int = iteration
+            if (indexOfFrontChild < childCount) {
+                if (iteration == childCount - 1) {
+                    childPos = indexOfFrontChild
+                } else if (iteration >= indexOfFrontChild) {
+                    childPos = iteration + 1
+                }
+            }
+            childPos
+        }
     }
 
     private fun initButtons() {
