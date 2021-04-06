@@ -18,7 +18,6 @@ import kotlinx.android.synthetic.main.settings_layout.*
 import kotlinx.android.synthetic.main.settings_layout.cirBottom
 import kotlinx.android.synthetic.main.settings_layout.cirChoose1
 import kotlinx.android.synthetic.main.settings_layout.cirChoose2
-import kotlinx.android.synthetic.main.settings_layout.cirChoose3
 import kotlinx.android.synthetic.main.settings_layout.cirLeft
 import kotlinx.android.synthetic.main.settings_layout.cirRight
 import kotlinx.android.synthetic.main.settings_layout.cirTop
@@ -186,7 +185,6 @@ class ContactSettingsFragment : Fragment() {
             cirBottom.borderWidth = it.toFloat()
             cirChoose1.borderWidth = it.toFloat()
             cirChoose2.borderWidth = it.toFloat()
-            cirChoose3.borderWidth = it.toFloat()
             cirTop.borderWidth = it.toFloat()
             cirRight.borderWidth = it.toFloat()
             cirLeft.borderWidth = it.toFloat()
@@ -196,7 +194,6 @@ class ContactSettingsFragment : Fragment() {
             cirBottom.borderColor = it
             cirChoose1.borderColor = it
             cirChoose2.borderColor = it
-            cirChoose3.borderColor = it
             cirTop.borderColor = it
             cirRight.borderColor = it
             cirLeft.borderColor = it

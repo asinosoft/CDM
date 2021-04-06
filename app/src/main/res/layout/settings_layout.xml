@@ -13,98 +13,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-    <androidx.cardview.widget.CardView
-        android:layout_gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="20dp"
-        android:visibility="gone"
-        android:backgroundTint="@color/white_gray_light">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <net.cachapa.expandablelayout.ExpandableLayout
-                android:id="@+id/expandable1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:el_expanded="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/card_view_text1">
-
-            <LinearLayout
-                android:id="@+id/content1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/card_view_text1">
-
-            <com.xw.repo.BubbleSeekBar
-                android:id="@+id/seekBarCountButtons"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                app:bsb_auto_adjust_section_mark="true"
-                app:bsb_max="18"
-                app:bsb_min="3"
-                app:bsb_second_track_color="@color/blue"
-                app:bsb_section_count="5"
-                app:bsb_section_text_position="below_section_mark"
-                app:bsb_show_section_mark="true"
-                app:bsb_show_section_text="true"
-                app:bsb_show_thumb_text="true"
-                app:bsb_thumb_text_size="18sp"
-                app:bsb_touch_to_seek="true" />
-            </LinearLayout>
-            </net.cachapa.expandablelayout.ExpandableLayout>
-
-
-            <androidx.cardview.widget.CardView
-                    android:id="@+id/card_view_text1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/white_gray"
-                    app:cardCornerRadius="20dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:padding="20dp"
-                        android:text="@string/setting_count_buttons"
-                        android:textColor="@color/purple"
-                        android:textSize="16sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <cdflynn.android.library.crossview.CrossView
-                        android:id="@+id/cross1"
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:padding="20dp"
-                        android:backgroundTint="@color/purple"
-                        app:lineColor="@android:color/black"
-                        android:layout_gravity="end|center" />
-
-                </androidx.cardview.widget.CardView>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
+        <androidx.cardview.widget.CardView
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -117,7 +26,7 @@
             android:layout_height="match_parent">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/card_view_text2"
+                android:id="@+id/favorites_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white_gray"
@@ -141,7 +50,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <cdflynn.android.library.crossview.CrossView
-                    android:id="@+id/cross2"
+                    android:id="@+id/favorites_cross"
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:padding="20dp"
@@ -153,13 +62,13 @@
             </androidx.cardview.widget.CardView>
 
             <net.cachapa.expandablelayout.ExpandableLayout
-                android:id="@+id/expandable2"
+                android:id="@+id/favorites_expandable"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:el_expanded="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/card_view_text2">
+                app:layout_constraintTop_toBottomOf="@+id/favorites_header">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content2"
@@ -170,7 +79,7 @@
         android:paddingBottom="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/card_view_text2">
+        app:layout_constraintTop_toBottomOf="@+id/favorites_header">
 
         <TextView
             android:id="@+id/textView1"
@@ -207,38 +116,26 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <CheckBox
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="start|center_vertical"
-            android:id="@+id/checkboxOffsetCirs"
-            app:layout_constraintTop_toBottomOf="@id/textView2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:checked="true"
-            android:text="Автоматически определять отступы" />
-
         <com.xw.repo.BubbleSeekBar
-            android:layout_marginTop="6dp"
             android:id="@+id/seekBarColumnsButtons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:bsb_auto_adjust_section_mark="true"
-            app:bsb_second_track_color="@color/blue"
-            app:bsb_touch_to_seek="true"
-            app:layout_constraintTop_toBottomOf="@id/checkboxOffsetCirs"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="6dp"
             android:paddingHorizontal="20dp"
-            app:bsb_min="1"
+            app:bsb_auto_adjust_section_mark="true"
             app:bsb_max="4"
+            app:bsb_min="1"
             app:bsb_progress="1"
+            app:bsb_second_track_color="@color/blue"
             app:bsb_section_count="3"
             app:bsb_section_text_position="below_section_mark"
             app:bsb_show_section_mark="true"
             app:bsb_show_section_text="true"
-            app:bsb_show_thumb_text="true"/>
+            app:bsb_show_thumb_text="true"
+            app:bsb_touch_to_seek="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
         <TextView
             android:id="@+id/textViewBorder"
@@ -251,30 +148,30 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <com.xw.repo.BubbleSeekBar
-            android:layout_marginTop="6dp"
             android:id="@+id/seekBarBorderButtons"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:paddingHorizontal="20dp"
             app:bsb_auto_adjust_section_mark="true"
+            app:bsb_max="100"
+            app:bsb_min="1"
+            app:bsb_progress="1"
             app:bsb_second_track_color="@color/blue"
             app:bsb_touch_to_seek="true"
-            app:layout_constraintTop_toBottomOf="@id/textViewBorder"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/colorPicker"
-            android:paddingHorizontal="20dp"
-            android:layout_marginEnd="5dp"
-            app:bsb_min="1"
-            app:bsb_max="100"
-            app:bsb_progress="1"/>
+            app:layout_constraintTop_toBottomOf="@id/textViewBorder" />
 
         <Button
             android:id="@+id/colorPicker"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/palette"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/seekBarBorderButtons"/>
+            app:layout_constraintTop_toBottomOf="@+id/seekBarBorderButtons" />
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/circleImageView"
@@ -295,101 +192,6 @@
 
     </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:layout_gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
-            android:layout_marginTop="40dp"
-            android:backgroundTint="@color/white_gray_light">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_view_text5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/white_gray"
-                app:cardCornerRadius="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:focusable="true"
-                android:clickable="true">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="20dp"
-                    android:text="Управление"
-                    android:textColor="@color/purple"
-                    android:textSize="16sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <cdflynn.android.library.crossview.CrossView
-                    android:id="@+id/cross5"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:padding="20dp"
-                    android:backgroundTint="@color/purple"
-                    app:lineColor="@android:color/black"
-                    android:layout_gravity="end|center" />
-
-            </androidx.cardview.widget.CardView>
-
-            <net.cachapa.expandablelayout.ExpandableLayout
-                android:id="@+id/expandable5"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:el_expanded="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/card_view_text5">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/content5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:animateLayoutChanges="true"
-                    android:paddingTop="20dp"
-                    android:paddingBottom="20dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/card_view_text5">
-
-                    <RadioGroup
-                        android:id="@+id/radioCir"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="10dp">
-
-                        <RadioButton
-                            android:text="Перестаскиванием"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                        <RadioButton
-                            android:id="@+id/menu"
-                            android:text="Выплывающим меню"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-
-                    </RadioGroup>
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </net.cachapa.expandablelayout.ExpandableLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
-
 
         <androidx.cardview.widget.CardView
             android:layout_gravity="center"
@@ -404,179 +206,7 @@
                 android:layout_height="match_parent">
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/card_view_text6"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/white_gray"
-                    app:cardCornerRadius="20dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:focusable="true"
-                    android:clickable="true">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:padding="20dp"
-                        android:textColor="@color/purple"
-                        android:textSize="16sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <cdflynn.android.library.crossview.CrossView
-                        android:id="@+id/cross6"
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:padding="20dp"
-                        android:backgroundTint="@color/purple"
-                        app:lineColor="@android:color/black"
-                        android:layout_gravity="end|center" />
-
-                </androidx.cardview.widget.CardView>
-
-                <net.cachapa.expandablelayout.ExpandableLayout
-                    android:id="@+id/expandable6"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:el_expanded="true"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/card_view_text6">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/content6"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:animateLayoutChanges="true"
-                        android:paddingTop="20dp"
-                        android:paddingBottom="20dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/card_view_text5">
-
-                        <RadioGroup
-                            android:id="@+id/radioHis"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="10dp">
-
-                            <RadioButton
-                                android:text="С верхней части"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"/>
-
-                            <RadioButton
-                                android:id="@+id/hisButtom"
-                                android:text="С нижней части"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"/>
-
-                        </RadioGroup>
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </net.cachapa.expandablelayout.ExpandableLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
-            android:visibility="gone"
-            android:layout_marginTop="40dp"
-            android:backgroundTint="@color/white_gray_light">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/card_view_text3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/white_gray"
-                    app:cardCornerRadius="20dp"
-
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:focusable="true"
-                    android:clickable="true">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:padding="20dp"
-                        android:text="Стиль приложения:"
-                        android:textColor="@color/purple"
-                        android:textSize="16sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-
-
-                    <cdflynn.android.library.crossview.CrossView
-                        android:id="@+id/cross3"
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:padding="20dp"
-                        android:backgroundTint="@color/purple"
-                        app:lineColor="@android:color/black"
-                        android:layout_gravity="end|center" />
-
-
-                </androidx.cardview.widget.CardView>
-
-                <net.cachapa.expandablelayout.ExpandableLayout
-                    android:id="@+id/expandable3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/card_view_text3"
-                    app:el_expanded="true">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/content3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:animateLayoutChanges="true"
-                    android:paddingTop="20dp"
-                    android:paddingBottom="20dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/card_view_text4"/>
-                </net.cachapa.expandablelayout.ExpandableLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
-            android:layout_marginTop="40dp"
-            android:backgroundTint="@color/white_gray_light">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/card_view_text4"
+                    android:id="@+id/actions_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/white_gray"
@@ -600,7 +230,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <cdflynn.android.library.crossview.CrossView
-                        android:id="@+id/cross4"
+                        android:id="@+id/actions_cross"
                         android:layout_width="56dp"
                         android:layout_height="56dp"
                         android:padding="20dp"
@@ -612,12 +242,12 @@
                 </androidx.cardview.widget.CardView>
 
                 <net.cachapa.expandablelayout.ExpandableLayout
-                    android:id="@+id/expandable4"
+                    android:id="@+id/actions_expandable"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/card_view_text4"
+                    app:layout_constraintTop_toBottomOf="@+id/actions_header"
                     app:el_expanded="true">
 
                     <LinearLayout
@@ -697,13 +327,6 @@
                             android:layout_toEndOf="@id/cirChoose1"
                             android:src="@drawable/contact_unfoto"
                             android:layout_marginHorizontal="10dp"/>
-
-                        <com.asinosoft.cdm.CircularImageView
-                            android:id="@+id/cirChoose3"
-                            android:layout_width="86dp"
-                            android:layout_height="86dp"
-                            android:src="@drawable/contact_unfoto"
-                            android:visibility="gone"/>
 
                     </RelativeLayout>
 

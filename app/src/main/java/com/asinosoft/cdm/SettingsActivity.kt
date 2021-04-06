@@ -11,7 +11,6 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.DragEvent
 import android.view.View
-import android.widget.RadioButton
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import com.asinosoft.cdm.Metoths.Companion.setSize
@@ -62,12 +61,8 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
 
     private fun initAll() {
         settings = Loader.loadSettings()
-        initSeek1()
-        initSeek2()
-        initSeek3()
-        initSeek4()
-        initSeek5()
-        initSeek6()
+        initFavoritesBlock()
+        initActionsBlock()
         initSave()
         setAllCirs(settings.borderWidthCirs, settings.colorBorder)
     }
@@ -83,7 +78,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     private fun saveAll() {
         Loader.saveSettings(
             settings.copy(
-                countCirs = v.seekBarCountButtons.progress,
                 sizeCirs = v.seekBarSizeButtons.progress,
                 rightButton = v.cirRight.action,
                 leftButton = v.cirLeft.action,
@@ -91,8 +85,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
                 bottomButton = v.cirBottom.action,
                 chooserButton1 = v.cirChoose1.action,
                 chooserButton2 = v.cirChoose2.action,
-                cirMenu = v.menu.isChecked,
-                historyButtom = v.hisButtom.isChecked,
                 columnsCirs = v.seekBarColumnsButtons.progress,
                 borderWidthCirs = v.seekBarBorderButtons.progress
             )
@@ -100,7 +92,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     }
 
     private fun setData() {
-        v.seekBarCountButtons.setProgress(settings.countCirs.toFloat())
         v.seekBarSizeButtons.setProgress(settings.sizeCirs.toFloat())
         v.cirRight.action = settings.rightButton
         v.cirLeft.action = settings.leftButton
@@ -108,10 +99,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         v.cirBottom.action = settings.bottomButton
         v.cirChoose1.action = settings.chooserButton1
         v.cirChoose2.action = settings.chooserButton2
-        v.radioHis.check(if (settings.historyButtom) 1 else 0)
-        (v.radioHis.getChildAt(v.radioHis.checkedRadioButtonId) as RadioButton).isChecked = true
-        v.radioCir.check(if (settings.cirMenu) 1 else 0)
-        (v.radioCir.getChildAt(v.radioCir.checkedRadioButtonId) as RadioButton).isChecked = true
         v.cirRight.let(this::setCirData)
         v.cirLeft.let(this::setCirData)
         v.cirTop.let(this::setCirData)
@@ -119,7 +106,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         v.cirChoose1.let(this::setCirData)
         v.cirChoose2.let(this::setCirData)
         v.seekBarColumnsButtons.setProgress(settings.columnsCirs.toFloat().takeIf { it > 0 } ?: 0f)
-        v.checkboxOffsetCirs.isChecked = settings.columnsCirs == -1
         v.seekBarBorderButtons.setProgress(settings.borderWidthCirs.toFloat())
     }
 
@@ -138,11 +124,100 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         }
     }
 
-    private fun initSeek4() {
-        if (v.expandable4.isExpanded) v.cross4.cross() else v.cross4.plus()
-        v.cardViewText4.setOnClickListener {
-            v.expandable4.toggle(true)
-            v.cross4.toggle(500L)
+    private fun initFavoritesBlock() {
+        if (v.favoritesExpandable.isExpanded) v.favoritesCross.cross() else v.favoritesCross.plus()
+        v.favoritesHeader.setOnClickListener {
+            v.favoritesExpandable.toggle(true)
+            v.favoritesCross.toggle(500L)
+        }
+
+        v.seekBarSizeButtons.onProgressChangedListener = object : OnProgressChangedListener {
+            override fun onProgressChanged(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float,
+                fromUser: Boolean
+            ) {
+                v.circleImageView.setSize(progress)
+            }
+
+            override fun getProgressOnActionUp(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float
+            ) {
+            }
+
+            override fun getProgressOnFinally(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float,
+                fromUser: Boolean
+            ) {
+            }
+        }
+
+        updateSeekSize()
+
+        seekBarBorderButtons.onProgressChangedListener = object : OnProgressChangedListener {
+            override fun onProgressChanged(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float,
+                fromUser: Boolean
+            ) {
+                circleImageView.borderWidth = progress
+                setAllCirs(width = progress)
+            }
+
+            override fun getProgressOnActionUp(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float
+            ) {
+            }
+
+            override fun getProgressOnFinally(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float,
+                fromUser: Boolean
+            ) {
+            }
+        }
+
+        v.seekBarColumnsButtons.onProgressChangedListener = object : OnProgressChangedListener {
+            override fun onProgressChanged(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float,
+                fromUser: Boolean
+            ) {
+                updateSeekSize()
+            }
+
+            override fun getProgressOnActionUp(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float
+            ) {
+            }
+
+            override fun getProgressOnFinally(
+                bubbleSeekBar: BubbleSeekBar?,
+                progress: Int,
+                progressFloat: Float,
+                fromUser: Boolean
+            ) {
+            }
+        }
+    }
+
+    private fun initActionsBlock() {
+        if (v.actionsExpandable.isExpanded) v.actionsCross.cross() else v.actionsCross.plus()
+        v.actionsHeader.setOnClickListener {
+            v.actionsExpandable.toggle(true)
+            v.actionsCross.toggle(500L)
         }
         v.cirBottom.let(this@SettingsActivity::setDragListener)
         v.cirTop.let(this@SettingsActivity::setDragListener)
@@ -222,92 +297,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         this.action = c.action.also { c.action = this.action }
     }
 
-    private fun initSeek3() {
-        if (v.expandable3.isExpanded) v.cross3.cross() else v.cross3.plus()
-        v.cardViewText3.setOnClickListener {
-            v.expandable3.toggle(true)
-            v.cross3.toggle(500L)
-        }
-    }
-
-    private fun initSeek5() {
-        if (v.expandable1.isExpanded) v.cross5.cross() else v.cross5.plus()
-        v.cardViewText5.setOnClickListener {
-            v.expandable5.toggle(true)
-            v.cross5.toggle(500L)
-        }
-    }
-
-    private fun initSeek6() {
-        if (v.expandable6.isExpanded) v.cross6.cross() else v.cross6.plus()
-        v.cardViewText6.setOnClickListener {
-            v.expandable6.toggle(true)
-            v.cross6.toggle(500L)
-        }
-    }
-
-    private fun initSeek1() {
-        if (v.expandable1.isExpanded) v.cross1.cross() else v.cross1.plus()
-        v.cardViewText1.setOnClickListener {
-            v.expandable1.toggle(true)
-            v.cross1.toggle(500L)
-        }
-        updateSeekSize()
-
-        seekBarBorderButtons.onProgressChangedListener = object : OnProgressChangedListener {
-            override fun onProgressChanged(
-                bubbleSeekBar: BubbleSeekBar?,
-                progress: Int,
-                progressFloat: Float,
-                fromUser: Boolean
-            ) {
-                circleImageView.borderWidth = progress
-                setAllCirs(width = progress)
-            }
-
-            override fun getProgressOnActionUp(
-                bubbleSeekBar: BubbleSeekBar?,
-                progress: Int,
-                progressFloat: Float
-            ) {
-            }
-
-            override fun getProgressOnFinally(
-                bubbleSeekBar: BubbleSeekBar?,
-                progress: Int,
-                progressFloat: Float,
-                fromUser: Boolean
-            ) {
-            }
-        }
-
-        v.seekBarColumnsButtons.onProgressChangedListener = object : OnProgressChangedListener {
-            override fun onProgressChanged(
-                bubbleSeekBar: BubbleSeekBar?,
-                progress: Int,
-                progressFloat: Float,
-                fromUser: Boolean
-            ) {
-                updateSeekSize()
-            }
-
-            override fun getProgressOnActionUp(
-                bubbleSeekBar: BubbleSeekBar?,
-                progress: Int,
-                progressFloat: Float
-            ) {
-            }
-
-            override fun getProgressOnFinally(
-                bubbleSeekBar: BubbleSeekBar?,
-                progress: Int,
-                progressFloat: Float,
-                fromUser: Boolean
-            ) {
-            }
-        }
-    }
-
     private fun updateSeekSize() {
         if (widthScreen == null) return
         val maxSize = widthScreen!! * when (v.seekBarColumnsButtons.progress) {
@@ -335,40 +324,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
 
         v.colorPicker.setOnClickListener {
             ColorPickerDialog.newBuilder().setColor(Color.RED).show(this)
-        }
-    }
-
-    private fun initSeek2() {
-        if (v.expandable2.isExpanded) v.cross2.cross() else v.cross2.plus()
-        v.cardViewText2.setOnClickListener {
-            v.expandable2.toggle(true)
-            v.cross2.toggle(500L)
-        }
-
-        v.seekBarSizeButtons.onProgressChangedListener = object : OnProgressChangedListener {
-            override fun onProgressChanged(
-                bubbleSeekBar: BubbleSeekBar?,
-                progress: Int,
-                progressFloat: Float,
-                fromUser: Boolean
-            ) {
-                v.circleImageView.setSize(progress)
-            }
-
-            override fun getProgressOnActionUp(
-                bubbleSeekBar: BubbleSeekBar?,
-                progress: Int,
-                progressFloat: Float
-            ) {
-            }
-
-            override fun getProgressOnFinally(
-                bubbleSeekBar: BubbleSeekBar?,
-                progress: Int,
-                progressFloat: Float,
-                fromUser: Boolean
-            ) {
-            }
         }
     }
 
@@ -413,7 +368,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
             cirBottom.borderWidth = it.toFloat()
             cirChoose1.borderWidth = it.toFloat()
             cirChoose2.borderWidth = it.toFloat()
-            cirChoose3.borderWidth = it.toFloat()
             cirTop.borderWidth = it.toFloat()
             cirRight.borderWidth = it.toFloat()
             cirLeft.borderWidth = it.toFloat()
@@ -424,7 +378,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
             cirBottom.borderColor = it
             cirChoose1.borderColor = it
             cirChoose2.borderColor = it
-            cirChoose3.borderColor = it
             cirTop.borderColor = it
             cirRight.borderColor = it
             cirLeft.borderColor = it
