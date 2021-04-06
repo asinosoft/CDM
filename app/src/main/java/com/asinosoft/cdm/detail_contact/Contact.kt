@@ -83,8 +83,7 @@ class Contact(
     }
 
     fun getContactListForDetail(): ArrayList<ContactDetailListElement> {
-
-        var result = ArrayList<ContactDetailListElement>()
+        val result = ArrayList<ContactDetailListElement>()
 
         for (i in mPhoneNumbers.indices) {
             val numberStr: String = mPhoneNumbers[i]
@@ -95,21 +94,21 @@ class Contact(
         if (mWhatsAppNumbers.size > 0) {
             for (i in mWhatsAppNumbers.indices) {
                 val numberStr = mWhatsAppNumbers[i]
-                val element = ContactDetailListElement(1, numberStr, TYPE_WHATSAPP, mWhatsAppCallId[i], mWhatsAppVideoId[i], mPhoneNumbers[i])
+                val element = ContactDetailListElement(1, numberStr, TYPE_WHATSAPP, mWhatsAppCallId[i], mWhatsAppVideoId[i], mWhatsAppNumbers[i])
                 result.add(element)
             }
         }
         if (mViberNumbers.size > 0) {
             for (i in mViberNumbers.indices) {
                 val numberStr = mViberNumbers[i]
-                val element = ContactDetailListElement(2, numberStr, TYPE_VIBER, mViberId[i], null, mPhoneNumbers[i])
+                val element = ContactDetailListElement(2, numberStr, TYPE_VIBER, mViberId[i], null, mViberNumbers[i])
                 result.add(element)
             }
         }
         if (mTelegramId.size > 0) {
             for (i in mTelegramId.indices) {
                 val numberStr = mTelegramId[i]
-                val element = ContactDetailListElement(3, numberStr, TYPE_TELEGRAM, null, null, mPhoneNumbers[i])
+                val element = ContactDetailListElement(3, numberStr, TYPE_TELEGRAM, null, null, mTelegram[i])
                 result.add(element)
             }
         }
