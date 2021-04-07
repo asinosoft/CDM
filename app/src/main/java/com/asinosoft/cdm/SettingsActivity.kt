@@ -47,6 +47,11 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         StatusBarUtil.setTranslucentForImageView(this, scrollView)
     }
 
+    override fun onPause() {
+        saveAll()
+        super.onPause()
+    }
+
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         widthScreen = scrollView.width
@@ -63,16 +68,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         settings = Loader.loadSettings()
         initFavoritesBlock()
         initActionsBlock()
-        initSave()
         setAllCirs(settings.borderWidthCirs, settings.colorBorder)
-    }
-
-    private fun initSave() {
-        v.save.setOnClickListener {
-            saveAll()
-            setResult(Activity.RESULT_OK)
-            finish()
-        }
     }
 
     private fun saveAll() {

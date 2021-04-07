@@ -32,26 +32,8 @@ class ManagerViewModel : ViewModel() {
     private lateinit var v: ActivityManagerBinding
     private lateinit var context: Context
     private lateinit var pickContact: (Int) -> Unit
-
-    private val adapterCallLogs: AdapterCallLogs by lazy {
-        AdapterCallLogs(context)
-    }
-    private val favoritesAdapter: CirAdapter by lazy {
-        CirAdapter(
-            FavoriteContactRepositoryImpl(
-                App.contactRepository,
-                context.getSharedPreferences(Keys.ManagerPreference, Context.MODE_PRIVATE)
-            ),
-            v.scrollView,
-            v.deleteCir,
-            v.editCir,
-            pickContact,
-            { indexOfFrontChild = it },
-            context,
-            settings,
-            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        )
-    }
+    private lateinit var adapterCallLogs: AdapterCallLogs
+    private lateinit var favoritesAdapter: CirAdapter
 
     // Номер избранного контакта, на котором находится палец пользователя - чтобы отрисовать его в последнюю очередь (поверх остальных)
     private var indexOfFrontChild: Int = 0
@@ -73,6 +55,21 @@ class ManagerViewModel : ViewModel() {
         this.context = context
         this.pickContact = pickContact
         this.settings = Loader.loadSettings()
+        adapterCallLogs = AdapterCallLogs(context)
+        favoritesAdapter = CirAdapter(
+            FavoriteContactRepositoryImpl(
+                App.contactRepository,
+                context.getSharedPreferences(Keys.ManagerPreference, Context.MODE_PRIVATE)
+            ),
+            v.scrollView,
+            v.deleteCir,
+            v.editCir,
+            pickContact,
+            { indexOfFrontChild = it },
+            context,
+            settings,
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        )
         initViews()
     }
 

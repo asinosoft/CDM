@@ -1,7 +1,6 @@
 package com.asinosoft.cdm
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -19,7 +18,6 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths.Companion.makeTouch
-import com.asinosoft.cdm.Metoths.Companion.toggle
 import com.asinosoft.cdm.adapters.NumbeAdapter
 import com.asinosoft.cdm.api.FavoriteContact
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
@@ -68,10 +66,8 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
      */
     private val openSettings =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (Activity.RESULT_OK == result.resultCode) {
-                initActivity()
-                viewModel.updateLists()
-            }
+            initActivity()
+            viewModel.updateLists()
         }
 
     /**
@@ -134,6 +130,9 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     }
 
     override fun onOpenSettings() {
+        if (v.layoutKeyboard.isVisible) {
+            hideContacts()
+        }
         openSettings.launch(Intent(this, SettingsActivity::class.java))
     }
 
@@ -175,7 +174,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         buttonRVDownUpdate.onClick { viewModel.showHiddenCallHistoryItems() }
 
         fabKeyboard.setOnClickListener {
-            toggleContacts(it)
+            showContacts()
         }
         keyboard = supportFragmentManager.findFragmentById(R.id.keyboard) as Keyboard
 
@@ -194,21 +193,23 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         }
     }
 
-    private fun toggleContacts(keyButton: View) {
-        v.layoutKeyboard.toggle()
-        keyButton.toggle(animation = false)
-        recyclerViewContact.visibility = if (recyclerViewContact.isVisible) {
-            keyboard.input_text.text = ""
-            View.GONE
-        } else {
-            recyclerViewContact.adapter = AdapterContacts(viewModel.getContacts(), {}, false)
-            View.VISIBLE
-        }
+    private fun showContacts() {
+        recyclerViewContact.adapter = AdapterContacts(viewModel.getContacts(), {}, false)
+        recyclerViewContact.visibility = View.VISIBLE
+        keyboard.input_text.text = ""
+        v.layoutKeyboard.visibility = View.VISIBLE
+        v.fabKeyboard.visibility = View.GONE
+    }
+
+    private fun hideContacts() {
+        v.layoutKeyboard.visibility = View.GONE
+        v.fabKeyboard.visibility = View.VISIBLE
+        recyclerViewContact.visibility = View.GONE
     }
 
     override fun onBackPressed() {
         if (v.layoutKeyboard.isVisible) {
-            toggleContacts(fabKeyboard)
+            hideContacts()
         } else {
             super.onBackPressed()
         }
