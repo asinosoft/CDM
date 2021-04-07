@@ -17,7 +17,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         INSTANCE = this
-        contactRepository = ContactRepositoryImpl(this)
-        callHistoryRepository = CallHistoryRepositoryImpl(this)
+        contactRepository = ContactRepositoryImpl(this.contentResolver)
+        callHistoryRepository = CallHistoryRepositoryImpl(this.contentResolver)
     }
 }

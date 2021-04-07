@@ -1,6 +1,6 @@
 package com.asinosoft.cdm.api
 
-import android.content.Context
+import android.content.ContentResolver
 import android.database.Cursor
 import android.provider.ContactsContract
 import androidx.core.database.getStringOrNull
@@ -11,7 +11,7 @@ import timber.log.Timber
 /**
  * Доступ к контактам
  */
-class ContactRepositoryImpl(context: Context) : ContactRepository {
+class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepository {
 
     override fun getContacts(): Collection<Contact> {
         return contacts.values
@@ -22,7 +22,7 @@ class ContactRepositoryImpl(context: Context) : ContactRepository {
     }
 
     override fun getContactByPhone(phone: String): Contact? {
-        return contactPhones[phone]
+        return contactPhones[StHelper.convertNumber(phone)]
     }
 
     // Список колонок, получаемых из базы контактов
@@ -33,12 +33,13 @@ class ContactRepositoryImpl(context: Context) : ContactRepository {
         ContactsContract.Data.DISPLAY_NAME,
         ContactsContract.Data.MIMETYPE,
         ContactsContract.Data.DATA1,
-        ContactsContract.Data.DATA2
+        ContactsContract.Data.DATA2,
+        ContactsContract.Data.DATA3
     )
 
     // Полный список контактов
     private val contacts: Map<Long, Contact> by lazy {
-        context.contentResolver.query(
+        contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             null, null, null
         )!!.let {
@@ -66,6 +67,7 @@ class ContactRepositoryImpl(context: Context) : ContactRepository {
         private val mimeType = cursor.getColumnIndex(ContactsContract.Data.MIMETYPE)
         private val data1 = cursor.getColumnIndex(ContactsContract.Data.DATA1)
         private val data2 = cursor.getColumnIndex(ContactsContract.Data.DATA2)
+        private val data3 = cursor.getColumnIndex(ContactsContract.Data.DATA3)
 
         fun getAll(): HashMap<Long, Contact> {
             val result = HashMap<Long, Contact>()
@@ -81,7 +83,7 @@ class ContactRepositoryImpl(context: Context) : ContactRepository {
                         )
                     }
                 ).let { contact ->
-                    contact.photoUri = cursor.getString(this@ContactCursorAdapter.photoUri)
+                    contact.photoUri = cursor.getStringOrNull(this@ContactCursorAdapter.photoUri)
                     when (cursor.getString(mimeType)) {
                         Contact.MIME_TYPE_PHONE -> parsePhone(contact)
                         Contact.MIME_TYPE_E_MAIL -> parseEmail(contact)
@@ -98,11 +100,12 @@ class ContactRepositoryImpl(context: Context) : ContactRepository {
         }
 
         private fun parsePhone(contact: Contact) {
-            val phoneNumber = cursor.getString(data1)
-            val phoneType = cursor.getInt(data2)
-            if (!contact.mPhoneNumbers.contains(phoneNumber)) {
-                contact.mPhoneNumbers.add(phoneNumber)
-                contact.mPhoneTypes.add(phoneType)
+            StHelper.convertNumber(cursor.getString(data1))?.let { phoneNumber ->
+                if (!contact.mPhoneNumbers.contains(phoneNumber)) {
+                    val phoneType = cursor.getInt(data2)
+                    contact.mPhoneNumbers.add(phoneNumber)
+                    contact.mPhoneTypes.add(phoneType)
+                }
             }
         }
 
@@ -116,7 +119,7 @@ class ContactRepositoryImpl(context: Context) : ContactRepository {
         }
 
         private fun parseWhatsAppCall(contact: Contact) {
-            parseNumber(cursor.getString(data1))?.let {
+            StHelper.convertNumber(cursor.getString(data1))?.let {
                 if (!contact.mWhatsAppNumbers.contains(it)) {
                     contact.mWhatsAppNumbers.add(it)
                     contact.mWhatsAppCallId.add(cursor.getString(_id))
@@ -125,7 +128,7 @@ class ContactRepositoryImpl(context: Context) : ContactRepository {
         }
 
         private fun parseWhatsAppVideo(contact: Contact) {
-            parseNumber(cursor.getString(data1))?.let {
+            StHelper.convertNumber(cursor.getString(data1))?.let {
                 if (!contact.mWhatsAppNumbers2.contains(it)) {
                     contact.mWhatsAppNumbers2.add(it)
                     contact.mWhatsAppVideoId.add(cursor.getString(_id))
@@ -134,7 +137,7 @@ class ContactRepositoryImpl(context: Context) : ContactRepository {
         }
 
         private fun parseViber(contact: Contact) {
-            parseNumber(cursor.getString(data1))?.let {
+            StHelper.convertNumber(cursor.getString(data1))?.let {
                 if (!contact.mWhatsAppNumbers2.contains(it)) {
                     contact.mWhatsAppNumbers2.add(it)
                     contact.mWhatsAppVideoId.add(cursor.getString(_id))
@@ -143,7 +146,7 @@ class ContactRepositoryImpl(context: Context) : ContactRepository {
         }
 
         private fun parseTelegram(contact: Contact) {
-            parseNumber(cursor.getString(data1))?.let {
+            StHelper.convertNumber(cursor.getString(data3))?.let {
                 if (!contact.mTelegram.contains(it)) {
                     contact.mTelegram.add(it)
                     contact.mTelegramId.add(cursor.getString(_id))
@@ -167,11 +170,5 @@ class ContactRepositoryImpl(context: Context) : ContactRepository {
                 Timber.e(ex)
             }
         }
-
-        /**
-         * Парсит номер телефона из строки типа "79039313404@s.whatsapp.net"
-         */
-        private fun parseNumber(string: String) =
-            Regex("^(\\d+)").find(string)?.value
     }
 }

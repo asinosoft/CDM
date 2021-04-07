@@ -1,29 +1,24 @@
 package com.asinosoft.cdm.detail_contact
 
-import android.util.Log
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
 import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
 
 object StHelper {
+    private val clearNonNumbers = Regex("\\D+") // чтобы не компилировать регексп на каждый вызов функции
 
-    fun convertNumber(number: String): String {
-        var numberStr: String
-        try {
+    fun convertNumber(number: String): String? {
+        return try {
+            val clearNumber = clearNonNumbers.replace(number, "")
             val phoneUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance()
-            val numberForm: Phonenumber.PhoneNumber? = phoneUtil.parse(number, "RU")
-            numberStr = phoneUtil.format(numberForm, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL)
+            val numberForm: Phonenumber.PhoneNumber? = phoneUtil.parse(clearNumber, "RU")
+            phoneUtil.format(numberForm, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL)
         } catch (e: Exception) {
-            numberStr = "-1"
-            Log.e(
-                "myLogHelper",
-                e.message ?: "null error message"
-            )
+            null
         }
-        return numberStr
     }
 
     fun parseDateToddMMyyyy(time: String?): String? {

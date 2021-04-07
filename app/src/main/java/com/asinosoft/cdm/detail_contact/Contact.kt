@@ -9,7 +9,7 @@ import com.asinosoft.cdm.App
 import com.asinosoft.cdm.R
 import java.io.IOException
 
-class Contact(
+open class Contact(
     val id: Long,
     val name: String
 ) {
