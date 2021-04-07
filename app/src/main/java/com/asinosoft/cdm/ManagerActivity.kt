@@ -194,7 +194,12 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     }
 
     private fun showContacts() {
-        recyclerViewContact.adapter = AdapterContacts(viewModel.getContacts(), {}, false)
+        recyclerViewContact.adapter =
+            AdapterContacts(
+                viewModel.getContacts().filter { it.mPhoneNumbers.isNotEmpty() },
+                {},
+                false
+            )
         recyclerViewContact.visibility = View.VISIBLE
         keyboard.input_text.text = ""
         v.layoutKeyboard.visibility = View.VISIBLE
