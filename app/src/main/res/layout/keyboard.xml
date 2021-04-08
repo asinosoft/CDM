@@ -461,7 +461,7 @@
                 android:layout_margin="@dimen/passcode_btn_margin"
                 android:src="@drawable/ic_phone_24px"
                 android:hapticFeedbackEnabled="true"
-                android:id="@+id/delete_btn"
+                android:id="@+id/btnCall"
                 android:background="@android:color/transparent"
                 android:visibility="visible"
                  />

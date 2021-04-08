@@ -136,6 +136,13 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         openSettings.launch(Intent(this, SettingsActivity::class.java))
     }
 
+    override fun onCall(phoneNumber: CharSequence) {
+        if (v.layoutKeyboard.isVisible) {
+            hideContacts()
+        }
+        Metoths.callPhone(phoneNumber.toString(), this)
+    }
+
     private fun requestAllPermissions() {
         ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION1)
     }

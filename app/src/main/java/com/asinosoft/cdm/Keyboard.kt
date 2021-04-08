@@ -17,6 +17,8 @@ import org.jetbrains.anko.support.v4.runOnUiThread
  */
 interface KeyBoardListener {
     fun onOpenSettings()
+
+    fun onCall(phoneNumber: CharSequence)
 }
 
 class Keyboard : Fragment() {
@@ -145,6 +147,13 @@ class Keyboard : Fragment() {
         rootView.image_clear.setOnClickListener {
             input_text.text = ""
             activity?.onBackPressed()
+        }
+        rootView.btnCall.setOnClickListener {
+            val phoneNumber = input_text.text
+            if (phoneNumber.isNotEmpty()) {
+                input_text.text = ""
+                (activity as KeyBoardListener).onCall(phoneNumber)
+            }
         }
 
         rootView.settingsButton.setOnClickListener {
