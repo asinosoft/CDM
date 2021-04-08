@@ -10,8 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asinosoft.cdm.Metoths.Companion.toggle
+import com.asinosoft.cdm.api.Contact
 import com.asinosoft.cdm.databinding.ActivitySearchBinding
-import com.asinosoft.cdm.detail_contact.Contact
 import com.jaeger.library.StatusBarUtil
 import kotlinx.android.synthetic.main.activity_search.*
 import kotlinx.android.synthetic.main.keyboard.*
@@ -40,7 +40,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setListens() {
-        list = App.contactRepository.getContacts().filter { !it.mPhoneNumbers.isNullOrEmpty() }
+        list = App.contactRepository.getContacts().filter { !it.phones.isNullOrEmpty() }
 
         v.rvFilteredContacts.layoutManager = LinearLayoutManager(this).apply {
             orientation = LinearLayoutManager.VERTICAL

@@ -12,10 +12,10 @@ import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.adapters.AdapterCallLogs
+import com.asinosoft.cdm.api.Contact
 import com.asinosoft.cdm.api.FavoriteContact
 import com.asinosoft.cdm.api.FavoriteContactRepositoryImpl
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
-import com.asinosoft.cdm.detail_contact.Contact
 import jp.wasabeef.recyclerview.animators.LandingAnimator
 import org.jetbrains.anko.vibrator
 import timber.log.Timber

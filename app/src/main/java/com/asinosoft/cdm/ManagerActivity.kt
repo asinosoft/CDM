@@ -19,9 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths.Companion.makeTouch
 import com.asinosoft.cdm.adapters.NumbeAdapter
+import com.asinosoft.cdm.api.Contact
 import com.asinosoft.cdm.api.FavoriteContact
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
-import com.asinosoft.cdm.detail_contact.Contact
 import com.asinosoft.cdm.dialer.Utilities
 import com.asinosoft.cdm.globals.AlertDialogUtils
 import com.jaeger.library.StatusBarUtil
@@ -77,12 +77,12 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         registerForActivityResult(ActivityResultContracts.PickContact()) { uri ->
             if (null != uri) {
                 viewModel.getContactIdFromIntent(uri)?.let { contact ->
-                    if (clearDuplicateNumbers(contact.mPhoneNumbers).size > 1) {
+                    if (contact.phones.size > 1) {
                         showNumberDialog(contact, pickedPosition)
                     } else {
                         viewModel.setFavoriteContact(
                             pickedPosition,
-                            FavoriteContact(contact, contact.mPhoneNumbers.first())
+                            FavoriteContact(contact, contact.phones.first().value)
                         )
                     }
                 }
@@ -203,7 +203,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
     private fun showContacts() {
         recyclerViewContact.adapter =
             AdapterContacts(
-                viewModel.getContacts().filter { it.mPhoneNumbers.isNotEmpty() },
+                viewModel.getContacts().filter { it.phones.isNotEmpty() },
                 {},
                 false
             )
@@ -269,19 +269,8 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
             val recyclerView = dialog.findViewById<RecyclerView>(R.id.recycler_popup)
             recyclerView.layoutManager = LinearLayoutManager(this)
             recyclerView.adapter = adapter
-            adapter.setData(contact.mPhoneNumbers)
+            adapter.setData(contact.phones.map { it.value })
             dialog.show()
         }
-    }
-
-    private fun clearDuplicateNumbers(numbers: MutableList<String>): List<String> {
-        val res: MutableList<String> = mutableListOf()
-        numbers.forEach { it ->
-            val cleanedNumber = it.replace(" ", "")
-                .replace("-", "").trim()
-            res.firstOrNull { it == cleanedNumber }
-                ?: res.add(it)
-        }
-        return res
     }
 }

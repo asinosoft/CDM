@@ -4,7 +4,7 @@ import android.content.ContentResolver
 import android.database.Cursor
 import android.provider.ContactsContract
 import androidx.core.database.getStringOrNull
-import com.asinosoft.cdm.detail_contact.Contact
+import com.asinosoft.cdm.data.*
 import com.asinosoft.cdm.detail_contact.StHelper
 import timber.log.Timber
 
@@ -22,7 +22,7 @@ class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepositor
     }
 
     override fun getContactByPhone(phone: String): Contact? {
-        return contactPhones[StHelper.convertNumber(phone)]
+        return contactPhones[phone]
     }
 
     // Список колонок, получаемых из базы контактов
@@ -34,7 +34,8 @@ class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepositor
         ContactsContract.Data.MIMETYPE,
         ContactsContract.Data.DATA1,
         ContactsContract.Data.DATA2,
-        ContactsContract.Data.DATA3
+        ContactsContract.Data.DATA3,
+        ContactsContract.Data.DATA4,
     )
 
     // Полный список контактов
@@ -52,8 +53,8 @@ class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepositor
     private val contactPhones: Map<String, Contact> by lazy {
         val index = HashMap<String, Contact>()
         contacts.values.forEach { contact ->
-            contact.mPhoneNumbers.forEach { phone ->
-                index[phone] = contact
+            contact.phones.forEach {
+                index[it.value] = contact
             }
         }
         index
@@ -68,6 +69,7 @@ class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepositor
         private val data1 = cursor.getColumnIndex(ContactsContract.Data.DATA1)
         private val data2 = cursor.getColumnIndex(ContactsContract.Data.DATA2)
         private val data3 = cursor.getColumnIndex(ContactsContract.Data.DATA3)
+        private val data4 = cursor.getColumnIndex(ContactsContract.Data.DATA4)
 
         fun getAll(): HashMap<Long, Contact> {
             val result = HashMap<Long, Contact>()
@@ -84,15 +86,14 @@ class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepositor
                     }
                 ).let { contact ->
                     contact.photoUri = cursor.getStringOrNull(this@ContactCursorAdapter.photoUri)
-                    when (cursor.getString(mimeType)) {
-                        Contact.MIME_TYPE_PHONE -> parsePhone(contact)
-                        Contact.MIME_TYPE_E_MAIL -> parseEmail(contact)
-                        Contact.MIME_TYPE_WHATSAPP_CALL -> parseWhatsAppCall(contact)
-                        Contact.MIME_TYPE_WHATSAPP_VIDEO -> parseWhatsAppVideo(contact)
-                        Contact.MIME_TYPE_VIBER_MSG -> parseViber(contact)
-                        Contact.MIME_TYPE_TELEGRAM -> parseTelegram(contact)
-                        Contact.MIME_TYPE_SKYPE -> parseSkype(contact)
-                        Contact.MIME_TYPE_BIRTHDAY -> parseBirthday(contact)
+                    when (ContactItem.Type.mimeToType(cursor.getString(mimeType))) {
+                        ContactItem.Type.BIRTHDAY -> parseBirthday(contact)
+                        ContactItem.Type.PHONE -> parsePhone(contact)
+                        ContactItem.Type.EMAIL -> parseEmail(contact)
+                        ContactItem.Type.SKYPE -> parseSkype(contact)
+                        ContactItem.Type.TELEGRAM -> parseTelegram(contact)
+                        ContactItem.Type.VIBER -> parseViber(contact)
+                        ContactItem.Type.WHATSAPP -> parseWhatsapp(contact)
                     }
                 }
             }
@@ -100,74 +101,90 @@ class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepositor
         }
 
         private fun parsePhone(contact: Contact) {
-            StHelper.convertNumber(cursor.getString(data1))?.let { phoneNumber ->
-                if (!contact.mPhoneNumbers.contains(phoneNumber)) {
-                    val phoneType = cursor.getInt(data2)
-                    contact.mPhoneNumbers.add(phoneNumber)
-                    contact.mPhoneTypes.add(phoneType)
+            val rawNumber = cursor.getStringOrNull(data4) ?: cursor.getString(data1)
+            if (null == contact.phones.find { it.value == rawNumber }) {
+                PhoneItem(cursor.getInt(data2), rawNumber).let {
+                    contact.phones.add(it)
+                    contact.items.add(it)
                 }
             }
         }
 
         private fun parseEmail(contact: Contact) {
             val emailAddress = cursor.getString(data1)
-            val emailType = cursor.getInt(data2)
-            if (!contact.mEmailAdress.contains(emailAddress)) {
-                contact.mEmailAdress.add(emailAddress)
-                contact.mEmailType.add(emailType)
-            }
-        }
-
-        private fun parseWhatsAppCall(contact: Contact) {
-            StHelper.convertNumber(cursor.getString(data1))?.let {
-                if (!contact.mWhatsAppNumbers.contains(it)) {
-                    contact.mWhatsAppNumbers.add(it)
-                    contact.mWhatsAppCallId.add(cursor.getString(_id))
+            if (null == contact.emails.find { it.value == emailAddress }) {
+                EmailItem(cursor.getInt(data2), emailAddress).let {
+                    contact.emails.add(it)
+                    contact.items.add(it)
                 }
             }
         }
 
-        private fun parseWhatsAppVideo(contact: Contact) {
-            StHelper.convertNumber(cursor.getString(data1))?.let {
-                if (!contact.mWhatsAppNumbers2.contains(it)) {
-                    contact.mWhatsAppNumbers2.add(it)
-                    contact.mWhatsAppVideoId.add(cursor.getString(_id))
+        private fun parseWhatsapp(contact: Contact) {
+            StHelper.convertNumber(cursor.getString(data1))?.let { whatsappNumber ->
+                var whatsapp = contact.whatsapps.find { it.value == whatsappNumber }
+                if (null == whatsapp) {
+                    whatsapp = WhatsAppItem(whatsappNumber).also {
+                        contact.whatsapps.add(it)
+                        contact.items.add(it)
+                    }
+                }
+
+                when (cursor.getString(mimeType)) {
+                    "vnd.android.cursor.item/vnd.com.whatsapp.profile" -> {
+                        whatsapp.chatId = cursor.getString(_id)
+                    }
+                    "vnd.android.cursor.item/vnd.com.whatsapp.voip.call" -> {
+                        whatsapp.audioId = cursor.getString(_id)
+                    }
+                    "vnd.android.cursor.item/vnd.com.whatsapp.video.call" -> {
+                        whatsapp.videoId = cursor.getString(_id)
+                    }
                 }
             }
         }
 
         private fun parseViber(contact: Contact) {
-            StHelper.convertNumber(cursor.getString(data1))?.let {
-                if (!contact.mWhatsAppNumbers2.contains(it)) {
-                    contact.mWhatsAppNumbers2.add(it)
-                    contact.mWhatsAppVideoId.add(cursor.getString(_id))
+            StHelper.convertNumber(cursor.getString(data1))?.let { viberNumber ->
+                if (null == contact.vibers.find { it.value == viberNumber }) {
+                    ViberItem(viberNumber, cursor.getString(_id)).let {
+                        contact.vibers.add(it)
+                        contact.items.add(it)
+                    }
                 }
             }
         }
 
         private fun parseTelegram(contact: Contact) {
-            StHelper.convertNumber(cursor.getString(data3))?.let {
-                if (!contact.mTelegram.contains(it)) {
-                    contact.mTelegram.add(it)
-                    contact.mTelegramId.add(cursor.getString(_id))
+            StHelper.convertNumber(cursor.getString(data3))?.let { telegramNumber ->
+                if (null == contact.telegrams.find { it.value == telegramNumber }) {
+                    TelegramItem(telegramNumber, cursor.getString(_id)).let {
+                        contact.telegrams.add(it)
+                        contact.items.add(it)
+                    }
                 }
             }
         }
 
         private fun parseSkype(contact: Contact) {
-            contact.mSkypeName = cursor.getString(data1)
+            val skypeLogin = cursor.getString(data1)
+            if (null == contact.skypes.find { it.value == skypeLogin }) {
+                SkypeItem(skypeLogin).let {
+                    contact.skypes.add(it)
+                    contact.items.add(it)
+                }
+            }
         }
 
         private fun parseBirthday(contact: Contact) {
-            val value = cursor.getString(data1)
-            try {
-                val date = StHelper.parseDateToddMMyyyy(value)
-                val age = StHelper.parseToMillis(value)
-                contact.mBirthDay.add(date!!)
-                contact.mAge.add(age)
-                contact.mBirthDayType.add(cursor.getInt(data2))
-            } catch (ex: java.text.ParseException) {
-                Timber.e(ex)
+            val date = cursor.getString(data1)
+
+            StHelper.parseDateToddMMyyyy(date)?.let {
+                val age = StHelper.parseToMillis(date)
+                BirthdayItem(date, age).let {
+                    contact.birthday = it
+                    contact.items.add(it)
+                }
             }
         }
     }

@@ -30,7 +30,7 @@ import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.Actions.*
 import com.asinosoft.cdm.Metoths.Companion.Direction.*
-import com.asinosoft.cdm.detail_contact.Contact
+import com.asinosoft.cdm.api.Contact
 import net.cachapa.expandablelayout.util.FastOutSlowInInterpolator
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.wrapContent
@@ -107,14 +107,14 @@ class Metoths {
             context.startActivity(intent)
         }
 
-        fun openWhatsAppMsg(number: String, context: Context) {
-            val uri = Uri.parse("smsto:$number")
-            val sendIntent = Intent(Intent.ACTION_SENDTO, uri)
-            sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            sendIntent.setPackage("com.whatsapp")
-            context.startActivity(
-                Intent.createChooser(sendIntent, "").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        fun openWhatsAppChat(id: String, context: Context) {
+            val intent = Intent().setAction(Intent.ACTION_VIEW)
+            intent.setDataAndType(
+                Uri.parse("content://com.android.contacts/data/$id"),
+                "vnd.android.cursor.item/vnd.com.whatsapp.profile"
             )
+            intent.setPackage("com.whatsapp")
+            context.startActivity(intent)
         }
 
         fun viberMsg(id: String, context: Context) {
@@ -170,15 +170,6 @@ class Metoths {
             eventTime: Long = downTime + 100
         ) {
             this.dispatchTouchEvent(MotionEvent.obtain(downTime, eventTime, action, x, y, 0))
-        }
-
-        fun List<Contact>.getFilteredWithNum(num: String): List<Contact> {
-            val r = ArrayList<Contact>()
-            this.forEach { con ->
-                con.mPhoneNumbers.filter { !it.isNullOrEmpty() }
-                    .forEach { if (it.contains(num)) r.addUnique(con) }
-            }
-            return r
         }
 
         fun <E> java.util.ArrayList<E>.addUnique(el: E) {

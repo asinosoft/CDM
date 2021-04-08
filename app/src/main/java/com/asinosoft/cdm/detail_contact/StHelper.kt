@@ -23,7 +23,7 @@ object StHelper {
 
     fun parseDateToddMMyyyy(time: String?): String? {
         val inputPattern = "yyyy-MM-dd"
-        val outputPattern = "dd MMM yyyy г."
+        val outputPattern = "dd MMMM yyyy г."
         val inputFormat = SimpleDateFormat(inputPattern)
         val outputFormat = SimpleDateFormat(outputPattern)
         var date: Date? = null

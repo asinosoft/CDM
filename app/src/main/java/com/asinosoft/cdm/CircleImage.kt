@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.PointF
 import android.net.Uri
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -32,8 +31,7 @@ import com.asinosoft.cdm.Metoths.Companion.toVisibility
 import com.asinosoft.cdm.Metoths.Companion.translateDiff
 import com.asinosoft.cdm.Metoths.Companion.translateTo
 import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
-import com.asinosoft.cdm.detail_contact.Contact
-import com.google.android.material.snackbar.Snackbar
+import com.asinosoft.cdm.api.Contact
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.onLongClick
 import org.jetbrains.anko.sdk27.coroutines.onTouch
@@ -180,17 +178,13 @@ class CircleImage @JvmOverloads constructor(
 
     private fun onTouchUp(event: MotionEvent) {
         touchStart?.let {
-            Log.d(
-                "CircleImage",
-                "Action TouchUp -> (${this.x}; ${this.y}) --> (${event.rawX}; ${event.rawY}) "
-            )
             var diff = it.diff(event, animationRadius)
             this.setTranslate(cirStart!!, 500L)
             touchStart = null
             cirStart = null
             directActions?.action(diff.diffAction(animationRadius))?.let { action ->
                 if (actionImage?.isVisible == true) try {
-                    startAction(action)
+                    contact?.let { startAction(action, it) }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -202,13 +196,8 @@ class CircleImage @JvmOverloads constructor(
 
     private fun onTouchMove(event: MotionEvent) {
         touchStart?.let {
-            Log.d(
-                "CircleImage",
-                "Action Move -> (${this.x}; ${this.y}) --> start = (${it.x}; ${it.y}); end = (${event.rawX}; ${event.rawY}), radius = $animationRadius "
-            )
             var diff = it.diff(event, animationRadius)
             isMoving = !diff.checkMoving(size / 10f)
-            Log.d("${this.javaClass}", "onTouchMove: isMoving = $isMoving")
             this.translateDiff(cirStart!!, diff, animationDuration)
             actionImage?.apply {
                 isVisible = diff.diffVisible(animationRadius).also { vis ->
@@ -221,41 +210,22 @@ class CircleImage @JvmOverloads constructor(
         }
     }
 
-    private fun startAction(action: Actions) {
-        val errorMes = fun() {
-            Toast.makeText(context, "Not correct number", Toast.LENGTH_LONG).show()
+    private fun startAction(action: Actions, contact: Contact) {
+        val error = fun(message: String) {
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
             return
         }
-        var num: String? = null
-        contact?.mPhoneNumbers?.firstOrNull {
-            it == selectedNumber
-        }?.let {
-
-            it?.let {
-                num = it
-            } ?: errorMes()
-        } ?: errorMes()
-        num?.let {
-            when (action) {
-                WhatsApp -> Metoths.openWhatsApp(it, context)
-                Viber -> openViber(it, context)
-                Telegram -> openTelegram(it, context)
-                PhoneCall -> callPhone(it, context)
-                Email -> {
-                    if (!contact!!.mEmailAdress.isNullOrEmpty()) contact!!.mEmailAdress.first()
-                        ?.let { mailToEmail(it, context) }
-                    else Snackbar.make(rootView, "Контакт без почты!", Snackbar.LENGTH_SHORT).show()
-                }
-                Sms -> sendSMS(it, context)
-            }
+        when (action) {
+            WhatsApp -> contact.whatsapps.firstOrNull()?.let { Metoths.openWhatsApp(it.value, context) } ?: error("Нет контакта в WhatsApp")
+            Viber -> contact.vibers.firstOrNull()?.let { openViber(it.value, context) } ?: error("Нет контакта в Viber")
+            Telegram -> contact.telegrams.firstOrNull()?.let { openTelegram(it.value, context) } ?: error("Нет контакта в Telegram")
+            PhoneCall -> contact.phones.firstOrNull()?.let { callPhone(it.value, context) } ?: error("Номер телефона не указан")
+            Email -> contact.emails.firstOrNull()?.let { mailToEmail(it.value, context) } ?: error("Нет электронной почты")
+            Sms -> contact.phones.firstOrNull()?.let { sendSMS(it.value, context) } ?: error("Номер телефона не указан")
         }
     }
 
     private fun onTouchDown(event: MotionEvent) {
-        Log.d(
-            "CircleImage",
-            "Action TouchDown -> (${this.x}; ${this.y}) --> (${event.rawX}; ${event.rawY}) "
-        )
         val number = selectedNumber
         number?.let {
             this.directActions = Loader.loadContactSettings(it).toDirectActions()

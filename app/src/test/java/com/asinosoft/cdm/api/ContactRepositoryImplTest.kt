@@ -2,8 +2,8 @@ package com.asinosoft.cdm.api
 
 import android.content.ContentResolver
 import android.provider.ContactsContract
-import com.asinosoft.cdm.detail_contact.Contact
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.*
 
@@ -20,27 +20,33 @@ class ContactRepositoryImplTest {
         )
     }
     */
+    private lateinit var contactRepository: ContactRepository
+
+    @Before
+    fun setUp() {
+        contactRepository = ContactRepositoryImpl(mockValidData())
+    }
 
     @Test
     fun `all contact should be grouped by contactId`() {
-        val contacts = ContactRepositoryImpl(mockValidData()).getContacts()
+        val contacts = contactRepository.getContacts()
         Assert.assertEquals(3, contacts.size)
         contacts.forEach { contact ->
             when (contact.id) {
                 41L -> {
                     Assert.assertEquals("Иванов", contact.name)
-                    Assert.assertEquals(listOf("+7 1234567890"), contact.mPhoneNumbers)
+                    Assert.assertEquals(listOf("+71234567890"), contact.phones.map { it.value })
                 }
                 42L -> {
                     Assert.assertEquals("Петров", contact.name)
                     Assert.assertEquals(
-                        listOf("+7 0987654321", "+7 987 654-32-10"),
-                        contact.mPhoneNumbers
+                        listOf("+70987654321", "+79876543210"),
+                        contact.phones.map { it.value }
                     )
                 }
                 43L -> {
                     Assert.assertEquals("Сидоров", contact.name)
-                    Assert.assertTrue(contact.mPhoneNumbers.isEmpty())
+                    Assert.assertTrue(contact.phones.isEmpty())
                 }
             }
         }
@@ -48,15 +54,15 @@ class ContactRepositoryImplTest {
 
     @Test
     fun `telegram contacts should contain phone numbers`() {
-        val contacts = ContactRepositoryImpl(mockValidData()).getContacts()
-            .filter { contact -> !contact.mTelegram.isEmpty() }
+        val contacts = contactRepository.getContacts()
+            .filter { contact -> !contact.telegrams.isEmpty() }
 
         Assert.assertEquals(1, contacts.size)
         contacts.forEach {
             when (it.id) {
                 41L -> {
-                    Assert.assertEquals(1, it.mTelegram.size)
-                    Assert.assertEquals("+7 777 666 5555", it.mTelegram[0])
+                    Assert.assertEquals(1, it.telegrams.size)
+                    Assert.assertEquals("+7 777 666 5555", it.telegrams[0].value)
                 }
             }
         }
@@ -84,21 +90,21 @@ class ContactRepositoryImplTest {
     private val validData = listOf(
         // Контакт с одним телефоном
         listOf(11, 41L, null, "Иванов", "vnd.android.cursor.item/name", "Иванов", "Иванов"),
-        listOf(13, 41L, null, "Иванов", Contact.MIME_TYPE_PHONE, "+71234567890", 2),
+        listOf(13, 41L, null, "Иванов", "vnd.android.cursor.item/phone_v2", "+71234567890", 2),
         listOf(
             141,
             41L,
             null,
             "Иванов",
-            Contact.MIME_TYPE_TELEGRAM,
+            "vnd.android.cursor.item/vnd.org.telegram.messenger.android.profile",
             218072587,
             "Telegram Profile",
             "Message +77776665555"
         ),
         // Контакт с двумя телефонами
         listOf(16, 42L, null, "Петров", "vnd.android.cursor.item/name", "Петров", "Петров"),
-        listOf(17, 42L, null, "Петров", Contact.MIME_TYPE_PHONE, "+70987654321", 2),
-        listOf(12, 42L, null, "Петров", Contact.MIME_TYPE_PHONE, "+79876543210", 2),
+        listOf(17, 42L, null, "Петров", "vnd.android.cursor.item/phone_v2", "+70987654321", 2),
+        listOf(12, 42L, null, "Петров", "vnd.android.cursor.item/phone_v2", "+79876543210", 2),
         // Контакт без телефонов
         listOf(19, 43L, null, "Сидоров", "vnd.android.cursor.item/name", "Сидоров", "Сидоров")
     )

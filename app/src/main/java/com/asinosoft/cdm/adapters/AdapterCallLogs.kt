@@ -93,7 +93,7 @@ class AdapterCallLogs(
             with(v) {
                 imageContact.setImageDrawable(item.contact.getPhoto())
                 name.text = item.contact.name
-                number.text = "${item.phone}, ${Metoths.getFormattedTime(item.duration)}"
+                number.text = "${item.prettyPhone}, ${Metoths.getFormattedTime(item.duration)}"
                 timeContact.text = item.time
                 dateContact.text = item.date
                 val settings = Loader.loadContactSettings(item.phone)

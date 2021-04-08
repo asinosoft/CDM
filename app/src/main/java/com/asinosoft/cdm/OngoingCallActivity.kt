@@ -25,7 +25,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.view.isVisible
 import com.agik.AGIKSwipeButton.Controller.OnSwipeCompleteListener
 import com.agik.AGIKSwipeButton.View.Swipe_Button_View
-import com.asinosoft.cdm.detail_contact.Contact
+import com.asinosoft.cdm.api.Contact
 import com.asinosoft.cdm.dialer.*
 import kotlinx.android.synthetic.main.activity_ongoing_call.*
 import kotlinx.android.synthetic.main.call_notification_two.*

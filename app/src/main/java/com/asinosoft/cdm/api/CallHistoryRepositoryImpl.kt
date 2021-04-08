@@ -4,16 +4,16 @@ import android.content.ContentResolver
 import android.database.Cursor
 import android.provider.CallLog
 import com.asinosoft.cdm.App
-import com.asinosoft.cdm.detail_contact.Contact
-import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.asinosoft.cdm.detail_contact.StHelper
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 
 /**
- * Класс потокового парсера истории.
+ * Доступ к истории звонков
  */
-class CallHistoryRepositoryImpl(private val contentResolver: ContentResolver) : CallHistoryRepository {
+class CallHistoryRepositoryImpl(private val contentResolver: ContentResolver) :
+    CallHistoryRepository {
     // Список колонок, получаемых из истории звонков
     private val projection = arrayOf(
         CallLog.Calls.NUMBER,
@@ -42,16 +42,18 @@ class CallHistoryRepositoryImpl(private val contentResolver: ContentResolver) : 
 
     override fun getHistoryByContactId(contactId: Long): List<CallHistoryItem> {
         return App.contactRepository.getContactById(contactId)?.let {
-            if (it.mPhoneNumbers.isEmpty()) {
+            if (it.phones.isEmpty()) {
                 return listOf()
             }
 
-            val selection = generateSequence { "${CallLog.Calls.NUMBER} = ?" }.take(it.mPhoneNumbers.size).joinToString(" OR ")
+            // Делаем выборку истории звонков по всем номерам телефонов контакта
+            val selection = generateSequence { "${CallLog.Calls.NUMBER} = ?" }.take(it.phones.size)
+                .joinToString(" OR ")
             return contentResolver.query(
                 CallLog.Calls.CONTENT_URI,
                 projection,
                 selection,
-                convertNumbersToInternationalFormat(it.mPhoneNumbers).toTypedArray(),
+                it.phones.map { it.value }.toTypedArray(),
                 "${CallLog.Calls.DATE} DESC"
             )?.let {
                 HistoryItemCursorAdapter(it).getAll()
@@ -69,18 +71,6 @@ class CallHistoryRepositoryImpl(private val contentResolver: ContentResolver) : 
         )?.let {
             HistoryItemCursorAdapter(it).getAll()
         } ?: ArrayList()
-    }
-
-    /**
-     * Преобразование номеров телефонов в формат, используемый в истории звонков
-     */
-    private fun convertNumbersToInternationalFormat(phoneNumbers: List<String>): List<String> {
-        return phoneNumbers.map {
-            PhoneNumberUtil.getInstance().format(
-                PhoneNumberUtil.getInstance().parse(it, "RU"),
-                PhoneNumberUtil.PhoneNumberFormat.E164
-            )
-        }
     }
 
     inner class HistoryItemCursorAdapter(
@@ -120,6 +110,7 @@ class CallHistoryRepositoryImpl(private val contentResolver: ContentResolver) : 
 
             return CallHistoryItem(
                 phone = phoneNumber,
+                prettyPhone = StHelper.convertNumber(phoneNumber) ?: phoneNumber,
                 date = dateFormat.format(date),
                 time = timeFormat.format(date),
                 typeCall = cursor.getInt(colType),

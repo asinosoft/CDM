@@ -6,6 +6,8 @@ import com.asinosoft.cdm.App
 import com.asinosoft.cdm.Loader
 import com.asinosoft.cdm.Settings
 import com.asinosoft.cdm.api.CallHistoryItem
+import com.asinosoft.cdm.api.Contact
+import com.asinosoft.cdm.data.ContactItem
 
 /**
  * Данные для окна Просмотр контакта
@@ -31,8 +33,9 @@ class DetailHistoryViewModel() : ViewModel() {
         App.contactRepository.getContactById(contactId)
             ?: App.contactRepository.getContactByPhone(phoneNumber)
             ?: Contact(0, phoneNumber).apply {
-                mPhoneNumbers.add(phoneNumber)
-                mPhoneTypes.add(-1)
+                items.add(
+                    ContactItem(ContactItem.Type.PHONE, phoneNumber)
+                )
             }
 
     fun getContactPhoto() = getContact().getPhoto()

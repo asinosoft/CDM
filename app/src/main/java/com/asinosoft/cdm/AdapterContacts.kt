@@ -10,8 +10,8 @@ import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths.Companion.getPattern
 import com.asinosoft.cdm.Metoths.Companion.setColoredText
+import com.asinosoft.cdm.api.Contact
 import com.asinosoft.cdm.databinding.HistorySwipingItemBinding
-import com.asinosoft.cdm.detail_contact.Contact
 import com.zerobranch.layout.SwipeLayout
 import kotlinx.coroutines.*
 import org.jetbrains.anko.runOnUiThread
@@ -53,9 +53,8 @@ class AdapterContacts(
                 r.add(contact)
                 return@forEach
             }
-            contact.mPhoneNumbers.forEach {
-                if (it.isNullOrEmpty()) return@forEach
-                if (it.contains(nums, true)) {
+            contact.phones.forEach {
+                if (it.value.contains(nums, true)) {
                     r.add(contact)
                     return@forEach
                 }
@@ -68,10 +67,9 @@ class AdapterContacts(
                     it.name.indexOf(res.value)
                 } else {
                     var index = 0
-                    it.mPhoneNumbers.forEach {
-                        if (it.isNullOrEmpty()) return@forEach
-                        if (it.contains(nums, true)) {
-                            index = it.indexOf(nums)
+                    it.phones.forEach {
+                        if (it.value.contains(nums, true)) {
+                            index = it.value.indexOf(nums)
                             return@forEach
                         }
                     }
@@ -109,7 +107,7 @@ class AdapterContacts(
 
     private fun openDetail(item: Contact) {
         val intent = Intent(this.context, DetailHistoryActivity::class.java)
-        intent.putExtra(Keys.number, item.mPhoneNumbers.firstOrNull())
+        intent.putExtra(Keys.number, item.phones.first().value)
         intent.putExtra(Keys.id, item.id)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
@@ -118,17 +116,14 @@ class AdapterContacts(
     inner class Holder(private val v: HistorySwipingItemBinding, val itemCallBack: () -> Unit) :
         RecyclerView.ViewHolder(v.root) {
 
-        fun bind(item: Contact, itemClickListerner: View.OnClickListener) {
-            item.photoUri?.let { v.imageContact.setImageURI(it.toUri()) }
+        fun bind(contact: Contact, itemClickListerner: View.OnClickListener) {
+            contact.photoUri?.let { v.imageContact.setImageURI(it.toUri()) }
                 ?: v.imageContact.setImageResource(R.drawable.contact_unfoto)
-            v.name.text = item.name
-            val t = item.mPhoneNumbers
+            v.name.text = contact.name
             var tNum = ""
-            if (t.isNotEmpty()) {
-                t.filter { !it.isNullOrEmpty() }.forEach {
-                    if (!tNum.contains(it)) tNum =
-                        tNum.plus("$it, ")
-                }
+            contact.phones.forEach {
+                if (!tNum.contains(it.value)) tNum =
+                    tNum.plus("${it.value}, ")
             }
             v.number.text = tNum.dropLast(2)
             v.timeContact.text = ""
@@ -151,16 +146,11 @@ class AdapterContacts(
                 override fun onOpen(direction: Int, isContinuous: Boolean) {
                     when (direction) {
                         SwipeLayout.RIGHT -> {
-                            Metoths.callPhone(item.mPhoneNumbers[0], context)
+                            contact.phones.firstOrNull()?.let { Metoths.callPhone(it.value, context) }
                         }
                         SwipeLayout.LEFT -> {
-//                            imageRight.visibility = View.VISIBLE
-                            Metoths.openWhatsApp(item.mPhoneNumbers[0], context)
+                            contact.whatsapps.firstOrNull()?.let { Metoths.openWhatsApp(it.value, context) }
                         }
-                        else -> Log.e(
-                            "AdapterHistory.kt: ",
-                            "SwipeLayout direction UNKNOWN = $direction"
-                        )
                     }
                     v.swipeLayout.close()
                 }
@@ -170,7 +160,7 @@ class AdapterContacts(
             })
 
             v.dragLayout.setOnClickListener {
-                openDetail(item)
+                openDetail(contact)
             }
         }
 

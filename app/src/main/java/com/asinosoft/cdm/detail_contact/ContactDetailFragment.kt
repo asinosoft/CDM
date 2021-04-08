@@ -30,6 +30,6 @@ class ContactDetailFragment : Fragment() {
         var lim = LinearLayoutManager(requireContext())
         lim.orientation = LinearLayoutManager.VERTICAL
         recyclerView.layoutManager = lim
-        recyclerView.adapter = AdapterContact(model.getContact().getContactListForDetail())
+        recyclerView.adapter = AdapterContact(model.getContact().items)
     }
 }

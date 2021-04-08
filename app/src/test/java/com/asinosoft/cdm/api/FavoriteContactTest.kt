@@ -1,6 +1,5 @@
 package com.asinosoft.cdm.api
 
-import com.asinosoft.cdm.detail_contact.Contact
 import org.junit.Assert
 import org.junit.Test
 
