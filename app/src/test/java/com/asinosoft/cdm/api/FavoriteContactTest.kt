@@ -40,8 +40,12 @@ class FavoriteContactTest {
     inner class ContactRepositoryMock : ContactRepository {
         var requests = mutableListOf<String>()
 
+        override fun initialize() {
+            throw NotImplementedError()
+        }
+
         override fun getContacts(): Collection<Contact> {
-            TODO("Not yet implemented")
+            throw NotImplementedError()
         }
 
         override fun getContactById(id: Long): Contact? {
@@ -54,7 +58,7 @@ class FavoriteContactTest {
         }
 
         override fun getContactByPhone(phone: String): Contact? {
-            TODO("Not yet implemented")
+            throw NotImplementedError()
         }
     }
 }

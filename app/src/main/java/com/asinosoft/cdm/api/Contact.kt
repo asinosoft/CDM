@@ -16,9 +16,6 @@ class Contact(
 ) {
     var photoUri: String? = null
 
-    // Полный список контактов
-    var items = mutableListOf<ContactItem>()
-
     // Список контактов, разбитый по типам
     var birthday: ContactItem? = null
     var emails = mutableListOf<EmailItem>()
@@ -29,6 +26,18 @@ class Contact(
     var whatsapps = mutableListOf<WhatsAppItem>()
 
     private var cachedPhoto: Drawable? = null
+
+    /**
+     * Возвращает все контакты одним списком в фиксированном порядке
+     */
+    fun getAllContacts(): List<ContactItem> {
+        val contacts = phones + whatsapps + vibers + telegrams + emails
+        return if (null == birthday) {
+            contacts
+        } else {
+            contacts + listOf(birthday!!)
+        }
+    }
 
     fun getPhoto(): Drawable {
         if (null == cachedPhoto) {

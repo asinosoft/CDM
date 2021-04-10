@@ -120,6 +120,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         Timber.d("ManagerActivity.onResume")
         recyclerViewHistory.makeTouch(MotionEvent.ACTION_UP)
         recyclerViewHistoryBottom.makeTouch(MotionEvent.ACTION_UP)
+        App.contactRepository.initialize()
         viewModel.updateLists()
     }
 

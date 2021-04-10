@@ -1,5 +1,6 @@
 package com.asinosoft.cdm.detail_contact
 
+import android.provider.ContactsContract
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.asinosoft.cdm.App
@@ -7,7 +8,7 @@ import com.asinosoft.cdm.Loader
 import com.asinosoft.cdm.Settings
 import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.api.Contact
-import com.asinosoft.cdm.data.ContactItem
+import com.asinosoft.cdm.data.PhoneItem
 
 /**
  * Данные для окна Просмотр контакта
@@ -33,8 +34,8 @@ class DetailHistoryViewModel() : ViewModel() {
         App.contactRepository.getContactById(contactId)
             ?: App.contactRepository.getContactByPhone(phoneNumber)
             ?: Contact(0, phoneNumber).apply {
-                items.add(
-                    ContactItem(ContactItem.Type.PHONE, phoneNumber)
+                phones.add(
+                    PhoneItem(ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE, phoneNumber)
                 )
             }
 

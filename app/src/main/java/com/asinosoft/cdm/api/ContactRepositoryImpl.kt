@@ -11,17 +11,40 @@ import timber.log.Timber
 /**
  * Доступ к контактам
  */
-class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepository {
+class ContactRepositoryImpl(private val contentResolver: ContentResolver) : ContactRepository {
+
+    override fun initialize() {
+        contacts = contentResolver.query(
+            ContactsContract.Data.CONTENT_URI, projection,
+            null, null, null
+        )!!.let {
+            Timber.d("Retrieve contact list")
+            ContactCursorAdapter(it).getAll()
+        }
+
+        val index = HashMap<String, Contact>()
+        contacts.values.forEach { contact ->
+            contact.phones.forEach {
+                index[it.value] = contact
+            }
+        }
+        contactPhones = index
+
+        initialized = true
+    }
 
     override fun getContacts(): Collection<Contact> {
+        if (!initialized) initialize()
         return contacts.values
     }
 
     override fun getContactById(id: Long): Contact? {
+        if (!initialized) initialize()
         return contacts[id]
     }
 
     override fun getContactByPhone(phone: String): Contact? {
+        if (!initialized) initialize()
         return contactPhones[phone]
     }
 
@@ -38,27 +61,13 @@ class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepositor
         ContactsContract.Data.DATA4,
     )
 
+    private var initialized = false
+
     // Полный список контактов
-    private val contacts: Map<Long, Contact> by lazy {
-        contentResolver.query(
-            ContactsContract.Data.CONTENT_URI, projection,
-            null, null, null
-        )!!.let {
-            Timber.d("Retrieve contact list")
-            ContactCursorAdapter(it).getAll()
-        }
-    }
+    private lateinit var contacts: Map<Long, Contact>
 
     // Индекс контактов по номеру телефона
-    private val contactPhones: Map<String, Contact> by lazy {
-        val index = HashMap<String, Contact>()
-        contacts.values.forEach { contact ->
-            contact.phones.forEach {
-                index[it.value] = contact
-            }
-        }
-        index
-    }
+    private lateinit var contactPhones: Map<String, Contact>
 
     inner class ContactCursorAdapter(private val cursor: Cursor) {
         private val _id = cursor.getColumnIndex(ContactsContract.Data._ID)
@@ -105,7 +114,6 @@ class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepositor
             if (null == contact.phones.find { it.value == rawNumber }) {
                 PhoneItem(cursor.getInt(data2), rawNumber).let {
                     contact.phones.add(it)
-                    contact.items.add(it)
                 }
             }
         }
@@ -115,7 +123,6 @@ class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepositor
             if (null == contact.emails.find { it.value == emailAddress }) {
                 EmailItem(cursor.getInt(data2), emailAddress).let {
                     contact.emails.add(it)
-                    contact.items.add(it)
                 }
             }
         }
@@ -126,7 +133,6 @@ class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepositor
                 if (null == whatsapp) {
                     whatsapp = WhatsAppItem(whatsappNumber).also {
                         contact.whatsapps.add(it)
-                        contact.items.add(it)
                     }
                 }
 
@@ -149,7 +155,6 @@ class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepositor
                 if (null == contact.vibers.find { it.value == viberNumber }) {
                     ViberItem(viberNumber, cursor.getString(_id)).let {
                         contact.vibers.add(it)
-                        contact.items.add(it)
                     }
                 }
             }
@@ -160,7 +165,6 @@ class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepositor
                 if (null == contact.telegrams.find { it.value == telegramNumber }) {
                     TelegramItem(telegramNumber, cursor.getString(_id)).let {
                         contact.telegrams.add(it)
-                        contact.items.add(it)
                     }
                 }
             }
@@ -171,7 +175,6 @@ class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepositor
             if (null == contact.skypes.find { it.value == skypeLogin }) {
                 SkypeItem(skypeLogin).let {
                     contact.skypes.add(it)
-                    contact.items.add(it)
                 }
             }
         }
@@ -179,11 +182,10 @@ class ContactRepositoryImpl(contentResolver: ContentResolver) : ContactRepositor
         private fun parseBirthday(contact: Contact) {
             val date = cursor.getString(data1)
 
-            StHelper.parseDateToddMMyyyy(date)?.let {
+            StHelper.parseDateToddMMyyyy(date)?.let { dateDMY ->
                 val age = StHelper.parseToMillis(date)
-                BirthdayItem(date, age).let {
+                BirthdayItem(dateDMY, age).let {
                     contact.birthday = it
-                    contact.items.add(it)
                 }
             }
         }

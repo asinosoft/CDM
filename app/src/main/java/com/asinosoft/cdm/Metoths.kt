@@ -118,27 +118,27 @@ class Metoths {
         }
 
         fun viberMsg(id: String, context: Context) {
-            val intent = Intent().setAction(Intent.ACTION_VIEW)
-            intent.setDataAndType(
-                Uri.parse("content://com.android.contacts/data/$id"),
-                "vnd.android.cursor.item/vnd.com.viber.voip.viber_number_message"
-            )
-            intent.setPackage("com.viber.voip")
+            val intent = Intent()
+                .setAction(Intent.ACTION_VIEW)
+                .setDataAndType(
+                    Uri.parse("content://com.android.contacts/data/$id"),
+                    "vnd.android.cursor.item/vnd.com.viber.voip.viber_number_message"
+                )
+                .setPackage("com.viber.voip")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
         }
 
-        fun viberCall(number: String, context: Context) {
+        fun viberCall(id: String, context: Context) {
             val intent = Intent()
-            intent.action = Intent.ACTION_VIEW
-            number.toUri().let { uri ->
-                intent.setDataAndType(
-                    uri,
+                .setAction(Intent.ACTION_VIEW)
+                .setDataAndType(
+                    Uri.parse("content://com.android.contacts/data/$id"),
                     "vnd.android.cursor.item/vnd.com.viber.voip.viber_number_call"
                 )
-                intent.setPackage("com.viber.voip")
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(intent)
-            }
+                .setPackage("com.viber.voip")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
         }
 
         /**
@@ -357,7 +357,7 @@ class Metoths {
         @SuppressLint("MissingPermission")
         fun callPhone(telNum: String, context: Context) {
             Timber.i("callPhone: %s", telNum)
-            val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$telNum"))
+            val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + Uri.encode(telNum)))
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             if (ActivityCompat.checkSelfPermission(
                     context,

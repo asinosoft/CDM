@@ -1,6 +1,8 @@
 package com.asinosoft.cdm.detail_contact
 
 import android.content.Context
+import android.provider.ContactsContract.CommonDataKinds.Email
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.*
+import org.jetbrains.anko.textResource
 
 class AdapterContact(private val elements: List<ContactItem>) :
     RecyclerView.Adapter<AdapterContact.ViewContactInfo>() {
@@ -56,20 +59,14 @@ class AdapterContact(private val elements: List<ContactItem>) :
             numberType.text = context.getString(R.string.type_birthday)
             number.text = item.value
             bText.text = item.age + " лет"
-            bText.visibility = View.GONE
+            bText.visibility = View.VISIBLE
             mCustomLeft.visibility = View.GONE
             mCustomMiddle.visibility = View.GONE
             mCustomRight.visibility = View.GONE
         }
 
         private fun bindEmail(item: EmailItem) {
-            when (item.emailType) {
-                1 -> numberType.text = context.getString(R.string.type_work)
-                2 -> numberType.text = context.getString(R.string.type_my)
-                3 -> numberType.text = context.getString(R.string.type_other)
-                else -> numberType.text = context.getString(R.string.type_e_mail)
-            }
-
+            numberType.textResource = Email.getTypeLabelResource(item.emailType)
             number.text = item.value
             mCustomRight.setBackgroundResource(R.drawable.email_192)
             mCustomMiddle.visibility = View.INVISIBLE
@@ -81,30 +78,7 @@ class AdapterContact(private val elements: List<ContactItem>) :
         }
 
         private fun bindPhone(item: PhoneItem) {
-            when (item.phoneType) {
-                1 -> numberType.text = context.getString(R.string.type_home)
-                2 -> numberType.text = context.getString(R.string.type_mobile)
-                3 -> numberType.text = context.getString(R.string.type_work)
-                4 -> numberType.text = context.getString(R.string.type_fax_work)
-                5 -> numberType.text = context.getString(R.string.type_fax_home)
-                6 -> numberType.text = context.getString(R.string.type_pager)
-                7 -> numberType.text = context.getString(R.string.type_other)
-                8 -> numberType.text = context.getString(R.string.type_callback)
-                9 -> numberType.text = context.getString(R.string.type_car)
-                10 -> numberType.text = context.getString(R.string.type_company_main)
-                11 -> numberType.text = context.getString(R.string.type_isdn)
-                12 -> numberType.text = context.getString(R.string.type_main)
-                13 -> numberType.text = context.getString(R.string.type_other_fax)
-                14 -> numberType.text = context.getString(R.string.type_radio)
-                15 -> numberType.text = context.getString(R.string.type_telex)
-                16 -> numberType.text = context.getString(R.string.type_tty_tdd)
-                17 -> numberType.text = context.getString(R.string.type_work_mobile)
-                18 -> numberType.text = context.getString(R.string.type_work_pager)
-                19 -> numberType.text = context.getString(R.string.type_assistant)
-                20 -> numberType.text = context.getString(R.string.type_mms)
-                else -> R.string.type_main
-            }
-
+            numberType.textResource = Phone.getTypeLabelResource(item.phoneType)
             mCustomMiddle.setBackgroundResource(R.drawable.call)
             number.text = item.prettyNumber
             mCustomLeft.visibility = View.INVISIBLE
@@ -153,12 +127,10 @@ class AdapterContact(private val elements: List<ContactItem>) :
             mCustomLeft.visibility = View.INVISIBLE
             bText.visibility = View.GONE
             mCustomMiddle.setOnClickListener {
-                Metoths.viberMsg(item.value, context)
+                Metoths.viberMsg(item.videoId, context)
             }
-            item.videoId?.let { videoId ->
-                mCustomRight.setOnClickListener {
-                    Metoths.viberCall(videoId, context)
-                }
+            mCustomRight.setOnClickListener {
+                Metoths.viberCall(item.videoId, context)
             }
         }
 

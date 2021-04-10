@@ -149,7 +149,7 @@ class AdapterContacts(
                             contact.phones.firstOrNull()?.let { Metoths.callPhone(it.value, context) }
                         }
                         SwipeLayout.LEFT -> {
-                            contact.whatsapps.firstOrNull()?.let { Metoths.openWhatsApp(it.value, context) }
+                            contact.whatsapps.firstOrNull()?.chatId?.let { Metoths.openWhatsAppChat(it, context) }
                         }
                     }
                     v.swipeLayout.close()
