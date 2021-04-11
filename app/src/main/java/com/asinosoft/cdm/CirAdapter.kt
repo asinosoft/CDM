@@ -28,7 +28,6 @@ class CirAdapter(
     val settings: Settings,
     val vibrator: Vibrator
 ) : RecyclerView.Adapter<CirAdapter.Holder>() {
-    var posDrag = -1
 
     private val touchHelper = ItemTouchHelper(ItemTouchCallbackCir())
 
