@@ -1,96 +1,111 @@
 package com.asinosoft.cdm
 
-import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asinosoft.cdm.Metoths.Companion.toggle
 import com.asinosoft.cdm.api.Contact
 import com.asinosoft.cdm.databinding.ActivitySearchBinding
 import com.jaeger.library.StatusBarUtil
-import kotlinx.android.synthetic.main.activity_search.*
-import kotlinx.android.synthetic.main.keyboard.*
 
 /**
- * Класс экрана поиска
+ * Экран поиска в списке контактов
  */
 class SearchActivity : AppCompatActivity() {
 
+    companion object {
+        const val RESULT_CALL = 1
+        const val RESULT_OPEN_SETTINGS = 2
+    }
+
     private lateinit var v: ActivitySearchBinding
     private lateinit var keyboard: Keyboard
-    private var list = listOf<Contact>()
+    private val contactsAdapter = AdapterContacts()
+    private var contacts = listOf<Contact>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         v = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(v.root)
-        StatusBarUtil.setTranslucentForImageView(this, rv_filtered_contacts)
+        StatusBarUtil.setTranslucentForImageView(this, v.rvFilteredContacts)
         keyboard = supportFragmentManager.findFragmentById(R.id.keyboard) as Keyboard
-        setListens()
+        initActivity()
     }
 
-    override fun onBackPressed() {
-        if (v.layoutKeyboard.height != 1) v.layoutKeyboard.toggle()
-        else super.onBackPressed()
-    }
+    private fun initActivity() {
+        contacts = App.contactRepository
+            .getContacts()
+            .filter { it.phones.isNotEmpty() }
+            .sortedBy { it.name }
 
-    private fun setListens() {
-        list = App.contactRepository.getContacts().filter { !it.phones.isNullOrEmpty() }
+        v.rvFilteredContacts.layoutManager = LinearLayoutManager(this)
 
-        v.rvFilteredContacts.layoutManager = LinearLayoutManager(this).apply {
-            orientation = LinearLayoutManager.VERTICAL
-            initialPrefetchItemCount = 11
-        }
-
-        v.rvFilteredContacts.adapter = AdapterContacts(
-            list,
-            { v: View? ->
-                val num = v?.findViewById<TextView>(R.id.number)?.text
-                num?.let {
-                    if (!num.contains(',')) searched(num.toString())
-                    else dialogNumbers(
-                        arrayOf(
-                            num.substring(0, num.indexOf(',')),
-                            num.substring(num.indexOf(' ') + 1, num.lastIndex + 1)
-                        )
-                    )
-                }
-            },
-            true
-        )
+        v.rvFilteredContacts.adapter = contactsAdapter
 
         v.fab.setOnClickListener { v.layoutKeyboard.toggle() }
 
-        keyboard.input_text.doOnTextChanged { text, _, _, _ ->
-            (v.rvFilteredContacts.adapter as AdapterContacts).setFilter(
-                text.toString(),
-                baseContext
-            )
+        contactsAdapter.doOnClickContact { contact ->
+            val intent = Intent(this, DetailHistoryActivity::class.java)
+                .putExtra(Keys.number, contact.phones.first().value)
+                .putExtra(Keys.id, contact.id)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        }
+
+        contactsAdapter.setContactList(contacts)
+
+        keyboard.doOnTextChanged { text ->
+            val regex = Regex(Metoths.getPattern(text, this), RegexOption.IGNORE_CASE)
+            contactsAdapter.setContactList(contacts.filtered(text, regex), text, regex)
+        }
+
+        keyboard.onCallButtonClick { phoneNumber ->
+            setResult(RESULT_CALL, Intent().apply { putExtra(Keys.number, phoneNumber) })
+            finish()
+        }
+
+        keyboard.onSettingsButtonClick {
+            setResult(RESULT_OPEN_SETTINGS)
+            finish()
+        }
+
+        keyboard.onCloseButtonClick {
+            finish()
         }
     }
 
-    private fun searched(num: String) {
-        setResult(
-            Activity.RESULT_OK,
-            Intent().apply { putExtra(Keys.number, num) }
-        )
-        finish()
-    }
-
-    private fun dialogNumbers(items: Array<String>) {
-        val builder = AlertDialog.Builder(this)
-        with(builder) {
-            setTitle("Выберите номер телефона:")
-            setCancelable(false)
-            setItems(items) { _, which ->
-                searched(items[which])
+    private fun List<Contact>.filtered(nums: String, regex: Regex?): List<Contact> {
+        val r = ArrayList<Contact>()
+        this@filtered.forEach { contact ->
+            regex?.find(contact.name)?.let {
+                r.add(contact)
+                return@forEach
             }
-            show()
+            contact.phones.forEach {
+                if (it.value.contains(nums, true)) {
+                    r.add(contact)
+                    return@forEach
+                }
+            }
         }
+        r.sortWith(
+            compareBy {
+                val res = regex?.find(it.name)
+                if (res != null) {
+                    it.name.indexOf(res.value)
+                } else {
+                    var index = 0
+                    it.phones.forEach {
+                        if (it.value.contains(nums, true)) {
+                            index = it.value.indexOf(nums)
+                            return@forEach
+                        }
+                    }
+                    index
+                }
+            }
+        )
+        return r
     }
 }

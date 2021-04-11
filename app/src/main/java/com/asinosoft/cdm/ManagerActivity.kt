@@ -7,14 +7,11 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.telecom.TelecomManager
 import android.view.MotionEvent
-import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths.Companion.makeTouch
@@ -26,14 +23,13 @@ import com.asinosoft.cdm.dialer.Utilities
 import com.asinosoft.cdm.globals.AlertDialogUtils
 import com.jaeger.library.StatusBarUtil
 import kotlinx.android.synthetic.main.activity_manager.*
-import kotlinx.android.synthetic.main.keyboard.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import timber.log.Timber
 
 /**
  * Основной класс приложения, отвечает за работу главного экрана (нового) приложения
  */
-class ManagerActivity : AppCompatActivity(), KeyBoardListener {
+class ManagerActivity : AppCompatActivity() {
     companion object {
         const val REQUEST_PERMISSION1 = 1
     }
@@ -47,7 +43,6 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
      * ViewModel главного экрана, отвечает за всю фоновую логику
      */
     private val viewModel: ManagerViewModel by viewModels()
-    private lateinit var keyboard: Keyboard
     private val PERMISSIONS = arrayOf(
         Manifest.permission.READ_CONTACTS,
         Manifest.permission.CALL_PHONE,
@@ -65,9 +60,29 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
      * Запуск окна настроек приложения
      */
     private val openSettings =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
             initActivity()
             viewModel.updateLists()
+        }
+
+    /**
+     * Запуск окна поиска контакта
+     */
+    private val openSearch =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            result?.let {
+                when (it.resultCode) {
+                    SearchActivity.RESULT_OPEN_SETTINGS -> {
+                        Timber.d("Open settings")
+                        openSettings.launch(Intent(this, SettingsActivity::class.java))
+                    }
+                    SearchActivity.RESULT_CALL ->
+                        it.data?.extras?.getString(Keys.number)?.let { phoneNumber ->
+                            Timber.d("CALL: $phoneNumber")
+                            Metoths.callPhone(phoneNumber, this)
+                        }
+                }
+            }
         }
 
     /**
@@ -130,26 +145,12 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         super.onDestroy()
     }
 
-    override fun onOpenSettings() {
-        if (v.layoutKeyboard.isVisible) {
-            hideContacts()
-        }
-        openSettings.launch(Intent(this, SettingsActivity::class.java))
-    }
-
-    override fun onCall(phoneNumber: CharSequence) {
-        if (v.layoutKeyboard.isVisible) {
-            hideContacts()
-        }
-        Metoths.callPhone(phoneNumber.toString(), this)
-    }
-
     private fun requestAllPermissions() {
         ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION1)
     }
 
     private fun hasPermissions(context: Context?, vararg permissions: String): Boolean {
-        if (context != null && permissions != null) {
+        if (context != null) {
             for (permission in permissions) {
                 if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
                     return false
@@ -182,49 +183,7 @@ class ManagerActivity : AppCompatActivity(), KeyBoardListener {
         buttonRVDownUpdate.onClick { viewModel.showHiddenCallHistoryItems() }
 
         fabKeyboard.setOnClickListener {
-            showContacts()
-        }
-        keyboard = supportFragmentManager.findFragmentById(R.id.keyboard) as Keyboard
-
-        keyboard.input_text.doOnTextChanged { text, start, count, after ->
-            kotlin.runCatching {
-                (recyclerViewContact.adapter as AdapterContacts).setFilter(
-                    text.toString(),
-                    context = baseContext
-                )
-            }.exceptionOrNull()?.printStackTrace()
-        }
-
-        recyclerViewContact.layoutManager = LinearLayoutManager(this).apply {
-            orientation = LinearLayoutManager.VERTICAL
-            initialPrefetchItemCount = 11
-        }
-    }
-
-    private fun showContacts() {
-        recyclerViewContact.adapter =
-            AdapterContacts(
-                viewModel.getContacts().filter { it.phones.isNotEmpty() },
-                {},
-                false
-            )
-        recyclerViewContact.visibility = View.VISIBLE
-        keyboard.input_text.text = ""
-        v.layoutKeyboard.visibility = View.VISIBLE
-        v.fabKeyboard.visibility = View.GONE
-    }
-
-    private fun hideContacts() {
-        v.layoutKeyboard.visibility = View.GONE
-        v.fabKeyboard.visibility = View.VISIBLE
-        recyclerViewContact.visibility = View.GONE
-    }
-
-    override fun onBackPressed() {
-        if (v.layoutKeyboard.isVisible) {
-            hideContacts()
-        } else {
-            super.onBackPressed()
+            openSearch.launch(Intent(this, SearchActivity::class.java))
         }
     }
 

@@ -22,7 +22,7 @@ class CirAdapter(
     val scrollView: LockableNestedScrollView,
     val deleteButton: CircularImageView,
     val editButton: CircularImageView,
-    val pickedContact: (Int) -> Unit,
+    val pickContact: (Int) -> Unit,
     val onTouch: (Int) -> Unit, // Через колбэк передаётся позиция контакта, на котором находится палец пользователя
     val context: Context,
     val settings: Settings,
@@ -92,9 +92,6 @@ class CirAdapter(
                 replaceListener = {
                     touchHelper.startDrag(it)
                 }
-                pickContact = { pos ->
-                    pickedContact(pos)
-                }
 
                 directActions = getCircleDirectActions(selectedNumber)
                 deleteListener = {
@@ -119,7 +116,7 @@ class CirAdapter(
                         )
                     }
                 }
-                pickContactForNum = {
+                pickContact = {
                     pickContact(absoluteAdapterPosition)
                 }
                 touchDownForIndex = {

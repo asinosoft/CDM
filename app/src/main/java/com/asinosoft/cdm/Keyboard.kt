@@ -2,11 +2,10 @@ package com.asinosoft.cdm
 
 import android.os.Bundle
 import android.os.Handler
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.keyboard.*
 import kotlinx.android.synthetic.main.keyboard.view.*
@@ -15,13 +14,38 @@ import org.jetbrains.anko.support.v4.runOnUiThread
 /**
  * Класс кастомной клавиатуры.
  */
-interface KeyBoardListener {
-    fun onOpenSettings()
-
-    fun onCall(phoneNumber: CharSequence)
-}
-
 class Keyboard : Fragment() {
+    private var settingsButtonClickCallback: () -> Unit = {}
+    private var callButtonClickCallback: (phoneNumber: String) -> Unit = {}
+    private var closeButtonClickCallback: () -> Unit = {}
+
+    /**
+     * Реакция на изменение текста в строке поиска
+     */
+    fun doOnTextChanged(callback: (String) -> Unit) {
+        input_text.doOnTextChanged { s, _, _, _ -> callback(s.toString()) }
+    }
+
+    /**
+     * Реакия на кнопку "Вызов"
+     */
+    fun onCallButtonClick(callback: (phoneNumber: String) -> Unit) {
+        callButtonClickCallback = callback
+    }
+
+    /**
+     * Реакция на кнопку "Настройки"
+     */
+    fun onSettingsButtonClick(callback: () -> Unit) {
+        settingsButtonClickCallback = callback
+    }
+
+    /**
+     * Реакция на кнопку "Закрыть" (клик по кнопке "Очистить", когда строка поиска уже пустая)
+     */
+    fun onCloseButtonClick(callback: () -> Unit) {
+        closeButtonClickCallback = callback
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,9 +53,6 @@ class Keyboard : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.keyboard, container, false)
-        rootView.setOnTouchListener { view, motionEvent ->
-            true
-        }
         rootView.findViewById<View>(R.id.one_btn)
             .setOnClickListener {
                 rootView.ripple1.startRippleAnimation()
@@ -145,42 +166,26 @@ class Keyboard : Fragment() {
             true
         }
         rootView.image_clear.setOnClickListener {
-            input_text.text = ""
-            activity?.onBackPressed()
+            if (input_text.text.isNotEmpty()) {
+                input_text.text = ""
+            } else {
+                closeButtonClickCallback()
+            }
         }
         rootView.btnCall.setOnClickListener {
-            val phoneNumber = input_text.text
-            if (phoneNumber.isNotEmpty()) {
-                input_text.text = ""
-                (activity as KeyBoardListener).onCall(phoneNumber)
+            if (input_text.text.isNotEmpty()) {
+                callButtonClickCallback(input_text.text.toString())
             }
         }
 
         rootView.settingsButton.setOnClickListener {
-            (activity as KeyBoardListener).onOpenSettings()
+            settingsButtonClickCallback()
         }
 
         return rootView
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        input_text.addTextChangedListener(texWatcher)
-    }
-
     private fun takeValue(num: String) {
         input_text.text = input_text.text.toString().plus(num)
-    }
-
-    val texWatcher = object : TextWatcher {
-
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-        }
-
-        override fun afterTextChanged(s: Editable?) {
-        }
-
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-        }
     }
 }

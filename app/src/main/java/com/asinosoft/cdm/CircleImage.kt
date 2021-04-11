@@ -43,8 +43,7 @@ class CircleImage @JvmOverloads constructor(
     var deleteListener: () -> Unit = {}
     var replaceListenerForHolder: () -> Unit = {}
     var replaceListener: (RecyclerView.ViewHolder) -> Unit = {}
-    var pickContactForNum: () -> Unit = {}
-    var pickContact: (Int) -> Unit = {}
+    var pickContact: () -> Unit = {}
     var dragListener: () -> Unit = {}
     var deleteCir: CircularImageView? = null
     var editCir: CircularImageView? = null
@@ -116,7 +115,7 @@ class CircleImage @JvmOverloads constructor(
             }
             if (!isMoving) {
                 if (contact == null) {
-                    pickContactForNum()
+                    pickContact()
                 } else openDetailContact(selectedNumber as String, contact!!, context = context)
             }
         }
@@ -176,7 +175,7 @@ class CircleImage @JvmOverloads constructor(
 
     private fun onTouchUp(event: MotionEvent) {
         touchStart?.let {
-            var diff = it.diff(event, animationRadius)
+            val diff = it.diff(event, animationRadius)
             this.setTranslate(cirStart!!, 500L)
             touchStart = null
             cirStart = null
@@ -194,7 +193,7 @@ class CircleImage @JvmOverloads constructor(
 
     private fun onTouchMove(event: MotionEvent) {
         touchStart?.let {
-            var diff = it.diff(event, animationRadius)
+            val diff = it.diff(event, animationRadius)
             isMoving = !diff.checkMoving(size / 10f)
             this.translateDiff(cirStart!!, diff, animationDuration)
             actionImage?.apply {
