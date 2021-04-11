@@ -97,7 +97,6 @@ class CirAdapter(
                 deleteListener = {
                     favorites.removeContact(absoluteAdapterPosition)
                     notifyItemRemoved(absoluteAdapterPosition)
-                    posDrag = -1
                 }
                 borderWidth = settings.borderWidthCirs.toFloat()
                 borderColor = settings.colorBorder
@@ -106,7 +105,6 @@ class CirAdapter(
                 }
                 dragListener = {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        posDrag = absoluteAdapterPosition
                         startDragAndDrop(
                             ClipData.newPlainText(
                                 Keys.adapterPos,
@@ -154,8 +152,8 @@ class CirAdapter(
                                     )
                                 }
                             )*/
-                            // TODO: val startPosition = event.clipData.getItemAt(0).text.toString().toInt()
-                            swapItems(posDrag, absoluteAdapterPosition)
+                            val draggedPosition = event.clipData.getItemAt(0).text.toString().toInt()
+                            swapItems(draggedPosition, absoluteAdapterPosition)
                         }
                     }
                     true

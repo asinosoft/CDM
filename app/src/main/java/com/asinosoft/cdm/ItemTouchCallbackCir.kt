@@ -2,7 +2,6 @@ package com.asinosoft.cdm
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import java.util.*
 
 /**
  * Обработчик перетаскивания кнопок избранных контактов
