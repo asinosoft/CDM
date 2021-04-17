@@ -21,7 +21,9 @@ import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
 import com.xw.repo.BubbleSeekBar
 import com.xw.repo.BubbleSeekBar.OnProgressChangedListener
 import kotlinx.android.synthetic.main.settings_layout.*
+import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.image
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 /**
  * Класс экрана настроек приложения
@@ -67,6 +69,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     private fun initAll() {
         settings = Loader.loadSettings()
         initFavoritesBlock()
+        initLayoutBlock()
         initActionsBlock()
         setAllCirs(settings.borderWidthCirs, settings.colorBorder)
     }
@@ -82,7 +85,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
                 chooserButton1 = v.cirChoose1.action,
                 chooserButton2 = v.cirChoose2.action,
                 columnsCirs = v.seekBarColumnsButtons.progress,
-                borderWidthCirs = v.seekBarBorderButtons.progress
+                borderWidthCirs = v.seekBarBorderButtons.progress,
             )
         )
     }
@@ -207,6 +210,17 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
             ) {
             }
         }
+    }
+
+    private fun initLayoutBlock() {
+        if (v.layoutModeExpandable.isExpanded) v.layoutModeCross.cross() else v.layoutModeCross.plus()
+        v.layoutModeHeader.setOnClickListener {
+            v.layoutModeExpandable.toggle(true)
+            v.layoutModeCross.toggle(500L)
+        }
+        v.btnFavoritesFirst.onClick { setFavoritesLayout(true) }
+        v.btnFavoritesLast.onClick { setFavoritesLayout(false) }
+        setFavoritesLayout(settings.historyButtom)
     }
 
     private fun initActionsBlock() {
@@ -379,5 +393,13 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
             cirLeft.borderColor = it
             circleImageView.borderColor = it
         }
+    }
+
+    private fun setFavoritesLayout(mode: Boolean) {
+        settings.historyButtom = mode
+        v.btnFavoritesFirst.backgroundColor =
+            if (mode) Color.rgb(0x67, 0x3a, 0xb7) else Color.LTGRAY
+        v.btnFavoritesLast.backgroundColor =
+            if (!mode) Color.rgb(0x67, 0x3a, 0xb7) else Color.LTGRAY
     }
 }

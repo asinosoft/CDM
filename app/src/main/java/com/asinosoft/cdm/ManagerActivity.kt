@@ -5,44 +5,55 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Vibrator
 import android.telecom.TelecomManager
-import android.view.MotionEvent
+import android.view.DragEvent
+import android.view.LayoutInflater
+import android.view.animation.OvershootInterpolator
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.Metoths.Companion.makeTouch
+import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
+import com.asinosoft.cdm.adapters.AdapterCallLogs
 import com.asinosoft.cdm.adapters.NumbeAdapter
 import com.asinosoft.cdm.api.Contact
 import com.asinosoft.cdm.api.FavoriteContact
+import com.asinosoft.cdm.api.FavoriteContactRepositoryImpl
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
+import com.asinosoft.cdm.databinding.FavoritesFragmentBinding
 import com.asinosoft.cdm.dialer.Utilities
 import com.asinosoft.cdm.globals.AlertDialogUtils
 import com.jaeger.library.StatusBarUtil
+import jp.wasabeef.recyclerview.animators.LandingAnimator
 import kotlinx.android.synthetic.main.activity_manager.*
-import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.vibrator
 import timber.log.Timber
 
 /**
  * Основной класс приложения, отвечает за работу главного экрана (нового) приложения
  */
 class ManagerActivity : AppCompatActivity() {
-    companion object {
-        const val REQUEST_PERMISSION1 = 1
-    }
-
     /**
      * Элемент, хранящий ссылки на все представления привязанного макета
      */
     private lateinit var v: ActivityManagerBinding
 
     /**
-     * ViewModel главного экрана, отвечает за всю фоновую логику
+     * Блок избранных контактов
      */
-    private val viewModel: ManagerViewModel by viewModels()
+    private lateinit var favoritesView: FavoritesFragmentBinding
+
+    /**
+     * Номер избранного контакта, на котором находится палец пользователя - чтобы отрисовать его в последнюю очередь (поверх остальных)
+     */
+    private var indexOfFrontChild: Int = 0
+
+    private lateinit var adapterCallLogs: AdapterCallLogs
+    private lateinit var favoritesAdapter: CirAdapter
+
     private val PERMISSIONS = arrayOf(
         Manifest.permission.READ_CONTACTS,
         Manifest.permission.CALL_PHONE,
@@ -57,48 +68,48 @@ class ManagerActivity : AppCompatActivity() {
     private var pickedPosition: Int = 0
 
     /**
-     * Запуск окна настроек приложения
+     * Настройки приложения
      */
-    private val openSettings =
+    private val settingsActivityResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
+            // После изменения настроек пересоздаем весь интерфейс
             initActivity()
-            viewModel.updateLists()
+            adapterCallLogs.setList(App.callHistoryRepository.getLatestHistory())
         }
 
     /**
-     * Запуск окна поиска контакта
+     * Многофункциональное окно с клавиатурой
      */
-    private val openSearch =
+    private val searchActivityResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             result?.let {
                 when (it.resultCode) {
                     SearchActivity.RESULT_OPEN_SETTINGS -> {
                         Timber.d("Open settings")
-                        openSettings.launch(Intent(this, SettingsActivity::class.java))
+                        settingsActivityResult.launch(Intent(this, SettingsActivity::class.java))
                     }
-                    SearchActivity.RESULT_CALL ->
+                    SearchActivity.RESULT_CALL -> {
                         it.data?.extras?.getString(Keys.number)?.let { phoneNumber ->
                             Timber.d("CALL: $phoneNumber")
                             Metoths.callPhone(phoneNumber, this)
                         }
+                    }
                 }
             }
         }
 
     /**
-     * Запуск диалога выбора избранного контакта
+     * Выбор контакта
      */
     private val pickContact =
         registerForActivityResult(ActivityResultContracts.PickContact()) { uri ->
             if (null != uri) {
-                viewModel.getContactIdFromIntent(uri)?.let { contact ->
+                App.contactRepository.getContactByUri(uri)?.let { contact ->
                     if (contact.phones.size > 1) {
                         showNumberDialog(contact, pickedPosition)
                     } else {
-                        viewModel.setFavoriteContact(
-                            pickedPosition,
-                            FavoriteContact(contact, contact.phones.first().value)
-                        )
+                        val favorite = FavoriteContact(contact, contact.phones.first().value)
+                        favoritesAdapter.setItem(pickedPosition, favorite)
                     }
                 }
             }
@@ -133,10 +144,8 @@ class ManagerActivity : AppCompatActivity() {
         }
 
         Timber.d("ManagerActivity.onResume")
-        recyclerViewHistory.makeTouch(MotionEvent.ACTION_UP)
-        recyclerViewHistoryBottom.makeTouch(MotionEvent.ACTION_UP)
         App.contactRepository.initialize()
-        viewModel.updateLists()
+        adapterCallLogs.setList(App.callHistoryRepository.getLatestHistory())
     }
 
     override fun onDestroy() {
@@ -146,7 +155,7 @@ class ManagerActivity : AppCompatActivity() {
     }
 
     private fun requestAllPermissions() {
-        ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION1)
+        ActivityCompat.requestPermissions(this, PERMISSIONS, 0)
     }
 
     private fun hasPermissions(context: Context?, vararg permissions: String): Boolean {
@@ -168,23 +177,96 @@ class ManagerActivity : AppCompatActivity() {
 
         StatusBarUtil.setTranslucentForImageView(this, v.container)
 
-        viewModel.start(
-            v,
-            this,
-            pickContact = { position -> pickContact(position) }
-        )
+        val callsLayoutManager = LockableLayoutManager(this, !Loader.loadSettings().historyButtom)
+
+        initFavorites(callsLayoutManager)
+        initCallHistory(callsLayoutManager)
 
         val isDefaultDealer: Boolean = Utilities().checkDefaultDialer(this)
         if (isDefaultDealer) {
             checkPermission(null)
         }
 
-        buttonRVTopUpdate.onClick { viewModel.showHiddenCallHistoryItems() }
-        buttonRVDownUpdate.onClick { viewModel.showHiddenCallHistoryItems() }
-
         fabKeyboard.setOnClickListener {
-            openSearch.launch(Intent(this, SearchActivity::class.java))
+            searchActivityResult.launch(Intent(this, SearchActivity::class.java))
         }
+    }
+
+    private fun initFavorites(callsLayoutManager: LockableLayoutManager) {
+        val context = this
+        favoritesView = FavoritesFragmentBinding.inflate(
+            LayoutInflater.from(this),
+            v.root,
+            false
+        ).apply {
+            rvFavorites.layoutManager =
+                CirLayoutManager(columns = Loader.loadSettings().columnsCirs)
+            rvFavorites.itemAnimator = LandingAnimator(OvershootInterpolator())
+            rvFavorites.setChildDrawingOrderCallback { childCount, iteration ->
+                // Изменяем порядок отрисовки избранных контактов, чтобы контакт
+                // на котором находится палец пользователя, отрисовывался в последнюю очередь,
+                // поверх остальных контактов
+                var childPos: Int = iteration
+                if (indexOfFrontChild < childCount) {
+                    if (iteration == childCount - 1) {
+                        childPos = indexOfFrontChild
+                    } else if (iteration >= indexOfFrontChild) {
+                        childPos = iteration + 1
+                    }
+                }
+                childPos
+            }
+
+            favoritesAdapter = CirAdapter(
+                FavoriteContactRepositoryImpl(
+                    App.contactRepository,
+                    getSharedPreferences(Keys.ManagerPreference, MODE_PRIVATE)
+                ),
+                callsLayoutManager,
+                btnDelete,
+                btnEdit,
+                { position -> pickContact(position) },
+                { indexOfFrontChild = it },
+                context,
+                getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            )
+            rvFavorites.adapter = favoritesAdapter
+
+            btnDelete.apply {
+                setOnDragListener { view, event ->
+                    try {
+                        when (event.action) {
+                            DragEvent.ACTION_DRAG_ENTERED -> {
+                                context.vibrator.vibrateSafety(Keys.VIBRO)
+                            }
+                            DragEvent.ACTION_DROP -> {
+                                event.clipData.getItemAt(0)?.text.let {
+                                    val position: Int = Integer.parseInt(it.toString())
+                                    favoritesAdapter.deleteItem(position)
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                    true
+                }
+            }
+
+            btnEdit.setOnDragListener { _, event ->
+                if (event.action == DragEvent.ACTION_DRAG_ENTERED)
+                    favoritesAdapter.addItem(FavoriteContact())
+                true
+            }
+        }
+    }
+
+    private fun initCallHistory(callsLayoutManager: LockableLayoutManager) {
+        adapterCallLogs = AdapterCallLogs(this, favoritesView)
+
+        v.rvCalls.adapter = adapterCallLogs
+        v.rvCalls.layoutManager = callsLayoutManager
+        v.rvCalls.isNestedScrollingEnabled = true
     }
 
     override fun onRequestPermissionsResult(
@@ -223,7 +305,8 @@ class ManagerActivity : AppCompatActivity() {
         contact.let {
             val dialog = AlertDialogUtils.dialogListWithoutConfirm(this, "Выберите номер")
             val adapter = NumbeAdapter {
-                viewModel.setFavoriteContact(position, FavoriteContact(contact, it))
+                val favorite = FavoriteContact(contact, it)
+                favoritesAdapter.setItem(position, favorite)
                 dialog.dismiss()
             }
             val recyclerView = dialog.findViewById<RecyclerView>(R.id.recycler_popup)

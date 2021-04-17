@@ -16,5 +16,10 @@ class Keys {
         val Cirs = "Cirs"
         val Preference = "Preferences"
         val ManagerPreference = "ManagerPreference"
+
+        /**
+         * Длительность вибрации
+         */
+        const val VIBRO = 30L
     }
 }

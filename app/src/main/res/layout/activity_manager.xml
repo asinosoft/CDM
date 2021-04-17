@@ -7,6 +7,17 @@
     android:layout_height="match_parent"
     tools:context=".ManagerActivity">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_calls"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:nestedScrollingEnabled="true"
+        tools:listitem="@layout/calllog_object" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabKeyboard"
         android:layout_width="wrap_content"
@@ -23,95 +34,5 @@
         android:focusable="true"
         android:src="@drawable/ic_key_board_dotted" />
 
-    <com.asinosoft.cdm.LockableNestedScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:id="@+id/relativeL"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:id="@+id/rvTop"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <Button
-                    android:id="@+id/buttonRVTopUpdate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Подгрузить еще" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewHistory"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:overScrollMode="never" />
-
-            </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_favorites"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true" />
-
-            <LinearLayout
-                android:id="@+id/rvDown"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewHistoryBottom"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:overScrollMode="never" />
-
-                <Button
-                    android:id="@+id/buttonRVDownUpdate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Показать еще" />
-
-            </LinearLayout>
-        </LinearLayout>
-
-    </com.asinosoft.cdm.LockableNestedScrollView>
-
-    <com.asinosoft.cdm.CircularImageView
-        android:id="@+id/deleteCir"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:scaleType="centerInside"
-        android:src="@drawable/delete"
-        android:visibility="invisible"
-        app:civ_circle_color="@android:color/holo_red_light" />
-
-
-    <com.asinosoft.cdm.CircularImageView
-        android:id="@+id/editCir"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="30dp"
-        android:scaleType="centerInside"
-        android:visibility="invisible"
-        android:src="@drawable/pluswhite"
-        app:civ_circle_color="@android:color/holo_green_dark" />
 
 </RelativeLayout>

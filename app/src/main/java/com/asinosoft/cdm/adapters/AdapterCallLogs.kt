@@ -8,63 +8,63 @@ import android.view.LayoutInflater
 import android.view.MotionEvent.ACTION_DOWN
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.asinosoft.cdm.*
 import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
 import com.zerobranch.layout.SwipeLayout
 import org.jetbrains.anko.imageResource
 import timber.log.Timber
+import java.security.InvalidParameterException
 
 /**
  * Адаптер списка последних звонков, который показывается в активности "Просмотр контакта"
  */
 class AdapterCallLogs(
-    val context: Context,
+    private val context: Context,
+    private val favorites: ViewBinding
 ) : RecyclerView.Adapter<AdapterCallLogs.HolderHistory>() {
-    private val VISIBLE_ITEMS_LIMIT = 21
+    companion object {
+        const val TYPE_FAVORITES = 1
+        const val TYPE_CALL_ITEM = 2
+    }
 
     private var items: List<CallHistoryItem> = listOf()
-    private var hiddenItems: List<CallHistoryItem> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
-        return HolderHistory(
-            CalllogObjectBinding.inflate(
+        val view = when (viewType) {
+            TYPE_FAVORITES -> favorites
+            TYPE_CALL_ITEM -> CalllogObjectBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
-        )
+            else -> throw InvalidParameterException("Unknown viewType=$viewType")
+        }
+        return HolderHistory(view)
     }
 
     /**
      * Заменяет список звонков
      */
     fun setList(list: List<CallHistoryItem>) {
-        // Список звонков разделяется на две части: одна показывается сразу, а вторая - только после нажатия на кнопку "Показать ещё"
-        // Это сделано, чтобы ускорить отрисовку при запуске активности
-        // А тормозит она потому, что там RecyclerView растянуют на всю высоту внутри NestedScrollView
-        // FIXME: Чтобы решить эту проблему, нужно показывать блок избранных контактов, как (не)обычный элемент внутри списка звонков
-        items = list.take(VISIBLE_ITEMS_LIMIT)
-        hiddenItems = list.subList(VISIBLE_ITEMS_LIMIT, list.size)
-        notifyDataSetChanged()
+        items = list
         Timber.d("AdapterCallLogs получил %d звонков/контактов", list.size)
     }
 
-    /**
-     * Добавление вкрытых звонков в список (реакция на кнопку "Показать ещё")
-     */
-    fun showHiddenItems() {
-        val positionStart = items.size
-        val itemCount = hiddenItems.size
-        items = items.plus(hiddenItems)
-        hiddenItems = listOf()
-        notifyItemRangeInserted(positionStart, itemCount)
+    override fun getItemCount() = items.size + 1
+
+    override fun getItemViewType(position: Int): Int {
+        return when (position) {
+            0 -> TYPE_FAVORITES
+            else -> TYPE_CALL_ITEM
+        }
     }
 
-    override fun getItemCount() = items.size
-
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
-        holder.bind(items[position])
+        if (position > 0) {
+            holder.bind(items[position - 1])
+        }
     }
 
     private fun openDetail(item: CallHistoryItem) {
@@ -74,7 +74,7 @@ class AdapterCallLogs(
         context.startActivity(intent)
     }
 
-    inner class HolderHistory(val v: CalllogObjectBinding) : RecyclerView.ViewHolder(v.root) {
+    inner class HolderHistory(val v: ViewBinding) : RecyclerView.ViewHolder(v.root) {
 
         private fun setIcons(
             settings: Settings,
@@ -90,7 +90,7 @@ class AdapterCallLogs(
         }
 
         fun bind(item: CallHistoryItem) {
-            with(v) {
+            with(v as CalllogObjectBinding) {
                 imageContact.setImageDrawable(item.contact.getPhoto())
                 name.text = item.contact.name
                 number.text = "${item.prettyPhone}, ${Metoths.getFormattedTime(item.duration)}"
@@ -121,7 +121,6 @@ class AdapterCallLogs(
 
                 swipeLayout.setOnActionsListener(object : SwipeLayout.SwipeActionsListener {
                     override fun onOpen(direction: Int, isContinuous: Boolean) {
-                        val settings = Loader.loadContactSettings(item.phone)
                         setIcons(settings, imageLeftAction, imageRightAction)
                         when (direction) {
                             SwipeLayout.RIGHT -> {

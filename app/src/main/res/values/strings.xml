@@ -65,6 +65,10 @@
     <string name="unknow_call">Неизвестный</string>
     <string name="unknown_caller">Неизвестный номер</string>
     <string name="open_keyboard">Открыть клавиатуру</string>
+    <string name="manager_layout">Раскладка главного окна</string>
+    <string name="favorites_first">Избранные контакты - вверху</string>
+    <string name="favorites_last">Избранные контакты - внизу</string>
+    <string name="favorites_border_color">Цвет обводки</string>
 
 
 </resources>

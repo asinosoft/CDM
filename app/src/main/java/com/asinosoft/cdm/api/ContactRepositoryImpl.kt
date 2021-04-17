@@ -2,6 +2,7 @@ package com.asinosoft.cdm.api
 
 import android.content.ContentResolver
 import android.database.Cursor
+import android.net.Uri
 import android.provider.ContactsContract
 import androidx.core.database.getStringOrNull
 import com.asinosoft.cdm.data.*
@@ -41,6 +42,18 @@ class ContactRepositoryImpl(private val contentResolver: ContentResolver) : Cont
     override fun getContactById(id: Long): Contact? {
         if (!initialized) initialize()
         return contacts[id]
+    }
+
+    override fun getContactByUri(uri: Uri): Contact? {
+        val projections = arrayOf(ContactsContract.Contacts._ID)
+        val cursor = contentResolver.query(uri, projections, null, null, null)
+        if (cursor != null && cursor.moveToFirst()) {
+            val columnId = cursor.getColumnIndex(projections[0])
+            val id = cursor.getLong(columnId)
+            cursor.close()
+            return getContactById(id)
+        }
+        return null
     }
 
     override fun getContactByPhone(phone: String): Contact? {
@@ -106,6 +119,7 @@ class ContactRepositoryImpl(private val contentResolver: ContentResolver) : Cont
                     }
                 }
             }
+            cursor.close()
             return result
         }
 

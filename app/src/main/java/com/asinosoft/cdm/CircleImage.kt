@@ -50,7 +50,7 @@ class CircleImage @JvmOverloads constructor(
     var touchDownForIndex: () -> Unit = {}
     var touchDown: (Int) -> Unit = {}
     var selectedNumber: String? = null
-    var lockableNestedScrollView: LockableNestedScrollView? = null
+    var lockableNestedScrollView: LockableLayoutManager? = null
 
     companion object {
         const val CONTACT_UNFOTO = R.drawable.contact_unfoto
@@ -198,7 +198,7 @@ class CircleImage @JvmOverloads constructor(
             this.translateDiff(cirStart!!, diff, animationDuration)
             actionImage?.apply {
                 isVisible = diff.diffVisible(animationRadius).also { vis ->
-                    if (vis && !isVisible) context.vibrator.vibrateSafety(ManagerViewModel.VIBRO)
+                    if (vis && !isVisible) context.vibrator.vibrateSafety(Keys.VIBRO)
                 }
                 directActions?.action(diff.diffAction(animationRadius))?.let { action ->
                     this.setImageAction(action)
@@ -213,12 +213,23 @@ class CircleImage @JvmOverloads constructor(
             return
         }
         when (action) {
-            WhatsApp -> contact.whatsapps.firstOrNull()?.chatId?.let { Metoths.openWhatsAppChat(it, context) } ?: error("Нет контакта в WhatsApp")
-            Viber -> contact.vibers.firstOrNull()?.let { Metoths.viberCall(it.videoId, context) } ?: error("Нет контакта в Viber")
-            Telegram -> contact.telegrams.firstOrNull()?.let { Metoths.openTelegramNow(it.chatId, context) } ?: error("Нет контакта в Telegram")
-            PhoneCall -> contact.phones.firstOrNull()?.let { callPhone(it.value, context) } ?: error("Номер телефона не указан")
-            Email -> contact.emails.firstOrNull()?.let { mailToEmail(it.value, context) } ?: error("Нет электронной почты")
-            Sms -> contact.phones.firstOrNull()?.let { sendSMS(it.value, context) } ?: error("Номер телефона не указан")
+            WhatsApp -> contact.whatsapps.firstOrNull()?.chatId?.let {
+                Metoths.openWhatsAppChat(
+                    it,
+                    context
+                )
+            } ?: error("Нет контакта в WhatsApp")
+            Viber -> contact.vibers.firstOrNull()?.let { Metoths.viberCall(it.videoId, context) }
+                ?: error("Нет контакта в Viber")
+            Telegram -> contact.telegrams.firstOrNull()
+                ?.let { Metoths.openTelegramNow(it.chatId, context) }
+                ?: error("Нет контакта в Telegram")
+            PhoneCall -> contact.phones.firstOrNull()?.let { callPhone(it.value, context) }
+                ?: error("Номер телефона не указан")
+            Email -> contact.emails.firstOrNull()?.let { mailToEmail(it.value, context) }
+                ?: error("Нет электронной почты")
+            Sms -> contact.phones.firstOrNull()?.let { sendSMS(it.value, context) }
+                ?: error("Номер телефона не указан")
         }
     }
 
@@ -236,6 +247,6 @@ class CircleImage @JvmOverloads constructor(
             translateTo(this@CircleImage, size * 0.1f)
             isVisible = false
         }
-        lockableNestedScrollView?.apply { setScrollingEnabled(false) }
+        lockableNestedScrollView?.setScrollingEnabled(false)
     }
 }

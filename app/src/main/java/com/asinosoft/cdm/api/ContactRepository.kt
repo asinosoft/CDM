@@ -1,5 +1,7 @@
 package com.asinosoft.cdm.api
 
+import android.net.Uri
+
 /**
  * Доступ к контактам
  */
@@ -18,6 +20,11 @@ interface ContactRepository {
      * Возвращает контакт по его ID
      */
     fun getContactById(id: Long): Contact?
+
+    /**
+     * Возвращает контакт по его Uri
+     */
+    fun getContactByUri(uri: Uri): Contact?
 
     /**
      * Возвращает контакт, которому принадлежит указанный телефон

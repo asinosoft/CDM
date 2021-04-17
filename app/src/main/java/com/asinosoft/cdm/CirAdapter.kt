@@ -19,17 +19,17 @@ import kotlinx.android.synthetic.main.item_cir.view.*
 
 class CirAdapter(
     val favorites: FavoriteContactRepository,
-    val scrollView: LockableNestedScrollView,
+    val callsLayoutManager: LockableLayoutManager,
     val deleteButton: CircularImageView,
     val editButton: CircularImageView,
     val pickContact: (Int) -> Unit,
     val onTouch: (Int) -> Unit, // Через колбэк передаётся позиция контакта, на котором находится палец пользователя
     val context: Context,
-    val settings: Settings,
     val vibrator: Vibrator
 ) : RecyclerView.Adapter<CirAdapter.Holder>() {
 
     private val touchHelper = ItemTouchHelper(ItemTouchCallbackCir())
+    private val settings = Loader.loadSettings()
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -80,7 +80,7 @@ class CirAdapter(
                 } else {
                     setImageDrawable(contact!!.getPhoto())
                 }
-                lockableNestedScrollView = scrollView
+                lockableNestedScrollView = callsLayoutManager
                 deleteCir = deleteButton
                 editCir = editButton
                 size = settings.sizeCirs
@@ -124,7 +124,7 @@ class CirAdapter(
                 setOnDragListener { _, event ->
                     when (event.action) {
                         DragEvent.ACTION_DRAG_ENTERED -> {
-                            vibrator.vibrateSafety(ManagerViewModel.VIBRO)
+                            vibrator.vibrateSafety(Keys.VIBRO)
                             /*setImageDrawable(
                                 items[posDrag].drawable.also {
                                     items[posDrag].setImageDrawable(
