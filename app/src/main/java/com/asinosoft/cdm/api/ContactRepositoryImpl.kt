@@ -126,7 +126,7 @@ class ContactRepositoryImpl(private val contentResolver: ContentResolver) : Cont
         private fun parsePhone(contact: Contact) {
             val rawNumber = cursor.getStringOrNull(data4) ?: cursor.getString(data1)
             if (null == contact.phones.find { it.value == rawNumber }) {
-                PhoneItem(cursor.getInt(data2), rawNumber).let {
+                PhoneItem(rawNumber, cursor.getInt(data2)).let {
                     contact.phones.add(it)
                 }
             }

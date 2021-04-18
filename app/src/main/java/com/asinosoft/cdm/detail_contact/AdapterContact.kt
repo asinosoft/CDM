@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.Metoths
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.*
 import org.jetbrains.anko.textResource
@@ -65,95 +64,89 @@ class AdapterContact(private val elements: List<ContactItem>) :
             mCustomRight.visibility = View.GONE
         }
 
-        private fun bindEmail(item: EmailItem) {
-            numberType.textResource = Email.getTypeLabelResource(item.emailType)
-            number.text = item.value
+        private fun bindEmail(email: EmailItem) {
+            numberType.textResource = Email.getTypeLabelResource(email.emailType)
+            number.text = email.value
             mCustomRight.setBackgroundResource(R.drawable.email_192)
             mCustomMiddle.visibility = View.INVISIBLE
             mCustomLeft.visibility = View.INVISIBLE
             bText.visibility = View.GONE
             mCustomRight.setOnClickListener {
-                Metoths.sendEmail(item.value, context)
+                email.send(context)
             }
         }
 
-        private fun bindPhone(item: PhoneItem) {
-            numberType.textResource = Phone.getTypeLabelResource(item.phoneType)
+        private fun bindPhone(phone: PhoneItem) {
+            numberType.textResource = Phone.getTypeLabelResource(phone.phoneType)
             mCustomMiddle.setBackgroundResource(R.drawable.call)
-            number.text = item.prettyNumber
+            number.text = phone.prettyNumber
             mCustomLeft.visibility = View.INVISIBLE
             bText.visibility = View.GONE
             mCustomMiddle.setOnClickListener { v ->
-                Metoths.callPhone(item.value, context)
+                phone.call(context)
             }
             mCustomRight.setBackgroundResource(R.drawable.message)
             mCustomRight.setOnClickListener { v ->
-                Metoths.sendMsg(item.value, context)
+                phone.sms(context)
             }
         }
 
-        private fun bindSkype(item: SkypeItem) {
+        private fun bindSkype(skype: SkypeItem) {
             numberType.text = context.getString(R.string.type_skype)
-            number.text = item.value
+            number.text = skype.value
             mCustomMiddle.setBackgroundResource(R.drawable.skype_message)
             mCustomRight.setBackgroundResource(R.drawable.skype_call)
             mCustomLeft.visibility = View.INVISIBLE
             bText.visibility = View.GONE
             mCustomMiddle.setOnClickListener {
-                Metoths.skypeMsg(item.value, context)
+                skype.chat(context)
             }
             mCustomRight.setOnClickListener {
-                Metoths.skypeCall(item.value, context)
+                skype.call(context)
             }
         }
 
-        private fun bindTelegram(item: TelegramItem) {
+        private fun bindTelegram(telegram: TelegramItem) {
             numberType.text = context.getString(R.string.type_telegram)
-            number.text = item.value
-            mCustomRight.setBackgroundResource(R.drawable.telegram)
+            number.text = telegram.value
+            mCustomRight.setBackgroundResource(R.drawable.ic_telegram)
             mCustomMiddle.visibility = View.INVISIBLE
             mCustomLeft.visibility = View.INVISIBLE
             bText.visibility = View.GONE
             mCustomRight.setOnClickListener {
-                Metoths.openTelegramNow(item.chatId, context)
+                telegram.chat(context)
             }
         }
 
-        private fun bindViber(item: ViberItem) {
+        private fun bindViber(viber: ViberItem) {
             numberType.text = context.getString(R.string.type_viber)
-            number.text = StHelper.convertNumber(item.value)
+            number.text = StHelper.convertNumber(viber.value)
             mCustomMiddle.setBackgroundResource(R.drawable.viber_message)
             mCustomRight.setBackgroundResource(R.drawable.viber)
             mCustomLeft.visibility = View.INVISIBLE
             bText.visibility = View.GONE
             mCustomMiddle.setOnClickListener {
-                Metoths.viberMsg(item.videoId, context)
+                viber.chat(context)
             }
             mCustomRight.setOnClickListener {
-                Metoths.viberCall(item.videoId, context)
+                viber.call(context)
             }
         }
 
-        private fun bindWhatsApp(item: WhatsAppItem) {
+        private fun bindWhatsApp(whatsapp: WhatsAppItem) {
             numberType.text = context.getString(R.string.type_whatsapp)
-            number.text = StHelper.convertNumber(item.value)
+            number.text = StHelper.convertNumber(whatsapp.value)
             mCustomLeft.setBackgroundResource(R.drawable.whatsapp_message)
             mCustomMiddle.setBackgroundResource(R.drawable.whatsapp_call)
             bText.visibility = View.GONE
-            item.chatId?.let { chatId ->
-                mCustomLeft.setOnClickListener {
-                    Metoths.openWhatsAppChat(chatId, context)
-                }
+            mCustomLeft.setOnClickListener {
+                whatsapp.chat(context)
             }
-            item.audioId?.let { audioId ->
-                mCustomMiddle.setOnClickListener {
-                    Metoths.callWhatsApp(audioId, context)
-                }
+            mCustomMiddle.setOnClickListener {
+                whatsapp.audio(context)
             }
-            item.videoId?.let { videoId ->
-                mCustomRight.setOnClickListener {
-                    Metoths.videoCallWhatsApp(videoId, context)
-                }
+            mCustomRight.setOnClickListener {
+                whatsapp.video(context)
             }
         }
     }

@@ -69,7 +69,7 @@ class ContactSettingsFragment : Fragment() {
             Actions.Email -> R.drawable.email_192
             Actions.PhoneCall -> R.drawable.telephony_call_192
             Actions.Viber -> R.drawable.viber
-            Actions.Telegram -> R.drawable.telegram
+            Actions.Telegram -> R.drawable.ic_telegram
         }
     }
 

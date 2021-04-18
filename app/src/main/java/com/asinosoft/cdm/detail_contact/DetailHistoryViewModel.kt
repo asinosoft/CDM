@@ -1,6 +1,5 @@
 package com.asinosoft.cdm.detail_contact
 
-import android.provider.ContactsContract
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.asinosoft.cdm.App
@@ -35,7 +34,7 @@ class DetailHistoryViewModel() : ViewModel() {
             ?: App.contactRepository.getContactByPhone(phoneNumber)
             ?: Contact(0, phoneNumber).apply {
                 phones.add(
-                    PhoneItem(ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE, phoneNumber)
+                    PhoneItem(phoneNumber)
                 )
             }
 

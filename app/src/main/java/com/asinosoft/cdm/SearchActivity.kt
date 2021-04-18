@@ -46,11 +46,11 @@ class SearchActivity : AppCompatActivity() {
         v.fab.setOnClickListener { v.layoutKeyboard.toggle() }
 
         contactsAdapter.doOnClickContact { contact ->
-            val intent = Intent(this, DetailHistoryActivity::class.java)
-                .putExtra(Keys.number, contact.phones.first().value)
-                .putExtra(Keys.id, contact.id)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
+            Metoths.openDetailContact(
+                contact.phones.first().value,
+                contact,
+                this
+            )
         }
 
         contactsAdapter.setContactList(contacts)

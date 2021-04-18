@@ -1,11 +1,8 @@
 package com.asinosoft.cdm
 
-import android.Manifest
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.PointF
@@ -25,14 +22,11 @@ import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
-import androidx.core.app.ActivityCompat
-import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.Actions.*
 import com.asinosoft.cdm.Metoths.Companion.Direction.*
 import com.asinosoft.cdm.api.Contact
 import net.cachapa.expandablelayout.util.FastOutSlowInInterpolator
-import org.jetbrains.anko.toast
 import org.jetbrains.anko.wrapContent
 import timber.log.Timber
 import kotlin.math.absoluteValue
@@ -58,87 +52,6 @@ class Metoths {
                 }
             }
             return r
-        }
-
-        fun sendMsg(telNum: String, context: Context) {
-            Timber.i("sendMsg: %s", telNum)
-            val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$telNum"))
-            context.startActivity(intent)
-        }
-
-        fun sendEmail(email: String, context: Context) {
-            Timber.i("sendEmail: %s", email)
-            val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$email"))
-            context.startActivity(intent)
-        }
-
-        fun skypeCall(userName: String, context: Context) {
-            Timber.i("skypeCall: %s", userName)
-            val sky = Intent("android.intent.action.VIEW")
-            sky.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            sky.data = Uri.parse("skype:$userName")
-            context.startActivity(sky)
-        }
-
-        fun skypeMsg(skName: String, context: Context) {
-            val sky = Intent("android.intent.action.VIEW")
-            sky.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            sky.data = Uri.parse("skype:$skName?chat")
-            context.startActivity(sky)
-        }
-
-        fun callWhatsApp(id: String, context: Context) {
-            val intent = Intent().setAction(Intent.ACTION_VIEW)
-            intent.setDataAndType(
-                Uri.parse("content://com.android.contacts/data/$id"),
-                "vnd.android.cursor.item/vnd.com.whatsapp.voip.call"
-            )
-            intent.setPackage("com.whatsapp")
-            context.startActivity(intent)
-        }
-
-        fun videoCallWhatsApp(id: String, context: Context) {
-            val intent = Intent().setAction(Intent.ACTION_VIEW)
-            intent.setDataAndType(
-                Uri.parse("content://com.android.contacts/data/$id"),
-                "vnd.android.cursor.item/vnd.com.whatsapp.video.call"
-            )
-            intent.setPackage("com.whatsapp")
-            context.startActivity(intent)
-        }
-
-        fun openWhatsAppChat(id: String, context: Context) {
-            val intent = Intent().setAction(Intent.ACTION_VIEW)
-            intent.setDataAndType(
-                Uri.parse("content://com.android.contacts/data/$id"),
-                "vnd.android.cursor.item/vnd.com.whatsapp.profile"
-            )
-            intent.setPackage("com.whatsapp")
-            context.startActivity(intent)
-        }
-
-        fun viberMsg(id: String, context: Context) {
-            val intent = Intent()
-                .setAction(Intent.ACTION_VIEW)
-                .setDataAndType(
-                    Uri.parse("content://com.android.contacts/data/$id"),
-                    "vnd.android.cursor.item/vnd.com.viber.voip.viber_number_message"
-                )
-                .setPackage("com.viber.voip")
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(intent)
-        }
-
-        fun viberCall(id: String, context: Context) {
-            val intent = Intent()
-                .setAction(Intent.ACTION_VIEW)
-                .setDataAndType(
-                    Uri.parse("content://com.android.contacts/data/$id"),
-                    "vnd.android.cursor.item/vnd.com.viber.voip.viber_number_call"
-                )
-                .setPackage("com.viber.voip")
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(intent)
         }
 
         /**
@@ -217,7 +130,7 @@ class Metoths {
         }
 
         fun openDetailContact(num: String, contact: Contact, context: Context) {
-
+            Timber.i("Окно контакта: [%s] %s (%s)", contact.id, contact.name, num)
             Intent(context, DetailHistoryActivity::class.java).apply {
                 putExtra(Keys.number, num)
                 putExtra(Keys.id, contact.id)
@@ -298,7 +211,7 @@ class Metoths {
                 when (actions) {
                     WhatsApp -> R.drawable.whatsapp_192
                     Viber -> R.drawable.viber
-                    Telegram -> R.drawable.telegram
+                    Telegram -> R.drawable.ic_telegram
                     PhoneCall -> R.drawable.telephony_call_192
                     Email -> R.drawable.email_192
                     Sms -> R.drawable.sms_192
@@ -352,91 +265,6 @@ class Metoths {
                 Timber.e(e)
             }
             return str
-        }
-
-        @SuppressLint("MissingPermission")
-        fun callPhone(telNum: String, context: Context) {
-            Timber.i("callPhone: %s", telNum)
-            val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + Uri.encode(telNum)))
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.CALL_PHONE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return
-            }
-            context.startActivity(intent)
-        }
-
-        fun sendSMS(phone: String, context: Context) {
-            Timber.i("sendSMS: %s", phone)
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phone, null)))
-        }
-
-        fun mailToEmail(email: String, context: Context) {
-            Timber.i("mailToEmail: %s", email)
-            val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", email, null))
-            emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(Intent.createChooser(emailIntent, "Send email..."))
-        }
-
-        fun openTelegram(phone: String, context: Context) {
-            Timber.i("openTelegram: %s", phone)
-            val telegram =
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://telegram.me/InfotechAvl_bot"))
-            telegram.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(telegram)
-        }
-
-        fun openTelegramNow(id: String, context: Context) {
-            Timber.i("openTelegramNow: %s", id)
-            val isAppInstalled = appInstalledOrNot("org.telegram.messenger", context)
-            if (isAppInstalled) {
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.setDataAndType(
-                    Uri.parse("content://com.android.contacts/data/$id"),
-                    "vnd.android.cursor.item/vnd.org.telegram.messenger.android.profile"
-                )
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(intent)
-            } else {
-                context.toast("Ошибка! Telegram не установлен!")
-            }
-        }
-
-        fun openViber(phone: String, context: Context) {
-            Timber.i("openViber: %s", phone)
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.setClassName("com.viber.voip", "com.viber.voip.WelcomeActivity")
-            intent.data = "tel:$phone".toUri()
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(intent)
-        }
-
-        fun openWhatsApp(num: String, context: Context) {
-            Timber.i("openWhatsApp: %s", num)
-            val isAppInstalled = appInstalledOrNot("com.whatsapp", context)
-            if (isAppInstalled) {
-                val intent = Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://api.whatsapp.com/send?phone=$num")
-                )
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(intent)
-            } else {
-                context.toast("Ошибка! WhatsApp не установлен!")
-            }
-        }
-
-        private fun appInstalledOrNot(uri: String, context: Context): Boolean {
-            val pm = context.packageManager
-            return try {
-                pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES)
-                true
-            } catch (e: PackageManager.NameNotFoundException) {
-                false
-            }
         }
     }
 }

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.*
 import com.asinosoft.cdm.api.CallHistoryItem
+import com.asinosoft.cdm.data.PhoneItem
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
 import com.zerobranch.layout.SwipeLayout
 import org.jetbrains.anko.imageResource
@@ -94,13 +95,15 @@ class HistoryDetailsCallsAdapter(val context: Context) :
                             when (direction) {
                                 SwipeLayout.RIGHT -> {
                                     if (settings.rightButton != Actions.WhatsApp)
-                                        Metoths.callPhone(item.phone, context)
-                                    else Metoths.openWhatsApp(item.phone, context)
+                                        callPhone(item)
+                                    else
+                                        openWhatsAppChat(item)
                                 }
                                 SwipeLayout.LEFT -> {
                                     if (settings.leftButton != Actions.WhatsApp)
-                                        Metoths.callPhone(item.phone, context)
-                                    else Metoths.openWhatsApp(item.phone, context)
+                                        callPhone(item)
+                                    else
+                                        openWhatsAppChat(item)
                                 }
                                 else -> Log.e(
                                     "AdapterHistory.kt: ",
@@ -117,5 +120,13 @@ class HistoryDetailsCallsAdapter(val context: Context) :
                 )
             }
         }
+    }
+
+    private fun callPhone(item: CallHistoryItem) {
+        PhoneItem(item.phone).call(context)
+    }
+
+    private fun openWhatsAppChat(item: CallHistoryItem) {
+        item.contact.whatsapps.firstOrNull()?.chat(context)
     }
 }

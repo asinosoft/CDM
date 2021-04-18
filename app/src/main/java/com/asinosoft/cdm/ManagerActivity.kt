@@ -22,6 +22,7 @@ import com.asinosoft.cdm.adapters.NumbeAdapter
 import com.asinosoft.cdm.api.Contact
 import com.asinosoft.cdm.api.FavoriteContact
 import com.asinosoft.cdm.api.FavoriteContactRepositoryImpl
+import com.asinosoft.cdm.data.PhoneItem
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.databinding.FavoritesFragmentBinding
 import com.asinosoft.cdm.dialer.Utilities
@@ -91,7 +92,7 @@ class ManagerActivity : AppCompatActivity() {
                     SearchActivity.RESULT_CALL -> {
                         it.data?.extras?.getString(Keys.number)?.let { phoneNumber ->
                             Timber.d("CALL: $phoneNumber")
-                            Metoths.callPhone(phoneNumber, this)
+                            PhoneItem(phoneNumber).call(this)
                         }
                     }
                 }

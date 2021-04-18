@@ -12,15 +12,12 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Actions.*
 import com.asinosoft.cdm.Metoths.Companion.action
-import com.asinosoft.cdm.Metoths.Companion.callPhone
 import com.asinosoft.cdm.Metoths.Companion.checkMoving
 import com.asinosoft.cdm.Metoths.Companion.diff
 import com.asinosoft.cdm.Metoths.Companion.diffAction
 import com.asinosoft.cdm.Metoths.Companion.diffVisible
-import com.asinosoft.cdm.Metoths.Companion.mailToEmail
 import com.asinosoft.cdm.Metoths.Companion.makeTouch
 import com.asinosoft.cdm.Metoths.Companion.openDetailContact
-import com.asinosoft.cdm.Metoths.Companion.sendSMS
 import com.asinosoft.cdm.Metoths.Companion.setImageAction
 import com.asinosoft.cdm.Metoths.Companion.setSize
 import com.asinosoft.cdm.Metoths.Companion.setTranslate
@@ -213,22 +210,17 @@ class CircleImage @JvmOverloads constructor(
             return
         }
         when (action) {
-            WhatsApp -> contact.whatsapps.firstOrNull()?.chatId?.let {
-                Metoths.openWhatsAppChat(
-                    it,
-                    context
-                )
-            } ?: error("Нет контакта в WhatsApp")
-            Viber -> contact.vibers.firstOrNull()?.let { Metoths.viberCall(it.videoId, context) }
+            WhatsApp -> contact.whatsapps.firstOrNull()?.chat(context)
+                ?: error("Нет контакта в WhatsApp")
+            Viber -> contact.vibers.firstOrNull()?.call(context)
                 ?: error("Нет контакта в Viber")
-            Telegram -> contact.telegrams.firstOrNull()
-                ?.let { Metoths.openTelegramNow(it.chatId, context) }
+            Telegram -> contact.telegrams.firstOrNull()?.chat(context)
                 ?: error("Нет контакта в Telegram")
-            PhoneCall -> contact.phones.firstOrNull()?.let { callPhone(it.value, context) }
+            PhoneCall -> contact.phones.firstOrNull()?.call(context)
                 ?: error("Номер телефона не указан")
-            Email -> contact.emails.firstOrNull()?.let { mailToEmail(it.value, context) }
+            Email -> contact.emails.firstOrNull()?.send(context)
                 ?: error("Нет электронной почты")
-            Sms -> contact.phones.firstOrNull()?.let { sendSMS(it.value, context) }
+            Sms -> contact.phones.firstOrNull()?.sms(context)
                 ?: error("Номер телефона не указан")
         }
     }

@@ -66,10 +66,10 @@ class AdapterContacts : RecyclerView.Adapter<AdapterContacts.Holder>() {
                 override fun onOpen(direction: Int, isContinuous: Boolean) {
                     when (direction) {
                         SwipeLayout.RIGHT -> {
-                            contact.phones.firstOrNull()?.let { Metoths.callPhone(it.value, context) }
+                            contact.phones.firstOrNull()?.call(context)
                         }
                         SwipeLayout.LEFT -> {
-                            contact.whatsapps.firstOrNull()?.chatId?.let { Metoths.openWhatsAppChat(it, context) }
+                            contact.whatsapps.firstOrNull()?.chat(context)
                         }
                     }
                     v.swipeLayout.close()

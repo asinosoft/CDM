@@ -1,7 +1,6 @@
 package com.asinosoft.cdm.adapters
 
 import android.content.Context
-import android.content.Intent
 import android.provider.CallLog
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.asinosoft.cdm.*
 import com.asinosoft.cdm.api.CallHistoryItem
+import com.asinosoft.cdm.data.PhoneItem
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
 import com.zerobranch.layout.SwipeLayout
 import org.jetbrains.anko.imageResource
@@ -67,13 +67,6 @@ class AdapterCallLogs(
         }
     }
 
-    private fun openDetail(item: CallHistoryItem) {
-        val intent = Intent(this.context, DetailHistoryActivity::class.java)
-        intent.putExtra(Keys.number, item.phone)
-        intent.putExtra(Keys.id, item.contact.id)
-        context.startActivity(intent)
-    }
-
     inner class HolderHistory(val v: ViewBinding) : RecyclerView.ViewHolder(v.root) {
 
         private fun setIcons(
@@ -125,13 +118,15 @@ class AdapterCallLogs(
                         when (direction) {
                             SwipeLayout.RIGHT -> {
                                 if (settings.rightButton != Actions.WhatsApp)
-                                    Metoths.callPhone(item.phone, context)
-                                else Metoths.openWhatsApp(item.phone, context)
+                                    callPhone(item)
+                                else
+                                    openWhatsAppChat(item)
                             }
                             SwipeLayout.LEFT -> {
                                 if (settings.leftButton != Actions.WhatsApp)
-                                    Metoths.callPhone(item.phone, context)
-                                else Metoths.openWhatsApp(item.phone, context)
+                                    callPhone(item)
+                                else
+                                    openWhatsAppChat(item)
                             }
                             else -> Log.e(
                                 "AdapterHistory.kt: ",
@@ -146,8 +141,22 @@ class AdapterCallLogs(
                     }
                 })
 
-                dragLayout.setOnClickListener { openDetail(item) }
+                dragLayout.setOnClickListener {
+                    Metoths.openDetailContact(
+                        item.phone,
+                        item.contact,
+                        context
+                    )
+                }
             }
         }
+    }
+
+    private fun callPhone(item: CallHistoryItem) {
+        PhoneItem(item.phone).call(context)
+    }
+
+    private fun openWhatsAppChat(item: CallHistoryItem) {
+        item.contact.whatsapps.firstOrNull()?.chat(context)
     }
 }
