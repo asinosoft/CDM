@@ -84,7 +84,7 @@ class CallHistoryRepositoryImpl(private val contentResolver: ContentResolver) :
         private val colDate = cursor.getColumnIndex(CallLog.Calls.DATE)
         private val colDuration = cursor.getColumnIndex(CallLog.Calls.DURATION)
 
-        fun getAll(): java.util.ArrayList<CallHistoryItem> {
+        fun getAll(): List<CallHistoryItem> {
             val result = java.util.ArrayList<CallHistoryItem>()
             while (cursor.moveToNext()) {
                 result.add(getOne())
@@ -92,7 +92,7 @@ class CallHistoryRepositoryImpl(private val contentResolver: ContentResolver) :
             return result
         }
 
-        fun <T> getUnique(distinctBy: (CallHistoryItem) -> T): java.util.ArrayList<CallHistoryItem> {
+        fun <T> getUnique(distinctBy: (CallHistoryItem) -> T): List<CallHistoryItem> {
             val set = HashSet<T>()
             val result = java.util.ArrayList<CallHistoryItem>()
             while (cursor.moveToNext()) {

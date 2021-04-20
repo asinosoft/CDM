@@ -49,6 +49,7 @@ class AdapterCallLogs(
      */
     fun setList(list: List<CallHistoryItem>) {
         items = list
+        notifyDataSetChanged()
         Timber.d("AdapterCallLogs получил %d звонков/контактов", list.size)
     }
 
