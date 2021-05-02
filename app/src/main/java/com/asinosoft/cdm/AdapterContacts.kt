@@ -7,10 +7,9 @@ import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths.Companion.setColoredText
-import com.asinosoft.cdm.api.Contact
+import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.HistorySwipingItemBinding
 import com.zerobranch.layout.SwipeLayout
-import kotlinx.coroutines.*
 
 class AdapterContacts : RecyclerView.Adapter<AdapterContacts.Holder>() {
 
@@ -66,10 +65,10 @@ class AdapterContacts : RecyclerView.Adapter<AdapterContacts.Holder>() {
                 override fun onOpen(direction: Int, isContinuous: Boolean) {
                     when (direction) {
                         SwipeLayout.RIGHT -> {
-                            contact.phones.firstOrNull()?.call(context)
+                            contact.phones.firstOrNull()?.perform(context)
                         }
                         SwipeLayout.LEFT -> {
-                            contact.whatsapps.firstOrNull()?.chat(context)
+                            contact.chats.firstOrNull()?.perform(context)
                         }
                     }
                     v.swipeLayout.close()

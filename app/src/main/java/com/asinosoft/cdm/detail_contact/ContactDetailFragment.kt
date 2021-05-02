@@ -26,10 +26,8 @@ class ContactDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerView = requireView().findViewById<RecyclerView>(R.id.recyclerViewForContact)
-        var lim = LinearLayoutManager(requireContext())
-        lim.orientation = LinearLayoutManager.VERTICAL
-        recyclerView.layoutManager = lim
-        recyclerView.adapter = AdapterContact(model.getContact().getAllContacts())
+        recyclerView = requireView().findViewById(R.id.recyclerViewForContact)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        recyclerView.adapter = AdapterContact(model.getContact())
     }
 }

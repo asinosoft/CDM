@@ -5,20 +5,20 @@ import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
+import com.asinosoft.cdm.data.Action
+import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.detail_contact.ContactDetailFragment
 import com.asinosoft.cdm.detail_contact.DetailHistoryViewModel
 import com.asinosoft.cdm.fragments.ContactSettingsFragment
-import com.asinosoft.cdm.fragments.ScrollViewListener
 import com.jaeger.library.StatusBarUtil
 import com.ogaclejapan.smarttablayout.SmartTabLayout
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems
-import kotlinx.android.synthetic.main.activity_detail_history.*
 
 /**
  * Активномть "Просмотр контакта"
  */
-class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener {
+class DetailHistoryActivity : AppCompatActivity() {
 
     lateinit var viewPager: ViewPager
     private val viewModel: DetailHistoryViewModel by viewModels()
@@ -27,10 +27,13 @@ class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_history)
 
-        viewModel.initialize(
-            phoneNumber = intent.getStringExtra(Keys.number) ?: "",
-            contactID = intent.getLongExtra(Keys.id, 0)
-        )
+        val phoneNumber = intent.getStringExtra(Keys.number) ?: ""
+        val contactID = intent.getLongExtra(Keys.id, 0)
+        val contact = App.contactRepository.getContactById(contactID)
+            ?: Contact(0, phoneNumber).apply {
+                actions.add(Action(0, Action.Type.PhoneCall, phoneNumber, ""))
+            }
+        viewModel.initialize(contact)
 
         val adapter = FragmentPagerItemAdapter(
             supportFragmentManager,
@@ -49,9 +52,5 @@ class DetailHistoryActivity : AppCompatActivity(), ScrollViewListener {
         StatusBarUtil.setTranslucentForImageView(this, imageView)
 
         imageView.setImageDrawable(viewModel.getContactPhoto())
-    }
-
-    override fun onScrolledToTop() {
-        drag_layout.setTouchMode(true)
     }
 }

@@ -23,9 +23,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.view.isVisible
-import com.asinosoft.cdm.Actions.*
 import com.asinosoft.cdm.Metoths.Companion.Direction.*
-import com.asinosoft.cdm.api.Contact
+import com.asinosoft.cdm.data.Action
+import com.asinosoft.cdm.data.Contact
+import com.asinosoft.cdm.data.DirectActions
 import net.cachapa.expandablelayout.util.FastOutSlowInInterpolator
 import org.jetbrains.anko.wrapContent
 import timber.log.Timber
@@ -206,16 +207,9 @@ class Metoths {
             UNKNOWN -> null
         }
 
-        fun ImageView.setImageAction(actions: Actions) {
+        fun ImageView.setImageAction(action: Action.Type) {
             this.setImageResource(
-                when (actions) {
-                    WhatsApp -> R.drawable.whatsapp_192
-                    Viber -> R.drawable.viber
-                    Telegram -> R.drawable.ic_telegram
-                    PhoneCall -> R.drawable.telephony_call_192
-                    Email -> R.drawable.email_192
-                    Sms -> R.drawable.sms_192
-                }
+                Action.resourceByType(action)
             )
         }
 

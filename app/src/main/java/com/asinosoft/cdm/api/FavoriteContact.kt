@@ -1,5 +1,6 @@
 package com.asinosoft.cdm.api
 
+import com.asinosoft.cdm.data.Contact
 import com.google.gson.Gson
 
 /**

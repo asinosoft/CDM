@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/relativeL"
     android:layout_width="match_parent"
     android:layout_height="65dp"
-    android:clickable="true"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:focusable="true"
-    android:focusableInTouchMode="true">
+    android:clickable="false"
+    android:focusable="auto"
+    android:focusableInTouchMode="false">
 
     <com.zerobranch.layout.SwipeLayout
         android:id="@+id/swipe_layout"
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:draggedItem="@id/drag_layout"
-        app:leftItem="@id/imageLeftAction"
-        app:rightItem="@id/imageRightAction"
-        app:swipeDirection="left|right"
-        app:isTogether="true">
+        app:isTogether="true"
+        app:leftItem="@id/imageRightAction"
+        app:rightItem="@id/imageLeftAction"
+        app:swipeDirection="left|right">
 
         <com.asinosoft.cdm.CircularImageView
             android:id="@+id/imageLeftAction"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_marginStart="-64dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="-64dp"
             android:src="@drawable/telephony_call_192"
-            android:visibility="visible"/>
+            android:visibility="visible" />
 
         <com.asinosoft.cdm.CircularImageView
             android:id="@+id/imageRightAction"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_marginEnd="-64dp"
+            android:layout_marginStart="-64dp"
             android:src="@drawable/whatsapp_192"
-            android:layout_gravity="end"
-            android:visibility="visible"/>
+            android:visibility="visible" />
 
         <RelativeLayout
             android:id="@+id/drag_layout"
@@ -50,14 +50,14 @@
 
             <TextView
                 android:id="@+id/name"
-                android:singleLine="true"
-                android:ellipsize="end"
                 android:layout_width="match_parent"
                 android:layout_height="32dp"
                 android:layout_marginEnd="15dp"
                 android:layout_toStartOf="@+id/dateContact"
                 android:layout_toEndOf="@id/imageContact"
+                android:ellipsize="end"
                 android:padding="4dp"
+                android:singleLine="true"
                 android:text="name"
                 android:textSize="18sp"
                 android:textStyle="normal" />
@@ -84,20 +84,20 @@
                 android:id="@+id/timeContact"
                 android:layout_width="wrap_content"
                 android:layout_height="22dp"
+                android:layout_above="@id/separator"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="13dp"
                 android:text="time"
-                android:layout_above="@id/separator"
                 android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/dateContact"
                 android:layout_width="wrap_content"
                 android:layout_height="22dp"
-                android:layout_marginEnd="16dp"
                 android:layout_above="@id/timeContact"
                 android:layout_alignParentEnd="true"
+                android:layout_marginEnd="16dp"
                 android:text="date"
                 android:textSize="16sp" />
 
@@ -105,9 +105,9 @@
                 android:id="@+id/separator"
                 android:layout_width="wrap_content"
                 android:layout_height="1dp"
+                android:layout_below="@id/imageContact"
                 android:layout_marginStart="64dp"
                 android:layout_marginEnd="16dp"
-                android:layout_below="@id/imageContact"
                 android:background="#A2A59C" />
 
         </RelativeLayout>

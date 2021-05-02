@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asinosoft.cdm.Metoths.Companion.toggle
-import com.asinosoft.cdm.api.Contact
+import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ActivitySearchBinding
 import com.jaeger.library.StatusBarUtil
 
@@ -36,7 +36,7 @@ class SearchActivity : AppCompatActivity() {
     private fun initActivity() {
         contacts = App.contactRepository
             .getContacts()
-            .filter { it.phones.isNotEmpty() }
+            .filter { contact -> contact.phones.isNotEmpty() }
             .sortedBy { it.name }
 
         v.rvFilteredContacts.layoutManager = LinearLayoutManager(this)

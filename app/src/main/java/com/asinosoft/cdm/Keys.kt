@@ -15,11 +15,17 @@ class Keys {
         val Settings = "Settings"
         val Cirs = "Cirs"
         val Preference = "Preferences"
+        const val CONTACT_PREFERENCES = "Contact#"
         val ManagerPreference = "ManagerPreference"
 
         /**
          * Длительность вибрации
          */
         const val VIBRO = 30L
+
+        /**
+         * Показываемое количество последних звонков
+         */
+        const val CALL_HISTORY_LIMIT = 60
     }
 }

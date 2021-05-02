@@ -19,6 +19,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
             android:backgroundTint="@color/white_gray_light"
+            android:visibility="visible"
             app:cardCornerRadius="20dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -198,6 +199,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:backgroundTint="@color/white_gray_light"
+            android:visibility="visible"
             app:cardCornerRadius="20dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -395,30 +397,24 @@
                                 android:layout_marginStart="10dp"
                                 android:layout_toEndOf="@id/contact"
                                 android:src="@drawable/contact_unfoto" />
+
                         </RelativeLayout>
 
-                        <RelativeLayout
+                        <TextView
+                            android:id="@+id/textView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:paddingBottom="20dp">
+                            android:text="@string/available_actions"
+                            android:textAlignment="center"
+                            android:textColor="@color/purple" />
 
-                            <com.asinosoft.cdm.CircularImageView
-                                android:id="@+id/cirChoose1"
-                                android:layout_width="86dp"
-                                android:layout_height="86dp"
-                                android:layout_marginHorizontal="10dp"
-                                android:src="@drawable/contact_unfoto" />
-
-                            <com.asinosoft.cdm.CircularImageView
-                                android:id="@+id/cirChoose2"
-                                android:layout_width="86dp"
-                                android:layout_height="86dp"
-                                android:layout_marginHorizontal="10dp"
-                                android:layout_toEndOf="@id/cirChoose1"
-                                android:src="@drawable/contact_unfoto" />
-
-                        </RelativeLayout>
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rv_actions"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:contentDescription="@string/available_actions"
+                            tools:itemCount="3"
+                            tools:listitem="@layout/action_item" />
 
                     </LinearLayout>
                 </net.cachapa.expandablelayout.ExpandableLayout>

@@ -1,5 +1,7 @@
 package com.asinosoft.cdm.api
 
+import com.asinosoft.cdm.data.Contact
+
 /**
  * Информационный класс элементов истории.
  */

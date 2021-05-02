@@ -1,9 +1,11 @@
 package com.asinosoft.cdm.api
 
-import android.content.ContentResolver
+import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.provider.ContactsContract
+import android.provider.ContactsContract.CommonDataKinds.Email
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import androidx.core.database.getStringOrNull
 import com.asinosoft.cdm.data.*
 import com.asinosoft.cdm.detail_contact.StHelper
@@ -12,10 +14,10 @@ import timber.log.Timber
 /**
  * Доступ к контактам
  */
-class ContactRepositoryImpl(private val contentResolver: ContentResolver) : ContactRepository {
+class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
     override fun initialize() {
-        contacts = contentResolver.query(
+        contacts = context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             null, null, null
         )!!.let {
@@ -46,7 +48,7 @@ class ContactRepositoryImpl(private val contentResolver: ContentResolver) : Cont
 
     override fun getContactByUri(uri: Uri): Contact? {
         val projections = arrayOf(ContactsContract.Contacts._ID)
-        val cursor = contentResolver.query(uri, projections, null, null, null)
+        val cursor = context.contentResolver.query(uri, projections, null, null, null)
         if (cursor != null && cursor.moveToFirst()) {
             val columnId = cursor.getColumnIndex(projections[0])
             val id = cursor.getLong(columnId)
@@ -108,14 +110,37 @@ class ContactRepositoryImpl(private val contentResolver: ContentResolver) : Cont
                     }
                 ).let { contact ->
                     contact.photoUri = cursor.getStringOrNull(this@ContactCursorAdapter.photoUri)
-                    when (ContactItem.Type.mimeToType(cursor.getString(mimeType))) {
-                        ContactItem.Type.BIRTHDAY -> parseBirthday(contact)
-                        ContactItem.Type.PHONE -> parsePhone(contact)
-                        ContactItem.Type.EMAIL -> parseEmail(contact)
-                        ContactItem.Type.SKYPE -> parseSkype(contact)
-                        ContactItem.Type.TELEGRAM -> parseTelegram(contact)
-                        ContactItem.Type.VIBER -> parseViber(contact)
-                        ContactItem.Type.WHATSAPP -> parseWhatsapp(contact)
+                    val mime = cursor.getString(mimeType).dropWhile { c -> c != '/' }
+                    when (mime) {
+                        "/contact_event" -> parseBirthday(contact)
+                        "/phone_v2" -> parsePhone(contact)
+                        "/email_v2" -> parseEmail(contact)
+                        "/com.skype4life.message" -> parseAction(contact, Action.Type.SkypeChat)
+                        "/com.skype4life.phone" -> parseAction(contact, Action.Type.SkypeCall)
+                        "/vnd.org.telegram.messenger.android.profile" -> parseAction(
+                            contact,
+                            Action.Type.TelegramChat
+                        )
+                        "/vnd.com.viber.voip.viber_number_message" -> parseAction(
+                            contact,
+                            Action.Type.ViberChat
+                        )
+                        "/vnd.com.viber.voip.viber_number_call" -> parseAction(
+                            contact,
+                            Action.Type.ViberCall
+                        )
+                        "/vnd.com.whatsapp.profile" -> parseAction(
+                            contact,
+                            Action.Type.WhatsAppChat
+                        )
+                        "/vnd.com.whatsapp.voip.call" -> parseAction(
+                            contact,
+                            Action.Type.WhatsAppCall
+                        )
+                        "/vnd.com.whatsapp.video.call" -> parseAction(
+                            contact,
+                            Action.Type.WhatsAppVideo
+                        )
                     }
                 }
             }
@@ -123,85 +148,44 @@ class ContactRepositoryImpl(private val contentResolver: ContentResolver) : Cont
             return result
         }
 
-        private fun parsePhone(contact: Contact) {
-            val rawNumber = cursor.getStringOrNull(data4) ?: cursor.getString(data1)
-            if (null == contact.phones.find { it.value == rawNumber }) {
-                PhoneItem(rawNumber, cursor.getInt(data2)).let {
-                    contact.phones.add(it)
-                }
-            }
-        }
-
-        private fun parseEmail(contact: Contact) {
-            val emailAddress = cursor.getString(data1)
-            if (null == contact.emails.find { it.value == emailAddress }) {
-                EmailItem(cursor.getInt(data2), emailAddress).let {
-                    contact.emails.add(it)
-                }
-            }
-        }
-
-        private fun parseWhatsapp(contact: Contact) {
-            StHelper.convertNumber(cursor.getString(data1))?.let { whatsappNumber ->
-                var whatsapp = contact.whatsapps.find { it.value == whatsappNumber }
-                if (null == whatsapp) {
-                    whatsapp = WhatsAppItem(whatsappNumber).also {
-                        contact.whatsapps.add(it)
-                    }
-                }
-
-                when (cursor.getString(mimeType)) {
-                    "vnd.android.cursor.item/vnd.com.whatsapp.profile" -> {
-                        whatsapp.chatId = cursor.getString(_id)
-                    }
-                    "vnd.android.cursor.item/vnd.com.whatsapp.voip.call" -> {
-                        whatsapp.audioId = cursor.getString(_id)
-                    }
-                    "vnd.android.cursor.item/vnd.com.whatsapp.video.call" -> {
-                        whatsapp.videoId = cursor.getString(_id)
-                    }
-                }
-            }
-        }
-
-        private fun parseViber(contact: Contact) {
-            StHelper.convertNumber(cursor.getString(data1))?.let { viberNumber ->
-                if (null == contact.vibers.find { it.value == viberNumber }) {
-                    ViberItem(viberNumber, cursor.getString(_id)).let {
-                        contact.vibers.add(it)
-                    }
-                }
-            }
-        }
-
-        private fun parseTelegram(contact: Contact) {
-            StHelper.convertNumber(cursor.getString(data3))?.let { telegramNumber ->
-                if (null == contact.telegrams.find { it.value == telegramNumber }) {
-                    TelegramItem(telegramNumber, cursor.getString(_id)).let {
-                        contact.telegrams.add(it)
-                    }
-                }
-            }
-        }
-
-        private fun parseSkype(contact: Contact) {
-            val skypeLogin = cursor.getString(data1)
-            if (null == contact.skypes.find { it.value == skypeLogin }) {
-                SkypeItem(skypeLogin).let {
-                    contact.skypes.add(it)
-                }
-            }
-        }
-
         private fun parseBirthday(contact: Contact) {
             val date = cursor.getString(data1)
 
             StHelper.parseDateToddMMyyyy(date)?.let { dateDMY ->
-                val age = StHelper.parseToMillis(date)
-                BirthdayItem(dateDMY, age).let {
-                    contact.birthday = it
-                }
+                contact.age = StHelper.parseToMillis(date)
+                contact.birthday = dateDMY
             }
+        }
+
+        private fun parsePhone(contact: Contact) {
+            val id = cursor.getInt(_id)
+            val number = cursor.getStringOrNull(data4) ?: cursor.getString(data1)
+            val description =
+                context.resources.getString(Phone.getTypeLabelResource(cursor.getInt(data2)))
+
+            contact.actions.add(
+                Action(id, Action.Type.PhoneCall, number, description)
+            )
+            contact.actions.add(
+                Action(id, Action.Type.Sms, number, description)
+            )
+        }
+
+        private fun parseEmail(contact: Contact) {
+            val id = cursor.getInt(_id)
+            val emailAddress = cursor.getString(data1)
+            val description =
+                context.resources.getString(Email.getTypeLabelResource(cursor.getInt(data2)))
+
+            contact.actions.add(Action(id, Action.Type.Email, emailAddress, description))
+        }
+
+        private fun parseAction(contact: Contact, type: Action.Type) {
+            val id = cursor.getInt(_id)
+            val value = cursor.getString(data1)
+            val description = cursor.getString(data2) ?: type.name
+
+            contact.actions.add(Action(id, type, value, description))
         }
     }
 }

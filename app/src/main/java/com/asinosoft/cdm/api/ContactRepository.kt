@@ -1,6 +1,7 @@
 package com.asinosoft.cdm.api
 
 import android.net.Uri
+import com.asinosoft.cdm.data.Contact
 
 /**
  * Доступ к контактам

@@ -3,7 +3,6 @@ package com.asinosoft.cdm
 import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.ClipData
-import android.content.ClipDescription
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -13,7 +12,11 @@ import android.view.DragEvent
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import com.asinosoft.cdm.Metoths.Companion.setSize
+import com.asinosoft.cdm.adapters.ActionListAdapter
+import com.asinosoft.cdm.data.Action
+import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.databinding.SettingsLayoutBinding
 import com.jaeger.library.StatusBarUtil
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
@@ -32,7 +35,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
 
     lateinit var settings: Settings
     lateinit var v: SettingsLayoutBinding
-    lateinit var draggedCir: CircularImageView
     var filePathPhoto = ""
     var widthScreen: Int? = null
         set(value) {
@@ -82,8 +84,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
                 leftButton = v.cirLeft.action,
                 topButton = v.cirTop.action,
                 bottomButton = v.cirBottom.action,
-                chooserButton1 = v.cirChoose1.action,
-                chooserButton2 = v.cirChoose2.action,
                 columnsCirs = v.seekBarColumnsButtons.progress,
                 borderWidthCirs = v.seekBarBorderButtons.progress,
             )
@@ -96,31 +96,16 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         v.cirLeft.action = settings.leftButton
         v.cirTop.action = settings.topButton
         v.cirBottom.action = settings.bottomButton
-        v.cirChoose1.action = settings.chooserButton1
-        v.cirChoose2.action = settings.chooserButton2
         v.cirRight.let(this::setCirData)
         v.cirLeft.let(this::setCirData)
         v.cirTop.let(this::setCirData)
         v.cirBottom.let(this::setCirData)
-        v.cirChoose1.let(this::setCirData)
-        v.cirChoose2.let(this::setCirData)
         v.seekBarColumnsButtons.setProgress(settings.columnsCirs.toFloat().takeIf { it > 0 } ?: 0f)
         v.seekBarBorderButtons.setProgress(settings.borderWidthCirs.toFloat())
     }
 
     private fun setCirData(cir: CircularImageView) {
-        cir.setImageResource(getResDrawable(cir.action))
-    }
-
-    private fun getResDrawable(action: Actions): Int {
-        return when (action) {
-            Actions.WhatsApp -> R.drawable.whatsapp_192
-            Actions.Sms -> R.drawable.sms_192
-            Actions.Email -> R.drawable.email_192
-            Actions.PhoneCall -> R.drawable.telephony_call_192
-            Actions.Viber -> R.drawable.viber
-            Actions.Telegram -> R.drawable.ic_telegram
-        }
+        cir.setImageResource(Action.resourceByType(cir.action))
     }
 
     private fun initFavoritesBlock() {
@@ -233,26 +218,20 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         v.cirTop.let(this@SettingsActivity::setDragListener)
         v.cirLeft.let(this@SettingsActivity::setDragListener)
         v.cirRight.let(this@SettingsActivity::setDragListener)
-        v.cirChoose1.let(this@SettingsActivity::setDragListener)
-        v.cirChoose2.let(this@SettingsActivity::setDragListener)
+
+        v.rvActions.layoutManager = GridLayoutManager(this, 1 + settings.columnsCirs)
+        v.rvActions.adapter = ActionListAdapter(Action.Type.values().asList(), settings)
     }
 
     private fun setDragListener(cir: CircularImageView) {
         cir.setOnLongClickListener {
             it.bringToFront()
-            draggedCir = cir
-            val item = ClipData.Item(it.tag as? CharSequence)
-            val dragData = ClipData(
-                it.tag as? CharSequence,
-                arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
-                item
-            )
             val myShadow = View.DragShadowBuilder(it)
 
             it.startDrag(
-                dragData,
+                ClipData.newPlainText(cir.action.name, cir.action.name),
                 myShadow,
-                null,
+                cir,
                 0
             )
         }
@@ -260,42 +239,49 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         cir.setOnDragListener { v, event ->
             when (event.action) {
                 DragEvent.ACTION_DRAG_STARTED -> {
-                    // Determines if this View can accept the dragged data
-                    event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
+                    when (event.localState) {
+                        is CircularImageView -> true
+                        is Action.Type -> true
+                        else -> false
+                    }
                 }
                 DragEvent.ACTION_DRAG_ENTERED -> {
-                    // Applies a green tint to the View. Return true; the return value is ignored.
-                    cir.swapCir(draggedCir)
-
-                    // Invalidate the view to force a redraw in the new tint
-                    v.invalidate()
-                    cir.invalidate()
+                    val item = event.localState
+                    when (item) {
+                        is CircularImageView -> {
+                            cir.swapCir(item)
+                            v.invalidate()
+                            cir.invalidate()
+                        }
+                        is Action.Type -> {
+                            cir.setImageResource(Action.resourceByType(item))
+                        }
+                    }
                     true
                 }
-
-                DragEvent.ACTION_DRAG_LOCATION ->
-                    // Ignore the event
-                    true
                 DragEvent.ACTION_DRAG_EXITED -> {
-                    // Re-sets the color tint to blue. Returns true; the return value is ignored.
-                    cir.swapCir(draggedCir)
-
-                    // Invalidate the view to force a redraw in the new tint
-                    v.invalidate()
+                    val item = event.localState
+                    when (item) {
+                        is CircularImageView -> {
+                            cir.swapCir(item)
+                            v.invalidate()
+                        }
+                        is Action.Type -> {
+                            cir.setImageResource(Action.resourceByType(cir.action))
+                        }
+                    }
                     true
                 }
                 DragEvent.ACTION_DROP -> {
-                    this.v.scrollView.setScrollingEnabled(true)
-                    false
-                }
-
-                DragEvent.ACTION_DRAG_ENDED -> {
-                    this.v.scrollView.setScrollingEnabled(true)
-                    false
+                    when (val item = event.localState) {
+                        is Action.Type -> {
+                            cir.action = item
+                            cir.setImageResource(Action.resourceByType(item))
+                        }
+                    }
+                    true
                 }
                 else -> {
-                    // An unknown action type was received.
-                    Log.e("DragDrop Example", "Unknown action type received by OnDragListener.")
                     false
                 }
             }
@@ -376,8 +362,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     private fun setAllCirs(width: Int? = null, @ColorInt color: Int? = null) {
         width?.let {
             cirBottom.borderWidth = it.toFloat()
-            cirChoose1.borderWidth = it.toFloat()
-            cirChoose2.borderWidth = it.toFloat()
             cirTop.borderWidth = it.toFloat()
             cirRight.borderWidth = it.toFloat()
             cirLeft.borderWidth = it.toFloat()
@@ -386,8 +370,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
 
         color?.let {
             cirBottom.borderColor = it
-            cirChoose1.borderColor = it
-            cirChoose2.borderColor = it
             cirTop.borderColor = it
             cirRight.borderColor = it
             cirLeft.borderColor = it

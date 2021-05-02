@@ -5,12 +5,10 @@ import android.graphics.PointF
 import android.net.Uri
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.Actions.*
 import com.asinosoft.cdm.Metoths.Companion.action
 import com.asinosoft.cdm.Metoths.Companion.checkMoving
 import com.asinosoft.cdm.Metoths.Companion.diff
@@ -26,7 +24,8 @@ import com.asinosoft.cdm.Metoths.Companion.toVisibility
 import com.asinosoft.cdm.Metoths.Companion.translateDiff
 import com.asinosoft.cdm.Metoths.Companion.translateTo
 import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
-import com.asinosoft.cdm.api.Contact
+import com.asinosoft.cdm.data.Contact
+import com.asinosoft.cdm.data.DirectActions
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.onLongClick
 import org.jetbrains.anko.sdk27.coroutines.onTouch
@@ -53,11 +52,6 @@ class CircleImage @JvmOverloads constructor(
         const val CONTACT_UNFOTO = R.drawable.contact_unfoto
     }
 
-    var contactSettings: ContactSettings? = null
-        set(value) {
-            field = value
-            if (value != null) updateSetting(value)
-        }
     var contact: Contact? = null
         set(value) {
             field = value
@@ -85,14 +79,6 @@ class CircleImage @JvmOverloads constructor(
         initTouch()
         initLongClickWithDrag()
         if (contact == null) setImageResource(R.drawable.plus)
-        contactSettings?.let {
-            updateSetting(it)
-        }
-    }
-
-    private fun updateSetting(settings: ContactSettings) {
-        borderWidth = settings.borderWidth
-        borderColor = settings.borderColor
     }
 
     fun setOptionalCirsVisible(b: Boolean) {
@@ -178,7 +164,7 @@ class CircleImage @JvmOverloads constructor(
             cirStart = null
             directActions?.action(diff.diffAction(animationRadius))?.let { action ->
                 if (actionImage?.isVisible == true) try {
-                    contact?.let { startAction(action, it) }
+                    action.perform(context)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -198,38 +184,14 @@ class CircleImage @JvmOverloads constructor(
                     if (vis && !isVisible) context.vibrator.vibrateSafety(Keys.VIBRO)
                 }
                 directActions?.action(diff.diffAction(animationRadius))?.let { action ->
-                    this.setImageAction(action)
+                    this.setImageAction(action.type)
                 }
             }
         }
     }
 
-    private fun startAction(action: Actions, contact: Contact) {
-        val error = fun(message: String) {
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-            return
-        }
-        when (action) {
-            WhatsApp -> contact.whatsapps.firstOrNull()?.chat(context)
-                ?: error("Нет контакта в WhatsApp")
-            Viber -> contact.vibers.firstOrNull()?.call(context)
-                ?: error("Нет контакта в Viber")
-            Telegram -> contact.telegrams.firstOrNull()?.chat(context)
-                ?: error("Нет контакта в Telegram")
-            PhoneCall -> contact.phones.firstOrNull()?.call(context)
-                ?: error("Номер телефона не указан")
-            Email -> contact.emails.firstOrNull()?.send(context)
-                ?: error("Нет электронной почты")
-            Sms -> contact.phones.firstOrNull()?.sms(context)
-                ?: error("Номер телефона не указан")
-        }
-    }
-
     private fun onTouchDown(event: MotionEvent) {
-        val number = selectedNumber
-        number?.let {
-            this.directActions = Loader.loadContactSettings(it).toDirectActions()
-        }
+        this.directActions = contact?.directActions
         touchDownForIndex()
         touchStart = event.toPointF()
         cirStart = this.toPointF()

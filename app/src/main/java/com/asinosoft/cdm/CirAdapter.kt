@@ -92,7 +92,7 @@ class CirAdapter(
                     touchHelper.startDrag(it)
                 }
 
-                directActions = getCircleDirectActions(selectedNumber)
+                directActions = favorite.contact?.directActions
                 deleteListener = {
                     favorites.removeContact(absoluteAdapterPosition)
                     notifyItemRemoved(absoluteAdapterPosition)
@@ -159,14 +159,6 @@ class CirAdapter(
                 }
             }
             v.root.setSize((v.circleImage.size + v.circleImage.animationRadius * 2).toInt())
-        }
-    }
-
-    private fun getCircleDirectActions(phone: String?): DirectActions {
-        return if (null == phone) {
-            settings.toDirectActions()
-        } else {
-            Loader.loadContactSettings(phone).toDirectActions()
         }
     }
 }

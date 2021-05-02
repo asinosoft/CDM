@@ -1,4 +1,4 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.data
 
 import android.graphics.Color
 
@@ -11,12 +11,10 @@ data class Settings(
     var themeColor: Int = Color.WHITE,
     var listHistoryReverse: Boolean = true,
     var photoFilePath: String = "",
-    var leftButton: Actions = Actions.WhatsApp,
-    var rightButton: Actions = Actions.PhoneCall,
-    var topButton: Actions = Actions.Email,
-    var bottomButton: Actions = Actions.Sms,
-    var chooserButton1: Actions = Actions.Telegram,
-    var chooserButton2: Actions = Actions.Viber,
+    var leftButton: Action.Type = Action.Type.WhatsAppChat,
+    var rightButton: Action.Type = Action.Type.PhoneCall,
+    var topButton: Action.Type = Action.Type.Email,
+    var bottomButton: Action.Type = Action.Type.Sms,
 
     /**
      * Режим главного окна:
@@ -29,13 +27,4 @@ data class Settings(
     var columnsCirs: Int = 3,
     var colorBorder: Int = Color.CYAN,
     var borderWidthCirs: Int = 5
-) {
-
-    fun toDirectActions() = DirectActions(leftButton, rightButton, topButton, bottomButton)
-}
-
-data class DirectActions(val left: Actions = Actions.WhatsApp, val right: Actions = Actions.PhoneCall, val top: Actions = Actions.Email, val down: Actions = Actions.Sms)
-
-enum class Actions {
-    WhatsApp, Viber, Telegram, PhoneCall, Email, Sms
-}
+)

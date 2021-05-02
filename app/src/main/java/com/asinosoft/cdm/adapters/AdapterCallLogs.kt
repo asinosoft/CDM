@@ -8,9 +8,12 @@ import android.view.MotionEvent.ACTION_DOWN
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.asinosoft.cdm.*
+import com.asinosoft.cdm.CircularImageView
+import com.asinosoft.cdm.Metoths
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.CallHistoryItem
-import com.asinosoft.cdm.data.PhoneItem
+import com.asinosoft.cdm.data.Action
+import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
 import com.zerobranch.layout.SwipeLayout
 import org.jetbrains.anko.imageResource
@@ -71,16 +74,12 @@ class AdapterCallLogs(
     inner class HolderHistory(val v: ViewBinding) : RecyclerView.ViewHolder(v.root) {
 
         private fun setIcons(
-            settings: Settings,
+            directActions: DirectActions,
             imageLeftAction: CircularImageView,
             imageRightAction: CircularImageView
         ) {
-            imageLeftAction.imageResource =
-                if (settings.leftButton == Actions.WhatsApp) R.drawable.telephony_call_192
-                else R.drawable.whatsapp_192
-            imageRightAction.imageResource =
-                if (settings.rightButton == Actions.WhatsApp) R.drawable.telephony_call_192
-                else R.drawable.whatsapp_192
+            imageLeftAction.imageResource = Action.resourceByType(directActions.left.type)
+            imageRightAction.imageResource = Action.resourceByType(directActions.right.type)
         }
 
         fun bind(item: CallHistoryItem) {
@@ -90,13 +89,8 @@ class AdapterCallLogs(
                 number.text = "${item.prettyPhone}, ${Metoths.getFormattedTime(item.duration)}"
                 timeContact.text = item.time
                 dateContact.text = item.date
-                val settings = Loader.loadContactSettings(item.phone)
-                imageLeftAction.imageResource =
-                    if (settings.leftButton == Actions.WhatsApp) R.drawable.telephony_call_192
-                    else R.drawable.whatsapp_192
-                imageRightAction.imageResource =
-                    if (settings.rightButton == Actions.WhatsApp) R.drawable.telephony_call_192
-                    else R.drawable.whatsapp_192
+                val directActions = item.contact.directActions
+                setIcons(directActions, imageLeftAction, imageRightAction)
 
                 when (item.typeCall) {
                     CallLog.Calls.OUTGOING_TYPE -> typeCall.setImageResource(R.drawable.baseline_call_made_24)
@@ -107,28 +101,17 @@ class AdapterCallLogs(
 
                 dragLayout.setOnTouchListener { view, motionEvent ->
                     if (motionEvent.action == ACTION_DOWN) {
-                        val settings = Loader.loadContactSettings(item.phone)
-                        setIcons(settings, imageLeftAction, imageRightAction)
+                        setIcons(directActions, imageLeftAction, imageRightAction)
                     }
                     false
                 }
 
                 swipeLayout.setOnActionsListener(object : SwipeLayout.SwipeActionsListener {
                     override fun onOpen(direction: Int, isContinuous: Boolean) {
-                        setIcons(settings, imageLeftAction, imageRightAction)
+                        setIcons(directActions, imageLeftAction, imageRightAction)
                         when (direction) {
-                            SwipeLayout.RIGHT -> {
-                                if (settings.rightButton != Actions.WhatsApp)
-                                    callPhone(item)
-                                else
-                                    openWhatsAppChat(item)
-                            }
-                            SwipeLayout.LEFT -> {
-                                if (settings.leftButton != Actions.WhatsApp)
-                                    callPhone(item)
-                                else
-                                    openWhatsAppChat(item)
-                            }
+                            SwipeLayout.RIGHT -> directActions.right.perform(context)
+                            SwipeLayout.LEFT -> directActions.left.perform(context)
                             else -> Log.e(
                                 "AdapterHistory.kt: ",
                                 "SwipeLayout direction UNKNOWN = $direction"
@@ -151,13 +134,5 @@ class AdapterCallLogs(
                 }
             }
         }
-    }
-
-    private fun callPhone(item: CallHistoryItem) {
-        PhoneItem(item.phone).call(context)
-    }
-
-    private fun openWhatsAppChat(item: CallHistoryItem) {
-        item.contact.whatsapps.firstOrNull()?.chat(context)
     }
 }

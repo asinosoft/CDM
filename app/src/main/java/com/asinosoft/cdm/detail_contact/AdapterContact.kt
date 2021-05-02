@@ -1,8 +1,6 @@
 package com.asinosoft.cdm.detail_contact
 
 import android.content.Context
-import android.provider.ContactsContract.CommonDataKinds.Email
-import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,13 +8,35 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.data.*
-import org.jetbrains.anko.textResource
+import com.asinosoft.cdm.data.Action
+import com.asinosoft.cdm.data.Contact
 
-class AdapterContact(private val elements: List<ContactItem>) :
+class AdapterContact(private val contact: Contact) :
     RecyclerView.Adapter<AdapterContact.ViewContactInfo>() {
 
     private lateinit var context: Context
+    private val groups = contact.actions.groupBy { Item(it.type.group, it.value, it.description) }
+    private val keys = groups.keys.toList().sortedBy { it.group }
+
+    inner class Item(val group: Action.Group, val name: String, val description: String) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Item
+
+            if (group != other.group) return false
+            if (name != other.name) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = group.hashCode()
+            result = 31 * result + name.hashCode()
+            return result
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewContactInfo {
         context = parent.context
@@ -26,11 +46,25 @@ class AdapterContact(private val elements: List<ContactItem>) :
     }
 
     override fun getItemCount(): Int {
-        return elements.size
+        return keys.size + (if (contact.birthday != null) 1 else 0)
     }
 
     override fun onBindViewHolder(holder: ViewContactInfo, position: Int) {
-        holder.bind(elements[position])
+        if (position >= keys.size) {
+            holder.bindBirthday(contact.birthday, contact.age)
+        } else {
+
+            val key = keys[position]
+            val actions = groups[key]!!
+            when (key.group) {
+                Action.Group.Email -> holder.bindEmail(actions.first())
+                Action.Group.Phone -> holder.bindPhone(key, actions)
+                Action.Group.Skype -> holder.bindSkype(key, actions)
+                Action.Group.Telegram -> holder.bindTelegram(key, actions)
+                Action.Group.Viber -> holder.bindViber(key, actions)
+                Action.Group.WhatsApp -> holder.bindWhatsApp(key, actions)
+            }
+        }
     }
 
     inner class ViewContactInfo(val view: View) : RecyclerView.ViewHolder(view) {
@@ -42,111 +76,99 @@ class AdapterContact(private val elements: List<ContactItem>) :
         private var number = itemView.findViewById<TextView>(R.id.number_id)
         private var bText = itemView.findViewById<TextView>(R.id.bText)
 
-        fun bind(item: ContactItem) {
-            when (item) {
-                is BirthdayItem -> bindBirthday(item)
-                is EmailItem -> bindEmail(item)
-                is PhoneItem -> bindPhone(item)
-                is SkypeItem -> bindSkype(item)
-                is TelegramItem -> bindTelegram(item)
-                is ViberItem -> bindViber(item)
-                is WhatsAppItem -> bindWhatsApp(item)
-            }
-        }
-
-        private fun bindBirthday(item: BirthdayItem) {
+        fun bindBirthday(birthday: String?, age: String?) {
             numberType.text = context.getString(R.string.type_birthday)
-            number.text = item.value
-            bText.text = item.age + " лет"
+            number.text = birthday
+            bText.text = "$age лет"
             bText.visibility = View.VISIBLE
             mCustomLeft.visibility = View.GONE
             mCustomMiddle.visibility = View.GONE
             mCustomRight.visibility = View.GONE
         }
 
-        private fun bindEmail(email: EmailItem) {
-            numberType.textResource = Email.getTypeLabelResource(email.emailType)
+        fun bindEmail(email: Action) {
+            numberType.text = email.description
             number.text = email.value
-            mCustomRight.setBackgroundResource(R.drawable.email_192)
+            mCustomRight.setBackgroundResource(R.drawable.ic_email)
             mCustomMiddle.visibility = View.INVISIBLE
             mCustomLeft.visibility = View.INVISIBLE
             bText.visibility = View.GONE
             mCustomRight.setOnClickListener {
-                email.send(context)
+                email.perform(context)
             }
         }
 
-        private fun bindPhone(phone: PhoneItem) {
-            numberType.textResource = Phone.getTypeLabelResource(phone.phoneType)
+        fun bindPhone(item: Item, actions: List<Action>) {
+            numberType.text = item.description
             mCustomMiddle.setBackgroundResource(R.drawable.call)
-            number.text = phone.prettyNumber
+            number.text = StHelper.convertNumber(item.name) ?: item.name
             mCustomLeft.visibility = View.INVISIBLE
             bText.visibility = View.GONE
             mCustomMiddle.setOnClickListener { v ->
-                phone.call(context)
+                actions.find { it.type == Action.Type.PhoneCall }?.perform(context)
             }
-            mCustomRight.setBackgroundResource(R.drawable.message)
+            mCustomRight.setBackgroundResource(R.drawable.ic_sms)
             mCustomRight.setOnClickListener { v ->
-                phone.sms(context)
+                actions.find { it.type == Action.Type.Sms }?.perform(context)
             }
         }
 
-        private fun bindSkype(skype: SkypeItem) {
-            numberType.text = context.getString(R.string.type_skype)
-            number.text = skype.value
+        fun bindSkype(item: Item, actions: List<Action>) {
+            numberType.text = item.description // context.getString(R.string.type_skype)
+            number.text = item.name
             mCustomMiddle.setBackgroundResource(R.drawable.skype_message)
             mCustomRight.setBackgroundResource(R.drawable.skype_call)
             mCustomLeft.visibility = View.INVISIBLE
             bText.visibility = View.GONE
             mCustomMiddle.setOnClickListener {
-                skype.chat(context)
+                actions.find { it.type == Action.Type.SkypeChat }?.perform(context)
             }
             mCustomRight.setOnClickListener {
-                skype.call(context)
+                actions.find { it.type == Action.Type.SkypeCall }?.perform(context)
             }
         }
 
-        private fun bindTelegram(telegram: TelegramItem) {
-            numberType.text = context.getString(R.string.type_telegram)
-            number.text = telegram.value
+        fun bindTelegram(item: Item, actions: List<Action>) {
+            numberType.text = item.description // context.getString(R.string.type_telegram)
+            number.text = item.name
             mCustomRight.setBackgroundResource(R.drawable.ic_telegram)
             mCustomMiddle.visibility = View.INVISIBLE
             mCustomLeft.visibility = View.INVISIBLE
             bText.visibility = View.GONE
             mCustomRight.setOnClickListener {
-                telegram.chat(context)
+                actions.find { it.type == Action.Type.TelegramChat }?.perform(context)
             }
         }
 
-        private fun bindViber(viber: ViberItem) {
-            numberType.text = context.getString(R.string.type_viber)
-            number.text = StHelper.convertNumber(viber.value)
-            mCustomMiddle.setBackgroundResource(R.drawable.viber_message)
-            mCustomRight.setBackgroundResource(R.drawable.viber)
+        fun bindViber(item: Item, actions: List<Action>) {
+            numberType.text = item.description // context.getString(R.string.type_viber)
+            number.text = StHelper.convertNumber(item.name)
+            mCustomMiddle.setBackgroundResource(R.drawable.ic_viber_chat)
+            mCustomRight.setBackgroundResource(R.drawable.ic_viber_call)
             mCustomLeft.visibility = View.INVISIBLE
             bText.visibility = View.GONE
             mCustomMiddle.setOnClickListener {
-                viber.chat(context)
+                actions.find { it.type == Action.Type.ViberChat }?.perform(context)
             }
             mCustomRight.setOnClickListener {
-                viber.call(context)
+                actions.find { it.type == Action.Type.ViberCall }?.perform(context)
             }
         }
 
-        private fun bindWhatsApp(whatsapp: WhatsAppItem) {
-            numberType.text = context.getString(R.string.type_whatsapp)
-            number.text = StHelper.convertNumber(whatsapp.value)
+        fun bindWhatsApp(item: Item, actions: List<Action>) {
+            numberType.text = item.description // context.getString(R.string.type_whatsapp)
+            number.text = StHelper.convertNumber(item.name)
             mCustomLeft.setBackgroundResource(R.drawable.whatsapp_message)
             mCustomMiddle.setBackgroundResource(R.drawable.whatsapp_call)
             bText.visibility = View.GONE
             mCustomLeft.setOnClickListener {
-                whatsapp.chat(context)
+                actions.find { it.type == Action.Type.WhatsAppChat }?.perform(context)
             }
             mCustomMiddle.setOnClickListener {
-                whatsapp.audio(context)
+                actions.find { it.type == Action.Type.WhatsAppCall }?.perform(context)
             }
             mCustomRight.setOnClickListener {
-                whatsapp.video(context)
+                actions.find { it.type == Action.Type.WhatsAppVideo }?.perform(context)
             }
         }
     }

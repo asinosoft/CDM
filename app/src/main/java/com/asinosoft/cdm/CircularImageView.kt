@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewOutlineProvider
 import android.widget.ImageView.ScaleType.*
 import androidx.appcompat.widget.AppCompatImageView
+import com.asinosoft.cdm.data.Action
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -37,7 +38,8 @@ open class CircularImageView @JvmOverloads constructor(
     private var circleCenter = 0
     private var heightCircle: Int = 0
 
-    var action = Actions.Email
+    var direction = Metoths.Companion.Direction.UNKNOWN
+    var action = Action.Type.Email
 
     //region Attributes
     var circleColor: Int = Color.WHITE

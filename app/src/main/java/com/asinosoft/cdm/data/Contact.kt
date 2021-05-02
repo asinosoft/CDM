@@ -1,4 +1,4 @@
-package com.asinosoft.cdm.api
+package com.asinosoft.cdm.data
 
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
@@ -6,38 +6,31 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.core.content.ContextCompat
 import com.asinosoft.cdm.App
+import com.asinosoft.cdm.Loader
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.data.*
 import java.io.IOException
+import java.util.*
 
 class Contact(
     val id: Long,
     val name: String
 ) {
     var photoUri: String? = null
+    var birthday: String? = null
+    var age: String? = null
 
-    // Список контактов, разбитый по типам
-    var birthday: ContactItem? = null
-    var emails = mutableListOf<EmailItem>()
-    var phones = mutableListOf<PhoneItem>()
-    var skypes = mutableListOf<SkypeItem>()
-    var telegrams = mutableListOf<TelegramItem>()
-    var vibers = mutableListOf<ViberItem>()
-    var whatsapps = mutableListOf<WhatsAppItem>()
+    var actions = mutableSetOf<Action>()
+    val phones: List<Action> by lazy {
+        actions.filter { action -> action.type == Action.Type.PhoneCall }
+    }
+
+    val chats: List<Action> by lazy {
+        actions.filter { action -> action.type == Action.Type.WhatsAppChat }
+    }
+
+    val directActions: DirectActions by lazy { Loader.loadContactSettings(this) }
 
     private var cachedPhoto: Drawable? = null
-
-    /**
-     * Возвращает все контакты одним списком в фиксированном порядке
-     */
-    fun getAllContacts(): List<ContactItem> {
-        val contacts = phones + whatsapps + vibers + telegrams + emails
-        return if (null == birthday) {
-            contacts
-        } else {
-            contacts + listOf(birthday!!)
-        }
-    }
 
     fun getPhoto(): Drawable {
         if (null == cachedPhoto) {

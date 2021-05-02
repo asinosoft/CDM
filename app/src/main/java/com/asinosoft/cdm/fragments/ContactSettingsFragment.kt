@@ -1,94 +1,75 @@
 package com.asinosoft.cdm.fragments
 
 import android.content.ClipData
-import android.content.ClipDescription
 import android.os.Bundle
-import android.util.Log
 import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.ColorInt
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.asinosoft.cdm.*
+import androidx.recyclerview.widget.GridLayoutManager
+import com.asinosoft.cdm.CircularImageView
+import com.asinosoft.cdm.Metoths
+import com.asinosoft.cdm.adapters.ActionListAdapter
+import com.asinosoft.cdm.data.Action
+import com.asinosoft.cdm.data.DirectActions
+import com.asinosoft.cdm.data.Settings
+import com.asinosoft.cdm.databinding.ContactSettingsBinding
 import com.asinosoft.cdm.detail_contact.DetailHistoryViewModel
-import kotlinx.android.synthetic.main.contact_settings.*
-import kotlinx.android.synthetic.main.settings_layout.*
-import kotlinx.android.synthetic.main.settings_layout.cirBottom
-import kotlinx.android.synthetic.main.settings_layout.cirChoose1
-import kotlinx.android.synthetic.main.settings_layout.cirChoose2
-import kotlinx.android.synthetic.main.settings_layout.cirLeft
-import kotlinx.android.synthetic.main.settings_layout.cirRight
-import kotlinx.android.synthetic.main.settings_layout.cirTop
 import org.jetbrains.anko.image
-
-interface ScrollViewListener {
-    fun onScrolledToTop()
-}
 
 class ContactSettingsFragment : Fragment() {
     private val viewModel: DetailHistoryViewModel by activityViewModels()
-    lateinit var scrollView: LockableScrollView
-    lateinit var draggedCir: CircularImageView
+    private lateinit var v: ContactSettingsBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.contact_settings, container, false)
+    ): View {
+        v = ContactSettingsBinding.inflate(inflater)
+        return v.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        scrollView = view.findViewById(R.id.scrollView)
-        scrollView.setScrollingEnabled(false)
 
-        scrollView.setOnScrollChangeListener { view, scrollX, scrollY, oldScrollX, oldScrollY ->
-            if (oldScrollY > 0 && scrollY == 0) {
-                (activity as ScrollViewListener).onScrolledToTop()
-            }
-        }
+        v.number.text = viewModel.getPhoneNumber()
+        v.cirLeft.direction = Metoths.Companion.Direction.LEFT
+        v.cirRight.direction = Metoths.Companion.Direction.RIGHT
+        v.cirTop.direction = Metoths.Companion.Direction.TOP
+        v.cirBottom.direction = Metoths.Companion.Direction.DOWN
 
-        number.text = viewModel.getPhoneNumber()
-        viewModel.getContactSettings().let {
-            setAllCirs(it.borderWidthCirs, it.colorBorder)
-            setData(it)
-        }
+        v.cirBottom.let(this@ContactSettingsFragment::setDragListener)
+        v.cirTop.let(this@ContactSettingsFragment::setDragListener)
+        v.cirLeft.let(this@ContactSettingsFragment::setDragListener)
+        v.cirRight.let(this@ContactSettingsFragment::setDragListener)
+
+        val settings = viewModel.getGlobalSettings()
+        setAllCirs(settings)
+        setData(viewModel.getContactActions())
+
+        v.rvActions.layoutManager = GridLayoutManager(requireContext(), 1 + settings.columnsCirs)
+        v.rvActions.adapter = ActionListAdapter(
+            viewModel.getAvailableActions(),
+            viewModel.getGlobalSettings()
+        )
     }
 
     private fun setCirData(cir: CircularImageView) {
-        cir.setImageResource(getResDrawable(cir.action))
-    }
-
-    private fun getResDrawable(action: Actions): Int {
-        return when (action) {
-            Actions.WhatsApp -> R.drawable.whatsapp_192
-            Actions.Sms -> R.drawable.sms_192
-            Actions.Email -> R.drawable.email_192
-            Actions.PhoneCall -> R.drawable.telephony_call_192
-            Actions.Viber -> R.drawable.viber
-            Actions.Telegram -> R.drawable.ic_telegram
-        }
+        cir.setImageResource(Action.resourceByType(cir.action))
     }
 
     private fun setDragListener(cir: CircularImageView) {
         cir.setOnLongClickListener {
             it.bringToFront()
-            draggedCir = cir
-            val item = ClipData.Item(it.tag as? CharSequence)
-            val dragData = ClipData(
-                it.tag as? CharSequence,
-                arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
-                item
-            )
             val myShadow = View.DragShadowBuilder(it)
 
             it.startDrag(
-                dragData,
+                ClipData.newPlainText(cir.action.name, cir.action.name),
                 myShadow,
-                null,
+                cir,
                 0
             )
         }
@@ -96,42 +77,55 @@ class ContactSettingsFragment : Fragment() {
         cir.setOnDragListener { v, event ->
             when (event.action) {
                 DragEvent.ACTION_DRAG_STARTED -> {
-                    // Determines if this View can accept the dragged data
-                    event.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
+                    when (event.localState) {
+                        is CircularImageView -> true
+                        is Action.Type -> true
+                        else -> false
+                    }
                 }
                 DragEvent.ACTION_DRAG_ENTERED -> {
-                    // Applies a green tint to the View. Return true; the return value is ignored.
-                    cir.swapCir(draggedCir)
-
-                    // Invalidate the view to force a redraw in the new tint
-                    v.invalidate()
-                    cir.invalidate()
+                    val item = event.localState
+                    when (item) {
+                        is CircularImageView -> {
+                            cir.swapCir(item)
+                            v.invalidate()
+                            cir.invalidate()
+                        }
+                        is Action.Type -> {
+                            cir.setImageResource(Action.resourceByType(item))
+                        }
+                    }
                     true
                 }
-
-                DragEvent.ACTION_DRAG_LOCATION ->
-                    // Ignore the event
-                    true
                 DragEvent.ACTION_DRAG_EXITED -> {
-                    // Re-sets the color tint to blue. Returns true; the return value is ignored.
-                    cir.swapCir(draggedCir)
-
-                    // Invalidate the view to force a redraw in the new tint
-                    v.invalidate()
+                    val item = event.localState
+                    when (item) {
+                        is CircularImageView -> {
+                            cir.swapCir(item)
+                            v.invalidate()
+                        }
+                        is Action.Type -> {
+                            cir.setImageResource(Action.resourceByType(cir.action))
+                        }
+                    }
                     true
                 }
                 DragEvent.ACTION_DROP -> {
-                    scrollView.setScrollingEnabled(true)
-                    false
-                }
-
-                DragEvent.ACTION_DRAG_ENDED -> {
-                    scrollView.setScrollingEnabled(true)
-                    false
+                    when (val item = event.localState) {
+                        is CircularImageView -> {
+                            viewModel.swapContactAction(cir.direction, item.direction)
+                            setData(viewModel.getContactActions())
+                        }
+                        is Action.Type -> {
+                            val action = viewModel.getContact().actions.find { it.type == item }
+                                ?: Action(0, item, "", "")
+                            viewModel.setContactAction(cir.direction, action)
+                            setData(viewModel.getContactActions())
+                        }
+                    }
+                    true
                 }
                 else -> {
-                    // An unknown action type was received.
-                    Log.e("DragDrop Example", "Unknown action type received by OnDragListener.")
                     false
                 }
             }
@@ -139,16 +133,7 @@ class ContactSettingsFragment : Fragment() {
     }
 
     override fun onStop() {
-        viewModel.saveContactSettings(
-            Settings(
-                rightButton = cirRight.action,
-                leftButton = cirLeft.action,
-                topButton = cirTop.action,
-                bottomButton = cirBottom.action,
-                chooserButton1 = cirChoose1.action,
-                chooserButton2 = cirChoose2.action
-            )
-        )
+        viewModel.saveContactSettings()
         super.onStop()
     }
 
@@ -157,46 +142,35 @@ class ContactSettingsFragment : Fragment() {
         this.action = c.action.also { c.action = this.action }
     }
 
-    private fun setData(settings: Settings) {
+    private fun setData(directActions: DirectActions) {
+        v.cirRight.action = directActions.right.type
+        v.cirLeft.action = directActions.left.type
+        v.cirTop.action = directActions.top.type
+        v.cirBottom.action = directActions.down.type
+        v.cirRight.let(this::setCirData)
+        v.cirLeft.let(this::setCirData)
+        v.cirTop.let(this::setCirData)
+        v.cirBottom.let(this::setCirData)
 
-        cirRight.action = settings.rightButton
-        cirLeft.action = settings.leftButton
-        cirTop.action = settings.topButton
-        cirBottom.action = settings.bottomButton
-        cirChoose1.action = settings.chooserButton1
-        cirChoose2.action = settings.chooserButton2
-        cirRight.let(this::setCirData)
-        cirLeft.let(this::setCirData)
-        cirTop.let(this::setCirData)
-        cirBottom.let(this::setCirData)
-        cirChoose1.let(this::setCirData)
-        cirChoose2.let(this::setCirData)
-
-        cirBottom.let(this@ContactSettingsFragment::setDragListener)
-        cirTop.let(this@ContactSettingsFragment::setDragListener)
-        cirLeft.let(this@ContactSettingsFragment::setDragListener)
-        cirRight.let(this@ContactSettingsFragment::setDragListener)
-        cirChoose1.let(this@ContactSettingsFragment::setDragListener)
-        cirChoose2.let(this@ContactSettingsFragment::setDragListener)
+        v.textLeft.text = directActions.left.value
+        v.textRight.text = directActions.right.value
+        v.textTop.text = directActions.top.value
+        v.textBottom.text = directActions.down.value
     }
 
-    private fun setAllCirs(width: Int? = null, @ColorInt color: Int? = null) {
-        width?.let {
-            cirBottom.borderWidth = it.toFloat()
-            cirChoose1.borderWidth = it.toFloat()
-            cirChoose2.borderWidth = it.toFloat()
-            cirTop.borderWidth = it.toFloat()
-            cirRight.borderWidth = it.toFloat()
-            cirLeft.borderWidth = it.toFloat()
+    private fun setAllCirs(settings: Settings) {
+        settings.borderWidthCirs.toFloat().let {
+            v.cirBottom.borderWidth = it
+            v.cirTop.borderWidth = it
+            v.cirRight.borderWidth = it
+            v.cirLeft.borderWidth = it
         }
 
-        color?.let {
-            cirBottom.borderColor = it
-            cirChoose1.borderColor = it
-            cirChoose2.borderColor = it
-            cirTop.borderColor = it
-            cirRight.borderColor = it
-            cirLeft.borderColor = it
+        settings.colorBorder.let {
+            v.cirBottom.borderColor = it
+            v.cirTop.borderColor = it
+            v.cirRight.borderColor = it
+            v.cirLeft.borderColor = it
         }
     }
 }

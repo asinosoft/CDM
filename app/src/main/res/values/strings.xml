@@ -69,6 +69,6 @@
     <string name="favorites_first">Избранные контакты - вверху</string>
     <string name="favorites_last">Избранные контакты - внизу</string>
     <string name="favorites_border_color">Цвет обводки</string>
-
+    <string name="available_actions">Доступные действия</string>
 
 </resources>

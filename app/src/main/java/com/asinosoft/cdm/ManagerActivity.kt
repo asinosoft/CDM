@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.Vibrator
 import android.telecom.TelecomManager
@@ -19,10 +20,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.adapters.AdapterCallLogs
 import com.asinosoft.cdm.adapters.NumbeAdapter
-import com.asinosoft.cdm.api.Contact
 import com.asinosoft.cdm.api.FavoriteContact
 import com.asinosoft.cdm.api.FavoriteContactRepositoryImpl
-import com.asinosoft.cdm.data.PhoneItem
+import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.databinding.FavoritesFragmentBinding
 import com.asinosoft.cdm.dialer.Utilities
@@ -75,7 +75,7 @@ class ManagerActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
             // После изменения настроек пересоздаем весь интерфейс
             initActivity()
-            adapterCallLogs.setList(App.callHistoryRepository.getLatestHistory())
+            adapterCallLogs.setList(App.callHistoryRepository.getLatestHistory().take(Keys.CALL_HISTORY_LIMIT))
         }
 
     /**
@@ -92,7 +92,9 @@ class ManagerActivity : AppCompatActivity() {
                     SearchActivity.RESULT_CALL -> {
                         it.data?.extras?.getString(Keys.number)?.let { phoneNumber ->
                             Timber.d("CALL: $phoneNumber")
-                            PhoneItem(phoneNumber).call(this)
+                            Intent(Intent.ACTION_CALL, Uri.parse("tel:" + Uri.encode(phoneNumber)))
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                .let { startActivity(it) }
                         }
                     }
                 }
@@ -146,7 +148,7 @@ class ManagerActivity : AppCompatActivity() {
 
         Timber.d("ManagerActivity.onResume")
         App.contactRepository.initialize()
-        adapterCallLogs.setList(App.callHistoryRepository.getLatestHistory())
+        adapterCallLogs.setList(App.callHistoryRepository.getLatestHistory().take(Keys.CALL_HISTORY_LIMIT))
     }
 
     override fun onDestroy() {

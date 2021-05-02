@@ -1,5 +1,7 @@
 package com.asinosoft.cdm.api
 
+import android.net.Uri
+import com.asinosoft.cdm.data.Contact
 import org.junit.Assert
 import org.junit.Test
 
@@ -55,6 +57,10 @@ class FavoriteContactTest {
                 77L -> Contact(77L, "John Doe")
                 else -> error("Запрос неизвестного контакта (ID = $id)")
             }
+        }
+
+        override fun getContactByUri(uri: Uri): Contact? {
+            throw NotImplementedError()
         }
 
         override fun getContactByPhone(phone: String): Contact? {

@@ -2,6 +2,7 @@ package com.asinosoft.cdm.api
 
 import android.content.SharedPreferences
 import com.asinosoft.cdm.Keys
+import com.asinosoft.cdm.data.Contact
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
