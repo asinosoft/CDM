@@ -1,10 +1,11 @@
 package com.asinosoft.cdm.dialer
 
+import android.content.Context
 import android.net.Uri
 import android.telecom.Call
 import android.telecom.InCallService
 import android.telecom.VideoProfile
-import com.asinosoft.cdm.App
+import com.asinosoft.cdm.api.ContactRepositoryImpl
 
 class CallManager {
 
@@ -54,7 +55,7 @@ class CallManager {
             }
         }
 
-        fun getCallContact(callback: (CallContact) -> Unit) {
+        fun getCallContact(context: Context, callback: (CallContact) -> Unit) {
             if (call == null || call!!.details == null || call!!.details!!.handle == null) {
                 callback(CallContact())
                 return
@@ -64,7 +65,7 @@ class CallManager {
             if (uri.startsWith("tel:")) {
                 val number = uri.substringAfter("tel:")
                 var callContact = CallContact(number)
-                App.contactRepository.getContactByPhone(number)?.let {
+                ContactRepositoryImpl(context).getContactByPhone(number)?.let {
                     callContact.name = it.name
                     callContact.photoUri = it.photoUri ?: ""
                 }

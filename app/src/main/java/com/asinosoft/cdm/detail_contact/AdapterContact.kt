@@ -101,7 +101,7 @@ class AdapterContact(private val contact: Contact) :
         fun bindPhone(item: Item, actions: List<Action>) {
             numberType.text = item.description
             mCustomMiddle.setBackgroundResource(R.drawable.call)
-            number.text = StHelper.convertNumber(item.name) ?: item.name
+            number.text = StHelper.convertNumber(item.name)
             mCustomLeft.visibility = View.INVISIBLE
             bText.visibility = View.GONE
             mCustomMiddle.setOnClickListener { v ->

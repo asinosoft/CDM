@@ -1,15 +1,13 @@
 package com.asinosoft.cdm.data
 
+import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.core.content.ContextCompat
-import com.asinosoft.cdm.App
-import com.asinosoft.cdm.Loader
 import com.asinosoft.cdm.R
 import java.io.IOException
-import java.util.*
 
 class Contact(
     val id: Long,
@@ -28,24 +26,22 @@ class Contact(
         actions.filter { action -> action.type == Action.Type.WhatsAppChat }
     }
 
-    val directActions: DirectActions by lazy { Loader.loadContactSettings(this) }
-
     private var cachedPhoto: Drawable? = null
 
-    fun getPhoto(): Drawable {
+    fun getPhoto(context: Context): Drawable {
         if (null == cachedPhoto) {
             cachedPhoto = photoUri?.let {
-                getPhotoByUri(it)
-            } ?: defaultPhoto
+                getPhotoByUri(context, it)
+            } ?: getDefaultPhoto(context)
         }
         return cachedPhoto!!
     }
 
-    private fun getPhotoByUri(photoUri: String): Drawable? {
+    private fun getPhotoByUri(context: Context, photoUri: String): Drawable? {
         return try {
-            App.INSTANCE.contentResolver.openAssetFileDescriptor(Uri.parse(photoUri), "r")?.let {
+            context.contentResolver.openAssetFileDescriptor(Uri.parse(photoUri), "r")?.let {
                 BitmapDrawable(
-                    App.INSTANCE.resources,
+                    context.resources,
                     BitmapFactory.decodeStream(it.createInputStream())
                 )
             }
@@ -54,10 +50,9 @@ class Contact(
         }
     }
 
-    private val defaultPhoto: Drawable by lazy {
+    private fun getDefaultPhoto(context: Context): Drawable =
         ContextCompat.getDrawable(
-            App.INSTANCE,
+            context,
             R.drawable.contact_unfoto
         ) as Drawable
-    }
 }

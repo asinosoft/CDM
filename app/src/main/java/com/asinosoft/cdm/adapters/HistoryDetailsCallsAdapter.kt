@@ -56,12 +56,12 @@ class HistoryDetailsCallsAdapter(val context: Context) :
 
         fun bind(item: CallHistoryItem) {
             with(v) {
-                imageContact.setImageDrawable(item.contact.getPhoto())
+                imageContact.setImageDrawable(item.contact.getPhoto(context))
                 name.text = item.contact.name
                 number.text = "${item.phone}, ${Metoths.getFormattedTime(item.duration)}"
                 timeContact.text = item.time
                 dateContact.text = item.date
-                val directActions = item.contact.directActions
+                val directActions = Loader.loadContactSettings(context, item.contact)
                 setIcons(directActions, imageLeftAction, imageRightAction)
 
                 when (item.typeCall) {

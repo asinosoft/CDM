@@ -9,14 +9,19 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.CircularImageView
 import com.asinosoft.cdm.Metoths
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.adapters.ActionListAdapter
+import com.asinosoft.cdm.adapters.NumbeAdapter
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.databinding.ContactSettingsBinding
 import com.asinosoft.cdm.detail_contact.DetailHistoryViewModel
+import com.asinosoft.cdm.globals.AlertDialogUtils
 import org.jetbrains.anko.image
 
 class ContactSettingsFragment : Fragment() {
@@ -29,11 +34,6 @@ class ContactSettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         v = ContactSettingsBinding.inflate(inflater)
-        return v.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
         v.number.text = viewModel.getPhoneNumber()
         v.cirLeft.direction = Metoths.Companion.Direction.LEFT
@@ -46,15 +46,25 @@ class ContactSettingsFragment : Fragment() {
         v.cirLeft.let(this@ContactSettingsFragment::setDragListener)
         v.cirRight.let(this@ContactSettingsFragment::setDragListener)
 
-        val settings = viewModel.getGlobalSettings()
+        val settings = viewModel.getGlobalSettings(requireContext())
         setAllCirs(settings)
-        setData(viewModel.getContactActions())
 
         v.rvActions.layoutManager = GridLayoutManager(requireContext(), 1 + settings.columnsCirs)
-        v.rvActions.adapter = ActionListAdapter(
-            viewModel.getAvailableActions(),
-            viewModel.getGlobalSettings()
-        )
+        v.rvActions.adapter = ActionListAdapter(viewModel.getGlobalSettings(requireContext()))
+
+        return v.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.availableActions.observe(viewLifecycleOwner) {
+            (v.rvActions.adapter as ActionListAdapter).setActions(it)
+        }
+
+        viewModel.directActions.observe(viewLifecycleOwner) {
+            setData(it)
+        }
     }
 
     private fun setCirData(cir: CircularImageView) {
@@ -114,13 +124,9 @@ class ContactSettingsFragment : Fragment() {
                     when (val item = event.localState) {
                         is CircularImageView -> {
                             viewModel.swapContactAction(cir.direction, item.direction)
-                            setData(viewModel.getContactActions())
                         }
                         is Action.Type -> {
-                            val action = viewModel.getContact().actions.find { it.type == item }
-                                ?: Action(0, item, "", "")
-                            viewModel.setContactAction(cir.direction, action)
-                            setData(viewModel.getContactActions())
+                            setContactAction(cir.direction, item)
                         }
                     }
                     true
@@ -133,13 +139,41 @@ class ContactSettingsFragment : Fragment() {
     }
 
     override fun onStop() {
-        viewModel.saveContactSettings()
+        viewModel.saveContactSettings(requireContext())
         super.onStop()
     }
 
     private fun CircularImageView.swapCir(c: CircularImageView) {
         this.image = c.image.also { c.image = this.image }
         this.action = c.action.also { c.action = this.action }
+    }
+
+    private fun setContactAction(direction: Metoths.Companion.Direction, type: Action.Type) {
+        val actions = viewModel.getContact().actions.filter { it.type == type }
+        when (actions.size) {
+            0 -> {
+                viewModel.setContactAction(direction, Action(0, type, "", ""))
+            }
+            1 -> {
+                viewModel.setContactAction(direction, actions[0])
+            }
+            else -> {
+                val dialog =
+                    AlertDialogUtils.dialogListWithoutConfirm(requireContext(), "Выберите номер")
+                val adapter = NumbeAdapter { selectedNumber ->
+                    viewModel.setContactAction(
+                        direction,
+                        actions.find { it.value == selectedNumber }!!
+                    )
+                    dialog.dismiss()
+                }
+                val recyclerView = dialog.findViewById<RecyclerView>(R.id.recycler_popup)
+                recyclerView.layoutManager = LinearLayoutManager(requireContext())
+                recyclerView.adapter = adapter
+                adapter.setData(actions.map { it.value })
+                dialog.show()
+            }
+        }
     }
 
     private fun setData(directActions: DirectActions) {

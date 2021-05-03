@@ -16,9 +16,15 @@ import org.jetbrains.anko.vibrator
  * Адаптер списка действий доступных для контакта (звонок/смс/письмо/вотсап-чат/вотсап-звонок и т.д.)
  */
 class ActionListAdapter(
-    private val actions: List<Action.Type>,
     private val settings: Settings
 ) : RecyclerView.Adapter<ActionListAdapter.Holder>() {
+
+    private var actions: List<Action.Type> = listOf()
+
+    fun setActions(actions: List<Action.Type>) {
+        this.actions = actions
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val view = ActionItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)

@@ -69,7 +69,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     }
 
     private fun initAll() {
-        settings = Loader.loadSettings()
+        settings = Loader.loadSettings(this)
         initFavoritesBlock()
         initLayoutBlock()
         initActionsBlock()
@@ -78,6 +78,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
 
     private fun saveAll() {
         Loader.saveSettings(
+            this,
             settings.copy(
                 sizeCirs = v.seekBarSizeButtons.progress,
                 rightButton = v.cirRight.action,
@@ -220,7 +221,9 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         v.cirRight.let(this@SettingsActivity::setDragListener)
 
         v.rvActions.layoutManager = GridLayoutManager(this, 1 + settings.columnsCirs)
-        v.rvActions.adapter = ActionListAdapter(Action.Type.values().asList(), settings)
+        v.rvActions.adapter = ActionListAdapter(settings).apply {
+            setActions(Action.Type.values().asList())
+        }
     }
 
     private fun setDragListener(cir: CircularImageView) {

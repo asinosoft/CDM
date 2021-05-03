@@ -191,7 +191,7 @@ class CircleImage @JvmOverloads constructor(
     }
 
     private fun onTouchDown(event: MotionEvent) {
-        this.directActions = contact?.directActions
+        this.directActions = this.contact?.let { Loader.loadContactSettings(context, it) }
         touchDownForIndex()
         touchStart = event.toPointF()
         cirStart = this.toPointF()

@@ -1,9 +1,8 @@
 package com.asinosoft.cdm.api
 
-import android.content.ContentResolver
+import android.content.Context
 import android.database.Cursor
 import android.provider.CallLog
-import com.asinosoft.cdm.App
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.detail_contact.StHelper
 import java.util.*
@@ -13,7 +12,7 @@ import kotlin.collections.HashSet
 /**
  * Доступ к истории звонков
  */
-class CallHistoryRepositoryImpl(private val contentResolver: ContentResolver) :
+class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository) :
     CallHistoryRepository {
     // Список колонок, получаемых из истории звонков
     private val projection = arrayOf(
@@ -23,8 +22,8 @@ class CallHistoryRepositoryImpl(private val contentResolver: ContentResolver) :
         CallLog.Calls.DURATION
     )
 
-    override fun getLatestHistory(): List<CallHistoryItem> {
-        return contentResolver.query(
+    override fun getLatestHistory(context: Context): List<CallHistoryItem> {
+        return context.contentResolver.query(
             CallLog.Calls.CONTENT_URI,
             projection,
             null,
@@ -41,29 +40,27 @@ class CallHistoryRepositoryImpl(private val contentResolver: ContentResolver) :
         } ?: ArrayList()
     }
 
-    override fun getHistoryByContactId(contactId: Long): List<CallHistoryItem> {
-        return App.contactRepository.getContactById(contactId)?.let {
-            if (it.phones.isEmpty()) {
-                return listOf()
-            }
+    override fun getHistoryByContact(context: Context, contact: Contact): List<CallHistoryItem> {
+        if (contact.phones.isEmpty()) {
+            return listOf()
+        }
 
-            // Делаем выборку истории звонков по всем номерам телефонов контакта
-            val selection = generateSequence { "${CallLog.Calls.NUMBER} = ?" }.take(it.phones.size)
-                .joinToString(" OR ")
-            return contentResolver.query(
-                CallLog.Calls.CONTENT_URI,
-                projection,
-                selection,
-                it.phones.map { it.value }.toTypedArray(),
-                "${CallLog.Calls.DATE} DESC"
-            )?.let {
-                HistoryItemCursorAdapter(it).getAll()
-            } ?: listOf()
+        // Делаем выборку истории звонков по всем номерам телефонов контакта
+        val selection = generateSequence { "${CallLog.Calls.NUMBER} = ?" }.take(contact.phones.size)
+            .joinToString(" OR ")
+        return context.contentResolver.query(
+            CallLog.Calls.CONTENT_URI,
+            projection,
+            selection,
+            contact.phones.map { it.value }.toTypedArray(),
+            "${CallLog.Calls.DATE} DESC"
+        )?.let {
+            HistoryItemCursorAdapter(it).getAll()
         } ?: listOf()
     }
 
-    override fun getHistoryByPhone(phone: String): List<CallHistoryItem> {
-        return contentResolver.query(
+    override fun getHistoryByPhone(context: Context, phone: String): List<CallHistoryItem> {
+        return context.contentResolver.query(
             CallLog.Calls.CONTENT_URI,
             projection,
             "${CallLog.Calls.NUMBER} = ?",
@@ -111,12 +108,12 @@ class CallHistoryRepositoryImpl(private val contentResolver: ContentResolver) :
 
             return CallHistoryItem(
                 phone = phoneNumber,
-                prettyPhone = StHelper.convertNumber(phoneNumber) ?: phoneNumber,
+                prettyPhone = StHelper.convertNumber(phoneNumber),
                 date = dateFormat.format(date),
                 time = timeFormat.format(date),
                 typeCall = cursor.getInt(colType),
                 duration = cursor.getLong(colDuration),
-                contact = App.contactRepository.getContactByPhone(phoneNumber) ?: Contact(
+                contact = contactRepository.getContactByPhone(phoneNumber) ?: Contact(
                     0,
                     phoneNumber
                 )

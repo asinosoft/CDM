@@ -42,10 +42,6 @@ class FavoriteContactTest {
     inner class ContactRepositoryMock : ContactRepository {
         var requests = mutableListOf<String>()
 
-        override fun initialize() {
-            throw NotImplementedError()
-        }
-
         override fun getContacts(): Collection<Contact> {
             throw NotImplementedError()
         }

@@ -66,7 +66,7 @@ class OngoingCallActivity : AppCompatActivity() {
         initProximitySensor()
 
         audioManager.mode = AudioManager.MODE_IN_CALL
-        CallManager.getCallContact { contact ->
+        CallManager.getCallContact(this) { contact ->
             callContact = contact
             callContactAvatar = getCallContactAvatar()
             runOnUiThread {

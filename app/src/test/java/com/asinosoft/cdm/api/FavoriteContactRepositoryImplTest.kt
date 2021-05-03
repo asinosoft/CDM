@@ -1,6 +1,8 @@
 package com.asinosoft.cdm.api
 
+import android.content.Context
 import android.content.SharedPreferences
+import androidx.appcompat.app.AppCompatActivity
 import com.asinosoft.cdm.Keys
 import com.asinosoft.cdm.data.Contact
 import org.junit.Assert
@@ -10,11 +12,13 @@ import org.mockito.Mockito
 import org.mockito.Mockito.mock
 
 class FavoriteContactRepositoryImplTest {
+    private val mockContext = mock(Context::class.java)
     private val mockContactRepository = mock(ContactRepository::class.java)
     private val mockSharedPreferences = mock(SharedPreferences::class.java)
     private val mockEditor = mock(SharedPreferences.Editor::class.java)
 
     init {
+        Mockito.`when`(mockContext.getSharedPreferences(Keys.ManagerPreference, AppCompatActivity.MODE_PRIVATE)).thenReturn(mockSharedPreferences)
         Mockito.`when`(mockContactRepository.getContactById(0)).thenReturn(null)
         Mockito.`when`(mockSharedPreferences.edit()).thenReturn(mockEditor)
         Mockito.`when`(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor)
@@ -29,8 +33,11 @@ class FavoriteContactRepositoryImplTest {
         val mockEmptyPreferences = mock(SharedPreferences::class.java)
         Mockito.`when`(mockEmptyPreferences.getString(Keys.Cirs, null)).thenReturn(null)
 
+        val mockEmptyContext = mock(Context::class.java)
+        Mockito.`when`(mockEmptyContext.getSharedPreferences(Keys.ManagerPreference, AppCompatActivity.MODE_PRIVATE)).thenReturn(mockEmptyPreferences)
+
         val favoriteContactRepository =
-            FavoriteContactRepositoryImpl(mockContactRepository, mockEmptyPreferences)
+            FavoriteContactRepositoryImpl(mockEmptyContext, mockContactRepository)
 
         Assert.assertEquals(
             generateSequence { FavoriteContact() }.take(9).toList(),
@@ -41,7 +48,7 @@ class FavoriteContactRepositoryImplTest {
     @Test
     fun `при добавлении контакта он должен попасть в конец списка + список должен сохраниться в настройки`() {
         val favoriteContactRepository =
-            FavoriteContactRepositoryImpl(mockContactRepository, mockSharedPreferences)
+            FavoriteContactRepositoryImpl(mockContext, mockContactRepository)
 
         val addedContact = FavoriteContact(Contact(1, "John Doe"), "+71234567890")
 
@@ -64,7 +71,7 @@ class FavoriteContactRepositoryImplTest {
     @Test
     fun `при замене контакта количество элементов в списке должно остаться прежним`() {
         val favoriteContactRepository =
-            FavoriteContactRepositoryImpl(mockContactRepository, mockSharedPreferences)
+            FavoriteContactRepositoryImpl(mockContext, mockContactRepository)
 
         val newContact = FavoriteContact(Contact(77, "John Doe"), "+71234567890")
 
@@ -84,7 +91,7 @@ class FavoriteContactRepositoryImplTest {
     @Test
     fun `при обмене контактов остальные должны остаться на своих местах`() {
         val favoriteContactRepository =
-            FavoriteContactRepositoryImpl(mockContactRepository, mockSharedPreferences)
+            FavoriteContactRepositoryImpl(mockContext, mockContactRepository)
 
         val alphaMale = FavoriteContact(Contact(22, "Alpha Male"))
         val betaTester = FavoriteContact(Contact(33, "Beta Tester"))

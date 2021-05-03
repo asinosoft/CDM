@@ -29,7 +29,7 @@ class CirAdapter(
 ) : RecyclerView.Adapter<CirAdapter.Holder>() {
 
     private val touchHelper = ItemTouchHelper(ItemTouchCallbackCir())
-    private val settings = Loader.loadSettings()
+    private val settings = Loader.loadSettings(context)
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -78,7 +78,7 @@ class CirAdapter(
                 if (null == contact) {
                     setImageResource(R.drawable.plus)
                 } else {
-                    setImageDrawable(contact!!.getPhoto())
+                    setImageDrawable(contact!!.getPhoto(context))
                 }
                 lockableNestedScrollView = callsLayoutManager
                 deleteCir = deleteButton
@@ -92,7 +92,7 @@ class CirAdapter(
                     touchHelper.startDrag(it)
                 }
 
-                directActions = favorite.contact?.directActions
+                directActions = favorite.contact?.let { Loader.loadContactSettings(context, it) }
                 deleteListener = {
                     favorites.removeContact(absoluteAdapterPosition)
                     notifyItemRemoved(absoluteAdapterPosition)
@@ -151,7 +151,8 @@ class CirAdapter(
                                     )
                                 }
                             )*/
-                            val draggedPosition = event.clipData.getItemAt(0).text.toString().toInt()
+                            val draggedPosition =
+                                event.clipData.getItemAt(0).text.toString().toInt()
                             swapItems(draggedPosition, absoluteAdapterPosition)
                         }
                     }

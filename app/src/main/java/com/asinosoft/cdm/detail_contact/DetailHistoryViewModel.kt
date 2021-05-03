@@ -1,11 +1,13 @@
 package com.asinosoft.cdm.detail_contact
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.asinosoft.cdm.App
 import com.asinosoft.cdm.Loader
 import com.asinosoft.cdm.Metoths.Companion.Direction
 import com.asinosoft.cdm.api.CallHistoryItem
+import com.asinosoft.cdm.api.CallHistoryRepositoryImpl
+import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
@@ -17,27 +19,37 @@ class DetailHistoryViewModel : ViewModel() {
     private lateinit var contact: Contact
     private lateinit var actions: DirectActions
 
-    val callHistory: MutableLiveData<List<CallHistoryItem>> by lazy {
-        MutableLiveData<List<CallHistoryItem>>()
-    }
+    val callHistory: MutableLiveData<List<CallHistoryItem>> = MutableLiveData()
+    val availableActions: MutableLiveData<List<Action.Type>> = MutableLiveData()
+    val directActions: MutableLiveData<DirectActions> = MutableLiveData()
 
-    fun initialize(contact: Contact) {
-        this.contact = contact
-        this.actions = contact.directActions
+    fun initialize(context: Context, contactId: Long, phoneNumber: String) {
+        val contactRepository = ContactRepositoryImpl(context)
+        contact = contactRepository.getContactById(contactId)
+            ?: Contact(0, phoneNumber).apply {
+                actions.add(Action(0, Action.Type.PhoneCall, phoneNumber, ""))
+            }
+
         callHistory.value =
-            if (0L != contact.id) App.callHistoryRepository.getHistoryByContactId(contact.id)
-            else App.callHistoryRepository.getHistoryByPhone(contact.name)
+            if (0L != contact.id) {
+                CallHistoryRepositoryImpl(contactRepository).getHistoryByContact(context, contact)
+            } else {
+                CallHistoryRepositoryImpl(contactRepository).getHistoryByPhone(
+                    context,
+                    contact.name
+                )
+            }
+
+        actions = Loader.loadContactSettings(context, contact)
+        directActions.value = actions
+        availableActions.value = getAvailableActions()
     }
 
     fun getPhoneNumber() = contact.name
 
     fun getContact(): Contact = contact
 
-    fun getAvailableActions(): List<Action.Type> = contact.actions.map { it.type }.distinct()
-
-    fun getContactPhoto() = contact.getPhoto()
-
-    fun getContactActions(): DirectActions = actions
+    fun getContactPhoto(context: Context) = contact.getPhoto(context)
 
     private fun getContactAction(direction: Direction): Action {
         return when (direction) {
@@ -57,6 +69,8 @@ class DetailHistoryViewModel : ViewModel() {
             Direction.DOWN -> actions.down = action
             else -> throw Exception("Unknown direction: $direction")
         }
+        directActions.value = actions
+        availableActions.value = getAvailableActions()
     }
 
     fun swapContactAction(one: Direction, another: Direction) {
@@ -67,9 +81,16 @@ class DetailHistoryViewModel : ViewModel() {
         }
     }
 
-    fun saveContactSettings() {
-        Loader.saveContactSettings(contact, actions)
+    fun saveContactSettings(context: Context) {
+        Loader.saveContactSettings(context, contact, actions)
     }
 
-    fun getGlobalSettings() = Loader.loadSettings()
+    fun getGlobalSettings(context: Context) = Loader.loadSettings(context)
+
+    private fun getAvailableActions(): List<Action.Type> =
+        contact.actions
+            .filter {
+                it != actions.left && it != actions.right && it != actions.top && it != actions.down
+            }
+            .map { it.type }.distinct()
 }

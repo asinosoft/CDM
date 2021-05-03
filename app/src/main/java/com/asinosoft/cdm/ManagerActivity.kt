@@ -12,7 +12,7 @@ import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.animation.OvershootInterpolator
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.Nullable
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.adapters.AdapterCallLogs
 import com.asinosoft.cdm.adapters.NumbeAdapter
+import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.api.FavoriteContact
 import com.asinosoft.cdm.api.FavoriteContactRepositoryImpl
 import com.asinosoft.cdm.data.Contact
@@ -37,6 +38,8 @@ import timber.log.Timber
  * Основной класс приложения, отвечает за работу главного экрана (нового) приложения
  */
 class ManagerActivity : AppCompatActivity() {
+    private val model: ManagerViewModel by viewModels()
+
     /**
      * Элемент, хранящий ссылки на все представления привязанного макета
      */
@@ -75,7 +78,7 @@ class ManagerActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
             // После изменения настроек пересоздаем весь интерфейс
             initActivity()
-            adapterCallLogs.setList(App.callHistoryRepository.getLatestHistory().take(Keys.CALL_HISTORY_LIMIT))
+            model.refresh(this)
         }
 
     /**
@@ -107,7 +110,7 @@ class ManagerActivity : AppCompatActivity() {
     private val pickContact =
         registerForActivityResult(ActivityResultContracts.PickContact()) { uri ->
             if (null != uri) {
-                App.contactRepository.getContactByUri(uri)?.let { contact ->
+                model.getContactByUri(this, uri)?.let { contact ->
                     if (contact.phones.size > 1) {
                         showNumberDialog(contact, pickedPosition)
                     } else {
@@ -126,6 +129,10 @@ class ManagerActivity : AppCompatActivity() {
             requestAllPermissions()
         }
         initActivity()
+
+        model.getLatestCalls().observe(this) { calls ->
+            adapterCallLogs.setList(calls)
+        }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -146,9 +153,7 @@ class ManagerActivity : AppCompatActivity() {
             return
         }
 
-        Timber.d("ManagerActivity.onResume")
-        App.contactRepository.initialize()
-        adapterCallLogs.setList(App.callHistoryRepository.getLatestHistory().take(Keys.CALL_HISTORY_LIMIT))
+        model.refresh(this)
     }
 
     override fun onDestroy() {
@@ -180,14 +185,15 @@ class ManagerActivity : AppCompatActivity() {
 
         StatusBarUtil.setTranslucentForImageView(this, v.container)
 
-        val callsLayoutManager = LockableLayoutManager(this, !Loader.loadSettings().historyButtom)
+        val callsLayoutManager =
+            LockableLayoutManager(this, !Loader.loadSettings(this).historyButtom)
 
         initFavorites(callsLayoutManager)
         initCallHistory(callsLayoutManager)
 
         val isDefaultDealer: Boolean = Utilities().checkDefaultDialer(this)
         if (isDefaultDealer) {
-            checkPermission(null)
+            checkPermission()
         }
 
         fabKeyboard.setOnClickListener {
@@ -203,7 +209,7 @@ class ManagerActivity : AppCompatActivity() {
             false
         ).apply {
             rvFavorites.layoutManager =
-                CirLayoutManager(columns = Loader.loadSettings().columnsCirs)
+                CirLayoutManager(columns = Loader.loadSettings(context).columnsCirs)
             rvFavorites.itemAnimator = LandingAnimator(OvershootInterpolator())
             rvFavorites.setChildDrawingOrderCallback { childCount, iteration ->
                 // Изменяем порядок отрисовки избранных контактов, чтобы контакт
@@ -222,8 +228,8 @@ class ManagerActivity : AppCompatActivity() {
 
             favoritesAdapter = CirAdapter(
                 FavoriteContactRepositoryImpl(
-                    App.contactRepository,
-                    getSharedPreferences(Keys.ManagerPreference, MODE_PRIVATE)
+                    context,
+                    ContactRepositoryImpl(context)
                 ),
                 callsLayoutManager,
                 btnDelete,
@@ -283,12 +289,8 @@ class ManagerActivity : AppCompatActivity() {
         this.onResume()
     }
 
-    private fun checkPermission(@Nullable grantResults: IntArray?) {
-        if (grantResults != null && Utilities().checkPermissionsGranted(grantResults)) {
-            Utilities().checkPermissionsGranted(this, Utilities().MUST_HAVE_PERMISSIONS)
-        } else {
-            Utilities().askForPermissions(this, Utilities().MUST_HAVE_PERMISSIONS)
-        }
+    private fun checkPermission() {
+        Utilities().askForPermissions(this, Utilities().MUST_HAVE_PERMISSIONS)
     }
 
     private fun offerReplacingDefaultDialer() {

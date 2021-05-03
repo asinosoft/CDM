@@ -8,11 +8,6 @@ import com.asinosoft.cdm.data.Contact
  */
 interface ContactRepository {
     /**
-     * Обновляет внутренний кэш репозитория (который используется для получения контактов по ID, по телефону)
-     */
-    fun initialize()
-
-    /**
      * Возвращает полный список контактов
      */
     fun getContacts(): Collection<Contact>

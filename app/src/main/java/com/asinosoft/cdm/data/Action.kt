@@ -214,6 +214,8 @@ class Action(
     }
 
     override fun hashCode(): Int {
-        return type.hashCode() + value.hashCode()
+        var result = type.hashCode()
+        result = 31 * result + value.hashCode()
+        return result
     }
 }

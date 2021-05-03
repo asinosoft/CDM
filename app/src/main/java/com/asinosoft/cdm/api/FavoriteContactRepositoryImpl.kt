@@ -1,6 +1,7 @@
 package com.asinosoft.cdm.api
 
-import android.content.SharedPreferences
+import android.content.Context
+import androidx.appcompat.app.AppCompatActivity
 import com.asinosoft.cdm.Keys
 import java.util.Collections.swap
 
@@ -9,8 +10,8 @@ import java.util.Collections.swap
  * Все изменения списка сразу сохраняются в настройки
  */
 class FavoriteContactRepositoryImpl(
-    private val contactRepository: ContactRepository,
-    private val sharedPreferences: SharedPreferences
+    private val context: Context,
+    private val contactRepository: ContactRepository
 ) : FavoriteContactRepository {
     private val favoriteContacts: MutableList<FavoriteContact> by lazy {
         loadContacts()
@@ -41,10 +42,14 @@ class FavoriteContactRepositoryImpl(
     }
 
     private fun loadContacts(): MutableList<FavoriteContact> {
-        sharedPreferences.getString(Keys.Cirs, null)?.let {
+        val preferences = context.getSharedPreferences(
+            Keys.ManagerPreference,
+            AppCompatActivity.MODE_PRIVATE
+        )
+        preferences.getString(Keys.Cirs, null)?.let {
             val list = it.split("<end>")
-            val contacts = list.map {
-                FavoriteContact.fromJson(it, contactRepository)
+            val contacts = list.map { json ->
+                FavoriteContact.fromJson(json, contactRepository)
             }
 
             return if (contacts.isNotEmpty()) {
@@ -58,10 +63,11 @@ class FavoriteContactRepositoryImpl(
     }
 
     private fun saveContacts() {
-        favoriteContacts.map {
+        favoriteContacts.joinToString("<end>") {
             it.toJson()
-        }.joinToString("<end>").let {
-            sharedPreferences
+        }.let {
+            val preferences = context.getSharedPreferences(Keys.ManagerPreference, Context.MODE_PRIVATE)
+            preferences
                 .edit()
                 .putString(Keys.Cirs, it)
                 .apply()

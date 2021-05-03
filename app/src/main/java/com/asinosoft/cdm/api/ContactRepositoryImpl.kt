@@ -16,7 +16,7 @@ import timber.log.Timber
  */
 class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
-    override fun initialize() {
+    private fun initialize() {
         contacts = context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             null, null, null
@@ -182,7 +182,11 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
         private fun parseAction(contact: Contact, type: Action.Type) {
             val id = cursor.getInt(_id)
-            val value = cursor.getString(data1)
+            val value = when (type.group) {
+                Action.Group.Telegram -> StHelper.convertNumber(cursor.getString(data3))
+                Action.Group.WhatsApp -> StHelper.convertNumber(cursor.getString(data1))
+                else -> cursor.getString(data1)
+            }
             val description = cursor.getString(data2) ?: type.name
 
             contact.actions.add(Action(id, type, value, description))

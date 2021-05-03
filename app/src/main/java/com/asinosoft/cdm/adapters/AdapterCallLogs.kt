@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.asinosoft.cdm.CircularImageView
+import com.asinosoft.cdm.Loader
 import com.asinosoft.cdm.Metoths
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.CallHistoryItem
@@ -84,13 +85,11 @@ class AdapterCallLogs(
 
         fun bind(item: CallHistoryItem) {
             with(v as CalllogObjectBinding) {
-                imageContact.setImageDrawable(item.contact.getPhoto())
+                imageContact.setImageDrawable(item.contact.getPhoto(context))
                 name.text = item.contact.name
                 number.text = "${item.prettyPhone}, ${Metoths.getFormattedTime(item.duration)}"
                 timeContact.text = item.time
                 dateContact.text = item.date
-                val directActions = item.contact.directActions
-                setIcons(directActions, imageLeftAction, imageRightAction)
 
                 when (item.typeCall) {
                     CallLog.Calls.OUTGOING_TYPE -> typeCall.setImageResource(R.drawable.baseline_call_made_24)
@@ -101,6 +100,7 @@ class AdapterCallLogs(
 
                 dragLayout.setOnTouchListener { view, motionEvent ->
                     if (motionEvent.action == ACTION_DOWN) {
+                        val directActions = Loader.loadContactSettings(context, item.contact)
                         setIcons(directActions, imageLeftAction, imageRightAction)
                     }
                     false
@@ -108,7 +108,7 @@ class AdapterCallLogs(
 
                 swipeLayout.setOnActionsListener(object : SwipeLayout.SwipeActionsListener {
                     override fun onOpen(direction: Int, isContinuous: Boolean) {
-                        setIcons(directActions, imageLeftAction, imageRightAction)
+                        val directActions = Loader.loadContactSettings(context, item.contact)
                         when (direction) {
                             SwipeLayout.RIGHT -> directActions.right.perform(context)
                             SwipeLayout.LEFT -> directActions.left.perform(context)

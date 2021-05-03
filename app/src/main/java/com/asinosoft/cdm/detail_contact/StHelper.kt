@@ -10,14 +10,14 @@ import java.util.*
 object StHelper {
     private val clearNonNumbers = Regex("\\D+") // чтобы не компилировать регексп на каждый вызов функции
 
-    fun convertNumber(number: String): String? {
+    fun convertNumber(number: String): String {
         return try {
             val clearNumber = clearNonNumbers.replace(number, "")
             val phoneUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance()
             val numberForm: Phonenumber.PhoneNumber? = phoneUtil.parse(clearNumber, "RU")
             phoneUtil.format(numberForm, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL)
         } catch (e: Exception) {
-            null
+            number
         }
     }
 

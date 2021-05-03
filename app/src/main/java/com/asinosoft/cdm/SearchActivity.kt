@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asinosoft.cdm.Metoths.Companion.toggle
+import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ActivitySearchBinding
 import com.jaeger.library.StatusBarUtil
@@ -34,8 +35,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun initActivity() {
-        contacts = App.contactRepository
-            .getContacts()
+        contacts = ContactRepositoryImpl(this).getContacts()
             .filter { contact -> contact.phones.isNotEmpty() }
             .sortedBy { it.name }
 

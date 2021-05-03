@@ -22,10 +22,5 @@ class Keys {
          * Длительность вибрации
          */
         const val VIBRO = 30L
-
-        /**
-         * Показываемое количество последних звонков
-         */
-        const val CALL_HISTORY_LIMIT = 60
     }
 }

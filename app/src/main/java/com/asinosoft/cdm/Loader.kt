@@ -1,38 +1,38 @@
 package com.asinosoft.cdm
 
 import android.content.Context
-import android.content.SharedPreferences
-import android.util.Log
-import com.asinosoft.cdm.data.*
+import com.asinosoft.cdm.data.Action
+import com.asinosoft.cdm.data.Contact
+import com.asinosoft.cdm.data.DirectActions
+import com.asinosoft.cdm.data.Settings
 import com.google.gson.Gson
 
 /**
  * Класс загрузчика настроек.
  */
 object Loader {
-
-    private var myPref: SharedPreferences =
-        App.INSTANCE.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
-
     /**
      * Загрузка настроек
      */
-    fun loadSettings(): Settings {
-        val settings = myPref.getString(Keys.Settings, null)
+    fun loadSettings(context: Context): Settings {
+        val preferences = context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
+        val settings = preferences.getString(Keys.Settings, null)
         if (settings == null) {
             return Settings()
         }
         return Gson().fromJson(settings, Settings().javaClass) ?: Settings()
     }
 
-    fun loadContactSettings(contact: Contact): DirectActions {
-        val settings = myPref.getString(Keys.CONTACT_PREFERENCES + contact.id, null)
+    fun loadContactSettings(context: Context, contact: Contact): DirectActions {
+        val preferences = context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
+        val settings = preferences.getString(Keys.CONTACT_PREFERENCES + contact.id, null)
+        val globalSettings = loadSettings(context)
         return if (settings == null) {
-            getDefaultContactActions(contact)
+            getDefaultContactActions(contact, globalSettings)
         } else {
             Gson().fromJson(settings, ContactSettings::class.java)
                 ?.let { getContactActions(contact, it) }
-                ?: getDefaultContactActions(contact)
+                ?: getDefaultContactActions(contact, globalSettings)
         }
     }
 
@@ -43,56 +43,55 @@ object Loader {
         contact: Contact,
         settings: ContactSettings
     ): DirectActions {
-        val defaultSettings = loadSettings()
-        val left = contact.actions.find { it.id == settings.leftButton } ?: getActionByType(
-            contact,
-            defaultSettings.leftButton
-        )
-        val right = contact.actions.find { it.id == settings.rightButton } ?: getActionByType(
-            contact,
-            defaultSettings.rightButton
-        )
-        val top = contact.actions.find { it.id == settings.topButton } ?: getActionByType(
-            contact,
-            defaultSettings.topButton
-        )
-        val bottom = contact.actions.find { it.id == settings.bottomButton } ?: getActionByType(
-            contact,
-            defaultSettings.bottomButton
-        )
+        val left = getContactAction(contact, settings.left)
+        val right = getContactAction(contact, settings.right)
+        val top = getContactAction(contact, settings.top)
+        val bottom = getContactAction(contact, settings.bottom)
         return DirectActions(left, right, top, bottom)
+    }
+
+    /**
+     * Ищет подходящее действие: сначала по ID+типу, затем просто по типу
+     */
+    private fun getContactAction(contact: Contact, like: ActionSettings): Action {
+        return contact.actions.find { it.id == like.id && it.type == like.type }
+            ?: contact.actions.firstOrNull { it.type == like.type }
+            ?: Action(0, like.type, "", "")
     }
 
     /**
      * Возвращает набор действий для контакта в соответствии с глобальными дефолтными настройками
      */
-    private fun getDefaultContactActions(contact: Contact): DirectActions {
-        val settings = loadSettings()
-        val left = getActionByType(contact, settings.leftButton)
-        val right = getActionByType(contact, settings.rightButton)
-        val top = getActionByType(contact, settings.topButton)
-        val bottom = getActionByType(contact, settings.bottomButton)
+    private fun getDefaultContactActions(
+        contact: Contact,
+        globalSettings: Settings
+    ): DirectActions {
+        val left = getActionByType(contact, globalSettings.leftButton)
+        val right = getActionByType(contact, globalSettings.rightButton)
+        val top = getActionByType(contact, globalSettings.topButton)
+        val bottom = getActionByType(contact, globalSettings.bottomButton)
         return DirectActions(left, right, top, bottom)
     }
 
     /**
      * Сохранение настроек
      */
-    fun saveSettings(settings: Settings) {
-        val e = myPref.edit()
+    fun saveSettings(context: Context, settings: Settings) {
+        val preferences = context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
+        val e = preferences.edit()
         e.putString(Keys.Settings, Gson().toJson(settings))
         e.apply()
     }
 
-    fun saveContactSettings(contact: Contact, directActions: DirectActions) {
-        Log.d("saveContactSettings # ${contact.name}", "left: ${directActions.left.type.name},\n right: ${directActions.right.type.name},\n top: ${directActions.top.type.name},\n bottom: ${directActions.down.type.name}")
+    fun saveContactSettings(context: Context, contact: Contact, directActions: DirectActions) {
         val settings = ContactSettings(
-            directActions.left.id,
-            directActions.right.id,
-            directActions.top.id,
-            directActions.down.id
+            ActionSettings(directActions.left.id, directActions.left.type),
+            ActionSettings(directActions.right.id, directActions.right.type),
+            ActionSettings(directActions.top.id, directActions.top.type),
+            ActionSettings(directActions.down.id, directActions.down.type),
         )
-        val e = myPref.edit()
+        val preferences = context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
+        val e = preferences.edit()
         e.putString(Keys.CONTACT_PREFERENCES + contact.id, Gson().toJson(settings))
         e.apply()
     }
@@ -101,4 +100,16 @@ object Loader {
         return contact.actions.firstOrNull { it.type == type }
             ?: Action(0, type, "", "")
     }
+
+    class ContactSettings(
+        var left: ActionSettings,
+        var right: ActionSettings,
+        var top: ActionSettings,
+        var bottom: ActionSettings,
+    )
+
+    class ActionSettings(
+        val id: Int,
+        val type: Action.Type,
+    )
 }
