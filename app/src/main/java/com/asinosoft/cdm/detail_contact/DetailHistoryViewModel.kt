@@ -23,22 +23,21 @@ class DetailHistoryViewModel : ViewModel() {
     val availableActions: MutableLiveData<List<Action.Type>> = MutableLiveData()
     val directActions: MutableLiveData<DirectActions> = MutableLiveData()
 
-    fun initialize(context: Context, contactId: Long, phoneNumber: String) {
-        val contactRepository = ContactRepositoryImpl(context)
-        contact = contactRepository.getContactById(contactId)
-            ?: Contact(0, phoneNumber).apply {
-                actions.add(Action(0, Action.Type.PhoneCall, phoneNumber, ""))
-            }
+    fun initialize(context: Context, phoneNumber: String) {
+        contact = Contact(0, phoneNumber)
 
-        callHistory.value =
-            if (0L != contact.id) {
-                CallHistoryRepositoryImpl(contactRepository).getHistoryByContact(context, contact)
-            } else {
-                CallHistoryRepositoryImpl(contactRepository).getHistoryByPhone(
-                    context,
-                    contact.name
-                )
-            }
+        val contactRepository = ContactRepositoryImpl(context)
+        callHistory.value = CallHistoryRepositoryImpl(contactRepository).getHistoryByPhone(
+            context,
+            contact.name
+        )
+    }
+
+    fun initialize(context: Context, contactId: Long) {
+        contact = ContactRepositoryImpl(context).getContactById(contactId)!!
+
+        val contactRepository = ContactRepositoryImpl(context)
+        callHistory.value = CallHistoryRepositoryImpl(contactRepository).getHistoryByContact(context, contact)
 
         actions = Loader.loadContactSettings(context, contact)
         directActions.value = actions

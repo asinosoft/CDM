@@ -51,11 +51,16 @@ class ManagerActivity : AppCompatActivity() {
     private lateinit var favoritesView: FavoritesFragmentBinding
 
     /**
+     * Раскладка окна - избранные вверху/внизу
+     */
+    private var favoritesFirst: Boolean = true
+
+    /**
      * Номер избранного контакта, на котором находится палец пользователя - чтобы отрисовать его в последнюю очередь (поверх остальных)
      */
     private var indexOfFrontChild: Int = 0
 
-    private lateinit var adapterCallLogs: AdapterCallLogs
+    private lateinit var callsAdapter: AdapterCallLogs
     private lateinit var favoritesAdapter: CirAdapter
 
     private val PERMISSIONS = arrayOf(
@@ -78,7 +83,7 @@ class ManagerActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
             // После изменения настроек пересоздаем весь интерфейс
             initActivity()
-            model.refresh(this)
+            model.refresh()
         }
 
     /**
@@ -130,8 +135,8 @@ class ManagerActivity : AppCompatActivity() {
         }
         initActivity()
 
-        model.getLatestCalls().observe(this) { calls ->
-            adapterCallLogs.setList(calls)
+        model.calls.observe(this) { calls ->
+            callsAdapter.setList(calls)
         }
     }
 
@@ -153,7 +158,7 @@ class ManagerActivity : AppCompatActivity() {
             return
         }
 
-        model.refresh(this)
+        model.refresh()
     }
 
     override fun onDestroy() {
@@ -185,8 +190,8 @@ class ManagerActivity : AppCompatActivity() {
 
         StatusBarUtil.setTranslucentForImageView(this, v.container)
 
-        val callsLayoutManager =
-            LockableLayoutManager(this, !Loader.loadSettings(this).historyButtom)
+        favoritesFirst = !Loader.loadSettings(this).historyButtom
+        val callsLayoutManager = LockableLayoutManager(this, favoritesFirst)
 
         initFavorites(callsLayoutManager)
         initCallHistory(callsLayoutManager)
@@ -227,10 +232,7 @@ class ManagerActivity : AppCompatActivity() {
             }
 
             favoritesAdapter = CirAdapter(
-                FavoriteContactRepositoryImpl(
-                    context,
-                    ContactRepositoryImpl(context)
-                ),
+                FavoriteContactRepositoryImpl(context, ContactRepositoryImpl(context)),
                 callsLayoutManager,
                 btnDelete,
                 btnEdit,
@@ -271,11 +273,21 @@ class ManagerActivity : AppCompatActivity() {
     }
 
     private fun initCallHistory(callsLayoutManager: LockableLayoutManager) {
-        adapterCallLogs = AdapterCallLogs(this, favoritesView)
+        callsAdapter = AdapterCallLogs(this, favoritesView)
 
-        v.rvCalls.adapter = adapterCallLogs
+        v.rvCalls.adapter = callsAdapter
         v.rvCalls.layoutManager = callsLayoutManager
         v.rvCalls.isNestedScrollingEnabled = true
+
+        v.rvCalls.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if (!recyclerView.canScrollVertically(if (favoritesFirst) -1 else 1)) {
+                    model.getMoreCalls()
+                }
+            }
+        })
     }
 
     override fun onRequestPermissionsResult(

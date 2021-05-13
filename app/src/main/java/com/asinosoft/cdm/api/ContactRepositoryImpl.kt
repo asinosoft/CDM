@@ -16,12 +16,19 @@ import timber.log.Timber
  */
 class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
-    private fun initialize() {
+    // Полный список контактов
+    private var contacts: MutableMap<Long, Contact> = mutableMapOf()
+
+    // Индекс контактов по номеру телефона
+    private var contactPhones: MutableMap<String, Contact> = mutableMapOf()
+
+    fun initialize() {
+        Timber.d("Initialize contact repository")
+        contactPhones = mutableMapOf()
         contacts = context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             null, null, null
         )!!.let {
-            Timber.d("Retrieve contact list")
             ContactCursorAdapter(it).getAll()
         }
 
@@ -31,19 +38,17 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
                 index[it.value] = contact
             }
         }
-        contactPhones = index
 
-        initialized = true
+        contactPhones = index
+        Timber.d("%s contacts found", contacts.size)
     }
 
     override fun getContacts(): Collection<Contact> {
-        if (!initialized) initialize()
         return contacts.values
     }
 
     override fun getContactById(id: Long): Contact? {
-        if (!initialized) initialize()
-        return contacts[id]
+        return contacts[id] ?: findContactById(id)?.also { cache(it) }
     }
 
     override fun getContactByUri(uri: Uri): Contact? {
@@ -59,8 +64,40 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     override fun getContactByPhone(phone: String): Contact? {
-        if (!initialized) initialize()
-        return contactPhones[phone]
+        return contactPhones[phone] ?: findContactByPhone(phone)?.also { cache(it) }
+    }
+
+    private fun cache(contact: Contact) {
+        this.contacts[contact.id] = contact
+        contact.phones.forEach {
+            contactPhones[it.value] = contact
+        }
+    }
+
+    private fun findContactById(id: Long): Contact? {
+        Timber.d("Find contact by ID %s", id)
+        return context.contentResolver.query(
+            ContactsContract.Data.CONTENT_URI, projection,
+            "${ContactsContract.Data.CONTACT_ID} = ?", arrayOf(id.toString()), null
+        )?.use { cursor ->
+            ContactCursorAdapter(cursor).getAll()[id]
+        }
+    }
+
+    private fun findContactByPhone(phone: String): Contact? {
+        context.contentResolver.query(
+            ContactsContract.Data.CONTENT_URI, arrayOf(ContactsContract.Data.CONTACT_ID),
+            "${ContactsContract.Data.MIMETYPE} = ? AND ${ContactsContract.Data.DATA4} = ?",
+            arrayOf("vnd.android.cursor.item/phone_v2", phone),
+            null
+        )?.use { cursor ->
+            if (cursor.moveToNext()) {
+                val column = cursor.getColumnIndex(ContactsContract.Data.CONTACT_ID)
+                val contactId = cursor.getLong(column)
+                return getContactById(contactId)
+            }
+        }
+        return null
     }
 
     // Список колонок, получаемых из базы контактов
@@ -75,14 +112,6 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         ContactsContract.Data.DATA3,
         ContactsContract.Data.DATA4,
     )
-
-    private var initialized = false
-
-    // Полный список контактов
-    private lateinit var contacts: Map<Long, Contact>
-
-    // Индекс контактов по номеру телефона
-    private lateinit var contactPhones: Map<String, Contact>
 
     inner class ContactCursorAdapter(private val cursor: Cursor) {
         private val _id = cursor.getColumnIndex(ContactsContract.Data._ID)

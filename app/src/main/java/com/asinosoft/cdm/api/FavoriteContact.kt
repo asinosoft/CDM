@@ -14,7 +14,7 @@ class FavoriteContact(
         fun fromJson(json: String, contactRepository: ContactRepository): FavoriteContact {
             return Gson().fromJson(json, JsonData::class.java)?.let { data ->
                 FavoriteContact(
-                    contactRepository.getContactById(data.contactID),
+                    if (0L == data.contactID) null else contactRepository.getContactById(data.contactID),
                     data.selectedNumber
                 )
             } ?: FavoriteContact()

@@ -17,8 +17,6 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems
  * Активность "Просмотр контакта"
  */
 class DetailHistoryActivity : AppCompatActivity() {
-
-    lateinit var viewPager: ViewPager
     private val viewModel: DetailHistoryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,19 +24,28 @@ class DetailHistoryActivity : AppCompatActivity() {
         setContentView(R.layout.activity_detail_history)
 
         val contactId = intent.getLongExtra(Keys.id, 0)
-        val phoneNumber = intent.getStringExtra(Keys.number) ?: ""
-        viewModel.initialize(this, contactId, phoneNumber)
-
-        val adapter = FragmentPagerItemAdapter(
-            supportFragmentManager,
-            FragmentPagerItems.with(this)
+        val fragmentPagerItems: FragmentPagerItems
+        if (0L != contactId) {
+            viewModel.initialize(this, contactId)
+            fragmentPagerItems = FragmentPagerItems.with(this)
                 .add("История", HistoryDetailFragment().javaClass)
                 .add("Контакт", ContactDetailFragment().javaClass)
                 .add("Настройки", ContactSettingsFragment().javaClass)
                 .create()
+        } else {
+            val phoneNumber = intent.getStringExtra(Keys.number) ?: ""
+            viewModel.initialize(this, phoneNumber)
+            fragmentPagerItems = FragmentPagerItems.with(this)
+                .add("История", HistoryDetailFragment().javaClass)
+                .create()
+        }
+
+        val adapter = FragmentPagerItemAdapter(
+            supportFragmentManager,
+            fragmentPagerItems
         )
 
-        viewPager = findViewById(R.id.viewpager)
+        val viewPager = findViewById<ViewPager>(R.id.viewpager)
         viewPager.adapter = adapter
         val viewPagerTab = findViewById<SmartTabLayout>(R.id.viewpagertab)
         viewPagerTab.setViewPager(viewPager)

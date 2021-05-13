@@ -3,11 +3,11 @@ package com.asinosoft.cdm.api
 import android.content.Context
 import android.database.Cursor
 import android.provider.CallLog
+import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.detail_contact.StHelper
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 
 /**
  * Доступ к истории звонков
@@ -22,21 +22,34 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
         CallLog.Calls.DURATION
     )
 
-    override fun getLatestHistory(context: Context): List<CallHistoryItem> {
+    override fun getLatestHistory(
+        context: Context,
+        before: Date,
+        limit: Int,
+        filter: CallHistoryFilter
+    ): List<CallHistoryItem> {
         return context.contentResolver.query(
             CallLog.Calls.CONTENT_URI,
             projection,
-            null,
-            null,
+            "${CallLog.Calls.DATE} < ?",
+            arrayOf(before.time.toString()),
             "${CallLog.Calls.DATE} DESC"
         )?.let {
             // По каждому контакту показываем только последний звонок (первый, с учетом сортировки DESC)
-            HistoryItemCursorAdapter(it).getUnique { item ->
-                when (item.contact.id) {
-                    0L -> item.phone
-                    else -> item.contact.id.toString()
-                }
-            }
+            HistoryItemCursorAdapter(it).getFiltered(limit, filter)
+        } ?: ArrayList()
+    }
+
+    override fun getNewestHistory(context: Context, after: Date): List<CallHistoryItem> {
+        return context.contentResolver.query(
+            CallLog.Calls.CONTENT_URI,
+            projection,
+            "${CallLog.Calls.DATE} > ?",
+            arrayOf(after.time.toString()),
+            "${CallLog.Calls.DATE} DESC"
+        )?.let {
+            // По каждому контакту показываем только последний звонок (первый, с учетом сортировки DESC)
+            HistoryItemCursorAdapter(it).getAll()
         } ?: ArrayList()
     }
 
@@ -90,13 +103,16 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             return result
         }
 
-        fun <T> getUnique(distinctBy: (CallHistoryItem) -> T): List<CallHistoryItem> {
-            val set = HashSet<T>()
+        fun getFiltered(limit: Int, filter: CallHistoryFilter): List<CallHistoryItem> {
             val result = java.util.ArrayList<CallHistoryItem>()
             while (cursor.moveToNext()) {
                 val item = getOne()
-                if (set.add(distinctBy(item))) {
+                if (filter.filter(item)) {
                     result.add(getOne())
+                }
+
+                if (result.size >= limit) {
+                    break
                 }
             }
             return result
@@ -109,6 +125,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             return CallHistoryItem(
                 phone = phoneNumber,
                 prettyPhone = StHelper.convertNumber(phoneNumber),
+                timestamp = Date(date),
                 date = dateFormat.format(date),
                 time = timeFormat.format(date),
                 typeCall = cursor.getInt(colType),
@@ -116,7 +133,9 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
                 contact = contactRepository.getContactByPhone(phoneNumber) ?: Contact(
                     0,
                     phoneNumber
-                )
+                ).apply {
+                    actions.add(Action(0, Action.Type.PhoneCall, phoneNumber, ""))
+                }
             )
         }
     }

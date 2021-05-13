@@ -35,7 +35,9 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun initActivity() {
-        contacts = ContactRepositoryImpl(this).getContacts()
+        val contactRepository = ContactRepositoryImpl(this).apply { initialize() }
+
+        contacts = contactRepository.getContacts()
             .filter { contact -> contact.phones.isNotEmpty() }
             .sortedBy { it.name }
 

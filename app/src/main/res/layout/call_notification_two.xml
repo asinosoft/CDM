@@ -11,7 +11,8 @@
         style="@style/TextAppearance.Compat.Notification.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/notification_thumbnail"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="0dp"
         android:textSize="16sp"
         android:textStyle="bold"
         tools:text="Caller name" />
@@ -33,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/notification_caller_name"
         android:layout_marginStart="14dp"
-        android:layout_toEndOf="@+id/notification_thumbnail"
+        android:layout_toEndOf="@+id/notification_caller_name"
         android:alpha="0.8"
         android:visibility="gone"
         tools:text="00:00" />

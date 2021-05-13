@@ -2,10 +2,10 @@ package com.asinosoft.cdm.adapters
 
 import android.content.Context
 import android.provider.CallLog
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent.ACTION_DOWN
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.asinosoft.cdm.CircularImageView
@@ -18,7 +18,6 @@ import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
 import com.zerobranch.layout.SwipeLayout
 import org.jetbrains.anko.imageResource
-import timber.log.Timber
 import java.security.InvalidParameterException
 
 /**
@@ -33,7 +32,7 @@ class AdapterCallLogs(
         const val TYPE_CALL_ITEM = 2
     }
 
-    private var items: List<CallHistoryItem> = listOf()
+    private var calls: List<CallHistoryItem> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
         val view = when (viewType) {
@@ -51,13 +50,29 @@ class AdapterCallLogs(
     /**
      * Заменяет список звонков
      */
-    fun setList(list: List<CallHistoryItem>) {
-        items = list
-        notifyDataSetChanged()
-        Timber.d("AdapterCallLogs получил %d звонков/контактов", list.size)
+    fun setList(newList: List<CallHistoryItem>) {
+        val oldList = calls
+        this.calls = newList
+        DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getOldListSize(): Int = 1 + oldList.size
+
+            override fun getNewListSize(): Int = 1 + newList.size
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return /* избранные контакты */ (0 == oldItemPosition && 0 == newItemPosition) ||
+                        /* звонки */ oldItemPosition > 0 && oldItemPosition > 0 &&
+                        oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return /* избранные контакты */ (0 == oldItemPosition && 0 == newItemPosition) ||
+                        /* звонки */ oldItemPosition > 0 && oldItemPosition > 0 &&
+                        oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
+            }
+        }).dispatchUpdatesTo(this)
     }
 
-    override fun getItemCount() = items.size + 1
+    override fun getItemCount() = calls.size + 1
 
     override fun getItemViewType(position: Int): Int {
         return when (position) {
@@ -68,7 +83,7 @@ class AdapterCallLogs(
 
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
         if (position > 0) {
-            holder.bind(items[position - 1])
+            holder.bind(calls[position - 1])
         }
     }
 
@@ -112,10 +127,6 @@ class AdapterCallLogs(
                         when (direction) {
                             SwipeLayout.RIGHT -> directActions.right.perform(context)
                             SwipeLayout.LEFT -> directActions.left.perform(context)
-                            else -> Log.e(
-                                "AdapterHistory.kt: ",
-                                "SwipeLayout direction UNKNOWN = $direction"
-                            )
                         }
 
                         swipeLayout.close()
