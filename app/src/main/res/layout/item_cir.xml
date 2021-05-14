@@ -10,7 +10,7 @@
         android:id="@+id/actionView"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:src="@drawable/whatsapp_192"
+        android:src="@drawable/ic_whatsapp_chat"
         android:visibility="invisible"
         tools:ignore="MissingConstraints" />
 

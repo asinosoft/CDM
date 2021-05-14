@@ -60,7 +60,6 @@ class ManagerActivity : AppCompatActivity() {
      */
     private var indexOfFrontChild: Int = 0
 
-    private lateinit var callsAdapter: AdapterCallLogs
     private lateinit var favoritesAdapter: CirAdapter
 
     private val PERMISSIONS = arrayOf(
@@ -136,7 +135,7 @@ class ManagerActivity : AppCompatActivity() {
         initActivity()
 
         model.calls.observe(this) { calls ->
-            callsAdapter.setList(calls)
+            (v.rvCalls.adapter as AdapterCallLogs).setList(calls)
         }
     }
 
@@ -273,12 +272,11 @@ class ManagerActivity : AppCompatActivity() {
     }
 
     private fun initCallHistory(callsLayoutManager: LockableLayoutManager) {
-        callsAdapter = AdapterCallLogs(this, favoritesView)
-
-        v.rvCalls.adapter = callsAdapter
+        v.rvCalls.adapter = AdapterCallLogs(this, favoritesView)
         v.rvCalls.layoutManager = callsLayoutManager
         v.rvCalls.isNestedScrollingEnabled = true
 
+        // Подгрузка истории звонков, когда список докрутился до последнего элемента
         v.rvCalls.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)

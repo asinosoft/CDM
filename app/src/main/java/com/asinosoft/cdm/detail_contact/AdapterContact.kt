@@ -100,7 +100,7 @@ class AdapterContact(private val contact: Contact) :
 
         fun bindPhone(item: Item, actions: List<Action>) {
             numberType.text = item.description
-            mCustomMiddle.setBackgroundResource(R.drawable.call)
+            mCustomMiddle.setBackgroundResource(R.drawable.ic_phone_call)
             number.text = StHelper.convertNumber(item.name)
             mCustomLeft.visibility = View.INVISIBLE
             bText.visibility = View.GONE
@@ -116,8 +116,8 @@ class AdapterContact(private val contact: Contact) :
         fun bindSkype(item: Item, actions: List<Action>) {
             numberType.text = item.description // context.getString(R.string.type_skype)
             number.text = item.name
-            mCustomMiddle.setBackgroundResource(R.drawable.skype_message)
-            mCustomRight.setBackgroundResource(R.drawable.skype_call)
+            mCustomMiddle.setBackgroundResource(R.drawable.ic_skype_chat)
+            mCustomRight.setBackgroundResource(R.drawable.ic_skype_call)
             mCustomLeft.visibility = View.INVISIBLE
             bText.visibility = View.GONE
             mCustomMiddle.setOnClickListener {
@@ -131,21 +131,27 @@ class AdapterContact(private val contact: Contact) :
         fun bindTelegram(item: Item, actions: List<Action>) {
             numberType.text = item.description // context.getString(R.string.type_telegram)
             number.text = item.name
-            mCustomRight.setBackgroundResource(R.drawable.ic_telegram)
-            mCustomMiddle.visibility = View.INVISIBLE
-            mCustomLeft.visibility = View.INVISIBLE
+            mCustomLeft.setBackgroundResource(R.drawable.ic_telegram_chat)
+            mCustomMiddle.setBackgroundResource(R.drawable.ic_telegram_call)
+            mCustomRight.setBackgroundResource(R.drawable.ic_telegram_video)
             bText.visibility = View.GONE
-            mCustomRight.setOnClickListener {
+            mCustomLeft.setOnClickListener {
                 actions.find { it.type == Action.Type.TelegramChat }?.perform(context)
+            }
+            mCustomMiddle.setOnClickListener {
+                actions.find { it.type == Action.Type.TelegramCall }?.perform(context)
+            }
+            mCustomRight.setOnClickListener {
+                actions.find { it.type == Action.Type.TelegramVideo }?.perform(context)
             }
         }
 
         fun bindViber(item: Item, actions: List<Action>) {
             numberType.text = item.description // context.getString(R.string.type_viber)
             number.text = StHelper.convertNumber(item.name)
+            mCustomLeft.visibility = View.INVISIBLE
             mCustomMiddle.setBackgroundResource(R.drawable.ic_viber_chat)
             mCustomRight.setBackgroundResource(R.drawable.ic_viber_call)
-            mCustomLeft.visibility = View.INVISIBLE
             bText.visibility = View.GONE
             mCustomMiddle.setOnClickListener {
                 actions.find { it.type == Action.Type.ViberChat }?.perform(context)
@@ -158,8 +164,9 @@ class AdapterContact(private val contact: Contact) :
         fun bindWhatsApp(item: Item, actions: List<Action>) {
             numberType.text = item.description // context.getString(R.string.type_whatsapp)
             number.text = StHelper.convertNumber(item.name)
-            mCustomLeft.setBackgroundResource(R.drawable.whatsapp_message)
-            mCustomMiddle.setBackgroundResource(R.drawable.whatsapp_call)
+            mCustomLeft.setBackgroundResource(R.drawable.ic_whatsapp_chat)
+            mCustomMiddle.setBackgroundResource(R.drawable.ic_whatsapp_call)
+            mCustomRight.setBackgroundResource(R.drawable.ic_whatsapp_video)
             bText.visibility = View.GONE
             mCustomLeft.setOnClickListener {
                 actions.find { it.type == Action.Type.WhatsAppChat }?.perform(context)

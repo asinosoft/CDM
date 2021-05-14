@@ -49,7 +49,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             "${CallLog.Calls.DATE} DESC"
         )?.let {
             // По каждому контакту показываем только последний звонок (первый, с учетом сортировки DESC)
-            HistoryItemCursorAdapter(it).getAll()
+            HistoryItemCursorAdapter(it).getFiltered(Int.MAX_VALUE, CallHistoryFilter())
         } ?: ArrayList()
     }
 

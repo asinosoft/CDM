@@ -47,6 +47,8 @@ class Action(
         SkypeCall(Group.Skype),
         SkypeChat(Group.Skype),
         TelegramChat(Group.Telegram),
+        TelegramCall(Group.Telegram),
+        TelegramVideo(Group.Telegram),
         ViberCall(Group.Viber),
         ViberChat(Group.Viber),
         WhatsAppCall(Group.WhatsApp),
@@ -58,16 +60,18 @@ class Action(
         fun resourceByType(type: Type): Int {
             return when (type) {
                 Type.Email -> R.drawable.ic_email
-                Type.PhoneCall -> R.drawable.telephony_call_192
+                Type.PhoneCall -> R.drawable.ic_phone_call
                 Type.Sms -> R.drawable.ic_sms
-                Type.SkypeCall -> R.drawable.skype_call
-                Type.SkypeChat -> R.drawable.skype_message
-                Type.TelegramChat -> R.drawable.ic_telegram
+                Type.SkypeCall -> R.drawable.ic_skype_call
+                Type.SkypeChat -> R.drawable.ic_skype_chat
+                Type.TelegramChat -> R.drawable.ic_telegram_chat
+                Type.TelegramCall -> R.drawable.ic_telegram_call
+                Type.TelegramVideo -> R.drawable.ic_telegram_video
                 Type.ViberCall -> R.drawable.ic_viber_call
                 Type.ViberChat -> R.drawable.ic_viber_chat
-                Type.WhatsAppCall -> R.drawable.whatsapp_call
-                Type.WhatsAppChat -> R.drawable.whatsapp_192
-                Type.WhatsAppVideo -> R.drawable.whatsapp_call
+                Type.WhatsAppCall -> R.drawable.ic_whatsapp_call
+                Type.WhatsAppChat -> R.drawable.ic_whatsapp_chat
+                Type.WhatsAppVideo -> R.drawable.ic_whatsapp_video
             }
         }
     }
@@ -117,7 +121,7 @@ class Action(
     }
 
     private fun skypeChat(context: Context) {
-        Timber.i("skypeCall: %s", value)
+        Timber.i("skypeChat: %s", value)
         val intent = Intent("android.intent.action.VIEW", Uri.parse("skype:$value?chat"))
         context.startActivity(intent)
     }
@@ -129,7 +133,7 @@ class Action(
     }
 
     private fun telegramChat(context: Context) {
-        Timber.i("openTelegramNow: %s", id)
+        Timber.i("openTelegramNow: %s (%s)", id, value)
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setDataAndType(
             Uri.parse("content://com.android.contacts/data/$id"),
@@ -140,11 +144,25 @@ class Action(
     }
 
     private fun telegramCall(context: Context) {
-        TODO()
+        Timber.i("telegramCall: %s (%s)", id, value)
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(
+            Uri.parse("content://com.android.contacts/data/$id"),
+            "vnd.android.cursor.item/vnd.org.telegram.messenger.android.call"
+        )
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
     }
 
     private fun telegramVideo(context: Context) {
-        TODO()
+        Timber.i("openTelegramNow: %s (%s)", id, value)
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(
+            Uri.parse("content://com.android.contacts/data/$id"),
+            "vnd.android.cursor.item/vnd.org.telegram.messenger.android.call.video"
+        )
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
     }
 
     private fun viberChat(context: Context) {

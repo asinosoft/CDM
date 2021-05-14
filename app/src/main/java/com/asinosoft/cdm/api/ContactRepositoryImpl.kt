@@ -144,11 +144,21 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
                         "/contact_event" -> parseBirthday(contact)
                         "/phone_v2" -> parsePhone(contact)
                         "/email_v2" -> parseEmail(contact)
-                        "/com.skype4life.message" -> parseAction(contact, Action.Type.SkypeChat)
-                        "/com.skype4life.phone" -> parseAction(contact, Action.Type.SkypeCall)
+                        "/com.skype4life.phone" -> {
+                            parseAction(contact, Action.Type.SkypeChat)
+                            parseAction(contact, Action.Type.SkypeCall)
+                        }
                         "/vnd.org.telegram.messenger.android.profile" -> parseAction(
                             contact,
                             Action.Type.TelegramChat
+                        )
+                        "/vnd.org.telegram.messenger.android.call" -> parseAction(
+                            contact,
+                            Action.Type.TelegramCall
+                        )
+                        "/vnd.org.telegram.messenger.android.call.video" -> parseAction(
+                            contact,
+                            Action.Type.TelegramVideo
                         )
                         "/vnd.com.viber.voip.viber_number_message" -> parseAction(
                             contact,

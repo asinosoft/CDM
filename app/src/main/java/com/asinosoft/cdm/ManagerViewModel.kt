@@ -19,10 +19,6 @@ import timber.log.Timber
 import java.util.*
 
 class ManagerViewModel(application: Application) : AndroidViewModel(application) {
-    companion object {
-        const val REFRESH_LAPSE = 1000
-    }
-
     val calls: MutableLiveData<List<CallHistoryItem>> = MutableLiveData()
 
     private val contactRepository = ContactRepositoryImpl(getApplication())
@@ -48,8 +44,10 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
                     getApplication(),
                     callHistory.firstOrNull()?.timestamp ?: Date()
                 )
+                val newestContacts = newestCalls.map { it.contact }
                 Timber.d("Найдено %s звонков", newestCalls.size)
-                calls.postValue(newestCalls + callHistory)
+                // Объединяем новую историю и старую, исключая из неё контакты, которые отметились в новой
+                calls.postValue(newestCalls + callHistory.filter { !newestContacts.contains(it.contact) })
             }
         }
     }
