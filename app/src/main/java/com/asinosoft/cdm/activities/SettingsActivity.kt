@@ -222,8 +222,8 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         v.cirLeft.let(this@SettingsActivity::setDragListener)
         v.cirRight.let(this@SettingsActivity::setDragListener)
 
-        v.rvActions.layoutManager = GridLayoutManager(this, 1 + settings.columnsCirs)
-        v.rvActions.adapter = ActionListAdapter(settings).apply {
+        v.rvActions.layoutManager = GridLayoutManager(this, 5)
+        v.rvActions.adapter = ActionListAdapter().apply {
             setActions(Action.Type.values().asList())
         }
     }

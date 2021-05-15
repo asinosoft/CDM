@@ -49,8 +49,8 @@ class ContactSettingsFragment : Fragment() {
         val settings = viewModel.getGlobalSettings(requireContext())
         setAllCirs(settings)
 
-        v.rvActions.layoutManager = GridLayoutManager(requireContext(), 1 + settings.columnsCirs)
-        v.rvActions.adapter = ActionListAdapter(viewModel.getGlobalSettings(requireContext()))
+        v.rvActions.layoutManager = GridLayoutManager(requireContext(), 5)
+        v.rvActions.adapter = ActionListAdapter()
 
         return v.root
     }
