@@ -60,13 +60,13 @@ class AdapterCallLogs(
 
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 return /* избранные контакты */ (0 == oldItemPosition && 0 == newItemPosition) ||
-                        /* звонки */ oldItemPosition > 0 && oldItemPosition > 0 &&
+                        /* звонки */ oldItemPosition > 0 && newItemPosition > 0 &&
                         oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
             }
 
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 return /* избранные контакты */ (0 == oldItemPosition && 0 == newItemPosition) ||
-                        /* звонки */ oldItemPosition > 0 && oldItemPosition > 0 &&
+                        /* звонки */ oldItemPosition > 0 && newItemPosition > 0 &&
                         oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
             }
         }).dispatchUpdatesTo(this)

@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import com.asinosoft.cdm.R
 import java.io.IOException
 
-class Contact(
+data class Contact(
     val id: Long,
     val name: String
 ) {

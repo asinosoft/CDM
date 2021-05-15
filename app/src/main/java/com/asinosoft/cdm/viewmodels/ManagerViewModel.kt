@@ -40,14 +40,16 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
                 calls.postValue(latestCalls)
             } else {
                 Timber.d("Проверка новых звонков")
-                val newestCalls = CallHistoryRepositoryImpl(contactRepository).getNewestHistory(
+                val newCalls = CallHistoryRepositoryImpl(contactRepository).getNewestHistory(
                     getApplication(),
                     callHistory.firstOrNull()?.timestamp ?: Date()
                 )
-                val newestContacts = newestCalls.map { it.contact }
-                Timber.d("Найдено %s звонков", newestCalls.size)
+                Timber.d("Найдено %s звонков", newCalls.size)
+
                 // Объединяем новую историю и старую, исключая из неё контакты, которые отметились в новой
-                calls.postValue(newestCalls + callHistory.filter { !newestContacts.contains(it.contact) })
+                val newContacts = newCalls.map { it.contact }
+                val oldCalls = callHistory.filter { !newContacts.contains(it.contact) }
+                calls.postValue(newCalls + oldCalls)
             }
         }
     }
