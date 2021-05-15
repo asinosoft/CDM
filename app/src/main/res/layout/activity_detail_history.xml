@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DetailHistoryActivity"
+    tools:context=".activities.DetailHistoryActivity"
     android:orientation="vertical">
 
     <github.chenupt.dragtoplayout.DragTopLayout

@@ -1,4 +1,4 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.activities
 
 import android.annotation.SuppressLint
 import android.app.*
@@ -25,6 +25,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.view.isVisible
 import com.agik.AGIKSwipeButton.Controller.OnSwipeCompleteListener
 import com.agik.AGIKSwipeButton.View.Swipe_Button_View
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.dialer.*
 import kotlinx.android.synthetic.main.activity_ongoing_call.*

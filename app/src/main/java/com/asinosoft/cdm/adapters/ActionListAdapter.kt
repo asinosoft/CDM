@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.Metoths.Companion.setSize
-import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
+import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
+import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.databinding.ActionItemBinding

@@ -1,4 +1,4 @@
-package com.asinosoft.cdm.detail_contact
+package com.asinosoft.cdm.helpers
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber

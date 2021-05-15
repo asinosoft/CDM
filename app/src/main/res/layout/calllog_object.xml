@@ -18,7 +18,7 @@
         app:rightItem="@id/imageLeftAction"
         app:swipeDirection="left|right">
 
-        <com.asinosoft.cdm.CircularImageView
+        <com.asinosoft.cdm.views.CircularImageView
             android:id="@+id/imageLeftAction"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -27,7 +27,7 @@
             android:src="@drawable/ic_phone_call"
             android:visibility="visible" />
 
-        <com.asinosoft.cdm.CircularImageView
+        <com.asinosoft.cdm.views.CircularImageView
             android:id="@+id/imageRightAction"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -42,7 +42,7 @@
             android:clickable="true"
             android:focusable="true">
 
-            <com.asinosoft.cdm.CircularImageView
+            <com.asinosoft.cdm.views.CircularImageView
                 android:id="@+id/imageContact"
                 android:layout_width="64dp"
                 android:layout_height="64dp"

@@ -1,4 +1,4 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.helpers
 
 /**
  * Класс, хранящий константные значения ключей.

@@ -1,7 +1,8 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.views
 
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.asinosoft.cdm.helpers.Keys
 
 /**
  * Менеджер макета для кнопок избранных контактов.

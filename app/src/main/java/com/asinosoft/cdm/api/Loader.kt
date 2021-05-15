@@ -1,10 +1,11 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.api
 
 import android.content.Context
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.data.Settings
+import com.asinosoft.cdm.helpers.Keys
 import com.google.gson.Gson
 
 /**

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.asinosoft.cdm.CircularImageView
+    <com.asinosoft.cdm.views.CircularImageView
         android:id="@+id/img_action"
         android:layout_width="86dp"
         android:layout_height="86dp"

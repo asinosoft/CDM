@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <com.asinosoft.cdm.CircularImageView
+    <com.asinosoft.cdm.views.CircularImageView
         android:id="@+id/actionView"
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -14,7 +14,7 @@
         android:visibility="invisible"
         tools:ignore="MissingConstraints" />
 
-    <com.asinosoft.cdm.CircleImage
+    <com.asinosoft.cdm.views.CircleImage
         android:id="@+id/circleImage"
         android:layout_width="64dp"
         android:layout_height="64dp"

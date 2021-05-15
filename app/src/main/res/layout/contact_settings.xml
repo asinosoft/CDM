@@ -54,14 +54,14 @@
                         android:paddingTop="20dp"
                         android:paddingBottom="20dp">
 
-                        <com.asinosoft.cdm.CircularImageView
+                        <com.asinosoft.cdm.views.CircularImageView
                             android:id="@+id/contact"
                             android:layout_width="86dp"
                             android:layout_height="86dp"
                             android:layout_centerInParent="true"
                             android:src="@drawable/contact_unfoto" />
 
-                        <com.asinosoft.cdm.CircularImageView
+                        <com.asinosoft.cdm.views.CircularImageView
                             android:id="@+id/cirTop"
                             android:layout_width="86dp"
                             android:layout_height="86dp"
@@ -70,7 +70,7 @@
                             android:layout_marginBottom="10dp"
                             android:src="@drawable/contact_unfoto" />
 
-                        <com.asinosoft.cdm.CircularImageView
+                        <com.asinosoft.cdm.views.CircularImageView
                             android:id="@+id/cirBottom"
                             android:layout_width="86dp"
                             android:layout_height="86dp"
@@ -79,7 +79,7 @@
                             android:layout_marginTop="10dp"
                             android:src="@drawable/contact_unfoto" />
 
-                        <com.asinosoft.cdm.CircularImageView
+                        <com.asinosoft.cdm.views.CircularImageView
                             android:id="@+id/cirLeft"
                             android:layout_width="86dp"
                             android:layout_height="86dp"
@@ -88,7 +88,7 @@
                             android:layout_toStartOf="@id/contact"
                             android:src="@drawable/contact_unfoto" />
 
-                        <com.asinosoft.cdm.CircularImageView
+                        <com.asinosoft.cdm.views.CircularImageView
                             android:id="@+id/cirRight"
                             android:layout_width="86dp"
                             android:layout_height="86dp"

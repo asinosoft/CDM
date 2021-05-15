@@ -3,7 +3,7 @@ package com.asinosoft.cdm.dialer
 import android.content.Intent
 import android.telecom.Call
 import android.telecom.InCallService
-import com.asinosoft.cdm.OngoingCallActivity
+import com.asinosoft.cdm.activities.OngoingCallActivity
 
 class CallService : InCallService() {
 

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.asinosoft.cdm.SearchActivity">
+    tools:context="com.asinosoft.cdm.activities.SearchActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_filtered_contacts"
@@ -32,7 +32,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:paddingTop="10dp">
 
-    <fragment android:name="com.asinosoft.cdm.Keyboard"
+    <fragment android:name="com.asinosoft.cdm.fragments.KeyboardFragment"
         android:id="@+id/keyboard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

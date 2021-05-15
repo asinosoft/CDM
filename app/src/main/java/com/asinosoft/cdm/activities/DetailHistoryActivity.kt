@@ -1,12 +1,15 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.activities
 
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
-import com.asinosoft.cdm.detail_contact.ContactDetailFragment
-import com.asinosoft.cdm.detail_contact.DetailHistoryViewModel
+import com.asinosoft.cdm.fragments.HistoryDetailFragment
+import com.asinosoft.cdm.helpers.Keys
+import com.asinosoft.cdm.R
+import com.asinosoft.cdm.fragments.ContactDetailFragment
+import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
 import com.asinosoft.cdm.fragments.ContactSettingsFragment
 import com.jaeger.library.StatusBarUtil
 import com.ogaclejapan.smarttablayout.SmartTabLayout

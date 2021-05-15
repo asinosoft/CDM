@@ -25,9 +25,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
-        <activity android:name=".OngoingCallActivity" />
+        <activity android:name=".activities.OngoingCallActivity" />
         <activity
-            android:name=".ManagerActivity"
+            android:name=".activities.ManagerActivity"
             android:screenOrientation="portrait">
 
             <!-- For receiving intents -->
@@ -106,13 +106,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SearchActivity"
+            android:name=".activities.SearchActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".DetailHistoryActivity"
+            android:name=".activities.DetailHistoryActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:screenOrientation="portrait" />
 
         <service

@@ -1,4 +1,4 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.fragments
 
 import android.os.Bundle
 import android.os.Handler
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import com.asinosoft.cdm.R
 import kotlinx.android.synthetic.main.keyboard.*
 import kotlinx.android.synthetic.main.keyboard.view.*
 import org.jetbrains.anko.support.v4.runOnUiThread
@@ -14,7 +15,7 @@ import org.jetbrains.anko.support.v4.runOnUiThread
 /**
  * Класс кастомной клавиатуры.
  */
-class Keyboard : Fragment() {
+class KeyboardFragment : Fragment() {
     private var settingsButtonClickCallback: () -> Unit = {}
     private var callButtonClickCallback: (phoneNumber: String) -> Unit = {}
     private var closeButtonClickCallback: () -> Unit = {}

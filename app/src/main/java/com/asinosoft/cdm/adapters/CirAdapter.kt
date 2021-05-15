@@ -1,4 +1,4 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.adapters
 
 import android.content.ClipData
 import android.content.Context
@@ -10,11 +10,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.Metoths.Companion.setSize
-import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
+import com.asinosoft.cdm.*
+import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
+import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.api.FavoriteContact
 import com.asinosoft.cdm.api.FavoriteContactRepository
+import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.databinding.ItemCirBinding
+import com.asinosoft.cdm.helpers.ItemTouchCallbackCir
+import com.asinosoft.cdm.helpers.Keys
+import com.asinosoft.cdm.views.CircularImageView
+import com.asinosoft.cdm.views.LockableLayoutManager
 import kotlinx.android.synthetic.main.item_cir.view.*
 
 class CirAdapter(
@@ -41,7 +47,7 @@ class CirAdapter(
 
     override fun getItemCount() = favorites.getContacts().size
 
-    override fun onBindViewHolder(holder: CirAdapter.Holder, position: Int) {
+    override fun onBindViewHolder(holder: Holder, position: Int) {
         holder.bind(position, favorites.getContacts()[position])
     }
 

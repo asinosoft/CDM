@@ -25,7 +25,7 @@
 
         <fragment
             android:id="@+id/keyboard"
-            android:name="com.asinosoft.cdm.Keyboard"
+            android:name="com.asinosoft.cdm.fragments.KeyboardFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>

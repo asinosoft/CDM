@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.asinosoft.cdm.CircularImageView
+    <com.asinosoft.cdm.views.CircularImageView
         android:id="@+id/btn_edit"
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -19,7 +19,7 @@
         app:layout_constraintEnd_toEndOf="@+id/rv_favorites"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.asinosoft.cdm.CircularImageView
+    <com.asinosoft.cdm.views.CircularImageView
         android:id="@+id/btn_delete"
         android:layout_width="64dp"
         android:layout_height="64dp"

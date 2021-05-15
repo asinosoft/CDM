@@ -1,4 +1,4 @@
-package com.asinosoft.cdm.detail_contact
+package com.asinosoft.cdm.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
+import com.asinosoft.cdm.helpers.StHelper
 
 class AdapterContact(private val contact: Contact) :
     RecyclerView.Adapter<AdapterContact.ViewContactInfo>() {

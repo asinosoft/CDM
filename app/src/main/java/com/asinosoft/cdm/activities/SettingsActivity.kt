@@ -1,4 +1,4 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.activities
 
 import android.animation.ValueAnimator
 import android.app.Activity
@@ -13,7 +13,9 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
-import com.asinosoft.cdm.Metoths.Companion.setSize
+import com.asinosoft.cdm.views.CircularImageView
+import com.asinosoft.cdm.api.Loader
+import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
 import com.asinosoft.cdm.adapters.ActionListAdapter
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Settings

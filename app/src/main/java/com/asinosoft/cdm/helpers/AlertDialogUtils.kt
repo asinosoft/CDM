@@ -1,4 +1,4 @@
-package com.asinosoft.cdm.globals
+package com.asinosoft.cdm.helpers
 
 import android.app.Dialog
 import android.content.Context

@@ -1,4 +1,4 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.viewmodels
 
 import android.app.Application
 import android.content.Context
@@ -7,7 +7,7 @@ import android.provider.ContactsContract
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.asinosoft.cdm.Keys.Companion.CALL_HISTORY_LIMIT
+import com.asinosoft.cdm.helpers.Keys.Companion.CALL_HISTORY_LIMIT
 import com.asinosoft.cdm.api.CallHistoryFilter
 import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.api.CallHistoryRepositoryImpl

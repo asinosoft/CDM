@@ -1,4 +1,4 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,7 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.Metoths.Companion.setColoredText
+import com.asinosoft.cdm.helpers.Metoths.Companion.setColoredText
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.HistorySwipingItemBinding
 import com.zerobranch.layout.SwipeLayout

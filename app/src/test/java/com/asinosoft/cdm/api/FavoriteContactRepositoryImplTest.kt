@@ -3,7 +3,7 @@ package com.asinosoft.cdm.api
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
-import com.asinosoft.cdm.Keys
+import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.data.Contact
 import org.junit.Assert
 import org.junit.Test

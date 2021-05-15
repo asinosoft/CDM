@@ -1,4 +1,4 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.views
 
 import android.content.Context
 import androidx.recyclerview.widget.LinearLayoutManager

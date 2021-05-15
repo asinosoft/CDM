@@ -1,4 +1,4 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.activities
 
 import android.Manifest
 import android.content.Context
@@ -17,17 +17,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.Metoths.Companion.vibrateSafety
+import com.asinosoft.cdm.*
+import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.adapters.AdapterCallLogs
+import com.asinosoft.cdm.adapters.CirAdapter
 import com.asinosoft.cdm.adapters.NumbeAdapter
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.api.FavoriteContact
 import com.asinosoft.cdm.api.FavoriteContactRepositoryImpl
+import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.databinding.FavoritesFragmentBinding
 import com.asinosoft.cdm.dialer.Utilities
-import com.asinosoft.cdm.globals.AlertDialogUtils
+import com.asinosoft.cdm.helpers.AlertDialogUtils
+import com.asinosoft.cdm.helpers.Keys
+import com.asinosoft.cdm.viewmodels.ManagerViewModel
+import com.asinosoft.cdm.views.CirLayoutManager
+import com.asinosoft.cdm.views.LockableLayoutManager
 import com.jaeger.library.StatusBarUtil
 import jp.wasabeef.recyclerview.animators.LandingAnimator
 import kotlinx.android.synthetic.main.activity_manager.*
@@ -238,7 +245,7 @@ class ManagerActivity : AppCompatActivity() {
                 { position -> pickContact(position) },
                 { indexOfFrontChild = it },
                 context,
-                getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                getSystemService(VIBRATOR_SERVICE) as Vibrator
             )
             rvFavorites.adapter = favoritesAdapter
 

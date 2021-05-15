@@ -1,4 +1,4 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.views
 
 import android.content.Context
 import android.graphics.*
@@ -11,6 +11,8 @@ import android.view.View
 import android.view.ViewOutlineProvider
 import android.widget.ImageView.ScaleType.*
 import androidx.appcompat.widget.AppCompatImageView
+import com.asinosoft.cdm.helpers.Metoths
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import kotlin.math.min
 import kotlin.math.roundToInt

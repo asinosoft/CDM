@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.telecom.CallAudioState
-import com.asinosoft.cdm.OngoingCallActivity
+import com.asinosoft.cdm.activities.OngoingCallActivity
 import org.jetbrains.anko.audioManager
 
 class NotificationActionReceiver : BroadcastReceiver() {

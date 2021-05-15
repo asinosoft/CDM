@@ -5,7 +5,7 @@ import android.database.Cursor
 import android.provider.CallLog
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
-import com.asinosoft.cdm.detail_contact.StHelper
+import com.asinosoft.cdm.helpers.StHelper
 import java.util.*
 import kotlin.collections.ArrayList
 

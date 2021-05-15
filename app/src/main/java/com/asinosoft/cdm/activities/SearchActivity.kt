@@ -1,13 +1,18 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.activities
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.asinosoft.cdm.Metoths.Companion.toggle
+import com.asinosoft.cdm.*
+import com.asinosoft.cdm.helpers.Metoths.Companion.toggle
+import com.asinosoft.cdm.adapters.AdapterContacts
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ActivitySearchBinding
+import com.asinosoft.cdm.fragments.KeyboardFragment
+import com.asinosoft.cdm.helpers.Keys
+import com.asinosoft.cdm.helpers.Metoths
 import com.jaeger.library.StatusBarUtil
 
 /**
@@ -21,7 +26,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private lateinit var v: ActivitySearchBinding
-    private lateinit var keyboard: Keyboard
+    private lateinit var keyboard: KeyboardFragment
     private val contactsAdapter = AdapterContacts()
     private var contacts = listOf<Contact>()
 
@@ -30,7 +35,7 @@ class SearchActivity : AppCompatActivity() {
         v = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(v.root)
         StatusBarUtil.setTranslucentForImageView(this, v.rvFilteredContacts)
-        keyboard = supportFragmentManager.findFragmentById(R.id.keyboard) as Keyboard
+        keyboard = supportFragmentManager.findFragmentById(R.id.keyboard) as KeyboardFragment
         initActivity()
     }
 

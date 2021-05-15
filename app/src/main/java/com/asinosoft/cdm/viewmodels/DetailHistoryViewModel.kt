@@ -1,10 +1,10 @@
-package com.asinosoft.cdm.detail_contact
+package com.asinosoft.cdm.viewmodels
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.asinosoft.cdm.Loader
-import com.asinosoft.cdm.Metoths.Companion.Direction
+import com.asinosoft.cdm.api.Loader
+import com.asinosoft.cdm.helpers.Metoths.Companion.Direction
 import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.api.CallHistoryRepositoryImpl
 import com.asinosoft.cdm.api.ContactRepositoryImpl

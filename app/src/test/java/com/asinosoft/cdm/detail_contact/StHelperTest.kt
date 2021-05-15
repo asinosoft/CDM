@@ -1,5 +1,6 @@
 package com.asinosoft.cdm.detail_contact
 
+import com.asinosoft.cdm.helpers.StHelper
 import org.junit.Assert
 import org.junit.Test
 

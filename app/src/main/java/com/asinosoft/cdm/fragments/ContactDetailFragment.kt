@@ -1,4 +1,4 @@
-package com.asinosoft.cdm.detail_contact
+package com.asinosoft.cdm.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +9,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.adapters.AdapterContact
+import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
 
 class ContactDetailFragment : Fragment() {
 

@@ -8,7 +8,7 @@ import android.provider.ContactsContract.CommonDataKinds.Email
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import androidx.core.database.getStringOrNull
 import com.asinosoft.cdm.data.*
-import com.asinosoft.cdm.detail_contact.StHelper
+import com.asinosoft.cdm.helpers.StHelper
 import timber.log.Timber
 
 /**

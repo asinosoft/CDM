@@ -1,4 +1,4 @@
-package com.asinosoft.cdm
+package com.asinosoft.cdm.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.asinosoft.cdm.adapters.HistoryDetailsCallsAdapter
 import com.asinosoft.cdm.databinding.HistoryDetailFragmentBinding
-import com.asinosoft.cdm.detail_contact.DetailHistoryViewModel
+import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
 
 /**
  * Фрагмент вкладки "Истории" в детальной информации по элементу истории

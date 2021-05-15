@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.asinosoft.cdm.CircularImageView
-import com.asinosoft.cdm.Loader
-import com.asinosoft.cdm.Metoths
+import com.asinosoft.cdm.views.CircularImageView
+import com.asinosoft.cdm.api.Loader
+import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.data.Action
