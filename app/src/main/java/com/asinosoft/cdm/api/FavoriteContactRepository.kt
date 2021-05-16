@@ -1,5 +1,7 @@
 package com.asinosoft.cdm.api
 
+import com.asinosoft.cdm.data.FavoriteContact
+
 /**
  * Список избранных контактов, которые показываются на главном экране
  */

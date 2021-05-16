@@ -13,7 +13,7 @@ import org.jetbrains.anko.vibrator
 /**
  * Адаптер списка действий доступных для контакта (звонок/смс/письмо/вотсап-чат/вотсап-звонок и т.д.)
  */
-class ActionListAdapter : RecyclerView.Adapter<ActionListAdapter.Holder>() {
+class ActionsAdapter : RecyclerView.Adapter<ActionsAdapter.Holder>() {
 
     private var actions: List<Action.Type> = listOf()
 

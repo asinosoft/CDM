@@ -48,7 +48,6 @@ class CircleImage @JvmOverloads constructor(
     var editCir: CircularImageView? = null
     var touchDownForIndex: () -> Unit = {}
     var touchDown: (Int) -> Unit = {}
-    var selectedNumber: String? = null
     var lockableNestedScrollView: LockableLayoutManager? = null
 
     companion object {
@@ -100,9 +99,9 @@ class CircleImage @JvmOverloads constructor(
                 return@onClick
             }
             if (!isMoving) {
-                if (contact == null) {
-                    pickContact()
-                } else openDetailContact(selectedNumber as String, contact!!, context = context)
+                contact?.let {
+                    openDetailContact(it.phones.first().value, it, context = context)
+                } ?: pickContact()
             }
         }
     }

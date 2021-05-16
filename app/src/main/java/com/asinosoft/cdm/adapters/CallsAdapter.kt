@@ -23,10 +23,10 @@ import java.security.InvalidParameterException
 /**
  * Адаптер списка последних звонков, который показывается в активности "Просмотр контакта"
  */
-class AdapterCallLogs(
+class CallsAdapter(
     private val context: Context,
     private val favorites: ViewBinding
-) : RecyclerView.Adapter<AdapterCallLogs.HolderHistory>() {
+) : RecyclerView.Adapter<CallsAdapter.HolderHistory>() {
     companion object {
         const val TYPE_FAVORITES = 1
         const val TYPE_CALL_ITEM = 2

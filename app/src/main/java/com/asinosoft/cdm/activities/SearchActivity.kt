@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asinosoft.cdm.*
 import com.asinosoft.cdm.helpers.Metoths.Companion.toggle
-import com.asinosoft.cdm.adapters.AdapterContacts
+import com.asinosoft.cdm.adapters.ContactsAdapter
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ActivitySearchBinding
@@ -27,7 +27,7 @@ class SearchActivity : AppCompatActivity() {
 
     private lateinit var v: ActivitySearchBinding
     private lateinit var keyboard: KeyboardFragment
-    private val contactsAdapter = AdapterContacts()
+    private val contactsAdapter = ContactsAdapter()
     private var contacts = listOf<Contact>()
 
     override fun onCreate(savedInstanceState: Bundle?) {

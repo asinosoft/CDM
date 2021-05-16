@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.data.Contact
+import com.asinosoft.cdm.data.FavoriteContact
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
@@ -50,7 +51,7 @@ class FavoriteContactRepositoryImplTest {
         val favoriteContactRepository =
             FavoriteContactRepositoryImpl(mockContext, mockContactRepository)
 
-        val addedContact = FavoriteContact(Contact(1, "John Doe"), "+71234567890")
+        val addedContact = FavoriteContact(Contact(1, "John Doe"))
 
         favoriteContactRepository.addContact(addedContact)
 
@@ -63,7 +64,7 @@ class FavoriteContactRepositoryImplTest {
             Keys.Cirs,
             generateSequence { "{\"contactID\":0}" }
                 .take(3)
-                .plus("{\"contactID\":1,\"selectedNumber\":\"+71234567890\"}")
+                .plus("{\"contactID\":1}")
                 .joinToString("<end>")
         )
     }
@@ -73,7 +74,7 @@ class FavoriteContactRepositoryImplTest {
         val favoriteContactRepository =
             FavoriteContactRepositoryImpl(mockContext, mockContactRepository)
 
-        val newContact = FavoriteContact(Contact(77, "John Doe"), "+71234567890")
+        val newContact = FavoriteContact(Contact(77, "John Doe"))
 
         favoriteContactRepository.replaceContact(1, newContact)
 
@@ -84,7 +85,7 @@ class FavoriteContactRepositoryImplTest {
 
         Mockito.verify(mockEditor).putString(
             Keys.Cirs,
-            """{"contactID":0}<end>{"contactID":77,"selectedNumber":"+71234567890"}<end>{"contactID":0}"""
+            """{"contactID":0}<end>{"contactID":77}<end>{"contactID":0}"""
         )
     }
 

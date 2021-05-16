@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.*
 import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
 import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
-import com.asinosoft.cdm.api.FavoriteContact
+import com.asinosoft.cdm.data.FavoriteContact
 import com.asinosoft.cdm.api.FavoriteContactRepository
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.databinding.ItemCirBinding
@@ -23,7 +23,7 @@ import com.asinosoft.cdm.views.CircularImageView
 import com.asinosoft.cdm.views.LockableLayoutManager
 import kotlinx.android.synthetic.main.item_cir.view.*
 
-class CirAdapter(
+class FavoritesAdapter(
     val favorites: FavoriteContactRepository,
     val callsLayoutManager: LockableLayoutManager,
     val deleteButton: CircularImageView,
@@ -32,7 +32,7 @@ class CirAdapter(
     val onTouch: (Int) -> Unit, // Через колбэк передаётся позиция контакта, на котором находится палец пользователя
     val context: Context,
     val vibrator: Vibrator
-) : RecyclerView.Adapter<CirAdapter.Holder>() {
+) : RecyclerView.Adapter<FavoritesAdapter.Holder>() {
 
     private val touchHelper = ItemTouchHelper(ItemTouchCallbackCir())
     private val settings = Loader.loadSettings(context)
@@ -77,7 +77,6 @@ class CirAdapter(
         fun bind(n: Int, favorite: FavoriteContact) {
             v.actionView.setSize(settings.sizeCirs)
             v.circleImage.apply {
-                selectedNumber = favorite.phone
                 contact = favorite.contact
 
                 setActionImage(v.actionView)

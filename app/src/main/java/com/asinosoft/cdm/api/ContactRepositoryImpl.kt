@@ -23,7 +23,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     private var contactPhones: MutableMap<String, Contact> = mutableMapOf()
 
     fun initialize() {
-        Timber.d("Initialize contact repository")
+        Timber.d("Чтение списка контактов")
         contactPhones = mutableMapOf()
         contacts = context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
@@ -40,7 +40,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         }
 
         contactPhones = index
-        Timber.d("%s contacts found", contacts.size)
+        Timber.d("Найдено %s контактов", contacts.size)
     }
 
     override fun getContacts(): Collection<Contact> {

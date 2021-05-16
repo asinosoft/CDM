@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.views.CircularImageView
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.adapters.ActionListAdapter
-import com.asinosoft.cdm.adapters.NumbeAdapter
+import com.asinosoft.cdm.adapters.ActionsAdapter
+import com.asinosoft.cdm.adapters.SelectorAdapter
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.data.Settings
@@ -50,7 +50,7 @@ class ContactSettingsFragment : Fragment() {
         setAllCirs(settings)
 
         v.rvActions.layoutManager = GridLayoutManager(requireContext(), 5)
-        v.rvActions.adapter = ActionListAdapter()
+        v.rvActions.adapter = ActionsAdapter()
 
         return v.root
     }
@@ -59,7 +59,7 @@ class ContactSettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.availableActions.observe(viewLifecycleOwner) {
-            (v.rvActions.adapter as ActionListAdapter).setActions(it)
+            (v.rvActions.adapter as ActionsAdapter).setActions(it)
         }
 
         viewModel.directActions.observe(viewLifecycleOwner) {
@@ -160,7 +160,7 @@ class ContactSettingsFragment : Fragment() {
             else -> {
                 val dialog =
                     AlertDialogUtils.dialogListWithoutConfirm(requireContext(), "Выберите номер")
-                val adapter = NumbeAdapter { selectedNumber ->
+                val adapter = SelectorAdapter(actions.map { it.value }) { selectedNumber ->
                     viewModel.setContactAction(
                         direction,
                         actions.find { it.value == selectedNumber }!!
@@ -170,7 +170,6 @@ class ContactSettingsFragment : Fragment() {
                 val recyclerView = dialog.findViewById<RecyclerView>(R.id.recycler_popup)
                 recyclerView.layoutManager = LinearLayoutManager(requireContext())
                 recyclerView.adapter = adapter
-                adapter.setData(actions.map { it.value })
                 dialog.show()
             }
         }

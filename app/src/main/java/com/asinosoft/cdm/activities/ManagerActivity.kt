@@ -15,23 +15,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.*
-import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
-import com.asinosoft.cdm.adapters.AdapterCallLogs
-import com.asinosoft.cdm.adapters.CirAdapter
-import com.asinosoft.cdm.adapters.NumbeAdapter
+import com.asinosoft.cdm.adapters.CallsAdapter
+import com.asinosoft.cdm.adapters.FavoritesAdapter
 import com.asinosoft.cdm.api.ContactRepositoryImpl
-import com.asinosoft.cdm.api.FavoriteContact
 import com.asinosoft.cdm.api.FavoriteContactRepositoryImpl
 import com.asinosoft.cdm.api.Loader
-import com.asinosoft.cdm.data.Contact
+import com.asinosoft.cdm.data.FavoriteContact
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.databinding.FavoritesFragmentBinding
 import com.asinosoft.cdm.dialer.Utilities
-import com.asinosoft.cdm.helpers.AlertDialogUtils
 import com.asinosoft.cdm.helpers.Keys
+import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import com.asinosoft.cdm.views.CirLayoutManager
 import com.asinosoft.cdm.views.LockableLayoutManager
@@ -45,6 +40,11 @@ import timber.log.Timber
  * Основной класс приложения, отвечает за работу главного экрана (нового) приложения
  */
 class ManagerActivity : AppCompatActivity() {
+    /**
+     * Отслеживает случаи, когда onRefresh срабатывает дважды
+     */
+    private var isRefreshed: Boolean = false
+
     private val model: ManagerViewModel by viewModels()
 
     /**
@@ -67,7 +67,7 @@ class ManagerActivity : AppCompatActivity() {
      */
     private var indexOfFrontChild: Int = 0
 
-    private lateinit var favoritesAdapter: CirAdapter
+    private lateinit var favoritesAdapter: FavoritesAdapter
 
     private val PERMISSIONS = arrayOf(
         Manifest.permission.READ_CONTACTS,
@@ -122,12 +122,7 @@ class ManagerActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.PickContact()) { uri ->
             if (null != uri) {
                 model.getContactByUri(this, uri)?.let { contact ->
-                    if (contact.phones.size > 1) {
-                        showNumberDialog(contact, pickedPosition)
-                    } else {
-                        val favorite = FavoriteContact(contact, contact.phones.first().value)
-                        favoritesAdapter.setItem(pickedPosition, favorite)
-                    }
+                    favoritesAdapter.setItem(pickedPosition, FavoriteContact(contact))
                 }
             }
         }
@@ -142,7 +137,7 @@ class ManagerActivity : AppCompatActivity() {
         initActivity()
 
         model.calls.observe(this) { calls ->
-            (v.rvCalls.adapter as AdapterCallLogs).setList(calls)
+            (v.rvCalls.adapter as CallsAdapter).setList(calls)
         }
     }
 
@@ -164,7 +159,15 @@ class ManagerActivity : AppCompatActivity() {
             return
         }
 
-        model.refresh()
+        if (!isRefreshed) {
+            isRefreshed = true
+            model.refresh()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        isRefreshed = false
     }
 
     override fun onDestroy() {
@@ -237,7 +240,7 @@ class ManagerActivity : AppCompatActivity() {
                 childPos
             }
 
-            favoritesAdapter = CirAdapter(
+            favoritesAdapter = FavoritesAdapter(
                 FavoriteContactRepositoryImpl(context, ContactRepositoryImpl(context)),
                 callsLayoutManager,
                 btnDelete,
@@ -279,7 +282,7 @@ class ManagerActivity : AppCompatActivity() {
     }
 
     private fun initCallHistory(callsLayoutManager: LockableLayoutManager) {
-        v.rvCalls.adapter = AdapterCallLogs(this, favoritesView)
+        v.rvCalls.adapter = CallsAdapter(this, favoritesView)
         v.rvCalls.layoutManager = callsLayoutManager
         v.rvCalls.isNestedScrollingEnabled = true
 
@@ -321,21 +324,5 @@ class ManagerActivity : AppCompatActivity() {
     private fun pickContact(position: Int) {
         pickedPosition = position
         pickContact.launch(null)
-    }
-
-    private fun showNumberDialog(contact: Contact, position: Int) {
-        contact.let {
-            val dialog = AlertDialogUtils.dialogListWithoutConfirm(this, "Выберите номер")
-            val adapter = NumbeAdapter {
-                val favorite = FavoriteContact(contact, it)
-                favoritesAdapter.setItem(position, favorite)
-                dialog.dismiss()
-            }
-            val recyclerView = dialog.findViewById<RecyclerView>(R.id.recycler_popup)
-            recyclerView.layoutManager = LinearLayoutManager(this)
-            recyclerView.adapter = adapter
-            adapter.setData(contact.phones.map { it.value })
-            dialog.show()
-        }
     }
 }

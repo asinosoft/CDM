@@ -12,8 +12,8 @@ import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
 
-class AdapterContact(private val contact: Contact) :
-    RecyclerView.Adapter<AdapterContact.ViewContactInfo>() {
+class ContactActionsAdapter(private val contact: Contact) :
+    RecyclerView.Adapter<ContactActionsAdapter.ViewContactInfo>() {
 
     private lateinit var context: Context
     private val groups = contact.actions.groupBy { Item(it.type.group, it.value, it.description) }

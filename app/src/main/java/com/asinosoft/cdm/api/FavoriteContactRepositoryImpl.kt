@@ -2,6 +2,7 @@ package com.asinosoft.cdm.api
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
+import com.asinosoft.cdm.data.FavoriteContact
 import com.asinosoft.cdm.helpers.Keys
 import java.util.Collections.swap
 

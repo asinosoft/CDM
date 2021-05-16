@@ -2,7 +2,7 @@ package com.asinosoft.cdm.helpers
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.adapters.CirAdapter
+import com.asinosoft.cdm.adapters.FavoritesAdapter
 
 /**
  * Обработчик перетаскивания кнопок избранных контактов
@@ -35,7 +35,7 @@ class ItemTouchCallbackCir : ItemTouchHelper.Callback() {
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        (recyclerView.adapter as CirAdapter).swapItems(
+        (recyclerView.adapter as FavoritesAdapter).swapItems(
             viewHolder.absoluteAdapterPosition,
             target.absoluteAdapterPosition
         )

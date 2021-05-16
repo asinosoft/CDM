@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.asinosoft.cdm.views.CircularImageView
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
-import com.asinosoft.cdm.adapters.ActionListAdapter
+import com.asinosoft.cdm.adapters.ActionsAdapter
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.databinding.SettingsLayoutBinding
@@ -223,7 +223,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         v.cirRight.let(this@SettingsActivity::setDragListener)
 
         v.rvActions.layoutManager = GridLayoutManager(this, 5)
-        v.rvActions.adapter = ActionListAdapter().apply {
+        v.rvActions.adapter = ActionsAdapter().apply {
             setActions(Action.Type.values().asList())
         }
     }

@@ -9,7 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.adapters.AdapterContact
+import com.asinosoft.cdm.adapters.ContactActionsAdapter
 import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
 
 class ContactDetailFragment : Fragment() {
@@ -30,6 +30,6 @@ class ContactDetailFragment : Fragment() {
 
         recyclerView = requireView().findViewById(R.id.recyclerViewForContact)
         recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        recyclerView.adapter = AdapterContact(model.getContact())
+        recyclerView.adapter = ContactActionsAdapter(model.getContact())
     }
 }

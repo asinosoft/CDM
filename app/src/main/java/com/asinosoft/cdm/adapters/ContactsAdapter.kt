@@ -12,7 +12,7 @@ import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.HistorySwipingItemBinding
 import com.zerobranch.layout.SwipeLayout
 
-class AdapterContacts : RecyclerView.Adapter<AdapterContacts.Holder>() {
+class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.Holder>() {
 
     private lateinit var context: Context
     private var nums = ""
