@@ -24,11 +24,11 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.helpers.Metoths.Companion.Direction.*
 import com.asinosoft.cdm.activities.DetailHistoryActivity
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
+import com.asinosoft.cdm.helpers.Metoths.Companion.Direction.*
 import net.cachapa.expandablelayout.util.FastOutSlowInInterpolator
 import org.jetbrains.anko.wrapContent
 import timber.log.Timber

@@ -11,8 +11,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.views.CircularImageView
-import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.adapters.ActionsAdapter
 import com.asinosoft.cdm.adapters.SelectorAdapter
@@ -20,8 +18,10 @@ import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.databinding.ContactSettingsBinding
-import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
 import com.asinosoft.cdm.helpers.AlertDialogUtils
+import com.asinosoft.cdm.helpers.Metoths
+import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
+import com.asinosoft.cdm.views.CircularImageView
 import org.jetbrains.anko.image
 
 class ContactSettingsFragment : Fragment() {

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimary">@color/white</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="costomGray">#252525</color>
+    <color name="colorAccent">#5199FF</color>
+    <color name="customGray">#252525</color>
+
+    <color name="blue">#5199FF</color>
     <color name="white_gray">#e0dcdc</color>
     <color name="white_gray_light">#f5f3ed</color>
     <color name="nk_color_strike">#2E7D32</color>
@@ -11,6 +13,7 @@
     <color name="gray">#9F9A9A</color>
     <color name="red">#E80202</color>
     <color name="green">#51D50B</color>
+    <color name="purple">#EF2FA2</color>
     <color name="md_grey">#9E9E9E</color>
 
     <!-- Темы -->

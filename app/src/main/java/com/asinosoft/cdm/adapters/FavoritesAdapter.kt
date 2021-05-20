@@ -11,14 +11,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.*
-import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
-import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
-import com.asinosoft.cdm.data.FavoriteContact
 import com.asinosoft.cdm.api.FavoriteContactRepository
 import com.asinosoft.cdm.api.Loader
+import com.asinosoft.cdm.data.FavoriteContact
 import com.asinosoft.cdm.databinding.ItemCirBinding
 import com.asinosoft.cdm.helpers.ItemTouchCallbackCir
 import com.asinosoft.cdm.helpers.Keys
+import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
+import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.views.CircularImageView
 import com.asinosoft.cdm.views.LockableLayoutManager
 import kotlinx.android.synthetic.main.item_cir.view.*
@@ -130,32 +130,13 @@ class FavoritesAdapter(
                     when (event.action) {
                         DragEvent.ACTION_DRAG_ENTERED -> {
                             vibrator.vibrateSafety(Keys.VIBRO)
-                            /*setImageDrawable(
-                                items[posDrag].drawable.also {
-                                    items[posDrag].setImageDrawable(
-                                        this.drawable
-                                    )
-                                }
-                            )*/
                         }
                         DragEvent.ACTION_DRAG_EXITED -> {
-                            /*setImageDrawable(
-                                items[posDrag].drawable.also {
-                                    items[posDrag].setImageDrawable(
-                                        this.drawable
-                                    )
-                                }
-                            )*/
                         }
-                        DragEvent.ACTION_DRAG_ENDED -> setOptionalCirsVisible(false)
+                        DragEvent.ACTION_DRAG_ENDED -> {
+                            setOptionalCirsVisible(false)
+                        }
                         DragEvent.ACTION_DROP -> {
-                            /*setImageDrawable(
-                                items[posDrag].drawable.also {
-                                    items[posDrag].setImageDrawable(
-                                        this.drawable
-                                    )
-                                }
-                            )*/
                             val draggedPosition =
                                 event.clipData.getItemAt(0).text.toString().toInt()
                             swapItems(draggedPosition, absoluteAdapterPosition)

@@ -77,7 +77,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/digit_one"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/costomGray" />
+                        android:textColor="@color/customGray" />
 
                     <ImageView
                         android:layout_width="24dp"
@@ -116,7 +116,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/digit_two"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/costomGray" />
+                        android:textColor="@color/customGray" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -154,7 +154,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/digit_three"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/costomGray" />
+                        android:textColor="@color/customGray" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -199,7 +199,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/digit_four"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/costomGray" />
+                        android:textColor="@color/customGray" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -236,7 +236,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/digit_five"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/costomGray" />
+                        android:textColor="@color/customGray" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -273,7 +273,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/digit_six"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/costomGray" />
+                        android:textColor="@color/customGray" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -318,7 +318,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/digit_seven"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/costomGray" />
+                        android:textColor="@color/customGray" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -355,7 +355,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/digit_eight"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/costomGray" />
+                        android:textColor="@color/customGray" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -392,7 +392,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/digit_nine"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/costomGray" />
+                        android:textColor="@color/customGray" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -425,7 +425,7 @@
                     android:gravity="center"
                     android:text="*"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/costomGray" />
+                    android:textColor="@color/customGray" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -433,7 +433,7 @@
                     android:layout_gravity="center"
                     android:text="#"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/costomGray" />
+                    android:textColor="@color/customGray" />
             </LinearLayout>
 
 
@@ -463,7 +463,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/digit_zero"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/costomGray" />
+                        android:textColor="@color/customGray" />
 
                     <TextView
                         android:layout_width="wrap_content"

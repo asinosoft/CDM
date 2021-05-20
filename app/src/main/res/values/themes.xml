@@ -4,13 +4,13 @@
     <!--Light-->
     <style name="AppTheme.Light" parent="Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/color_primary_light</item>
-        <item name="colorPrimaryDark">?attr/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/color_accent_default</item>
-        <item name="dialogBackgroundColor">?attr/colorPrimary</item>
+        <item name="dialogBackgroundColor">@color/colorPrimary</item>
 
-        <item name="android:windowBackground">?attr/colorPrimary</item>
-        <item name="android:navigationBarColor">?attr/colorPrimary</item>
-        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:windowBackground">@color/colorPrimary</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+        <item name="android:statusBarColor">@color/colorPrimary</item>
         <item name="android:windowLightStatusBar">true</item>
 
         <item name="iconColor">@color/icon_active_light</item>
@@ -27,13 +27,13 @@
     <!--Dark-->
     <style name="AppTheme.Dark" parent="Theme.MaterialComponents.Bridge">
         <item name="colorPrimary">@color/color_primary_dark</item>
-        <item name="colorPrimaryDark">?attr/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/color_accent_default</item>
 
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowBackground">?attr/colorPrimary</item>
-        <item name="android:navigationBarColor">?attr/colorPrimary</item>
-        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:windowBackground">@color/colorPrimary</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+        <item name="android:statusBarColor">@color/colorPrimary</item>
         <item name="dialogBackgroundColor">@color/grey_800</item>
 
         <item name="secondaryAccentColor">?attr/colorAccent</item>
@@ -50,7 +50,7 @@
     <!--AMOLED-->
     <style name="AppTheme.AMOLED" parent="AppTheme.Dark.Pink">
         <item name="colorPrimary">@color/color_primary_amoled</item>
-        <item name="dialogBackgroundColor">?attr/colorPrimary</item>
+        <item name="dialogBackgroundColor">@color/colorPrimary</item>
 
         <item name="secondaryAccentColor">?attr/colorAccent</item>
         <item name="iconColor">@color/icon_active_dark</item>

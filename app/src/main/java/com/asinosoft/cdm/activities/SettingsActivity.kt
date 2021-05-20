@@ -7,20 +7,20 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.DragEvent
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
-import com.asinosoft.cdm.views.CircularImageView
-import com.asinosoft.cdm.api.Loader
-import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
 import com.asinosoft.cdm.adapters.ActionsAdapter
+import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.databinding.SettingsLayoutBinding
-import com.jaeger.library.StatusBarUtil
+import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
+import com.asinosoft.cdm.views.CircularImageView
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
 import com.xw.repo.BubbleSeekBar
@@ -47,10 +47,9 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Firebase.analytics.logEvent("activity_settings", Bundle.EMPTY)
         v = SettingsLayoutBinding.inflate(layoutInflater)
         setContentView(v.root)
-
-        StatusBarUtil.setTranslucentForImageView(this, scrollView)
     }
 
     override fun onPause() {
@@ -79,18 +78,34 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     }
 
     private fun saveAll() {
-        Loader.saveSettings(
-            this,
-            settings.copy(
-                sizeCirs = v.seekBarSizeButtons.progress,
-                rightButton = v.cirRight.action,
-                leftButton = v.cirLeft.action,
-                topButton = v.cirTop.action,
-                bottomButton = v.cirBottom.action,
-                columnsCirs = v.seekBarColumnsButtons.progress,
-                borderWidthCirs = v.seekBarBorderButtons.progress,
-            )
+        val newSettings = settings.copy(
+            sizeCirs = v.seekBarSizeButtons.progress,
+            rightButton = v.cirRight.action,
+            leftButton = v.cirLeft.action,
+            topButton = v.cirTop.action,
+            bottomButton = v.cirBottom.action,
+            columnsCirs = v.seekBarColumnsButtons.progress,
+            borderWidthCirs = v.seekBarBorderButtons.progress,
         )
+
+        if (newSettings != settings) {
+            Loader.saveSettings(this, newSettings)
+
+            Firebase.analytics.logEvent(
+                "global_settings",
+                Bundle().apply {
+                    putInt("size", newSettings.sizeCirs)
+                    putInt("columns", newSettings.columnsCirs)
+                    putInt("borderWidth", newSettings.borderWidthCirs)
+                    putInt("borderColor", newSettings.colorBorder)
+                    putString("action_up", newSettings.topButton.name)
+                    putString("action_down", newSettings.bottomButton.name)
+                    putString("action_left", newSettings.leftButton.name)
+                    putString("action_right", newSettings.rightButton.name)
+                    putString("layout", if (newSettings.historyButtom) "down" else "up")
+                }
+            )
+        }
     }
 
     private fun setData() {
@@ -282,6 +297,13 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
                         is Action.Type -> {
                             cir.action = item
                             cir.setImageResource(Action.resourceByType(item))
+                            Firebase.analytics.logEvent(
+                                "global_set_action",
+                                Bundle().apply {
+                                    putString("direction", cir.direction.name)
+                                    putString("action", item.name)
+                                }
+                            )
                         }
                     }
                     true
@@ -308,7 +330,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
             else -> 0f
         }
         val minSize = widthScreen!! / 7
-        Log.d("${this.javaClass}", "updateSeekSize: min = $minSize; max = $maxSize")
         v.seekBarSizeButtons.configBuilder.apply {
             max(maxSize.toFloat())
             min(minSize.toFloat())

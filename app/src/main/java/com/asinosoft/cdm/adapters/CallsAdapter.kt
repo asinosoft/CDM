@@ -1,6 +1,7 @@
 package com.asinosoft.cdm.adapters
 
 import android.content.Context
+import android.os.Bundle
 import android.provider.CallLog
 import android.view.LayoutInflater
 import android.view.MotionEvent.ACTION_DOWN
@@ -8,14 +9,16 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.asinosoft.cdm.views.CircularImageView
-import com.asinosoft.cdm.api.Loader
-import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.CallHistoryItem
+import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
+import com.asinosoft.cdm.helpers.Metoths
+import com.asinosoft.cdm.views.CircularImageView
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.zerobranch.layout.SwipeLayout
 import org.jetbrains.anko.imageResource
 import java.security.InvalidParameterException
@@ -125,8 +128,14 @@ class CallsAdapter(
                     override fun onOpen(direction: Int, isContinuous: Boolean) {
                         val directActions = Loader.loadContactSettings(context, item.contact)
                         when (direction) {
-                            SwipeLayout.RIGHT -> directActions.right.perform(context)
-                            SwipeLayout.LEFT -> directActions.left.perform(context)
+                            SwipeLayout.RIGHT -> {
+                                Firebase.analytics.logEvent("history_swipe_right", Bundle.EMPTY)
+                                directActions.right.perform(context)
+                            }
+                            SwipeLayout.LEFT -> {
+                                Firebase.analytics.logEvent("history_swipe_left", Bundle.EMPTY)
+                                directActions.left.perform(context)
+                            }
                         }
 
                         swipeLayout.close()

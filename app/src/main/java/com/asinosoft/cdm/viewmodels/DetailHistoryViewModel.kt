@@ -1,16 +1,19 @@
 package com.asinosoft.cdm.viewmodels
 
 import android.content.Context
+import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.asinosoft.cdm.api.Loader
-import com.asinosoft.cdm.helpers.Metoths.Companion.Direction
 import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.api.CallHistoryRepositoryImpl
 import com.asinosoft.cdm.api.ContactRepositoryImpl
+import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
+import com.asinosoft.cdm.helpers.Metoths.Companion.Direction
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 
 /**
  * Данные для окна Просмотр контакта
@@ -37,7 +40,8 @@ class DetailHistoryViewModel : ViewModel() {
         contact = ContactRepositoryImpl(context).getContactById(contactId)!!
 
         val contactRepository = ContactRepositoryImpl(context)
-        callHistory.value = CallHistoryRepositoryImpl(contactRepository).getHistoryByContact(context, contact)
+        callHistory.value =
+            CallHistoryRepositoryImpl(contactRepository).getHistoryByContact(context, contact)
 
         actions = Loader.loadContactSettings(context, contact)
         directActions.value = actions
@@ -61,6 +65,13 @@ class DetailHistoryViewModel : ViewModel() {
     }
 
     fun setContactAction(direction: Direction, action: Action) {
+        Firebase.analytics.logEvent(
+            "contact_set_action",
+            Bundle().apply {
+                putString("direction", direction.name)
+                putString("action", action.type.name)
+            }
+        )
         when (direction) {
             Direction.LEFT -> actions.left = action
             Direction.RIGHT -> actions.right = action

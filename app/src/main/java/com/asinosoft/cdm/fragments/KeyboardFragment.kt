@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.asinosoft.cdm.R
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.keyboard.*
 import kotlinx.android.synthetic.main.keyboard.view.*
 import org.jetbrains.anko.support.v4.runOnUiThread
@@ -187,6 +189,7 @@ class KeyboardFragment : Fragment() {
     }
 
     private fun takeValue(num: String) {
+        Firebase.analytics.logEvent("keyboard_button", Bundle.EMPTY)
         input_text.text = input_text.text.toString().plus(num)
     }
 }

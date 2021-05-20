@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asinosoft.cdm.*
-import com.asinosoft.cdm.helpers.Metoths.Companion.toggle
 import com.asinosoft.cdm.adapters.ContactsAdapter
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.data.Contact
@@ -13,7 +12,9 @@ import com.asinosoft.cdm.databinding.ActivitySearchBinding
 import com.asinosoft.cdm.fragments.KeyboardFragment
 import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.Metoths
-import com.jaeger.library.StatusBarUtil
+import com.asinosoft.cdm.helpers.Metoths.Companion.toggle
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 
 /**
  * Экран поиска в списке контактов
@@ -32,9 +33,9 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Firebase.analytics.logEvent("activity_search", Bundle.EMPTY)
         v = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(v.root)
-        StatusBarUtil.setTranslucentForImageView(this, v.rvFilteredContacts)
         keyboard = supportFragmentManager.findFragmentById(R.id.keyboard) as KeyboardFragment
         initActivity()
     }
@@ -68,6 +69,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         keyboard.onCallButtonClick { phoneNumber ->
+            Firebase.analytics.logEvent("call_from_search", Bundle.EMPTY)
             setResult(RESULT_CALL, Intent().apply { putExtra(Keys.number, phoneNumber) })
             finish()
         }

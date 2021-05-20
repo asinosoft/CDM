@@ -46,5 +46,4 @@ class SelectorAdapter(
             numberText.text = number
         }
     }
-
 }

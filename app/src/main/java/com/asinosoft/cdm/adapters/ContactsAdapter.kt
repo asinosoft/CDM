@@ -1,15 +1,18 @@
 package com.asinosoft.cdm.adapters
 
 import android.content.Context
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.helpers.Metoths.Companion.setColoredText
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.HistorySwipingItemBinding
+import com.asinosoft.cdm.helpers.Metoths.Companion.setColoredText
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.zerobranch.layout.SwipeLayout
 
 class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.Holder>() {
@@ -66,9 +69,11 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.Holder>() {
                 override fun onOpen(direction: Int, isContinuous: Boolean) {
                     when (direction) {
                         SwipeLayout.RIGHT -> {
+                            Firebase.analytics.logEvent("search_swipe_right", Bundle.EMPTY)
                             contact.phones.firstOrNull()?.perform(context)
                         }
                         SwipeLayout.LEFT -> {
+                            Firebase.analytics.logEvent("search_swipe_left", Bundle.EMPTY)
                             contact.chats.firstOrNull()?.perform(context)
                         }
                     }

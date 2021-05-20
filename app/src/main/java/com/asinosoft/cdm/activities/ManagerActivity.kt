@@ -10,7 +10,6 @@ import android.os.Vibrator
 import android.telecom.TelecomManager
 import android.view.DragEvent
 import android.view.LayoutInflater
-import android.view.animation.OvershootInterpolator
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -30,8 +29,6 @@ import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import com.asinosoft.cdm.views.CirLayoutManager
 import com.asinosoft.cdm.views.LockableLayoutManager
-import com.jaeger.library.StatusBarUtil
-import jp.wasabeef.recyclerview.animators.LandingAnimator
 import kotlinx.android.synthetic.main.activity_manager.*
 import org.jetbrains.anko.vibrator
 import timber.log.Timber
@@ -197,8 +194,6 @@ class ManagerActivity : AppCompatActivity() {
             return
         }
 
-        StatusBarUtil.setTranslucentForImageView(this, v.container)
-
         favoritesFirst = !Loader.loadSettings(this).historyButtom
         val callsLayoutManager = LockableLayoutManager(this, favoritesFirst)
 
@@ -224,7 +219,6 @@ class ManagerActivity : AppCompatActivity() {
         ).apply {
             rvFavorites.layoutManager =
                 CirLayoutManager(columns = Loader.loadSettings(context).columnsCirs)
-            rvFavorites.itemAnimator = LandingAnimator(OvershootInterpolator())
             rvFavorites.setChildDrawingOrderCallback { childCount, iteration ->
                 // Изменяем порядок отрисовки избранных контактов, чтобы контакт
                 // на котором находится палец пользователя, отрисовывался в последнюю очередь,

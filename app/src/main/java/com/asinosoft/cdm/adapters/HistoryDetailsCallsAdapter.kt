@@ -1,6 +1,7 @@
 package com.asinosoft.cdm.adapters
 
 import android.content.Context
+import android.os.Bundle
 import android.provider.CallLog
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,6 +16,8 @@ import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.views.CircularImageView
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.zerobranch.layout.SwipeLayout
 import org.jetbrains.anko.imageResource
 
@@ -86,8 +89,14 @@ class HistoryDetailsCallsAdapter(val context: Context) :
                         override fun onOpen(direction: Int, isContinuous: Boolean) {
                             setIcons(directActions, imageLeftAction, imageRightAction)
                             when (direction) {
-                                SwipeLayout.RIGHT -> directActions.right.perform(context)
-                                SwipeLayout.LEFT -> directActions.left.perform(context)
+                                SwipeLayout.RIGHT -> {
+                                    Firebase.analytics.logEvent("contact_history_swipe_right", Bundle.EMPTY)
+                                    directActions.right.perform(context)
+                                }
+                                SwipeLayout.LEFT -> {
+                                    Firebase.analytics.logEvent("contact_history_swipe_left", Bundle.EMPTY)
+                                    directActions.left.perform(context)
+                                }
                                 else -> Log.e(
                                     "AdapterHistory.kt: ",
                                     "SwipeLayout direction UNKNOWN = $direction"

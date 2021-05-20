@@ -5,9 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Bundle
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.asinosoft.cdm.R
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import timber.log.Timber
 
 /**
@@ -105,120 +108,136 @@ class Action(
         ) {
             return
         }
+        Firebase.analytics.logEvent("action_phone_call", Bundle.EMPTY)
         Intent(Intent.ACTION_CALL, Uri.parse("tel:" + Uri.encode(value)))
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             .let { context.startActivity(it) }
     }
 
     private fun sms(context: Context) {
-        Timber.i("sendMsg: %s", value)
-        val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$value"))
-        context.startActivity(intent)
+        Timber.i("sms: %s", value)
+        Firebase.analytics.logEvent("action_phone_sms", Bundle.EMPTY)
+        Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$value"))
+            .let { context.startActivity(it) }
     }
 
     private fun email(context: Context) {
-        Timber.i("sendEmail: %s", value)
-        val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$value"))
-        context.startActivity(intent)
+        Timber.i("email: %s", value)
+        Firebase.analytics.logEvent("action_email", Bundle.EMPTY)
+        Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$value"))
+            .let { context.startActivity(it) }
     }
 
     private fun skypeChat(context: Context) {
         Timber.i("skypeChat: %s", value)
-        val intent = Intent("android.intent.action.VIEW", Uri.parse("skype:$value?chat"))
-        context.startActivity(intent)
+        Firebase.analytics.logEvent("action_skype_chat", Bundle.EMPTY)
+        Intent(Intent.ACTION_VIEW, Uri.parse("skype:$value?chat"))
+            .let { context.startActivity(it) }
     }
 
     private fun skypeCall(context: Context) {
         Timber.i("skypeCall: %s", value)
-        val intent = Intent("android.intent.action.VIEW", Uri.parse("skype:$value"))
-        context.startActivity(intent)
+        Firebase.analytics.logEvent("action_skype_call", Bundle.EMPTY)
+        Intent(Intent.ACTION_VIEW, Uri.parse("skype:$value"))
+            .let { context.startActivity(it) }
     }
 
     private fun telegramChat(context: Context) {
-        Timber.i("openTelegramNow: %s (%s)", id, value)
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(
-            Uri.parse("content://com.android.contacts/data/$id"),
-            "vnd.android.cursor.item/vnd.org.telegram.messenger.android.profile"
-        )
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
+        Timber.i("telegramChat: %s (%s)", id, value)
+        Firebase.analytics.logEvent("action_telegram_chat", Bundle.EMPTY)
+        Intent(Intent.ACTION_VIEW)
+            .setDataAndType(
+                Uri.parse("content://com.android.contacts/data/$id"),
+                "vnd.android.cursor.item/vnd.org.telegram.messenger.android.profile"
+            )
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            .let { context.startActivity(it) }
     }
 
     private fun telegramCall(context: Context) {
         Timber.i("telegramCall: %s (%s)", id, value)
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(
-            Uri.parse("content://com.android.contacts/data/$id"),
-            "vnd.android.cursor.item/vnd.org.telegram.messenger.android.call"
-        )
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
+        Firebase.analytics.logEvent("action_telegram_call", Bundle.EMPTY)
+        Intent(Intent.ACTION_VIEW)
+            .setDataAndType(
+                Uri.parse("content://com.android.contacts/data/$id"),
+                "vnd.android.cursor.item/vnd.org.telegram.messenger.android.call"
+            )
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            .let { context.startActivity(it) }
     }
 
     private fun telegramVideo(context: Context) {
-        Timber.i("openTelegramNow: %s (%s)", id, value)
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(
-            Uri.parse("content://com.android.contacts/data/$id"),
-            "vnd.android.cursor.item/vnd.org.telegram.messenger.android.call.video"
-        )
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
+        Timber.i("telegramVideo: %s (%s)", id, value)
+        Firebase.analytics.logEvent("action_telegram_video", Bundle.EMPTY)
+        Intent(Intent.ACTION_VIEW)
+            .setDataAndType(
+                Uri.parse("content://com.android.contacts/data/$id"),
+                "vnd.android.cursor.item/vnd.org.telegram.messenger.android.call.video"
+            )
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            .let { context.startActivity(it) }
     }
 
     private fun viberChat(context: Context) {
-        val intent = Intent()
-            .setAction(Intent.ACTION_VIEW)
+        Timber.i("viberChat: %s (%s)", id, value)
+        Firebase.analytics.logEvent("action_viber_chat", Bundle.EMPTY)
+        Intent(Intent.ACTION_VIEW)
             .setDataAndType(
                 Uri.parse("content://com.android.contacts/data/$id"),
                 "vnd.android.cursor.item/vnd.com.viber.voip.viber_number_message"
             )
             .setPackage("com.viber.voip")
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
+            .let { context.startActivity(it) }
     }
 
     private fun viberCall(context: Context) {
-        val intent = Intent()
-            .setAction(Intent.ACTION_VIEW)
+        Timber.i("viberCallt: %s (%s)", id, value)
+        Firebase.analytics.logEvent("action_viber_call", Bundle.EMPTY)
+        Intent(Intent.ACTION_VIEW)
             .setDataAndType(
                 Uri.parse("content://com.android.contacts/data/$id"),
                 "vnd.android.cursor.item/vnd.com.viber.voip.viber_number_call"
             )
             .setPackage("com.viber.voip")
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
+            .let { context.startActivity(it) }
     }
 
     private fun whatsappChat(context: Context) {
-        val intent = Intent().setAction(Intent.ACTION_VIEW)
-        intent.setDataAndType(
-            Uri.parse("content://com.android.contacts/data/$id"),
-            "vnd.android.cursor.item/vnd.com.whatsapp.profile"
-        )
-        intent.setPackage("com.whatsapp")
-        context.startActivity(intent)
+        Timber.i("whatsappChat: %s (%s)", id, value)
+        Firebase.analytics.logEvent("action_whatsapp_chat", Bundle.EMPTY)
+        Intent(Intent.ACTION_VIEW)
+            .setDataAndType(
+                Uri.parse("content://com.android.contacts/data/$id"),
+                "vnd.android.cursor.item/vnd.com.whatsapp.profile"
+            )
+            .setPackage("com.whatsapp")
+            .let { context.startActivity(it) }
     }
 
     private fun whatsappCall(context: Context) {
-        val intent = Intent().setAction(Intent.ACTION_VIEW)
-        intent.setDataAndType(
-            Uri.parse("content://com.android.contacts/data/$id"),
-            "vnd.android.cursor.item/vnd.com.whatsapp.voip.call"
-        )
-        intent.setPackage("com.whatsapp")
-        context.startActivity(intent)
+        Timber.i("whatsappCall: %s (%s)", id, value)
+        Firebase.analytics.logEvent("action_whatsapp_call", Bundle.EMPTY)
+        Intent(Intent.ACTION_VIEW)
+            .setDataAndType(
+                Uri.parse("content://com.android.contacts/data/$id"),
+                "vnd.android.cursor.item/vnd.com.whatsapp.voip.call"
+            )
+            .setPackage("com.whatsapp")
+            .let { context.startActivity(it) }
     }
 
     private fun whatsappVideo(context: Context) {
-        val intent = Intent().setAction(Intent.ACTION_VIEW)
-        intent.setDataAndType(
-            Uri.parse("content://com.android.contacts/data/$id"),
-            "vnd.android.cursor.item/vnd.com.whatsapp.video.call"
-        )
-        intent.setPackage("com.whatsapp")
-        context.startActivity(intent)
+        Timber.i("whatsappVideo: %s (%s)", id, value)
+        Firebase.analytics.logEvent("action_whatsapp_video", Bundle.EMPTY)
+        Intent(Intent.ACTION_VIEW)
+            .setDataAndType(
+                Uri.parse("content://com.android.contacts/data/$id"),
+                "vnd.android.cursor.item/vnd.com.whatsapp.video.call"
+            )
+            .setPackage("com.whatsapp")
+            .let { context.startActivity(it) }
     }
 
     override fun equals(other: Any?): Boolean {
