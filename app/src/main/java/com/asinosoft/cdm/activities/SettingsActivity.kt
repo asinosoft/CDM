@@ -1,12 +1,9 @@
 package com.asinosoft.cdm.activities
 
-import android.animation.ValueAnimator
-import android.app.Activity
 import android.content.ClipData
-import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.DragEvent
 import android.view.View
 import androidx.annotation.ColorInt
@@ -25,24 +22,59 @@ import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
 import com.xw.repo.BubbleSeekBar
 import com.xw.repo.BubbleSeekBar.OnProgressChangedListener
-import kotlinx.android.synthetic.main.settings_layout.*
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.image
 import org.jetbrains.anko.sdk27.coroutines.onClick
+import kotlin.math.roundToInt
 
 /**
  * Класс экрана настроек приложения
  */
 class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
 
-    lateinit var settings: Settings
+    lateinit var oldSettings: Settings
     lateinit var v: SettingsLayoutBinding
-    var filePathPhoto = ""
-    var widthScreen: Int? = null
+
+    private var columnsCount: Int = 0
         set(value) {
+            if (field == value) return
             field = value
+            v.seekBarColumnsButtons.setProgress(value.toFloat())
             updateSeekSize()
-            v.seekBarSizeButtons.setProgress(settings.sizeCirs.toFloat())
+        }
+
+    private var circleSize: Int = 0
+        set(value) {
+            if (field == value) return
+            field = value
+            v.seekBarSizeButtons.setProgress(value.toFloat())
+            v.circleImageView.setSize(value)
+        }
+
+    private var borderWidth: Int = 0
+        set(value) {
+            if (field == value) return
+            field = value
+            v.seekBarBorderButtons.setProgress(value.toFloat())
+            v.circleImageView.borderWidth = value
+            setAllCirs(width = value)
+        }
+
+    private var borderColor: Int = 0
+        set(value) {
+            if (field == value) return
+            field = value
+            v.circleImageView.borderColor = value
+            setAllCirs(color = value)
+        }
+
+    private var favoritesLayout: Boolean = true
+        set(mode) {
+            field = mode
+            v.btnFavoritesFirst.backgroundColor =
+                if (mode) Color.rgb(0x67, 0x3a, 0xb7) else Color.LTGRAY
+            v.btnFavoritesLast.backgroundColor =
+                if (!mode) Color.rgb(0x67, 0x3a, 0xb7) else Color.LTGRAY
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,43 +84,56 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
         setContentView(v.root)
     }
 
-    override fun onPause() {
-        saveAll()
-        super.onPause()
-    }
-
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        widthScreen = scrollView.width
-    }
-
     override fun onStart() {
         super.onStart()
         v.scrollView.setScrollingEnabled(true)
-        initAll()
-        setData()
-    }
-
-    private fun initAll() {
-        settings = Loader.loadSettings(this)
         initFavoritesBlock()
         initLayoutBlock()
         initActionsBlock()
-        setAllCirs(settings.borderWidthCirs, settings.colorBorder)
     }
 
-    private fun saveAll() {
-        val newSettings = settings.copy(
-            sizeCirs = v.seekBarSizeButtons.progress,
+    override fun onResume() {
+        super.onResume()
+        loadSettings()
+    }
+
+    override fun onPause() {
+        saveSettings()
+        super.onPause()
+    }
+
+    private fun loadSettings() {
+        val settings = Loader.loadSettings(this)
+        v.cirRight.action = settings.rightButton
+        v.cirLeft.action = settings.leftButton
+        v.cirTop.action = settings.topButton
+        v.cirBottom.action = settings.bottomButton
+        v.cirRight.let(this::setCirData)
+        v.cirLeft.let(this::setCirData)
+        v.cirTop.let(this::setCirData)
+        v.cirBottom.let(this::setCirData)
+        columnsCount = settings.columnsCirs
+        circleSize = settings.sizeCirs
+        borderWidth = settings.borderWidthCirs
+        borderColor = settings.colorBorder
+        favoritesLayout = settings.historyButtom
+        oldSettings = settings
+    }
+
+    private fun saveSettings() {
+        val newSettings = oldSettings.copy(
+            sizeCirs = circleSize,
             rightButton = v.cirRight.action,
             leftButton = v.cirLeft.action,
             topButton = v.cirTop.action,
             bottomButton = v.cirBottom.action,
-            columnsCirs = v.seekBarColumnsButtons.progress,
-            borderWidthCirs = v.seekBarBorderButtons.progress,
+            columnsCirs = columnsCount,
+            borderWidthCirs = borderWidth,
+            colorBorder = borderColor,
+            historyButtom = favoritesLayout
         )
 
-        if (newSettings != settings) {
+        if (newSettings != oldSettings) {
             Loader.saveSettings(this, newSettings)
 
             Firebase.analytics.logEvent(
@@ -106,20 +151,6 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
                 }
             )
         }
-    }
-
-    private fun setData() {
-        v.seekBarSizeButtons.setProgress(settings.sizeCirs.toFloat())
-        v.cirRight.action = settings.rightButton
-        v.cirLeft.action = settings.leftButton
-        v.cirTop.action = settings.topButton
-        v.cirBottom.action = settings.bottomButton
-        v.cirRight.let(this::setCirData)
-        v.cirLeft.let(this::setCirData)
-        v.cirTop.let(this::setCirData)
-        v.cirBottom.let(this::setCirData)
-        v.seekBarColumnsButtons.setProgress(settings.columnsCirs.toFloat().takeIf { it > 0 } ?: 0f)
-        v.seekBarBorderButtons.setProgress(settings.borderWidthCirs.toFloat())
     }
 
     private fun setCirData(cir: CircularImageView) {
@@ -140,7 +171,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
                 progressFloat: Float,
                 fromUser: Boolean
             ) {
-                v.circleImageView.setSize(progress)
+                circleSize = progress
             }
 
             override fun getProgressOnActionUp(
@@ -159,17 +190,14 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
             }
         }
 
-        updateSeekSize()
-
-        seekBarBorderButtons.onProgressChangedListener = object : OnProgressChangedListener {
+        v.seekBarBorderButtons.onProgressChangedListener = object : OnProgressChangedListener {
             override fun onProgressChanged(
                 bubbleSeekBar: BubbleSeekBar?,
                 progress: Int,
                 progressFloat: Float,
                 fromUser: Boolean
             ) {
-                circleImageView.borderWidth = progress
-                setAllCirs(width = progress)
+                borderWidth = progress
             }
 
             override fun getProgressOnActionUp(
@@ -195,7 +223,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
                 progressFloat: Float,
                 fromUser: Boolean
             ) {
-                updateSeekSize()
+                columnsCount = progress
             }
 
             override fun getProgressOnActionUp(
@@ -213,6 +241,10 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
             ) {
             }
         }
+
+        v.colorPicker.setOnClickListener {
+            ColorPickerDialog.newBuilder().setColor(Color.RED).show(this)
+        }
     }
 
     private fun initLayoutBlock() {
@@ -221,9 +253,8 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
             v.layoutModeExpandable.toggle(true)
             v.layoutModeCross.toggle(500L)
         }
-        v.btnFavoritesFirst.onClick { setFavoritesLayout(true) }
-        v.btnFavoritesLast.onClick { setFavoritesLayout(false) }
-        setFavoritesLayout(settings.historyButtom)
+        v.btnFavoritesFirst.onClick { favoritesLayout = true }
+        v.btnFavoritesLast.onClick { favoritesLayout = false }
     }
 
     private fun initActionsBlock() {
@@ -266,8 +297,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
                     }
                 }
                 DragEvent.ACTION_DRAG_ENTERED -> {
-                    val item = event.localState
-                    when (item) {
+                    when (val item = event.localState) {
                         is CircularImageView -> {
                             cir.swapCir(item)
                             v.invalidate()
@@ -280,8 +310,7 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
                     true
                 }
                 DragEvent.ACTION_DRAG_EXITED -> {
-                    val item = event.localState
-                    when (item) {
+                    when (val item = event.localState) {
                         is CircularImageView -> {
                             cir.swapCir(item)
                             v.invalidate()
@@ -321,93 +350,50 @@ class SettingsActivity : AppCompatActivity(), ColorPickerDialogListener {
     }
 
     private fun updateSeekSize() {
-        if (widthScreen == null) return
-        val maxSize = widthScreen!! * when (v.seekBarColumnsButtons.progress) {
+        val screenWidth = Resources.getSystem().displayMetrics.widthPixels
+
+        val maxSize: Int = (screenWidth * getColumnsFactor()).roundToInt()
+        val minSize: Int = (screenWidth / 7.0).roundToInt()
+
+        v.seekBarSizeButtons.configBuilder.apply {
+            min(minSize.toFloat())
+            max(maxSize.toFloat())
+        }.build()
+
+        circleSize = circleSize.coerceAtLeast(minSize).coerceAtMost(maxSize)
+    }
+
+    private fun getColumnsFactor(): Float =
+        when (columnsCount) {
             1 -> 0.4f
             2 -> 0.4f
             3 -> 0.28f
             4 -> 0.23f
             else -> 0f
         }
-        val minSize = widthScreen!! / 7
-        v.seekBarSizeButtons.configBuilder.apply {
-            max(maxSize.toFloat())
-            min(minSize.toFloat())
-        }.build()
-        v.seekBarSizeButtons.setProgress(
-            widthScreen!! * when (v.seekBarColumnsButtons.progress) {
-                1 -> 0.3f
-                2 -> 0.25f
-                3 -> 0.19f
-                4 -> 0.16f
-                else -> 0f
-            }
-        )
-
-        v.colorPicker.setOnClickListener {
-            ColorPickerDialog.newBuilder().setColor(Color.RED).show(this)
-        }
-    }
-
-    private fun increaseViewSize(view: View, height: Int) {
-        val valueAnimator = ValueAnimator.ofInt(view.measuredHeight, height)
-        valueAnimator.duration = 500L
-        valueAnimator.addUpdateListener {
-            val animatedValue = valueAnimator.animatedValue as Int
-            val layoutParams = view.layoutParams
-            layoutParams.height = animatedValue
-            view.layoutParams = layoutParams
-        }
-        valueAnimator.start()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode != 12 || resultCode != Activity.RESULT_OK) return
-        val uri = data!!.data
-        val projection = arrayOf(MediaStore.Images.Media.DATA)
-
-        val cursor = contentResolver.query(uri!!, projection, null, null, null)
-        cursor!!.moveToFirst()
-
-        val columnIndex = cursor.getColumnIndex(projection[0])
-        val filepath = cursor.getString(columnIndex)
-        cursor.close()
-        filePathPhoto = filepath
-    }
 
     override fun onDialogDismissed(dialogId: Int) {
     }
 
     override fun onColorSelected(dialogId: Int, color: Int) {
-        settings.colorBorder = color
-        circleImageView.borderColor = color
-        setAllCirs(color = color)
+        borderColor = color
     }
 
     private fun setAllCirs(width: Int? = null, @ColorInt color: Int? = null) {
         width?.let {
-            cirBottom.borderWidth = it.toFloat()
-            cirTop.borderWidth = it.toFloat()
-            cirRight.borderWidth = it.toFloat()
-            cirLeft.borderWidth = it.toFloat()
-            circleImageView.borderWidth = it
+            v.cirBottom.borderWidth = it.toFloat()
+            v.cirTop.borderWidth = it.toFloat()
+            v.cirRight.borderWidth = it.toFloat()
+            v.cirLeft.borderWidth = it.toFloat()
+            v.circleImageView.borderWidth = it
         }
 
         color?.let {
-            cirBottom.borderColor = it
-            cirTop.borderColor = it
-            cirRight.borderColor = it
-            cirLeft.borderColor = it
-            circleImageView.borderColor = it
+            v.cirBottom.borderColor = it
+            v.cirTop.borderColor = it
+            v.cirRight.borderColor = it
+            v.cirLeft.borderColor = it
+            v.circleImageView.borderColor = it
         }
-    }
-
-    private fun setFavoritesLayout(mode: Boolean) {
-        settings.historyButtom = mode
-        v.btnFavoritesFirst.backgroundColor =
-            if (mode) Color.rgb(0x67, 0x3a, 0xb7) else Color.LTGRAY
-        v.btnFavoritesLast.backgroundColor =
-            if (!mode) Color.rgb(0x67, 0x3a, 0xb7) else Color.LTGRAY
     }
 }
