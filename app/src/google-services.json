@@ -1,48 +1,38 @@
 {
   "project_info": {
-    "project_number": "923801077859",
-    "firebase_url": "https://contacts-dialer-messages.firebaseio.com",
-    "project_id": "contacts-dialer-messages",
-    "storage_bucket": "contacts-dialer-messages.appspot.com"
+    "project_number": "833313753419",
+    "project_id": "contacts-dial-manager",
+    "storage_bucket": "contacts-dial-manager.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:923801077859:android:ec3d0e0f7e64b41c",
+        "mobilesdk_app_id": "1:833313753419:android:2eebe51967a41b79e680ce",
         "android_client_info": {
           "package_name": "com.asinosoft.cdm"
         }
       },
       "oauth_client": [
         {
-          "client_id": "923801077859-mbcr4gcfj01q7siivtel330s079n31vh.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.asinosoft.cdm",
-            "certificate_hash": "cd8dcddbbfd65b5747a07dc6c13ea2b260becc63"
-          }
-        },
-        {
-          "client_id": "923801077859-p42u86gffkjq9s5j2r0j8o4bre91vedf.apps.googleusercontent.com",
+          "client_id": "833313753419-du1p6heagg1cu24rp7qqor0om9hdh672.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA8Yoslh66SKtQwX1xvBU31767JJvO4hkw"
+          "current_key": "AIzaSyD1MWdWmVN5RdOe4326ImRlcdK_u8ApZTw"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "923801077859-p42u86gffkjq9s5j2r0j8o4bre91vedf.apps.googleusercontent.com",
+              "client_id": "833313753419-du1p6heagg1cu24rp7qqor0om9hdh672.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
         }
-      },
-      "admob_app_id": "ca-app-pub-1058320783687363~3513831931"
+      }
     }
   ],
   "configuration_version": "1"
