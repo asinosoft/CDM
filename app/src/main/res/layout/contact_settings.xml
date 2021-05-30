@@ -59,7 +59,7 @@
                             android:layout_width="86dp"
                             android:layout_height="86dp"
                             android:layout_centerInParent="true"
-                            android:src="@drawable/contact_unfoto" />
+                            android:src="@drawable/ic_default_photo" />
 
                         <com.asinosoft.cdm.views.CircularImageView
                             android:id="@+id/cirTop"
@@ -68,7 +68,7 @@
                             android:layout_above="@id/contact"
                             android:layout_centerHorizontal="true"
                             android:layout_marginBottom="10dp"
-                            android:src="@drawable/contact_unfoto" />
+                            android:src="@drawable/ic_default_photo" />
 
                         <com.asinosoft.cdm.views.CircularImageView
                             android:id="@+id/cirBottom"
@@ -77,7 +77,7 @@
                             android:layout_below="@id/contact"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="10dp"
-                            android:src="@drawable/contact_unfoto" />
+                            android:src="@drawable/ic_default_photo" />
 
                         <com.asinosoft.cdm.views.CircularImageView
                             android:id="@+id/cirLeft"
@@ -86,7 +86,7 @@
                             android:layout_centerVertical="true"
                             android:layout_marginEnd="10dp"
                             android:layout_toStartOf="@id/contact"
-                            android:src="@drawable/contact_unfoto" />
+                            android:src="@drawable/ic_default_photo" />
 
                         <com.asinosoft.cdm.views.CircularImageView
                             android:id="@+id/cirRight"
@@ -95,7 +95,8 @@
                             android:layout_centerVertical="true"
                             android:layout_marginStart="10dp"
                             android:layout_toEndOf="@id/contact"
-                            android:src="@drawable/contact_unfoto" />
+                            app:civ_circle_color="?attr/backgroundColor"
+                            android:src="@drawable/ic_default_photo" />
 
                         <TextView
                             android:id="@+id/text_top"

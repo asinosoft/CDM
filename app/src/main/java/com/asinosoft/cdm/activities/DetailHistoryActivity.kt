@@ -3,7 +3,6 @@ package com.asinosoft.cdm.activities
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.fragments.ContactDetailFragment
@@ -20,7 +19,7 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems
 /**
  * Активность "Просмотр контакта"
  */
-class DetailHistoryActivity : AppCompatActivity() {
+class DetailHistoryActivity : BaseActivity() {
     private val viewModel: DetailHistoryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {

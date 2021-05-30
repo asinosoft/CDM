@@ -40,6 +40,8 @@
     <attr name="secondaryAccentColor" format="reference" />
     <attr name="dialogBackgroundColor" format="reference" />
 
+    <attr name="backgroundPattern" format="reference" />
+
     <attr name="overlayColor" format="reference" />
 
     <declare-styleable name="ListItem">

@@ -15,6 +15,7 @@ import android.provider.ContactsContract
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.INVISIBLE
@@ -261,6 +262,12 @@ class Metoths {
                 Timber.e(e)
             }
             return str
+        }
+
+        fun getThemeColor(context: Context, attribute: Int): Int {
+            val typedValue = TypedValue()
+            context.theme.resolveAttribute(attribute, typedValue, true)
+            return typedValue.data
         }
     }
 }

@@ -2,7 +2,6 @@ package com.asinosoft.cdm.activities
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.asinosoft.cdm.*
 import com.asinosoft.cdm.adapters.ContactsAdapter
@@ -19,7 +18,7 @@ import com.google.firebase.ktx.Firebase
 /**
  * Экран поиска в списке контактов
  */
-class SearchActivity : AppCompatActivity() {
+class SearchActivity : BaseActivity() {
 
     companion object {
         const val RESULT_CALL = 1

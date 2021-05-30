@@ -1,6 +1,7 @@
 package com.asinosoft.cdm.data
 
 import android.graphics.Color
+import com.asinosoft.cdm.R
 
 /**
  * Информационный класс настроек
@@ -8,7 +9,7 @@ import android.graphics.Color
 data class Settings(
     var sizeCirs: Int = 200,
     var countCirs: Int = 10,
-    var themeColor: Int = Color.WHITE,
+    var theme: Int = R.style.AppTheme_Light,
     var listHistoryReverse: Boolean = true,
     var photoFilePath: String = "",
     var leftButton: Action.Type = Action.Type.WhatsAppChat,

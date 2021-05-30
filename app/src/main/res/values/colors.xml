@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/white</color>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorSecondary">#79b8ff</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#5199FF</color>
-    <color name="customGray">#252525</color>
+
+    <color name="textPrimary">#1F1F1F</color>
+    <color name="textSecondary">#6A6A6A</color>
+
+    <color name="border">#A2A59E</color>
 
     <color name="blue">#5199FF</color>
     <color name="white_gray">#e0dcdc</color>

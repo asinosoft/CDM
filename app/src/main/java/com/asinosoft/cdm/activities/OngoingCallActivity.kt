@@ -20,7 +20,6 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.view.isVisible
 import com.agik.AGIKSwipeButton.Controller.OnSwipeCompleteListener
@@ -35,7 +34,7 @@ import kotlinx.android.synthetic.main.on_going_call.*
 import org.jetbrains.anko.audioManager
 import java.util.*
 
-class OngoingCallActivity : AppCompatActivity() {
+class OngoingCallActivity : BaseActivity() {
 
     lateinit var context: Context
     var contactDialer: Contact? = null
@@ -58,7 +57,6 @@ class OngoingCallActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ongoing_call)
-        setTheme(ThemeUtils().TYPE_TRANSPARENT_STATUS_BAR)
 
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 

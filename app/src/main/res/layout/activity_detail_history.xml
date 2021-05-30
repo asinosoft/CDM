@@ -15,7 +15,7 @@
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
-        android:src="@drawable/contact_unfoto"
+        android:src="@drawable/ic_default_photo"
         android:scaleType="centerCrop"
         android:layout_height="300dp"/>
 
@@ -34,15 +34,15 @@
         app:stl_indicatorInFront="false"
         app:stl_indicatorInterpolation="smart"
         app:stl_indicatorGravity="bottom"
-        app:stl_indicatorColor="#40C4FF"
+        app:stl_indicatorColor="@color/colorPrimary"
         app:stl_indicatorThickness="4dp"
         app:stl_indicatorWidth="auto"
         app:stl_indicatorCornerRadius="2dp"
         app:stl_overlineColor="#4D000000"
         app:stl_overlineThickness="0dp"
-        app:stl_underlineColor="#4D000000"
+        app:stl_underlineColor="@color/colorAccent"
         app:stl_underlineThickness="1dp"
-        app:stl_dividerColor="#4D000000"
+        app:stl_dividerColor="@color/colorPrimary"
         app:stl_dividerThickness="1dp"
         app:stl_defaultTabBackground="?attr/selectableItemBackground"
         app:stl_defaultTabTextAllCaps="true"
