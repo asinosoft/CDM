@@ -112,11 +112,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:28.0.1')
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
-//dependencies
-    implementation 'com.ogaclejapan.smarttablayout:library:2.0.0@aar'
-
     //Optional: see how to use the utility.
-    implementation 'com.ogaclejapan.smarttablayout:utils-v4:2.0.0@aar'
     implementation 'com.github.chenupt.android:dragtoplayout:1.2.1@aar'
     implementation 'com.xw.repo:bubbleseekbar:3.20'
     implementation 'com.github.cdflynn:crossview:v1.0.1'

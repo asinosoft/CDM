@@ -14,6 +14,8 @@ import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
 import com.asinosoft.cdm.viewmodels.SettingsViewModel
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.xw.repo.BubbleSeekBar
+import kotlinx.android.synthetic.main.activity_detail_history.view.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import kotlin.math.roundToInt
 
 /**
@@ -22,6 +24,18 @@ import kotlin.math.roundToInt
 class FavoritesSettingsFragment : Fragment() {
     private val model: SettingsViewModel by activityViewModels()
     private lateinit var v: FragmentFavoritesSettingsBinding
+    private val colorSelected: Int by lazy {
+        Metoths.getThemeColor(
+            requireContext(),
+            R.attr.colorAccent
+        )
+    }
+    private val colorNotSelected: Int by lazy {
+        Metoths.getThemeColor(
+            requireContext(),
+            R.attr.colorSecondary
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,20 +66,25 @@ class FavoritesSettingsFragment : Fragment() {
 
         model.buttonColor.observe(viewLifecycleOwner) { color ->
             v.imgFavorite.borderColor = color
+            v.pickBorderColor.image?.setColorFilter(color)
+        }
+
+        when (model.settings.theme) {
+            R.style.AppTheme_Light -> v.lightThemeButton.setBackgroundColor(colorSelected)
+            R.style.AppTheme_Gray -> v.grayThemeButton.setBackgroundColor(colorSelected)
+            R.style.AppTheme_Dark -> v.darkThemeButton.setBackgroundColor(colorSelected)
         }
     }
 
     private fun setFavoritesLayout(layout: Boolean) {
 
         model.settings.historyButtom = layout
-        val backgroundColor = Metoths.getThemeColor(requireContext(), R.attr.backgroundColor)
-        val colorAccent = Metoths.getThemeColor(requireContext(), R.attr.colorAccent)
         if (layout) {
-            v.btnFavoritesFirst.setBackgroundColor(colorAccent)
-            v.btnFavoritesLast.setBackgroundColor(backgroundColor)
+            v.btnFavoritesFirst.setBackgroundColor(colorSelected)
+            v.btnFavoritesLast.setBackgroundColor(colorNotSelected)
         } else {
-            v.btnFavoritesFirst.setBackgroundColor(backgroundColor)
-            v.btnFavoritesLast.setBackgroundColor(colorAccent)
+            v.btnFavoritesFirst.setBackgroundColor(colorNotSelected)
+            v.btnFavoritesLast.setBackgroundColor(colorSelected)
         }
     }
 
@@ -190,5 +209,18 @@ class FavoritesSettingsFragment : Fragment() {
         v.btnFavoritesFirst.setOnClickListener { setFavoritesLayout(true) }
 
         v.btnFavoritesLast.setOnClickListener { setFavoritesLayout(false) }
+
+        v.lightThemeButton.onClick {
+            model.settings.theme = R.style.AppTheme_Light
+            activity?.recreate()
+        }
+        v.grayThemeButton.onClick {
+            model.settings.theme = R.style.AppTheme_Gray
+            activity?.recreate()
+        }
+        v.darkThemeButton.onClick {
+            model.settings.theme = R.style.AppTheme_Dark
+            activity?.recreate()
+        }
     }
 }

@@ -3,40 +3,61 @@
     <style name="BaseTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:listViewStyle">@style/TransparentListView</item>
         <item name="android:expandableListViewStyle">@style/TransparentExpandableListView</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
+
+        <item name="backspaceIcon">@drawable/ic_backspace_24px</item>
+        <item name="callIcon">@drawable/ic_phone_24px</item>
+        <item name="closeIcon">@drawable/ic_close_24px</item>
+        <item name="settingsIcon">@drawable/ic_cog</item>
+        <item name="searchIcon">@drawable/ic_keyboard</item>
+        <item name="keyboardIcon">@drawable/twotone_keyboard_24</item>
+        <item name="voicemailIcon">@drawable/ic_voicemail_24px</item>
     </style>
 
     <style name="AppTheme.Light" parent="BaseTheme">
-        <item name="colorPrimary">#6A6A6A</item>
-        <item name="colorSecondary">#79b8ff</item>
-        <item name="colorAccent">#5199FF</item>
-        <item name="backgroundColor">#FFFFFF</item>
-        <item name="android:textColor">#1F1F1F</item>
-        <item name="android:textColorSecondary">#6A6A6A</item>
-        <item name="android:statusBarColor">#6A6A6A</item>
-        <item name="android:windowBackground">@drawable/pattern_light</item>
+        <item name="colorAccent">@color/selected_button_light</item>
+        <item name="colorOnSurface">@color/tab_text_light</item>
+        <item name="colorPrimary">@color/active_tab_text_light</item>
+        <item name="colorSecondary">@color/floating_button_light</item>
+        <item name="android:colorAccent">@color/keyboard_border_light</item>
+        <item name="android:colorBackground">@color/background_light</item>
+        <item name="android:colorPrimary">@color/photo_border_light</item>
+        <item name="android:textColor">@color/text_color_light</item>
+        <item name="android:textColorSecondary">@color/subtext_color_light</item>
+        <item name="android:navigationBarColor">@color/system_navbar_color_light</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="popupColor">@color/popup_color_light</item>
     </style>
 
     <style name="AppTheme.Gray" parent="BaseTheme">
-        <item name="colorPrimary">#004156</item>
-        <item name="colorSecondary">#79b8ff</item>
-        <item name="colorAccent">#5199FF</item>
-        <item name="backgroundColor">#303030</item>
-        <item name="android:colorBackground">#303030</item>
-        <item name="android:textColor">#FAFAFA</item>
-        <item name="android:textColorSecondary">#9B9B9B</item>
-        <item name="android:statusBarColor">#004156</item>
-        <item name="android:windowBackground">@drawable/pattern_gray</item>
+        <item name="colorAccent">@color/selected_button_gray</item>
+        <item name="colorOnSurface">@color/tab_text_gray</item>
+        <item name="colorPrimary">@color/active_tab_text_gray</item>
+        <item name="colorSecondary">@color/floating_button_gray</item>
+        <item name="android:colorAccent">@color/keyboard_border_gray</item>
+        <item name="android:colorBackground">@color/background_gray</item>
+        <item name="android:colorPrimary">@color/photo_border_gray</item>
+        <item name="android:textColor">@color/text_color_gray</item>
+        <item name="android:textColorSecondary">@color/subtext_color_gray</item>
+        <item name="android:navigationBarColor">@color/system_navbar_color_gray</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="popupColor">@color/popup_color_gray</item>
     </style>
 
     <style name="AppTheme.Dark" parent="BaseTheme">
-        <item name="colorPrimary">#004156</item>
-        <item name="colorSecondary">#79b8ff</item>
-        <item name="colorAccent">#5199FF</item>
-        <item name="backgroundColor">#303030</item>
-        <item name="android:colorBackground">#303030</item>
-        <item name="android:textColor">#FAFAFA</item>
-        <item name="android:textColorSecondary">#9B9B9B</item>
-        <item name="android:statusBarColor">#004156</item>
-        <item name="android:windowBackground">@drawable/pattern_dark</item>
+        <item name="colorAccent">@color/selected_button_dark</item>
+        <item name="colorOnSurface">@color/tab_text_dark</item>
+        <item name="colorPrimary">@color/active_tab_text_dark</item>
+        <item name="colorSecondary">@color/floating_button_dark</item>
+        <item name="android:colorAccent">@color/keyboard_border_dark</item>
+        <item name="android:colorBackground">@color/background_dark</item>
+        <item name="android:colorPrimary">@color/photo_border_dark</item>
+        <item name="android:textColor">@color/text_color_dark</item>
+        <item name="android:textColorSecondary">@color/subtext_color_dark</item>
+        <item name="android:navigationBarColor">@color/system_navbar_color_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="popupColor">@color/popup_color_dark</item>
+
     </style>
 </resources>

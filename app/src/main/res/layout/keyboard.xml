@@ -17,9 +17,9 @@
             android:id="@+id/image_clear"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:src="@drawable/ic_close_24px" />
+            android:src="?attr/closeIcon" />
 
         <TextView
             android:id="@+id/input_text"
@@ -34,8 +34,8 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="8dp"
-            android:layout_marginRight="8dp"
-            android:src="@drawable/ic_backspace_24px" />
+            android:layout_marginEnd="8dp"
+            android:src="?attr/backspaceIcon" />
 
     </LinearLayout>
 
@@ -65,7 +65,10 @@
                     android:id="@+id/one_btn"
                     android:layout_width="@dimen/passcode_btn"
                     android:layout_height="@dimen/passcode_btn"
-                    android:layout_margin="@dimen/passcode_btn_margin"
+                    android:layout_marginStart="@dimen/passcode_btn_margin"
+                    android:layout_marginTop="@dimen/passcode_btn_margin"
+                    android:layout_marginEnd="@dimen/passcode_btn_margin"
+                    android:layout_marginBottom="@dimen/passcode_btn_margin"
                     android:background="@drawable/numeric_button"
                     android:clickable="true"
                     android:focusable="true"
@@ -83,7 +86,7 @@
                         android:layout_height="24dp"
                         android:layout_marginTop="10dp"
                         android:alpha="0.4"
-                        android:src="@drawable/ic_voicemail_24px"
+                        android:src="?attr/voicemailIcon"
                         android:textAppearance="?android:attr/textAppearanceSmall" />
                 </LinearLayout>
 
@@ -476,10 +479,9 @@
                 android:layout_width="@dimen/passcode_btn"
                 android:layout_height="@dimen/passcode_btn"
                 android:layout_margin="@dimen/passcode_btn_margin"
-                android:background="@android:color/transparent"
                 android:hapticFeedbackEnabled="true"
                 android:padding="5dp"
-                android:src="@drawable/ic_phone_24px"
+                android:src="?attr/callIcon"
                 android:visibility="visible" />
         </TableRow>
 
@@ -491,7 +493,7 @@
         android:layout_height="48dp"
         android:layout_margin="10dp"
         android:padding="8dp"
-        android:src="@drawable/ic_cog"
+        android:src="?attr/settingsIcon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -69,7 +69,13 @@
     <string name="favorites">Избранные контакты</string>
     <string name="favorites_first">cверху</string>
     <string name="favorites_last">cнизу</string>
+    <string name="favorites_first_button">Избранные - cверху</string>
+    <string name="favorites_last_button">Избранные - cнизу</string>
     <string name="favorites_border_color">Цвет обводки</string>
+    <string name="favorites_size">Размер:</string>
+    <string name="favorites_columns_count">Количество колонок:</string>
+    <string name="favorites_border_width">Ширина обводки кнопок:</string>
+    <string name="favorites_sample">Пример кнопки избранного контакта</string>
     <string name="available_actions">Доступные действия</string>
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
@@ -91,7 +97,17 @@
     <string name="theme_light">светлая</string>
     <string name="theme_gray">серая</string>
     <string name="theme_dark">тёмная</string>
+    <string name="theme_light_button">Выбрать светлую тему</string>
+    <string name="theme_gray_button">Выбрать серую тему</string>
+    <string name="theme_dark_button">Выбрать тёмную тему</string>
     <string name="actions">Действия</string>
     <string name="background">Фон</string>
-
+    <string name="contact_tab_history">История</string>
+    <string name="contact_tab_actions">Контакт</string>
+    <string name="contact_tab_settings">Настройки</string>
+    <string name="settings_tab_appearance">Оформление</string>
+    <string name="settings_tab_actions">Действия</string>
+    <string name="settings_tab_about">О приложении</string>
+    <string name="photo">Фото</string>
+    <string name="version">Версия: %s</string>
 </resources>

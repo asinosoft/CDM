@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.databinding.SettingsLayoutBinding
+import com.asinosoft.cdm.databinding.ActivitySettingsBinding
 import com.asinosoft.cdm.fragments.ActionSettingsFragment
 import com.asinosoft.cdm.fragments.FavoritesSettingsFragment
 import com.asinosoft.cdm.fragments.OutfitSettingsFragment
@@ -21,33 +21,28 @@ import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
  */
 class SettingsActivity : BaseActivity(), ColorPickerDialogListener {
 
-    companion object {
-        const val SETTINGS_CHANGED = 1
-        const val THEME_CHANGED = 2
-    }
-
     private val model: SettingsViewModel by viewModels()
-    private val icons = arrayOf(
-        R.drawable.ic_photo_default,
-        R.drawable.ic_whatsapp_chat,
-        R.drawable.palette
+    private val tabLabels = arrayOf(
+        R.string.settings_tab_appearance,
+        R.string.settings_tab_actions,
+        R.string.settings_tab_about
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Firebase.analytics.logEvent("activity_settings", Bundle.EMPTY)
-        SettingsLayoutBinding.inflate(layoutInflater).let { v ->
+        ActivitySettingsBinding.inflate(layoutInflater).let { v ->
             setContentView(v.root)
             v.pages.adapter = SettingsPagesAdapter(this)
 
             TabLayoutMediator(v.tabs, v.pages) { tab, position ->
-                tab.setIcon(icons[position])
+                tab.setText(tabLabels[position])
             }.attach()
         }
     }
 
     override fun onPause() {
-        setResult(model.save())
+        model.save()
         super.onPause()
     }
 

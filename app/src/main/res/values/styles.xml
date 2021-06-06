@@ -1,7 +1,7 @@
 <resources>
     <style name="Caption" parent="Widget.AppCompat.TextView">
         <item name="android:gravity">center</item>
-        <item name="android:height">24pt</item>
+        <item name="android:height">@dimen/captionHeight</item>
         <item name="android:textAppearance">@android:style/TextAppearance.Large</item>
     </style>
 
@@ -11,5 +11,13 @@
 
     <style name="TransparentExpandableListView" parent="@android:style/Widget.ExpandableListView">
         <item name="android:cacheColorHint">@android:color/transparent</item>
+    </style>
+
+    <style name="TabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="tabTextAppearance">@style/TabLayoutText</item>
+    </style>
+
+    <style name="TabLayoutText" parent="TextAppearance.MaterialComponents.Button">
+        <item name="android:textSize">@dimen/tabTextSize</item>
     </style>
 </resources>

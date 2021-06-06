@@ -18,8 +18,8 @@
         android:layout_gravity="end|bottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/layout_keyboard"
-        android:src="@drawable/twotone_keyboard_24"
-        app:rippleColor="@color/green"
+        app:tint="?android:attr/colorBackground"
+        android:src="?attr/keyboardIcon"
         android:layout_margin="16dp" />
 
     <LinearLayout
@@ -29,8 +29,7 @@
         android:background="@drawable/shape"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:paddingTop="10dp">
+        app:layout_constraintEnd_toEndOf="parent">
 
     <fragment android:name="com.asinosoft.cdm.fragments.KeyboardFragment"
         android:id="@+id/keyboard"

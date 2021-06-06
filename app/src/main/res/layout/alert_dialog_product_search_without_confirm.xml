@@ -6,10 +6,9 @@
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
     android:orientation="vertical"
-    android:background="@android:color/white"
+    android:paddingHorizontal="8dp"
     android:paddingTop="8dp"
-    android:paddingBottom="16dp"
-    android:paddingHorizontal="8dp">
+    android:paddingBottom="16dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout"
@@ -22,16 +21,15 @@
 
         <TextView
             android:id="@+id/title"
+            style="@style/Caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"
 
-            android:gravity="center"
             android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:gravity="center"
             android:maxWidth="10dp"
-            android:textColor="@android:color/black"
-            android:textSize="18dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -39,12 +37,12 @@
 
         <ImageView
             android:id="@+id/close"
-            android:visibility="invisible"
             android:layout_width="32dp"
             android:layout_height="wrap_content"
-            android:scaleType="fitEnd"
             android:layout_weight="1"
+            android:scaleType="fitEnd"
             android:src="@drawable/ic_close_24px"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

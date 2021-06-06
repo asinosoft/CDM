@@ -2,8 +2,8 @@ package com.asinosoft.cdm.helpers
 
 import android.app.Dialog
 import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.util.TypedValue
 import android.view.Gravity
 import android.widget.ImageView
 import android.widget.TextView
@@ -19,7 +19,10 @@ object AlertDialogUtils {
         val popup = Dialog(context)
         popup.setCanceledOnTouchOutside(true)
         popup.setContentView(R.layout.alert_dialog_product_search_without_confirm)
-        popup.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val popupColor = TypedValue()
+        context.theme.resolveAttribute(R.attr.popupColor, popupColor, true)
+        popup.window?.setBackgroundDrawable(ColorDrawable(popupColor.data))
         popup.window?.attributes?.gravity = Gravity.CENTER
         popup.window?.setLayout(
             Toolbar.LayoutParams.MATCH_PARENT,

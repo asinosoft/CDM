@@ -29,7 +29,6 @@ import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import com.asinosoft.cdm.views.CirLayoutManager
 import com.asinosoft.cdm.views.LockableLayoutManager
-import kotlinx.android.synthetic.main.activity_manager.*
 import org.jetbrains.anko.vibrator
 import timber.log.Timber
 
@@ -208,9 +207,10 @@ class ManagerActivity : BaseActivity() {
             checkPermission()
         }
 
-        fabKeyboard.setOnClickListener {
+        v.fabKeyboard.setOnClickListener {
             searchActivityResult.launch(Intent(this, SearchActivity::class.java))
         }
+        v.fabKeyboard.supportImageTintList = null
     }
 
     private fun initFavorites(callsLayoutManager: LockableLayoutManager) {
