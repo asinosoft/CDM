@@ -1,14 +1,15 @@
 package com.asinosoft.cdm.activities
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.databinding.ActivityDetailHistoryBinding
-import com.asinosoft.cdm.fragments.*
+import com.asinosoft.cdm.fragments.ContactDetailFragment
+import com.asinosoft.cdm.fragments.ContactSettingsFragment
+import com.asinosoft.cdm.fragments.HistoryDetailFragment
 import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
 import com.google.android.material.tabs.TabLayout

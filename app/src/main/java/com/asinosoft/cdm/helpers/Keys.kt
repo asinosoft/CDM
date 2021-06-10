@@ -18,6 +18,8 @@ class Keys {
         const val CONTACT_PREFERENCES = "Contact#"
         val ManagerPreference = "ManagerPreference"
 
+        const val BACKGROUND_IMAGE = "Background Image"
+
         /**
          * Длительность вибрации
          */

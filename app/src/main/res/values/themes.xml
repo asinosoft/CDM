@@ -17,6 +17,7 @@
 
     <style name="AppTheme.Light" parent="BaseTheme">
         <item name="colorAccent">@color/selected_button_light</item>
+        <item name="colorOnPrimary">@color/tab_text_light</item>
         <item name="colorOnSurface">@color/tab_text_light</item>
         <item name="colorPrimary">@color/active_tab_text_light</item>
         <item name="colorSecondary">@color/floating_button_light</item>
@@ -32,6 +33,7 @@
 
     <style name="AppTheme.Gray" parent="BaseTheme">
         <item name="colorAccent">@color/selected_button_gray</item>
+        <item name="colorOnPrimary">@color/tab_text_gray</item>
         <item name="colorOnSurface">@color/tab_text_gray</item>
         <item name="colorPrimary">@color/active_tab_text_gray</item>
         <item name="colorSecondary">@color/floating_button_gray</item>
@@ -47,6 +49,7 @@
 
     <style name="AppTheme.Dark" parent="BaseTheme">
         <item name="colorAccent">@color/selected_button_dark</item>
+        <item name="colorOnPrimary">@color/tab_text_dark</item>
         <item name="colorOnSurface">@color/tab_text_dark</item>
         <item name="colorPrimary">@color/active_tab_text_dark</item>
         <item name="colorSecondary">@color/floating_button_dark</item>
@@ -58,6 +61,5 @@
         <item name="android:navigationBarColor">@color/system_navbar_color_dark</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_dark</item>
-
     </style>
 </resources>

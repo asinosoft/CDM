@@ -234,4 +234,25 @@
         app:layout_constraintEnd_toEndOf="@+id/dark_theme_button"
         app:layout_constraintStart_toStartOf="@+id/dark_theme_button" />
 
+    <Button
+        android:id="@+id/btn_select_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gray_theme_button" />
+
+    <ImageButton
+        android:id="@+id/btn_clear_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_close_24px"
+        android:contentDescription="@string/remove_background"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_select_background"
+        app:layout_constraintStart_toEndOf="@+id/btn_select_background"
+        app:layout_constraintTop_toTopOf="@+id/btn_select_background" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
