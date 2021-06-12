@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.provider.CallLog
 import android.view.LayoutInflater
-import android.view.MotionEvent.ACTION_DOWN
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -13,10 +12,8 @@ import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Action
-import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
 import com.asinosoft.cdm.helpers.Metoths
-import com.asinosoft.cdm.views.CircularImageView
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import com.zerobranch.layout.SwipeLayout
@@ -92,15 +89,6 @@ class CallsAdapter(
 
     inner class HolderHistory(val v: ViewBinding) : RecyclerView.ViewHolder(v.root) {
 
-        private fun setIcons(
-            directActions: DirectActions,
-            imageLeftAction: CircularImageView,
-            imageRightAction: CircularImageView
-        ) {
-            imageLeftAction.imageResource = Action.resourceByType(directActions.left.type)
-            imageRightAction.imageResource = Action.resourceByType(directActions.right.type)
-        }
-
         fun bind(item: CallHistoryItem) {
             with(v as CalllogObjectBinding) {
                 imageContact.setImageDrawable(item.contact.getPhoto(context))
@@ -116,17 +104,12 @@ class CallsAdapter(
                     CallLog.Calls.BLOCKED_TYPE -> typeCall.setImageResource(R.drawable.baseline_call_canceled_24)
                 }
 
-                dragLayout.setOnTouchListener { view, motionEvent ->
-                    if (motionEvent.action == ACTION_DOWN) {
-                        val directActions = Loader.loadContactSettings(context, item.contact)
-                        setIcons(directActions, imageLeftAction, imageRightAction)
-                    }
-                    false
-                }
+                val directActions = Loader.loadContactSettings(context, item.contact)
+                imageLeftAction.imageResource = Action.resourceByType(directActions.left.type)
+                imageRightAction.imageResource = Action.resourceByType(directActions.right.type)
 
                 swipeLayout.setOnActionsListener(object : SwipeLayout.SwipeActionsListener {
                     override fun onOpen(direction: Int, isContinuous: Boolean) {
-                        val directActions = Loader.loadContactSettings(context, item.contact)
                         when (direction) {
                             SwipeLayout.RIGHT -> {
                                 Firebase.analytics.logEvent("history_swipe_right", Bundle.EMPTY)

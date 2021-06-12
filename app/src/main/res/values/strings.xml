@@ -102,6 +102,7 @@
     <string name="theme_dark_button">Выбрать тёмную тему</string>
     <string name="actions">Действия</string>
     <string name="background">Фон</string>
+    <string name="remove_background">Удалить фон</string>
     <string name="contact_tab_history">История</string>
     <string name="contact_tab_actions">Контакт</string>
     <string name="contact_tab_settings">Настройки</string>

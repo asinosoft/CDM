@@ -7,12 +7,12 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.helpers.Keys
+import com.asinosoft.cdm.helpers.Metoths
 
 /**
  * Базовый клас с поддержкой тем
@@ -27,8 +27,13 @@ open class BaseActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        getBackgroundImage()?.let { image ->
-            findViewById<ViewGroup>(android.R.id.content).rootView.background = image
+        val image = getBackgroundImage()
+        val rootView = findViewById<ViewGroup>(android.R.id.content).rootView
+        if (null == image) {
+            val backgroundColor = Metoths.getThemeColor(this, android.R.attr.colorBackground)
+            rootView.setBackgroundColor(backgroundColor)
+        } else {
+            rootView.background = image
         }
     }
 
@@ -70,10 +75,9 @@ open class BaseActivity : AppCompatActivity() {
         val paint = Paint()
         paint.isFilterBitmap = true
 
-        val backgroundColor = TypedValue()
-        theme.resolveAttribute(R.attr.backgroundColor, backgroundColor, true)
+        val backgroundColor = Metoths.getThemeColor(this, android.R.attr.colorBackground)
 
-        canvas.drawColor(backgroundColor.data)
+        canvas.drawColor(backgroundColor)
         canvas.drawBitmap(bitmap, transformation, paint)
 
         return BitmapDrawable(resources, background)
