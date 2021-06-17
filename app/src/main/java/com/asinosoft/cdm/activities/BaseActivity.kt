@@ -27,6 +27,16 @@ open class BaseActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        applyBackgroundImage()
+    }
+
+    override fun getTheme(): Resources.Theme {
+        return super.getTheme().apply {
+            applyStyle(appTheme, true)
+        }
+    }
+
+    fun applyBackgroundImage() {
         val image = getBackgroundImage()
         val rootView = findViewById<ViewGroup>(android.R.id.content).rootView
         if (null == image) {
@@ -37,24 +47,22 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
-    override fun getTheme(): Resources.Theme {
-        return super.getTheme().apply {
-            applyStyle(appTheme, true)
-        }
-    }
-
     private fun getBackgroundImage(): Drawable? {
-        return getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
-            .getString(Keys.BACKGROUND_IMAGE, null)
-            ?.let {
-                contentResolver.openAssetFileDescriptor(Uri.parse(it), "r")?.let {
-                    BitmapFactory.decodeStream(
-                        it.createInputStream(),
-                    ).let {
-                        scaleToScreen(it)
+        return try {
+            getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
+                .getString(Keys.BACKGROUND_IMAGE, null)
+                ?.let {
+                    contentResolver.openAssetFileDescriptor(Uri.parse(it), "r")?.let {
+                        BitmapFactory.decodeStream(
+                            it.createInputStream(),
+                        ).let {
+                            scaleToScreen(it)
+                        }
                     }
                 }
-            }
+        } catch (ex: Exception) {
+            null
+        }
     }
 
     private fun scaleToScreen(bitmap: Bitmap): BitmapDrawable {

@@ -1,18 +1,15 @@
 package com.asinosoft.cdm.fragments
 
-import android.content.Context
-import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.databinding.FragmentFavoritesSettingsBinding
-import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
 import com.asinosoft.cdm.viewmodels.SettingsViewModel
@@ -40,18 +37,6 @@ class FavoritesSettingsFragment : Fragment() {
             R.attr.colorSecondary
         )
     }
-
-    private val backgroundImageActivityResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            result.data?.data?.let { uri ->
-                requireContext()
-                    .getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
-                    .edit()
-                    .putString(Keys.BACKGROUND_IMAGE, uri.toString())
-                    .apply()
-                activity?.recreate()
-            }
-        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -240,21 +225,7 @@ class FavoritesSettingsFragment : Fragment() {
         }
 
         v.btnSelectBackground.onClick {
-            backgroundImageActivityResult.launch(
-                Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "image/*"
-                }
-            )
-        }
-
-        v.btnClearBackground.onClick {
-            requireContext()
-                .getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
-                .edit()
-                .remove(Keys.BACKGROUND_IMAGE)
-                .apply()
-            activity?.recreate()
+            findNavController().navigate(R.id.selectBackgroundFragment)
         }
     }
 }
