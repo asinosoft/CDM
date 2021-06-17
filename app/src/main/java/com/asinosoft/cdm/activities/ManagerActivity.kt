@@ -12,7 +12,6 @@ import android.view.DragEvent
 import android.view.LayoutInflater
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.adapters.CallsAdapter
@@ -21,6 +20,7 @@ import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.api.FavoriteContactRepositoryImpl
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.FavoriteContact
+import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.databinding.FavoritesFragmentBinding
 import com.asinosoft.cdm.dialer.Utilities
@@ -29,14 +29,13 @@ import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import com.asinosoft.cdm.views.CirLayoutManager
 import com.asinosoft.cdm.views.LockableLayoutManager
-import kotlinx.android.synthetic.main.activity_manager.*
 import org.jetbrains.anko.vibrator
 import timber.log.Timber
 
 /**
  * Основной класс приложения, отвечает за работу главного экрана (нового) приложения
  */
-class ManagerActivity : AppCompatActivity() {
+class ManagerActivity : BaseActivity() {
     /**
      * Отслеживает случаи, когда onRefresh срабатывает дважды
      */
@@ -83,10 +82,14 @@ class ManagerActivity : AppCompatActivity() {
      * Настройки приложения
      */
     private val settingsActivityResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
-            // После изменения настроек пересоздаем весь интерфейс
-            initActivity()
-            model.refresh()
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val newSettings: Settings = Loader.loadSettings(this)
+            if (newSettings.theme != model.settings.theme) {
+                recreate()
+            } else if (newSettings != model.settings) {
+                initActivity()
+                model.refresh()
+            }
         }
 
     /**
@@ -132,7 +135,6 @@ class ManagerActivity : AppCompatActivity() {
             requestAllPermissions()
         }
         initActivity()
-
         model.calls.observe(this) { calls ->
             (v.rvCalls.adapter as CallsAdapter).setList(calls)
         }
@@ -205,9 +207,10 @@ class ManagerActivity : AppCompatActivity() {
             checkPermission()
         }
 
-        fabKeyboard.setOnClickListener {
+        v.fabKeyboard.setOnClickListener {
             searchActivityResult.launch(Intent(this, SearchActivity::class.java))
         }
+        v.fabKeyboard.supportImageTintList = null
     }
 
     private fun initFavorites(callsLayoutManager: LockableLayoutManager) {

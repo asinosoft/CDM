@@ -21,7 +21,6 @@ import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
 import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.views.CircularImageView
 import com.asinosoft.cdm.views.LockableLayoutManager
-import kotlinx.android.synthetic.main.item_cir.view.*
 
 class FavoritesAdapter(
     val favorites: FavoriteContactRepository,

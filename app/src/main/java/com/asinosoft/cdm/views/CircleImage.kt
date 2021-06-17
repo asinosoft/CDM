@@ -53,15 +53,11 @@ class CircleImage @JvmOverloads constructor(
     var touchDown: (Int) -> Unit = {}
     var lockableNestedScrollView: LockableLayoutManager? = null
 
-    companion object {
-        const val CONTACT_UNFOTO = R.drawable.contact_unfoto
-    }
-
     var contact: Contact? = null
         set(value) {
             field = value
             if (value?.photoUri != null) updatePhoto(value.photoUri!!.toUri())
-            else setImageResource(CONTACT_UNFOTO)
+            else setImageResource(R.drawable.ic_default_photo)
         }
 
     var size: Int = this.width

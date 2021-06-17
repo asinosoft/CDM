@@ -66,9 +66,51 @@
     <string name="unknown_caller">Неизвестный номер</string>
     <string name="open_keyboard">Открыть клавиатуру</string>
     <string name="manager_layout">Раскладка главного окна</string>
-    <string name="favorites_first">Избранные контакты - вверху</string>
-    <string name="favorites_last">Избранные контакты - внизу</string>
+    <string name="favorites">Избранные контакты</string>
+    <string name="favorites_first">cверху</string>
+    <string name="favorites_last">cнизу</string>
+    <string name="favorites_first_button">Избранные - cверху</string>
+    <string name="favorites_last_button">Избранные - cнизу</string>
     <string name="favorites_border_color">Цвет обводки</string>
+    <string name="favorites_size">Размер:</string>
+    <string name="favorites_columns_count">Количество колонок:</string>
+    <string name="favorites_border_width">Ширина обводки кнопок:</string>
+    <string name="favorites_sample">Пример кнопки избранного контакта</string>
     <string name="available_actions">Доступные действия</string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
 
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="themes">Темы</string>
+    <string name="theme_light">светлая</string>
+    <string name="theme_gray">серая</string>
+    <string name="theme_dark">тёмная</string>
+    <string name="theme_light_button">Выбрать светлую тему</string>
+    <string name="theme_gray_button">Выбрать серую тему</string>
+    <string name="theme_dark_button">Выбрать тёмную тему</string>
+    <string name="actions">Действия</string>
+    <string name="background">Фон</string>
+    <string name="remove_background">Удалить фон</string>
+    <string name="contact_tab_history">История</string>
+    <string name="contact_tab_actions">Контакт</string>
+    <string name="contact_tab_settings">Настройки</string>
+    <string name="settings_tab_appearance">Оформление</string>
+    <string name="settings_tab_actions">Действия</string>
+    <string name="settings_tab_about">О приложении</string>
+    <string name="photo">Фото</string>
+    <string name="version">Версия: %s</string>
+    <string name="background_default">Стандартный</string>
+    <string name="background_custom">Выбрать из галереи</string>
 </resources>

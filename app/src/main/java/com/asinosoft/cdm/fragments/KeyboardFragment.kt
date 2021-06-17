@@ -7,17 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import com.asinosoft.cdm.R
+import com.asinosoft.cdm.databinding.KeyboardBinding
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.keyboard.*
-import kotlinx.android.synthetic.main.keyboard.view.*
 import org.jetbrains.anko.support.v4.runOnUiThread
 
 /**
  * Класс кастомной клавиатуры.
  */
 class KeyboardFragment : Fragment() {
+    private lateinit var v: KeyboardBinding
     private var settingsButtonClickCallback: () -> Unit = {}
     private var callButtonClickCallback: (phoneNumber: String) -> Unit = {}
     private var closeButtonClickCallback: () -> Unit = {}
@@ -26,7 +25,7 @@ class KeyboardFragment : Fragment() {
      * Реакция на изменение текста в строке поиска
      */
     fun doOnTextChanged(callback: (String) -> Unit) {
-        input_text.doOnTextChanged { s, _, _, _ -> callback(s.toString()) }
+        v.inputText.doOnTextChanged { s, _, _, _ -> callback(s.toString()) }
     }
 
     /**
@@ -54,142 +53,132 @@ class KeyboardFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val rootView = inflater.inflate(R.layout.keyboard, container, false)
-        rootView.findViewById<View>(R.id.one_btn)
-            .setOnClickListener {
-                rootView.ripple1.startRippleAnimation()
-                Handler().postDelayed(
-                    { runOnUiThread { rootView.ripple1.stopRippleAnimation() } },
-                    500 / 3
-                )
-                takeValue("1")
-            }
-        rootView.findViewById<View>(R.id.two_btn)
-            .setOnClickListener {
-                rootView.ripple2.startRippleAnimation()
-                Handler().postDelayed(
-                    { runOnUiThread { rootView.ripple2.stopRippleAnimation() } },
-                    500 / 3
-                )
-                takeValue("2")
-            }
-        rootView.findViewById<View>(R.id.three_btn)
-            .setOnClickListener {
-                rootView.ripple3.startRippleAnimation()
-                Handler().postDelayed(
-                    { runOnUiThread { rootView.ripple3.stopRippleAnimation() } },
-                    500 / 3
-                )
-                takeValue("3")
-            }
-        rootView.findViewById<View>(R.id.four_btn)
-            .setOnClickListener {
-                rootView.ripple4.startRippleAnimation()
-                Handler().postDelayed(
-                    { runOnUiThread { rootView.ripple4.stopRippleAnimation() } },
-                    500 / 3
-                )
-                takeValue("4")
-            }
-        rootView.findViewById<View>(R.id.five_btn)
-            .setOnClickListener {
-                rootView.ripple5.startRippleAnimation()
-                Handler().postDelayed(
-                    { runOnUiThread { rootView.ripple5.stopRippleAnimation() } },
-                    500 / 3
-                )
-                takeValue("5")
-            }
-        rootView.findViewById<View>(R.id.six_btn)
-            .setOnClickListener {
-                rootView.ripple6.startRippleAnimation()
-                Handler().postDelayed(
-                    { runOnUiThread { rootView.ripple6.stopRippleAnimation() } },
-                    500 / 3
-                )
-                takeValue("6")
-            }
-        rootView.findViewById<View>(R.id.seven_btn)
-            .setOnClickListener {
-                rootView.ripple7.startRippleAnimation()
-                Handler().postDelayed(
-                    { runOnUiThread { rootView.ripple7.stopRippleAnimation() } },
-                    500 / 3
-                )
-                takeValue("7")
-            }
-        rootView.findViewById<View>(R.id.eight_btn)
-            .setOnClickListener {
-                rootView.ripple8.startRippleAnimation()
-                Handler().postDelayed(
-                    { runOnUiThread { rootView.ripple8.stopRippleAnimation() } },
-                    500 / 3
-                )
-                takeValue("8")
-            }
-        rootView.findViewById<View>(R.id.nine_btn)
-            .setOnClickListener {
-                rootView.ripple9.startRippleAnimation()
-                Handler().postDelayed(
-                    { runOnUiThread { rootView.ripple9.stopRippleAnimation() } },
-                    500 / 3
-                )
-                takeValue("9")
-            }
-        rootView.findViewById<View>(R.id.zero_btn).setOnLongClickListener {
+    ): View {
+        v = KeyboardBinding.inflate(inflater, container, false)
+        v.oneBtn.setOnClickListener {
+            v.ripple1.startRippleAnimation()
+            Handler().postDelayed(
+                { runOnUiThread { v.ripple1.stopRippleAnimation() } },
+                500 / 3
+            )
+            takeValue("1")
+        }
+        v.twoBtn.setOnClickListener {
+            v.ripple2.startRippleAnimation()
+            Handler().postDelayed(
+                { runOnUiThread { v.ripple2.stopRippleAnimation() } },
+                500 / 3
+            )
+            takeValue("2")
+        }
+        v.threeBtn.setOnClickListener {
+            v.ripple3.startRippleAnimation()
+            Handler().postDelayed(
+                { runOnUiThread { v.ripple3.stopRippleAnimation() } },
+                500 / 3
+            )
+            takeValue("3")
+        }
+        v.fourBtn.setOnClickListener {
+            v.ripple4.startRippleAnimation()
+            Handler().postDelayed(
+                { runOnUiThread { v.ripple4.stopRippleAnimation() } },
+                500 / 3
+            )
+            takeValue("4")
+        }
+        v.fiveBtn.setOnClickListener {
+            v.ripple5.startRippleAnimation()
+            Handler().postDelayed(
+                { runOnUiThread { v.ripple5.stopRippleAnimation() } },
+                500 / 3
+            )
+            takeValue("5")
+        }
+        v.sixBtn.setOnClickListener {
+            v.ripple6.startRippleAnimation()
+            Handler().postDelayed(
+                { runOnUiThread { v.ripple6.stopRippleAnimation() } },
+                500 / 3
+            )
+            takeValue("6")
+        }
+        v.sevenBtn.setOnClickListener {
+            v.ripple7.startRippleAnimation()
+            Handler().postDelayed(
+                { runOnUiThread { v.ripple7.stopRippleAnimation() } },
+                500 / 3
+            )
+            takeValue("7")
+        }
+        v.eightBtn.setOnClickListener {
+            v.ripple8.startRippleAnimation()
+            Handler().postDelayed(
+                { runOnUiThread { v.ripple8.stopRippleAnimation() } },
+                500 / 3
+            )
+            takeValue("8")
+        }
+        v.nineBtn.setOnClickListener {
+            v.ripple9.startRippleAnimation()
+            Handler().postDelayed(
+                { runOnUiThread { v.ripple9.stopRippleAnimation() } },
+                500 / 3
+            )
+            takeValue("9")
+        }
+        v.zeroBtn.setOnLongClickListener {
             takeValue("+")
             true
         }
-        rootView.findViewById<View>(R.id.star).setOnClickListener {
+        v.star.setOnClickListener {
             takeValue("*")
         }
-        rootView.findViewById<View>(R.id.star).setOnLongClickListener {
+        v.star.setOnLongClickListener {
             takeValue("#")
             true
         }
-        rootView.findViewById<View>(R.id.zero_btn)
-            .setOnClickListener {
-                rootView.ripple0.startRippleAnimation()
-                Handler().postDelayed(
-                    {
-                        runOnUiThread {
-                            rootView.ripple0.stopRippleAnimation()
-                        }
-                    },
-                    500 / 3
-                )
-                takeValue("0")
-            }
-        rootView.image_backspace.setOnClickListener {
-            input_text.text = input_text.text.dropLast(1)
+        v.zeroBtn.setOnClickListener {
+            v.ripple0.startRippleAnimation()
+            Handler().postDelayed(
+                {
+                    runOnUiThread {
+                        v.ripple0.stopRippleAnimation()
+                    }
+                },
+                500 / 3
+            )
+            takeValue("0")
         }
-        rootView.image_backspace.setOnLongClickListener {
-            input_text.text = ""
+        v.imageBackspace.setOnClickListener {
+            v.inputText.text = v.inputText.text.dropLast(1)
+        }
+        v.imageBackspace.setOnLongClickListener {
+            v.inputText.text = ""
             true
         }
-        rootView.image_clear.setOnClickListener {
-            if (input_text.text.isNotEmpty()) {
-                input_text.text = ""
+        v.imageClear.setOnClickListener {
+            if (v.inputText.text.isNotEmpty()) {
+                v.inputText.text = ""
             } else {
                 closeButtonClickCallback()
             }
         }
-        rootView.btnCall.setOnClickListener {
-            if (input_text.text.isNotEmpty()) {
-                callButtonClickCallback(input_text.text.toString())
+        v.btnCall.setOnClickListener {
+            if (v.inputText.text.isNotEmpty()) {
+                callButtonClickCallback(v.inputText.text.toString())
             }
         }
 
-        rootView.settingsButton.setOnClickListener {
+        v.settingsButton.setOnClickListener {
             settingsButtonClickCallback()
         }
 
-        return rootView
+        return v.root
     }
 
     private fun takeValue(num: String) {
         Firebase.analytics.logEvent("keyboard_button", Bundle.EMPTY)
-        input_text.text = input_text.text.toString().plus(num)
+        v.inputText.text = v.inputText.text.toString().plus(num)
     }
 }

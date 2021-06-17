@@ -35,7 +35,6 @@ class ContactSettingsFragment : Fragment() {
     ): View {
         v = ContactSettingsBinding.inflate(inflater)
 
-        v.number.text = viewModel.getPhoneNumber()
         v.cirLeft.direction = Metoths.Companion.Direction.LEFT
         v.cirRight.direction = Metoths.Companion.Direction.RIGHT
         v.cirTop.direction = Metoths.Companion.Direction.TOP

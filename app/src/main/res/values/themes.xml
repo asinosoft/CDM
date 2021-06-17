@@ -1,251 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    0
-    <!--Light-->
-    <style name="AppTheme.Light" parent="Theme.MaterialComponents.Light">
-        <item name="colorPrimary">@color/color_primary_light</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/color_accent_default</item>
-        <item name="dialogBackgroundColor">@color/colorPrimary</item>
+    <style name="BaseTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:listViewStyle">@style/TransparentListView</item>
+        <item name="android:expandableListViewStyle">@style/TransparentExpandableListView</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
 
-        <item name="android:windowBackground">@color/colorPrimary</item>
-        <item name="android:navigationBarColor">@color/colorPrimary</item>
-        <item name="android:statusBarColor">@color/colorPrimary</item>
+        <item name="backspaceIcon">@drawable/ic_backspace_24px</item>
+        <item name="callIcon">@drawable/ic_phone_24px</item>
+        <item name="closeIcon">@drawable/ic_close_24px</item>
+        <item name="settingsIcon">@drawable/ic_cog</item>
+        <item name="searchIcon">@drawable/ic_keyboard</item>
+        <item name="keyboardIcon">@drawable/twotone_keyboard_24</item>
+        <item name="voicemailIcon">@drawable/ic_voicemail_24px</item>
+    </style>
+
+    <style name="AppTheme.Light" parent="BaseTheme">
+        <item name="colorAccent">@color/selected_button_light</item>
+        <item name="colorOnPrimary">@color/tab_text_light</item>
+        <item name="colorOnSurface">@color/tab_text_light</item>
+        <item name="colorPrimary">@color/active_tab_text_light</item>
+        <item name="colorSecondary">@color/floating_button_light</item>
+        <item name="android:colorAccent">@color/keyboard_border_light</item>
+        <item name="android:colorBackground">@color/background_light</item>
+        <item name="android:colorPrimary">@color/photo_border_light</item>
+        <item name="android:textColor">@color/text_color_light</item>
+        <item name="android:textColorSecondary">@color/subtext_color_light</item>
+        <item name="android:navigationBarColor">@color/system_navbar_color_light</item>
         <item name="android:windowLightStatusBar">true</item>
-
-        <item name="iconColor">@color/icon_active_light</item>
-        <item name="secondaryAccentColor">?attr/colorAccent</item>
-        <item name="overlayColor">@color/semi_white</item>
-
-        <item name="android:fontFamily">@font/lato_black</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body1</item>
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="actionModeStyle">@style/ActionMode.Light</item>
-        <item name="windowActionModeOverlay">true</item>
+        <item name="popupColor">@color/popup_color_light</item>
     </style>
 
-    <!--Dark-->
-    <style name="AppTheme.Dark" parent="Theme.MaterialComponents.Bridge">
-        <item name="colorPrimary">@color/color_primary_dark</item>
-        <item name="colorPrimaryDark">@color/colorPrimary</item>
-        <item name="colorAccent">@color/color_accent_default</item>
-
+    <style name="AppTheme.Gray" parent="BaseTheme">
+        <item name="colorAccent">@color/selected_button_gray</item>
+        <item name="colorOnPrimary">@color/tab_text_gray</item>
+        <item name="colorOnSurface">@color/tab_text_gray</item>
+        <item name="colorPrimary">@color/active_tab_text_gray</item>
+        <item name="colorSecondary">@color/floating_button_gray</item>
+        <item name="android:colorAccent">@color/keyboard_border_gray</item>
+        <item name="android:colorBackground">@color/background_gray</item>
+        <item name="android:colorPrimary">@color/photo_border_gray</item>
+        <item name="android:textColor">@color/text_color_gray</item>
+        <item name="android:textColorSecondary">@color/subtext_color_gray</item>
+        <item name="android:navigationBarColor">@color/system_navbar_color_gray</item>
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowBackground">@color/colorPrimary</item>
-        <item name="android:navigationBarColor">@color/colorPrimary</item>
-        <item name="android:statusBarColor">@color/colorPrimary</item>
-        <item name="dialogBackgroundColor">@color/grey_800</item>
-
-        <item name="secondaryAccentColor">?attr/colorAccent</item>
-        <item name="iconColor">@color/icon_active_dark</item>
-        <item name="overlayColor">@color/semi_grey_850</item>
-
-        <item name="android:fontFamily">@font/lato_black</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body1</item>
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="actionModeStyle">@style/ActionMode.Dark</item>
-        <item name="windowActionModeOverlay">true</item>
+        <item name="popupColor">@color/popup_color_gray</item>
     </style>
 
-    <!--AMOLED-->
-    <style name="AppTheme.AMOLED" parent="AppTheme.Dark.Pink">
-        <item name="colorPrimary">@color/color_primary_amoled</item>
-        <item name="dialogBackgroundColor">@color/colorPrimary</item>
-
-        <item name="secondaryAccentColor">?attr/colorAccent</item>
-        <item name="iconColor">@color/icon_active_dark</item>
-        <item name="overlayColor">@color/semi_black</item>
-
-        <item name="android:fontFamily">@font/lato_black</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body1</item>
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="actionModeStyle">@style/ActionMode.Dark</item>
-        <item name="windowActionModeOverlay">true</item>
+    <style name="AppTheme.Dark" parent="BaseTheme">
+        <item name="colorAccent">@color/selected_button_dark</item>
+        <item name="colorOnPrimary">@color/tab_text_dark</item>
+        <item name="colorOnSurface">@color/tab_text_dark</item>
+        <item name="colorPrimary">@color/active_tab_text_dark</item>
+        <item name="colorSecondary">@color/floating_button_dark</item>
+        <item name="android:colorAccent">@color/keyboard_border_dark</item>
+        <item name="android:colorBackground">@color/background_dark</item>
+        <item name="android:colorPrimary">@color/photo_border_dark</item>
+        <item name="android:textColor">@color/text_color_dark</item>
+        <item name="android:textColorSecondary">@color/subtext_color_dark</item>
+        <item name="android:navigationBarColor">@color/system_navbar_color_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="popupColor">@color/popup_color_dark</item>
     </style>
-
-    <!-- Blue (default) -->
-    <style name="AppTheme.Light.Blue" parent="AppTheme.Light">
-        <item name="colorAccent">@color/color_accent_blue</item>
-        <item name="secondaryAccentColor">?attr/colorAccent</item>
-    </style>
-
-    <style name="AppTheme.Dark.Blue" parent="AppTheme.Dark">
-        <item name="colorAccent">@color/color_accent_blue</item>
-        <item name="secondaryAccentColor">?attr/colorAccent</item>
-    </style>
-
-    <style name="AppTheme.AMOLED.Blue" parent="AppTheme.AMOLED">
-        <item name="colorAccent">@color/color_accent_blue</item>
-        <item name="secondaryAccentColor">?attr/colorAccent</item>
-    </style>
-
-    <!-- Pink (default)-->
-    <style name="AppTheme.Light.Pink" parent="AppTheme.Light">
-        <item name="colorAccent">@color/color_accent_pink</item>
-        <item name="secondaryAccentColor">?attr/colorAccent</item>
-    </style>
-
-    <style name="AppTheme.Dark.Pink" parent="AppTheme.Dark">
-        <item name="colorAccent">@color/color_accent_pink</item>
-        <item name="secondaryAccentColor">?attr/colorAccent</item>
-    </style>
-
-    <style name="AppTheme.AMOLED.Pink" parent="AppTheme.AMOLED">
-        <item name="colorAccent">@color/color_accent_pink</item>
-        <item name="secondaryAccentColor">?attr/colorAccent</item>
-    </style>
-
-    <!--Greenish-->
-    <style name="AppTheme.Light.Green" parent="AppTheme.Light">
-        <item name="colorAccent">@color/color_accent_green</item>
-        <item name="secondaryAccentColor">?attr/colorAccent</item>
-    </style>
-
-    <style name="AppTheme.Dark.Green" parent="AppTheme.Dark">
-        <item name="colorAccent">@color/color_accent_green</item>
-        <item name="secondaryAccentColor">?attr/colorAccent</item>
-    </style>
-
-    <style name="AppTheme.AMOLED.Green" parent="AppTheme.AMOLED">
-        <item name="colorAccent">@color/color_accent_green</item>
-        <item name="secondaryAccentColor">?attr/colorAccent</item>
-    </style>
-
-    <!-- Creemish -->
-    <style name="AppTheme.Light.Cream" parent="AppTheme.Light">
-        <item name="colorAccent">@color/color_accent_cream</item>
-        <item name="secondaryAccentColor">?attr/colorAccent</item>
-    </style>
-
-    <style name="AppTheme.Dark.Cream" parent="AppTheme.Dark">
-        <item name="colorAccent">@color/color_accent_cream</item>
-        <item name="secondaryAccentColor">?attr/colorAccent</item>
-    </style>
-
-    <style name="AppTheme.AMOLED.Cream" parent="AppTheme.AMOLED">
-        <item name="colorAccent">@color/color_accent_cream</item>
-        <item name="secondaryAccentColor">?attr/colorAccent</item>
-    </style>
-
-    <!--No action bar-->
-    <style name="AppTheme.Light.Blue.NoActionBar" parent="AppTheme.Light.Blue">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="AppTheme.Light.Pink.NoActionBar" parent="AppTheme.Light.Pink">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="AppTheme.Light.Green.NoActionBar" parent="AppTheme.Light.Green">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="AppTheme.Light.Cream.NoActionBar" parent="AppTheme.Light.Cream">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="AppTheme.Dark.Blue.NoActionBar" parent="AppTheme.Dark.Blue">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="AppTheme.Dark.Pink.NoActionBar" parent="AppTheme.Dark.Pink">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="AppTheme.Dark.Green.NoActionBar" parent="AppTheme.Dark.Green">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="AppTheme.Dark.Cream.NoActionBar" parent="AppTheme.Dark.Cream">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="AppTheme.AMOLED.Blue.NoActionBar" parent="AppTheme.AMOLED.Blue">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="AppTheme.AMOLED.Pink.NoActionBar" parent="AppTheme.AMOLED.Pink">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="AppTheme.AMOLED.Green.NoActionBar" parent="AppTheme.AMOLED.Green">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="AppTheme.AMOLED.Cream.NoActionBar" parent="AppTheme.AMOLED.Cream">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <!--Transparent status bar-->
-    <style name="AppTheme.Light.Blue.TransparentStatusBar" parent="AppTheme.Light.Blue.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <style name="AppTheme.Light.Pink.TransparentStatusBar" parent="AppTheme.Light.Pink.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <style name="AppTheme.Light.Green.TransparentStatusBar" parent="AppTheme.Light.Green.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <style name="AppTheme.Light.Cream.TransparentStatusBar" parent="AppTheme.Light.Cream.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <style name="AppTheme.Dark.Blue.TransparentStatusBar" parent="AppTheme.Dark.Blue.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <style name="AppTheme.Dark.Pink.TransparentStatusBar" parent="AppTheme.Dark.Pink.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <style name="AppTheme.Dark.Green.TransparentStatusBar" parent="AppTheme.Dark.Green.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <style name="AppTheme.Dark.Cream.TransparentStatusBar" parent="AppTheme.Dark.Cream.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <style name="AppTheme.AMOLED.Blue.TransparentStatusBar" parent="AppTheme.AMOLED.Blue.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <style name="AppTheme.AMOLED.Pink.TransparentStatusBar" parent="AppTheme.AMOLED.Pink.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <style name="AppTheme.AMOLED.Green.TransparentStatusBar" parent="AppTheme.AMOLED.Green.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <style name="AppTheme.AMOLED.Cream.TransparentStatusBar" parent="AppTheme.AMOLED.Cream.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-    </style>
-
-    <!-- AppBar Overlay -->
-    <style name="ActionMode.Light" parent="Widget.AppCompat.ActionMode">
-        <item name="background">@color/grey_100</item>
-        <item name="height">@dimen/action_bar_size</item>
-    </style>
-
-    <style name="ActionMode.Dark" parent="Widget.AppCompat.ActionMode">
-        <item name="background">@color/black</item>
-        <item name="height">@dimen/action_bar_size</item>
-    </style>
-
 </resources>

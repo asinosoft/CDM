@@ -53,6 +53,6 @@ data class Contact(
     private fun getDefaultPhoto(context: Context): Drawable =
         ContextCompat.getDrawable(
             context,
-            R.drawable.contact_unfoto
+            R.drawable.ic_default_photo
         ) as Drawable
 }

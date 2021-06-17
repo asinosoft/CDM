@@ -1,80 +1,86 @@
 package com.asinosoft.cdm.activities
 
 import android.os.Bundle
-import android.widget.ImageView
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.viewpager.widget.ViewPager
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.databinding.ActivityDetailHistoryBinding
 import com.asinosoft.cdm.fragments.ContactDetailFragment
 import com.asinosoft.cdm.fragments.ContactSettingsFragment
 import com.asinosoft.cdm.fragments.HistoryDetailFragment
 import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
-import com.ogaclejapan.smarttablayout.SmartTabLayout
-import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter
-import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems
 
 /**
  * Активность "Просмотр контакта"
  */
-class DetailHistoryActivity : AppCompatActivity() {
+class DetailHistoryActivity : BaseActivity() {
     private val viewModel: DetailHistoryViewModel by viewModels()
+    private lateinit var v: ActivityDetailHistoryBinding
+    private lateinit var tabLabels: IntArray
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Firebase.analytics.logEvent("activity_contact", Bundle.EMPTY)
-        setContentView(R.layout.activity_detail_history)
+        v = ActivityDetailHistoryBinding.inflate(layoutInflater)
+        setContentView(v.root)
 
         val contactId = intent.getLongExtra(Keys.id, 0)
-        val fragmentPagerItems: FragmentPagerItems
         if (0L != contactId) {
             viewModel.initialize(this, contactId)
-            fragmentPagerItems = FragmentPagerItems.with(this)
-                .add("История", HistoryDetailFragment().javaClass)
-                .add("Контакт", ContactDetailFragment().javaClass)
-                .add("Настройки", ContactSettingsFragment().javaClass)
-                .create()
+            tabLabels = intArrayOf(
+                R.string.contact_tab_history,
+                R.string.contact_tab_actions,
+                R.string.contact_tab_settings
+            )
         } else {
             val phoneNumber = intent.getStringExtra(Keys.number) ?: ""
             viewModel.initialize(this, phoneNumber)
-            fragmentPagerItems = FragmentPagerItems.with(this)
-                .add("История", HistoryDetailFragment().javaClass)
-                .create()
+            tabLabels = intArrayOf(
+                R.string.contact_tab_history
+            )
         }
 
-        val adapter = FragmentPagerItemAdapter(
-            supportFragmentManager,
-            fragmentPagerItems
-        )
+        v.pages.adapter = ContactPagesAdapter(this, tabLabels.size)
 
-        val viewPager = findViewById<ViewPager>(R.id.viewpager)
-        viewPager.adapter = adapter
-        viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrolled(
-                position: Int,
-                positionOffset: Float,
-                positionOffsetPixels: Int
-            ) {
+        TabLayoutMediator(v.tabs, v.pages) { tab, position ->
+            tab.setText(tabLabels[position])
+        }.attach()
+
+        v.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                // TODO: отправлять событие о переключении вкладок в Firebase
+//                when (tab?.id) {
+//                    0 -> Firebase.analytics.logEvent("contact_tab_calls", Bundle.EMPTY)
+//                    1 -> Firebase.analytics.logEvent("contact_tab_actions", Bundle.EMPTY)
+//                    2 -> Firebase.analytics.logEvent("contact_tab_settings", Bundle.EMPTY)
+//                }
             }
 
-            override fun onPageSelected(position: Int) {
-                when (position) {
-                    0 -> Firebase.analytics.logEvent("contact_tab_calls", Bundle.EMPTY)
-                    1 -> Firebase.analytics.logEvent("contact_tab_actions", Bundle.EMPTY)
-                    2 -> Firebase.analytics.logEvent("contact_tab_settings", Bundle.EMPTY)
-                }
-            }
-
-            override fun onPageScrollStateChanged(state: Int) {
-            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
-        val viewPagerTab = findViewById<SmartTabLayout>(R.id.viewpagertab)
-        viewPagerTab.setViewPager(viewPager)
-        val imageView = findViewById<ImageView>(R.id.image)
 
-        imageView.setImageDrawable(viewModel.getContactPhoto(this))
+        v.image.setImageDrawable(viewModel.getContactPhoto(this))
+    }
+
+    private inner class ContactPagesAdapter(
+        fa: FragmentActivity,
+        private val count: Int
+    ) : FragmentStateAdapter(fa) {
+        override fun getItemCount(): Int = count
+        override fun createFragment(position: Int): Fragment {
+            return when (position) {
+                0 -> HistoryDetailFragment()
+                1 -> ContactDetailFragment()
+                else -> ContactSettingsFragment()
+            }
+        }
     }
 }

@@ -1,31 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingStart="20dp"
-    android:paddingEnd="20dp">
+    android:layout_height="match_parent">
 
-
-    <TextView
-        android:id="@+id/number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="15dp"
-        android:text=""
-        android:textColor="@android:color/black"
-        android:textSize="18sp" />
-
-    <androidx.cardview.widget.CardView
+    <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="40dp"
-        android:backgroundTint="@color/white_gray_light"
-        app:cardCornerRadius="20dp">
+        android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -59,7 +41,7 @@
                             android:layout_width="86dp"
                             android:layout_height="86dp"
                             android:layout_centerInParent="true"
-                            android:src="@drawable/contact_unfoto" />
+                            android:src="@drawable/ic_default_photo" />
 
                         <com.asinosoft.cdm.views.CircularImageView
                             android:id="@+id/cirTop"
@@ -68,7 +50,7 @@
                             android:layout_above="@id/contact"
                             android:layout_centerHorizontal="true"
                             android:layout_marginBottom="10dp"
-                            android:src="@drawable/contact_unfoto" />
+                            android:src="@drawable/ic_default_photo" />
 
                         <com.asinosoft.cdm.views.CircularImageView
                             android:id="@+id/cirBottom"
@@ -77,7 +59,7 @@
                             android:layout_below="@id/contact"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="10dp"
-                            android:src="@drawable/contact_unfoto" />
+                            android:src="@drawable/ic_default_photo" />
 
                         <com.asinosoft.cdm.views.CircularImageView
                             android:id="@+id/cirLeft"
@@ -86,7 +68,7 @@
                             android:layout_centerVertical="true"
                             android:layout_marginEnd="10dp"
                             android:layout_toStartOf="@id/contact"
-                            android:src="@drawable/contact_unfoto" />
+                            android:src="@drawable/ic_default_photo" />
 
                         <com.asinosoft.cdm.views.CircularImageView
                             android:id="@+id/cirRight"
@@ -95,7 +77,7 @@
                             android:layout_centerVertical="true"
                             android:layout_marginStart="10dp"
                             android:layout_toEndOf="@id/contact"
-                            android:src="@drawable/contact_unfoto" />
+                            android:src="@drawable/ic_default_photo" />
 
                         <TextView
                             android:id="@+id/text_top"
@@ -152,9 +134,5 @@
             </net.cachapa.expandablelayout.ExpandableLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    </androidx.cardview.widget.CardView>
-
-
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.FavoritesSettingsFragment">
+
+    <ImageButton
+        android:id="@+id/btn_favorites_first"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:contentDescription="@string/favorites_first_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_favorites_last"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/caption"
+        app:layout_constraintVertical_bias="0"
+        app:srcCompat="@drawable/ic_layout_mode" />
+
+    <ImageButton
+        android:id="@+id/btn_favorites_last"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:contentDescription="@string/favorites_last_button"
+        android:rotation="180"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_favorites_first"
+        app:layout_constraintTop_toBottomOf="@id/caption"
+        app:layout_constraintVertical_bias="0"
+        app:srcCompat="@drawable/ic_layout_mode" />
+
+    <TextView
+        android:id="@+id/caption"
+        style="@style/Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/favorites"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_favorite_size"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="@string/favorites_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_favorites_first" />
+
+    <com.xw.repo.BubbleSeekBar
+        android:id="@+id/sb_favorite_size"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:paddingHorizontal="20dp"
+        app:bsb_auto_adjust_section_mark="true"
+        app:bsb_max="300"
+        app:bsb_min="30"
+        app:bsb_second_track_color="@color/blue"
+        app:bsb_touch_to_seek="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_favorite_size" />
+
+    <TextView
+        android:id="@+id/text_column_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/favorites_columns_count"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sb_favorite_size" />
+
+    <com.xw.repo.BubbleSeekBar
+        android:id="@+id/sb_column_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:paddingHorizontal="20dp"
+        app:bsb_auto_adjust_section_mark="true"
+        app:bsb_max="4"
+        app:bsb_min="1"
+        app:bsb_progress="1"
+        app:bsb_second_track_color="@color/blue"
+        app:bsb_section_count="3"
+        app:bsb_section_text_position="below_section_mark"
+        app:bsb_show_section_mark="true"
+        app:bsb_show_section_text="true"
+        app:bsb_show_thumb_text="true"
+        app:bsb_touch_to_seek="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_column_count" />
+
+    <TextView
+        android:id="@+id/text_border_width"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/favorites_border_width"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sb_column_count" />
+
+    <com.xw.repo.BubbleSeekBar
+        android:id="@+id/sb_border_width"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:paddingHorizontal="20dp"
+        app:bsb_auto_adjust_section_mark="true"
+        app:bsb_max="100"
+        app:bsb_min="1"
+        app:bsb_progress="1"
+        app:bsb_second_track_color="@color/blue"
+        app:bsb_touch_to_seek="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_border_width" />
+
+    <Button
+        android:id="@+id/pick_border_color"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/palette"
+        android:contentDescription="@string/favorites_border_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sb_border_width" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/img_favorite"
+        android:layout_width="86dp"
+        android:layout_height="86dp"
+        android:layout_marginTop="24dp"
+        android:contentDescription="@string/favorites_sample"
+        android:src="@drawable/ic_default_photo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sb_border_width" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/favorites_first"
+        app:layout_constraintBottom_toTopOf="@id/btn_favorites_first"
+        app:layout_constraintLeft_toLeftOf="@id/btn_favorites_first"
+        app:layout_constraintRight_toRightOf="@id/btn_favorites_first" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/favorites_last"
+        app:layout_constraintBottom_toTopOf="@id/btn_favorites_last"
+        app:layout_constraintLeft_toLeftOf="@id/btn_favorites_last"
+        app:layout_constraintRight_toRightOf="@id/btn_favorites_last" />
+
+    <TextView
+        android:id="@+id/themes"
+        style="@style/Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/themes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_favorite" />
+
+    <ImageButton
+        android:id="@+id/light_theme_button"
+        android:layout_width="64dp"
+        android:layout_height="96dp"
+        android:layout_marginTop="32dp"
+        android:contentDescription="@string/theme_light_button"
+        android:src="@drawable/background_light"
+        app:layout_constraintEnd_toStartOf="@id/gray_theme_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/themes" />
+
+    <ImageButton
+        android:id="@+id/gray_theme_button"
+        android:layout_width="64dp"
+        android:layout_height="96dp"
+        android:layout_marginTop="32dp"
+        android:contentDescription="@string/theme_gray_button"
+        android:src="@drawable/background_gray"
+        app:layout_constraintEnd_toStartOf="@id/dark_theme_button"
+        app:layout_constraintStart_toEndOf="@id/light_theme_button"
+        app:layout_constraintTop_toBottomOf="@+id/themes" />
+
+    <ImageButton
+        android:id="@+id/dark_theme_button"
+        android:layout_width="64dp"
+        android:layout_height="96dp"
+        android:layout_marginTop="32dp"
+        android:contentDescription="@string/theme_dark_button"
+        android:src="@drawable/background_dark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/gray_theme_button"
+        app:layout_constraintTop_toBottomOf="@+id/themes" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/theme_light"
+        app:layout_constraintBottom_toTopOf="@+id/light_theme_button"
+        app:layout_constraintEnd_toEndOf="@+id/light_theme_button"
+        app:layout_constraintStart_toStartOf="@+id/light_theme_button" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/theme_gray"
+        app:layout_constraintBottom_toTopOf="@id/gray_theme_button"
+        app:layout_constraintEnd_toEndOf="@+id/gray_theme_button"
+        app:layout_constraintStart_toStartOf="@id/gray_theme_button" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/theme_dark"
+        app:layout_constraintBottom_toTopOf="@id/dark_theme_button"
+        app:layout_constraintEnd_toEndOf="@+id/dark_theme_button"
+        app:layout_constraintStart_toStartOf="@+id/dark_theme_button" />
+
+    <Button
+        android:id="@+id/btn_select_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gray_theme_button" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

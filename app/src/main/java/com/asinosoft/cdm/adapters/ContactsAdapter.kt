@@ -3,13 +3,12 @@ package com.asinosoft.cdm.adapters
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Contact
-import com.asinosoft.cdm.databinding.HistorySwipingItemBinding
+import com.asinosoft.cdm.databinding.ContactItemBinding
 import com.asinosoft.cdm.helpers.Metoths.Companion.setColoredText
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
@@ -37,7 +36,7 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.Holder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         context = parent.context
-        return Holder(HistorySwipingItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        return Holder(ContactItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
     }
 
     override fun getItemCount() = contacts.size
@@ -46,12 +45,12 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.Holder>() {
         holder.bind(contacts[position])
     }
 
-    inner class Holder(private val v: HistorySwipingItemBinding) :
+    inner class Holder(private val v: ContactItemBinding) :
         RecyclerView.ViewHolder(v.root) {
 
         fun bind(contact: Contact) {
             contact.photoUri?.let { v.imageContact.setImageURI(it.toUri()) }
-                ?: v.imageContact.setImageResource(R.drawable.contact_unfoto)
+                ?: v.imageContact.setImageResource(R.drawable.ic_default_photo)
             v.name.text = contact.name
             var tNum = ""
             contact.phones.forEach {
@@ -59,10 +58,6 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.Holder>() {
                     tNum.plus("${it.value}, ")
             }
             v.number.text = tNum.dropLast(2)
-            v.timeContact.text = ""
-            v.dateContact.text = ""
-            v.typeCall.visibility = View.GONE
-
             setColors()
 
             v.swipeLayout.setOnActionsListener(object : SwipeLayout.SwipeActionsListener {

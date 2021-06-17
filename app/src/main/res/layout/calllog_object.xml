@@ -46,7 +46,10 @@
                 android:id="@+id/imageContact"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:src="@drawable/contact_unfoto" />
+                android:src="@drawable/ic_default_photo"
+                app:civ_border_color="?android:attr/colorPrimary"
+                app:civ_border_width="1dp"
+                />
 
             <TextView
                 android:id="@+id/name"
@@ -78,17 +81,19 @@
                 android:layout_marginTop="2dp"
                 android:layout_toEndOf="@id/typeCall"
                 android:text="number"
+                android:textColor="?android:attr/textColorSecondary"
                 android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/timeContact"
                 android:layout_width="wrap_content"
                 android:layout_height="22dp"
-                android:layout_above="@id/separator"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="13dp"
                 android:text="time"
+                android:textColor="?android:attr/textColorSecondary"
                 android:textSize="16sp" />
 
             <TextView
@@ -99,16 +104,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="16dp"
                 android:text="date"
+                android:textColor="?android:attr/textColorSecondary"
                 android:textSize="16sp" />
-
-            <View
-                android:id="@+id/separator"
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:layout_below="@id/imageContact"
-                android:layout_marginStart="64dp"
-                android:layout_marginEnd="16dp"
-                android:background="#A2A59C" />
 
         </RelativeLayout>
 

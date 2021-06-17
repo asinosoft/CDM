@@ -17,9 +17,9 @@
             android:id="@+id/image_clear"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:src="@drawable/ic_close_24px" />
+            android:src="?attr/closeIcon" />
 
         <TextView
             android:id="@+id/input_text"
@@ -34,8 +34,8 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="8dp"
-            android:layout_marginRight="8dp"
-            android:src="@drawable/ic_backspace_24px" />
+            android:layout_marginEnd="8dp"
+            android:src="?attr/backspaceIcon" />
 
     </LinearLayout>
 
@@ -65,7 +65,10 @@
                     android:id="@+id/one_btn"
                     android:layout_width="@dimen/passcode_btn"
                     android:layout_height="@dimen/passcode_btn"
-                    android:layout_margin="@dimen/passcode_btn_margin"
+                    android:layout_marginStart="@dimen/passcode_btn_margin"
+                    android:layout_marginTop="@dimen/passcode_btn_margin"
+                    android:layout_marginEnd="@dimen/passcode_btn_margin"
+                    android:layout_marginBottom="@dimen/passcode_btn_margin"
                     android:background="@drawable/numeric_button"
                     android:clickable="true"
                     android:focusable="true"
@@ -76,15 +79,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/digit_one"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/customGray" />
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginTop="10dp"
                         android:alpha="0.4"
-                        android:src="@drawable/ic_voicemail_24px"
+                        android:src="?attr/voicemailIcon"
                         android:textAppearance="?android:attr/textAppearanceSmall" />
                 </LinearLayout>
 
@@ -115,15 +117,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/digit_two"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/customGray" />
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="@string/digit_two_text"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/textSecondary" />
                 </LinearLayout>
 
             </com.skyfishjy.library.RippleBackground>
@@ -153,15 +155,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/digit_three"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/customGray" />
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="@string/digit_three_text"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/textSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -198,15 +200,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/digit_four"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/customGray" />
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="@string/digit_four_text"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/textSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -235,15 +237,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/digit_five"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/customGray" />
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="@string/digit_five_text"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/textSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -272,15 +274,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/digit_six"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/customGray" />
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="@string/digit_six_text"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/textSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -317,15 +319,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/digit_seven"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/customGray" />
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="@string/digit_seven_text"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/textSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -354,15 +356,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/digit_eight"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/customGray" />
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="@string/digit_eight_text"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/textSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -391,15 +393,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/digit_nine"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/customGray" />
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="@string/digit_nine_text"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/textSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -424,8 +426,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:text="*"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/customGray" />
+                    android:textAppearance="?android:attr/textAppearanceLarge"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -433,7 +434,7 @@
                     android:layout_gravity="center"
                     android:text="#"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/customGray" />
+                    android:textColor="@color/textSecondary" />
             </LinearLayout>
 
 
@@ -462,14 +463,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/digit_zero"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/customGray" />
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/digit_zero_text"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/textSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -478,10 +479,9 @@
                 android:layout_width="@dimen/passcode_btn"
                 android:layout_height="@dimen/passcode_btn"
                 android:layout_margin="@dimen/passcode_btn_margin"
-                android:background="@android:color/transparent"
                 android:hapticFeedbackEnabled="true"
                 android:padding="5dp"
-                android:src="@drawable/ic_phone_24px"
+                android:src="?attr/callIcon"
                 android:visibility="visible" />
         </TableRow>
 
@@ -493,7 +493,7 @@
         android:layout_height="48dp"
         android:layout_margin="10dp"
         android:padding="8dp"
-        android:src="@drawable/ic_cog"
+        android:src="?attr/settingsIcon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
