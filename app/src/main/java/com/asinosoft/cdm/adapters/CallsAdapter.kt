@@ -82,60 +82,58 @@ class CallsAdapter(
     }
 
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
-        if (position > 0) {
-            holder.bind(calls[position - 1])
+        when (holder.v) {
+            is CalllogObjectBinding -> bindCallHistoryItem(holder.v, calls[position - 1])
         }
     }
 
-    inner class HolderHistory(val v: ViewBinding) : RecyclerView.ViewHolder(v.root) {
+    private fun bindCallHistoryItem(v: CalllogObjectBinding, call: CallHistoryItem) {
+        v.imageContact.setImageDrawable(call.contact.getPhoto(context))
+        v.name.text = call.contact.name
+        v.number.text = "${call.prettyPhone}, ${Metoths.getFormattedTime(call.duration)}"
+        v.timeContact.text = call.time
+        v.dateContact.text = call.date
 
-        fun bind(item: CallHistoryItem) {
-            with(v as CalllogObjectBinding) {
-                imageContact.setImageDrawable(item.contact.getPhoto(context))
-                name.text = item.contact.name
-                number.text = "${item.prettyPhone}, ${Metoths.getFormattedTime(item.duration)}"
-                timeContact.text = item.time
-                dateContact.text = item.date
+        val directActions = Loader.loadContactSettings(context, call.contact)
+        v.imageLeftAction.imageResource = Action.resourceByType(directActions.left.type)
+        v.imageRightAction.imageResource = Action.resourceByType(directActions.right.type)
 
-                when (item.typeCall) {
-                    CallLog.Calls.OUTGOING_TYPE -> typeCall.setImageResource(R.drawable.baseline_call_made_24)
-                    CallLog.Calls.INCOMING_TYPE -> typeCall.setImageResource(R.drawable.baseline_call_received_24)
-                    CallLog.Calls.MISSED_TYPE -> typeCall.setImageResource(R.drawable.baseline_call_missed_24)
-                    CallLog.Calls.BLOCKED_TYPE -> typeCall.setImageResource(R.drawable.baseline_call_canceled_24)
+        when (call.typeCall) {
+            CallLog.Calls.OUTGOING_TYPE -> v.typeCall.setImageResource(R.drawable.baseline_call_made_24)
+            CallLog.Calls.INCOMING_TYPE -> v.typeCall.setImageResource(R.drawable.baseline_call_received_24)
+            CallLog.Calls.MISSED_TYPE -> v.typeCall.setImageResource(R.drawable.baseline_call_missed_24)
+            CallLog.Calls.BLOCKED_TYPE -> v.typeCall.setImageResource(R.drawable.baseline_call_canceled_24)
+        }
+
+        v.swipeLayout.setOnActionsListener(object : SwipeLayout.SwipeActionsListener {
+            override fun onOpen(direction: Int, isContinuous: Boolean) {
+                when (direction) {
+                    SwipeLayout.RIGHT -> {
+                        Firebase.analytics.logEvent("history_swipe_right", Bundle.EMPTY)
+                        directActions.right.perform(context)
+                    }
+                    SwipeLayout.LEFT -> {
+                        Firebase.analytics.logEvent("history_swipe_left", Bundle.EMPTY)
+                        directActions.left.perform(context)
+                    }
                 }
 
-                val directActions = Loader.loadContactSettings(context, item.contact)
-                imageLeftAction.imageResource = Action.resourceByType(directActions.left.type)
-                imageRightAction.imageResource = Action.resourceByType(directActions.right.type)
-
-                swipeLayout.setOnActionsListener(object : SwipeLayout.SwipeActionsListener {
-                    override fun onOpen(direction: Int, isContinuous: Boolean) {
-                        when (direction) {
-                            SwipeLayout.RIGHT -> {
-                                Firebase.analytics.logEvent("history_swipe_right", Bundle.EMPTY)
-                                directActions.right.perform(context)
-                            }
-                            SwipeLayout.LEFT -> {
-                                Firebase.analytics.logEvent("history_swipe_left", Bundle.EMPTY)
-                                directActions.left.perform(context)
-                            }
-                        }
-
-                        swipeLayout.close()
-                    }
-
-                    override fun onClose() {
-                    }
-                })
-
-                dragLayout.setOnClickListener {
-                    Metoths.openDetailContact(
-                        item.phone,
-                        item.contact,
-                        context
-                    )
-                }
+                // bugfix: Если сделать действие-влево, то потом эта строка уже вправо не двигается пока немного влево сдвинешь и отпустишь.
+                notifyDataSetChanged()
             }
+
+            override fun onClose() {
+            }
+        })
+
+        v.dragLayout.setOnClickListener {
+            Metoths.openDetailContact(
+                call.phone,
+                call.contact,
+                context
+            )
         }
     }
+
+    inner class HolderHistory(val v: ViewBinding) : RecyclerView.ViewHolder(v.root)
 }

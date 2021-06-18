@@ -15,7 +15,6 @@ import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
  */
 class HistoryDetailFragment : Fragment() {
     private val viewModel: DetailHistoryViewModel by activityViewModels()
-    private lateinit var callsAdapter: HistoryDetailsCallsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,13 +22,12 @@ class HistoryDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val bindings = HistoryDetailFragmentBinding.inflate(inflater)
-        callsAdapter = HistoryDetailsCallsAdapter(requireContext())
-        bindings.rvContactCalls.adapter = callsAdapter
 
         viewModel.callHistory.observe(
             requireActivity(),
-            {
-                callsAdapter.setList(it)
+            { calls ->
+                bindings.rvContactCalls.adapter =
+                    HistoryDetailsCallsAdapter(requireContext(), calls)
             }
         )
 
