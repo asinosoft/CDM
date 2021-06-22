@@ -1,16 +1,15 @@
-package com.asinosoft.cdm.activities
+package com.asinosoft.cdm.fragments
 
 import android.os.Bundle
-import androidx.activity.viewModels
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.databinding.ActivityDetailHistoryBinding
-import com.asinosoft.cdm.fragments.ContactDetailFragment
-import com.asinosoft.cdm.fragments.ContactSettingsFragment
-import com.asinosoft.cdm.fragments.HistoryDetailFragment
-import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -18,36 +17,34 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 
 /**
- * Активность "Просмотр контакта"
+ * Окно контакта
  */
-class DetailHistoryActivity : BaseActivity() {
-    private val viewModel: DetailHistoryViewModel by viewModels()
+class ContactFragment : Fragment() {
+    private val model: DetailHistoryViewModel by activityViewModels()
     private lateinit var v: ActivityDetailHistoryBinding
-    private lateinit var tabLabels: IntArray
+    private val tabLabels = intArrayOf(
+        R.string.contact_tab_actions,
+        R.string.contact_tab_history,
+        R.string.contact_tab_settings
+    )
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        v = ActivityDetailHistoryBinding.inflate(inflater)
+        return v.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Firebase.analytics.logEvent("activity_contact", Bundle.EMPTY)
-        v = ActivityDetailHistoryBinding.inflate(layoutInflater)
-        setContentView(v.root)
 
-        val contactId = intent.getLongExtra(Keys.id, 0)
-        if (0L != contactId) {
-            viewModel.initialize(this, contactId)
-            tabLabels = intArrayOf(
-                R.string.contact_tab_history,
-                R.string.contact_tab_actions,
-                R.string.contact_tab_settings
-            )
-        } else {
-            val phoneNumber = intent.getStringExtra(Keys.number) ?: ""
-            viewModel.initialize(this, phoneNumber)
-            tabLabels = intArrayOf(
-                R.string.contact_tab_history
-            )
+        arguments?.getLong("contactId")?.let { contactId ->
+            model.initialize(requireContext(), contactId)
         }
 
-        v.pages.adapter = ContactPagesAdapter(this, tabLabels.size)
+        v.pages.adapter = ContactPagesAdapter(requireActivity(), tabLabels.size)
 
         TabLayoutMediator(v.tabs, v.pages) { tab, position ->
             tab.setText(tabLabels[position])
@@ -67,7 +64,7 @@ class DetailHistoryActivity : BaseActivity() {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
 
-        v.image.setImageDrawable(viewModel.getContactPhoto(this))
+        v.image.setImageDrawable(model.getContactPhoto())
     }
 
     private inner class ContactPagesAdapter(
@@ -77,8 +74,8 @@ class DetailHistoryActivity : BaseActivity() {
         override fun getItemCount(): Int = count
         override fun createFragment(position: Int): Fragment {
             return when (position) {
-                0 -> HistoryDetailFragment()
-                1 -> ContactDetailFragment()
+                0 -> ContactDetailFragment()
+                1 -> HistoryDetailFragment()
                 else -> ContactSettingsFragment()
             }
         }

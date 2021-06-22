@@ -4,7 +4,7 @@
         <item name="android:listViewStyle">@style/TransparentListView</item>
         <item name="android:expandableListViewStyle">@style/TransparentExpandableListView</item>
         <item name="android:windowTranslucentNavigation">false</item>
-        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentStatus">false</item>
 
         <item name="backspaceIcon">@drawable/ic_backspace_24px</item>
         <item name="callIcon">@drawable/ic_phone_24px</item>
@@ -26,6 +26,7 @@
         <item name="android:colorPrimary">@color/photo_border_light</item>
         <item name="android:textColor">@color/text_color_light</item>
         <item name="android:textColorSecondary">@color/subtext_color_light</item>
+        <item name="android:statusBarColor">@color/system_navbar_color_light</item>
         <item name="android:navigationBarColor">@color/system_navbar_color_light</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="popupColor">@color/popup_color_light</item>
@@ -42,6 +43,7 @@
         <item name="android:colorPrimary">@color/photo_border_gray</item>
         <item name="android:textColor">@color/text_color_gray</item>
         <item name="android:textColorSecondary">@color/subtext_color_gray</item>
+        <item name="android:statusBarColor">@color/system_navbar_color_gray</item>
         <item name="android:navigationBarColor">@color/system_navbar_color_gray</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_gray</item>
@@ -58,6 +60,7 @@
         <item name="android:colorPrimary">@color/photo_border_dark</item>
         <item name="android:textColor">@color/text_color_dark</item>
         <item name="android:textColorSecondary">@color/subtext_color_dark</item>
+        <item name="android:statusBarColor">@color/system_navbar_color_dark</item>
         <item name="android:navigationBarColor">@color/system_navbar_color_dark</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_dark</item>

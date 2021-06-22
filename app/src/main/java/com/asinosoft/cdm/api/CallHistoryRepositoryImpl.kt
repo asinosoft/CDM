@@ -34,7 +34,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             "${CallLog.Calls.DATE} < ?",
             arrayOf(before.time.toString()),
             "${CallLog.Calls.DATE} DESC"
-        )?.let {
+        )?.use {
             // По каждому контакту показываем только последний звонок (первый, с учетом сортировки DESC)
             HistoryItemCursorAdapter(it).getFiltered(limit, filter)
         } ?: ArrayList()
@@ -47,7 +47,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             "${CallLog.Calls.DATE} > ?",
             arrayOf(after.time.toString()),
             "${CallLog.Calls.DATE} DESC"
-        )?.let {
+        )?.use {
             // По каждому контакту показываем только последний звонок (первый, с учетом сортировки DESC)
             HistoryItemCursorAdapter(it).getFiltered(Int.MAX_VALUE, CallHistoryFilter())
         } ?: ArrayList()
@@ -67,7 +67,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             selection,
             contact.phones.map { it.value }.toTypedArray(),
             "${CallLog.Calls.DATE} DESC"
-        )?.let {
+        )?.use {
             HistoryItemCursorAdapter(it).getAll()
         } ?: listOf()
     }
@@ -79,7 +79,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             "${CallLog.Calls.NUMBER} = ?",
             arrayOf(phone),
             "${CallLog.Calls.DATE} DESC"
-        )?.let {
+        )?.use {
             HistoryItemCursorAdapter(it).getAll()
         } ?: ArrayList()
     }

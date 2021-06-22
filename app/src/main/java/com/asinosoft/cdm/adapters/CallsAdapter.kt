@@ -12,6 +12,7 @@ import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Action
+import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.CalllogObjectBinding
 import com.asinosoft.cdm.helpers.Metoths
 import com.google.firebase.analytics.ktx.analytics
@@ -25,7 +26,8 @@ import java.security.InvalidParameterException
  */
 class CallsAdapter(
     private val context: Context,
-    private val favorites: ViewBinding
+    private val favorites: ViewBinding,
+    private val handler: Handler
 ) : RecyclerView.Adapter<CallsAdapter.HolderHistory>() {
     companion object {
         const val TYPE_FAVORITES = 1
@@ -33,6 +35,11 @@ class CallsAdapter(
     }
 
     private var calls: List<CallHistoryItem> = listOf()
+
+    interface Handler {
+        fun onClickContact(contact: Contact)
+        fun onClickPhone(phone: String)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
         val view = when (viewType) {
@@ -127,11 +134,11 @@ class CallsAdapter(
         })
 
         v.dragLayout.setOnClickListener {
-            Metoths.openDetailContact(
-                call.phone,
-                call.contact,
-                context
-            )
+            if (0L == call.contact.id) {
+                handler.onClickPhone(call.phone)
+            } else {
+                handler.onClickContact(call.contact)
+            }
         }
     }
 

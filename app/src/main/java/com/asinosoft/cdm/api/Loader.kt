@@ -78,10 +78,10 @@ object Loader {
      * Сохранение настроек
      */
     fun saveSettings(context: Context, settings: Settings) {
-        val preferences = context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
-        val e = preferences.edit()
-        e.putString(Keys.Settings, Gson().toJson(settings))
-        e.apply()
+        context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
+            .edit()
+            .putString(Keys.Settings, Gson().toJson(settings))
+            .apply()
     }
 
     fun saveContactSettings(context: Context, contact: Contact, directActions: DirectActions) {
@@ -91,10 +91,10 @@ object Loader {
             ActionSettings(directActions.top.id, directActions.top.type),
             ActionSettings(directActions.down.id, directActions.down.type),
         )
-        val preferences = context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
-        val e = preferences.edit()
-        e.putString(Keys.CONTACT_PREFERENCES + contact.id, Gson().toJson(settings))
-        e.apply()
+        context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
+            .edit()
+            .putString(Keys.CONTACT_PREFERENCES + contact.id, Gson().toJson(settings))
+            .apply()
     }
 
     private fun getActionByType(contact: Contact, type: Action.Type): Action {

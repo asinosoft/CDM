@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.*
 import com.asinosoft.cdm.api.FavoriteContactRepository
 import com.asinosoft.cdm.api.Loader
+import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.FavoriteContact
 import com.asinosoft.cdm.databinding.ItemCirBinding
 import com.asinosoft.cdm.helpers.ItemTouchCallbackCir
@@ -27,6 +28,7 @@ class FavoritesAdapter(
     val callsLayoutManager: LockableLayoutManager,
     val deleteButton: CircularImageView,
     val editButton: CircularImageView,
+    val openContact: (Contact) -> Unit,
     val pickContact: (Int) -> Unit,
     val onTouch: (Int) -> Unit, // Через колбэк передаётся позиция контакта, на котором находится палец пользователя
     val context: Context,
@@ -117,9 +119,8 @@ class FavoritesAdapter(
                         )
                     }
                 }
-                pickContact = {
-                    pickContact(absoluteAdapterPosition)
-                }
+                openContact = this@FavoritesAdapter.openContact
+                pickContact = { pickContact(absoluteAdapterPosition) }
                 touchDownForIndex = {
                     touchDown(absoluteAdapterPosition)
                     onTouch(absoluteAdapterPosition)

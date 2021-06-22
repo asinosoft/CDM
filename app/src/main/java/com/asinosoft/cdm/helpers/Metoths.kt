@@ -25,9 +25,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.activities.DetailHistoryActivity
 import com.asinosoft.cdm.data.Action
-import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.helpers.Metoths.Companion.Direction.*
 import net.cachapa.expandablelayout.util.FastOutSlowInInterpolator
@@ -130,14 +128,6 @@ class Metoths {
         fun openCardContact(idContact: String, context: Context) {
             Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, idContact)
-            }.let(context::startActivity)
-        }
-
-        fun openDetailContact(num: String, contact: Contact, context: Context) {
-            Timber.i("Окно контакта: [%s] %s (%s)", contact.id, contact.name, num)
-            Intent(context, DetailHistoryActivity::class.java).apply {
-                putExtra(Keys.number, num)
-                putExtra(Keys.id, contact.id)
             }.let(context::startActivity)
         }
 

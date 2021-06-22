@@ -18,6 +18,7 @@ import java.util.*
 
 class ManagerViewModel(application: Application) : AndroidViewModel(application) {
     val calls: MutableLiveData<List<CallHistoryItem>> = MutableLiveData()
+    val contacts: MutableLiveData<Collection<Contact>> = MutableLiveData()
     var settings: Settings = Loader.loadSettings(application)
 
     private val contactRepository = ContactRepositoryImpl(getApplication())
@@ -26,6 +27,8 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch(Dispatchers.IO) {
             settings = Loader.loadSettings(getApplication())
             contactRepository.initialize()
+
+            contacts.postValue(contactRepository.getContacts())
 
             val callHistory = calls.value
             if (null == callHistory) {
@@ -67,6 +70,13 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
             Timber.d("Найдено %s звонков", oldestCalls.size)
             calls.postValue(callHistory + oldestCalls)
         }
+    }
+
+    fun getPhoneCalls(phone: String): List<CallHistoryItem> {
+        return CallHistoryRepositoryImpl(contactRepository).getHistoryByPhone(
+            getApplication(),
+            phone
+        )
     }
 
     fun getContactByUri(context: Context, uri: Uri): Contact? {

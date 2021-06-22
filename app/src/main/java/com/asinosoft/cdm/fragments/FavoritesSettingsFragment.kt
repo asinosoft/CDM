@@ -78,7 +78,6 @@ class FavoritesSettingsFragment : Fragment() {
     }
 
     private fun setFavoritesLayout(layout: Boolean) {
-
         model.settings.historyButtom = layout
         if (layout) {
             v.btnFavoritesFirst.setBackgroundColor(colorSelected)
@@ -225,7 +224,7 @@ class FavoritesSettingsFragment : Fragment() {
         }
 
         v.btnSelectBackground.onClick {
-            findNavController().navigate(R.id.selectBackgroundFragment)
+            findNavController().navigate(R.id.action_select_background)
         }
     }
 }

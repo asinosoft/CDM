@@ -1,85 +1,81 @@
-package com.asinosoft.cdm.activities
+package com.asinosoft.cdm.fragments
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.asinosoft.cdm.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.adapters.ContactsAdapter
-import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ActivitySearchBinding
-import com.asinosoft.cdm.fragments.KeyboardFragment
-import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.Metoths.Companion.toggle
+import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 
-/**
- * Экран поиска в списке контактов
- */
-class SearchActivity : BaseActivity() {
-
-    companion object {
-        const val RESULT_CALL = 1
-        const val RESULT_OPEN_SETTINGS = 2
-    }
-
+class SearchFragment : Fragment() {
     private lateinit var v: ActivitySearchBinding
+    private val model: ManagerViewModel by activityViewModels()
     private lateinit var keyboard: KeyboardFragment
     private val contactsAdapter = ContactsAdapter()
     private var contacts = listOf<Contact>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         Firebase.analytics.logEvent("activity_search", Bundle.EMPTY)
         v = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(v.root)
-        keyboard = supportFragmentManager.findFragmentById(R.id.keyboard) as KeyboardFragment
+        keyboard = childFragmentManager.findFragmentById(R.id.keyboard) as KeyboardFragment
         initActivity()
+        return v.root
     }
 
     private fun initActivity() {
-        val contactRepository = ContactRepositoryImpl(this).apply { initialize() }
-
-        contacts = contactRepository.getContacts()
-            .filter { contact -> contact.phones.isNotEmpty() }
-            .sortedBy { it.name }
-
-        v.rvFilteredContacts.layoutManager = LinearLayoutManager(this)
+        model.contacts.observe(viewLifecycleOwner) { contacts ->
+            this.contacts = contacts.filter { contact -> contact.phones.isNotEmpty() }
+                .sortedBy { it.name }
+            contactsAdapter.setContactList(this.contacts)
+        }
 
         v.rvFilteredContacts.adapter = contactsAdapter
 
         v.fab.setOnClickListener { v.layoutKeyboard.toggle() }
 
         contactsAdapter.doOnClickContact { contact ->
-            Metoths.openDetailContact(
-                contact.phones.first().value,
-                contact,
-                this
+            findNavController().navigate(
+                R.id.action_open_contact,
+                bundleOf("contactId" to contact.id)
             )
         }
 
-        contactsAdapter.setContactList(contacts)
-
         keyboard.doOnTextChanged { text ->
-            val regex = Regex(Metoths.getPattern(text, this), RegexOption.IGNORE_CASE)
+            val regex = Regex(Metoths.getPattern(text, requireContext()), RegexOption.IGNORE_CASE)
             contactsAdapter.setContactList(contacts.filtered(text, regex), text, regex)
         }
 
         keyboard.onCallButtonClick { phoneNumber ->
             Firebase.analytics.logEvent("call_from_search", Bundle.EMPTY)
-            setResult(RESULT_CALL, Intent().apply { putExtra(Keys.number, phoneNumber) })
-            finish()
+            findNavController().popBackStack()
+            Intent(Intent.ACTION_CALL, Uri.parse("tel:" + Uri.encode(phoneNumber)))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                .let { startActivity(it) }
         }
 
         keyboard.onSettingsButtonClick {
-            setResult(RESULT_OPEN_SETTINGS)
-            finish()
+            findNavController().navigate(R.id.action_open_settings)
         }
 
         keyboard.onCloseButtonClick {
-            finish()
+            findNavController().popBackStack()
         }
     }
 

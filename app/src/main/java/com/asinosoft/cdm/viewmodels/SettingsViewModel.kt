@@ -19,39 +19,15 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     val buttonColor: MutableLiveData<Int> = MutableLiveData(settings.colorBorder)
     val backgroundImages: MutableLiveData<List<Int>> = MutableLiveData()
 
-    fun save() {
-        val oldSettings = Loader.loadSettings(getApplication())
-
-        if (settings == oldSettings) {
-            return
-        }
-
-        Loader.saveSettings(getApplication(), settings)
-
-        Firebase.analytics.logEvent(
-            "global_settings",
-            Bundle().apply {
-                putInt("size", settings.sizeCirs)
-                putInt("columns", settings.columnsCirs)
-                putInt("borderWidth", settings.borderWidthCirs)
-                putInt("borderColor", settings.colorBorder)
-                putString("action_up", settings.topButton.name)
-                putString("action_down", settings.bottomButton.name)
-                putString("action_left", settings.leftButton.name)
-                putString("action_right", settings.rightButton.name)
-                putString("layout", if (settings.historyButtom) "down" else "up")
-            }
-        )
-    }
-
     fun setAction(direction: Metoths.Companion.Direction, action: Action.Type) {
         when (direction) {
             Metoths.Companion.Direction.TOP -> settings.topButton = action
             Metoths.Companion.Direction.DOWN -> settings.bottomButton = action
             Metoths.Companion.Direction.LEFT -> settings.leftButton = action
             Metoths.Companion.Direction.RIGHT -> settings.rightButton = action
-            Metoths.Companion.Direction.UNKNOWN -> TODO("Неизвестное направление")
+            Metoths.Companion.Direction.UNKNOWN -> {}
         }
+        save()
 
         Firebase.analytics.logEvent(
             "global_set_action",
@@ -75,11 +51,25 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         )
     }
 
+    fun setTheme(theme: Int) {
+        settings.theme = theme
+        save()
+    }
+
+    fun setLayout(layout: Boolean) {
+        settings.historyButtom = layout
+        save()
+    }
+
     fun setBackgroundImage(uri: String?) {
         (getApplication() as Context)
             .getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
             .edit()
             .putString(Keys.BACKGROUND_IMAGE, uri.toString())
             .apply()
+    }
+
+    fun save() {
+        Loader.saveSettings(getApplication(), settings)
     }
 }

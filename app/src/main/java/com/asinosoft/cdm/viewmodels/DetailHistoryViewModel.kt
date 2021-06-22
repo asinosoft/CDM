@@ -1,9 +1,10 @@
 package com.asinosoft.cdm.viewmodels
 
+import android.app.Application
 import android.content.Context
 import android.os.Bundle
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.api.CallHistoryRepositoryImpl
 import com.asinosoft.cdm.api.ContactRepositoryImpl
@@ -18,23 +19,13 @@ import com.google.firebase.ktx.Firebase
 /**
  * Данные для окна Просмотр контакта
  */
-class DetailHistoryViewModel : ViewModel() {
+class DetailHistoryViewModel(application: Application) : AndroidViewModel(application) {
     private lateinit var contact: Contact
     private lateinit var actions: DirectActions
 
     val callHistory: MutableLiveData<List<CallHistoryItem>> = MutableLiveData()
     val availableActions: MutableLiveData<List<Action.Type>> = MutableLiveData()
     val directActions: MutableLiveData<DirectActions> = MutableLiveData()
-
-    fun initialize(context: Context, phoneNumber: String) {
-        contact = Contact(0, phoneNumber)
-
-        val contactRepository = ContactRepositoryImpl(context)
-        callHistory.value = CallHistoryRepositoryImpl(contactRepository).getHistoryByPhone(
-            context,
-            contact.name
-        )
-    }
 
     fun initialize(context: Context, contactId: Long) {
         contact = ContactRepositoryImpl(context).getContactById(contactId)!!
@@ -48,11 +39,9 @@ class DetailHistoryViewModel : ViewModel() {
         availableActions.value = getAvailableActions()
     }
 
-    fun getPhoneNumber() = contact.name
-
     fun getContact(): Contact = contact
 
-    fun getContactPhoto(context: Context) = contact.getPhoto(context)
+    fun getContactPhoto() = contact.getPhoto(getApplication())
 
     private fun getContactAction(direction: Direction): Action {
         return when (direction) {

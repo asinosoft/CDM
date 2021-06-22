@@ -21,7 +21,6 @@ import com.asinosoft.cdm.helpers.Metoths.Companion.diff
 import com.asinosoft.cdm.helpers.Metoths.Companion.diffAction
 import com.asinosoft.cdm.helpers.Metoths.Companion.diffVisible
 import com.asinosoft.cdm.helpers.Metoths.Companion.makeTouch
-import com.asinosoft.cdm.helpers.Metoths.Companion.openDetailContact
 import com.asinosoft.cdm.helpers.Metoths.Companion.setImageAction
 import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
 import com.asinosoft.cdm.helpers.Metoths.Companion.setTranslate
@@ -45,6 +44,7 @@ class CircleImage @JvmOverloads constructor(
     var deleteListener: () -> Unit = {}
     var replaceListenerForHolder: () -> Unit = {}
     var replaceListener: (RecyclerView.ViewHolder) -> Unit = {}
+    var openContact: (Contact) -> Unit = {}
     var pickContact: () -> Unit = {}
     var dragListener: () -> Unit = {}
     var deleteCir: CircularImageView? = null
@@ -99,7 +99,7 @@ class CircleImage @JvmOverloads constructor(
             }
             if (!isMoving) {
                 contact?.let {
-                    openDetailContact(it.phones.first().value, it, context = context)
+                    openContact(it)
                 } ?: pickContact()
             }
         }
