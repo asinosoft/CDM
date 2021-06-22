@@ -18,11 +18,19 @@
 
         <action
             android:id="@+id/action_open_contact"
-            app:destination="@id/contactFragment" />
+            app:destination="@id/contactFragment"
+            app:enterAnim="@android:animator/fade_in"
+            app:exitAnim="@android:animator/fade_out"
+            app:popEnterAnim="@android:animator/fade_in"
+            app:popExitAnim="@android:animator/fade_out" />
 
         <action
             android:id="@+id/action_open_phone_history"
-            app:destination="@id/strayPhoneFragment" />
+            app:destination="@id/strayPhoneFragment"
+            app:enterAnim="@android:animator/fade_in"
+            app:exitAnim="@android:animator/fade_out"
+            app:popEnterAnim="@android:animator/fade_in"
+            app:popExitAnim="@android:animator/fade_out" />
     </fragment>
 
     <fragment
@@ -53,7 +61,9 @@
             app:destination="@id/contactFragment" />
         <action
             android:id="@+id/action_open_settings"
-            app:destination="@id/settingsActivity" />
+            app:destination="@id/settingsActivity"
+            app:enterAnim="@anim/no_animation"
+            app:popUpTo="@id/managerFragment" />
     </fragment>
 
     <activity
