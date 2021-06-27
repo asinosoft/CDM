@@ -6,6 +6,7 @@ import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.Calendar.YEAR
 
 object StHelper {
     private val clearNonNumbers = Regex("\\D+") // чтобы не компилировать регексп на каждый вызов функции
@@ -45,5 +46,14 @@ object StHelper {
         val ageInMillis = dateToMillis - date.time
         val age = ageInMillis / 1000 / 60 / 60 / 24 / 366
         return age.toString()
+    }
+
+    fun today(): Date {
+        val now = Calendar.getInstance()
+        now.set(Calendar.HOUR, 0)
+        now.set(Calendar.MINUTE, 0)
+        now.set(Calendar.SECOND, 0)
+        now.set(Calendar.MILLISECOND, 0)
+        return now.time
     }
 }

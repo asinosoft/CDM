@@ -43,70 +43,52 @@
             android:clickable="true"
             android:focusable="true">
 
-            <com.asinosoft.cdm.views.CircularImageView
-                android:id="@+id/imageContact"
+            <ImageView
+                android:id="@+id/type"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:src="@drawable/ic_default_photo"
+                android:padding="16dp"
                 app:civ_border_color="?android:attr/colorPrimary"
                 app:civ_border_width="1dp"
-                />
+                tools:src="@drawable/baseline_call_made_24" />
 
             <TextView
-                android:id="@+id/name"
-                android:layout_width="match_parent"
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
                 android:layout_height="32dp"
-                android:layout_marginEnd="15dp"
-                android:layout_toStartOf="@+id/dateContact"
-                android:layout_toEndOf="@id/imageContact"
+                android:layout_toEndOf="@id/type"
                 android:ellipsize="end"
                 android:padding="4dp"
                 android:singleLine="true"
+                android:textColor="?android:attr/textColorSecondary"
                 android:textSize="18sp"
-                android:textStyle="normal|bold"
-                tools:text="name" />
+                android:textStyle="normal"
+                tools:text="Сегодня," />
 
-            <ImageView
-                android:id="@+id/typeCall"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_below="@id/name"
-                android:layout_toEndOf="@id/imageContact"
-                android:src="@drawable/baseline_call_made_24" />
+            <TextView
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_toEndOf="@+id/date"
+                android:layout_alignBaseline="@id/date"
+                android:ellipsize="end"
+                android:padding="4dp"
+                android:singleLine="true"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="14sp"
+                android:textStyle="normal"
+                tools:text="20:54" />
 
             <TextView
                 android:id="@+id/number"
                 android:layout_width="wrap_content"
                 android:layout_height="22dp"
-                android:layout_below="@id/name"
+                android:layout_below="@id/date"
                 android:layout_marginTop="2dp"
-                android:layout_toEndOf="@id/typeCall"
-                tools:text="number"
+                android:layout_toEndOf="@id/type"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/timeContact"
-                android:layout_width="wrap_content"
-                android:layout_height="22dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="13dp"
-                tools:text="time"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/dateContact"
-                android:layout_width="wrap_content"
-                android:layout_height="22dp"
-                android:layout_above="@id/timeContact"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="16dp"
-                tools:text="date"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textSize="16sp" />
+                android:textSize="14sp"
+                tools:text="+7888-999-44-22" />
 
         </RelativeLayout>
 

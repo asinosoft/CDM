@@ -1,4 +1,5 @@
-<resources>
+<resources>            android:layout_height="64dp"
+
     <style name="Caption" parent="Widget.AppCompat.TextView">
         <item name="android:gravity">center</item>
         <item name="android:height">@dimen/captionHeight</item>

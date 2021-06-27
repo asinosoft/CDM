@@ -113,4 +113,6 @@
     <string name="version">Версия: %s</string>
     <string name="background_default">Стандартный</string>
     <string name="background_custom">Выбрать из галереи</string>
+    <string name="digit_star">*</string>
+    <string name="digit_jail">#</string>
 </resources>

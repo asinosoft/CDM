@@ -7,13 +7,55 @@
     android:orientation="vertical"
     tools:context=".fragments.ContactFragment">
 
-    <ImageView
-        android:id="@+id/image"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/face"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:contentDescription="@string/photo"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_default_photo" />
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true">
+
+        <QuickContactBadge
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:contentDescription="@string/photo"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="Иван Иванович" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <com.asinosoft.cdm.views.CircleImage
+            android:id="@+id/image2"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="8dp"
+            tools:src="@drawable/ic_photo_default" />
+
+        <TextView
+            android:id="@+id/title2"
+            style="@style/Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            tools:text="Иван Иванович" />
+    </LinearLayout>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"

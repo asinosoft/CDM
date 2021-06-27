@@ -62,8 +62,8 @@
         <action
             android:id="@+id/action_open_settings"
             app:destination="@id/settingsActivity"
-            app:enterAnim="@anim/no_animation"
-            app:popUpTo="@id/managerFragment" />
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_in_left" />
     </fragment>
 
     <activity

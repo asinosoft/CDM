@@ -1,7 +1,9 @@
 package com.asinosoft.cdm.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -15,6 +17,9 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onTouch
+import kotlin.math.roundToInt
 
 /**
  * Окно контакта
@@ -64,7 +69,62 @@ class ContactFragment : Fragment() {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
 
+        v.title.text = model.getContactName()
+
         v.image.setImageDrawable(model.getContactPhoto())
+        v.image.onTouch { v, event -> onTouch(event) }
+
+        v.title2.text = model.getContactName()
+        v.image2.setImageDrawable(model.getContactPhoto())
+
+        v.bar.onClick {
+            v.bar.visibility = View.GONE
+            v.face.visibility = View.VISIBLE
+        }
+    }
+
+    /**
+     * Растягивание/сворачивание фотографии контакта
+     */
+    private var pointer = MotionEvent.INVALID_POINTER_ID
+    private val start = MotionEvent.PointerCoords()
+    private var originalSize: Int = 0
+
+    private fun onTouch(event: MotionEvent) {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                pointer = event.getPointerId(0)
+                originalSize = v.image.measuredHeight
+                event.getPointerCoords(pointer, start)
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (MotionEvent.INVALID_POINTER_ID != pointer) {
+                    val current = MotionEvent.PointerCoords()
+                    event.getPointerCoords(pointer, current)
+                    val size = originalSize + current.y - start.y
+                    v.image.layoutParams =
+                        (v.image.layoutParams as ViewGroup.LayoutParams).apply {
+                            height = size.roundToInt()
+                        }
+                }
+            }
+            MotionEvent.ACTION_UP -> {
+                if (MotionEvent.INVALID_POINTER_ID != pointer) {
+                    val z = MotionEvent.PointerCoords()
+                    event.getPointerCoords(pointer, z)
+
+                    if ((start.y - z.y) > (originalSize / 4)) {
+                        v.face.visibility = View.GONE
+                        v.bar.visibility = View.VISIBLE
+                    }
+                }
+
+                v.image.layoutParams =
+                    (v.image.layoutParams as ViewGroup.LayoutParams).apply {
+                        height = (resources.displayMetrics.density * 300).toInt()
+                    }
+            }
+        }
     }
 
     private inner class ContactPagesAdapter(

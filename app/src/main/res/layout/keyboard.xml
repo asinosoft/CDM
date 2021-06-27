@@ -413,29 +413,44 @@
             android:layout_height="wrap_content"
             android:gravity="center">
 
-            <LinearLayout
-                android:id="@+id/star"
-                android:layout_width="@dimen/passcode_btn"
-                android:layout_height="@dimen/passcode_btn"
-                android:layout_gravity="center"
-                android:orientation="vertical">
+            <com.skyfishjy.library.RippleBackground
+                android:id="@+id/ripple_"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:rb_color="#0099CC"
+                app:rb_duration="500"
+                app:rb_radius="16dp"
+                app:rb_rippleAmount="1"
+                app:rb_scale="3">
 
-                <TextView
-                    android:layout_width="30dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
+                <LinearLayout
+                    android:id="@+id/star"
+                    android:layout_width="@dimen/passcode_btn"
+                    android:layout_height="@dimen/passcode_btn"
+                    android:layout_marginStart="@dimen/passcode_btn_margin"
+                    android:layout_marginTop="@dimen/passcode_btn_margin"
+                    android:layout_marginEnd="@dimen/passcode_btn_margin"
+                    android:layout_marginBottom="@dimen/passcode_btn_margin"
+                    android:background="@drawable/numeric_button"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center"
-                    android:text="*"
-                    android:textAppearance="?android:attr/textAppearanceLarge"/>
+                    android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="#"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/textSecondary" />
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/digit_star"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/digit_jail"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/textSecondary" />
+                </LinearLayout>
+            </com.skyfishjy.library.RippleBackground>
 
 
             <com.skyfishjy.library.RippleBackground
@@ -452,7 +467,10 @@
                     android:id="@+id/zero_btn"
                     android:layout_width="@dimen/passcode_btn"
                     android:layout_height="@dimen/passcode_btn"
-                    android:layout_margin="@dimen/passcode_btn_margin"
+                    android:layout_marginStart="@dimen/passcode_btn_margin"
+                    android:layout_marginTop="@dimen/passcode_btn_margin"
+                    android:layout_marginEnd="@dimen/passcode_btn_margin"
+                    android:layout_marginBottom="@dimen/passcode_btn_margin"
                     android:background="@drawable/numeric_button"
                     android:clickable="true"
                     android:focusable="true"
