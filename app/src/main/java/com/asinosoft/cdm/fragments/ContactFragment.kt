@@ -1,6 +1,5 @@
 package com.asinosoft.cdm.fragments
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +15,6 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
-import org.jetbrains.anko.textView
 
 /**
  * Окно контакта

@@ -6,7 +6,6 @@ import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.Calendar.YEAR
 
 object StHelper {
     private val clearNonNumbers = Regex("\\D+") // чтобы не компилировать регексп на каждый вызов функции

@@ -1,11 +1,8 @@
 package com.asinosoft.cdm.viewmodels
 
 import android.app.Application
-import android.content.ContentUris
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
-import android.provider.ContactsContract
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.asinosoft.cdm.api.CallHistoryItem

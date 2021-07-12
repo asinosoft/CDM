@@ -2,7 +2,6 @@ package com.asinosoft.cdm.activities
 
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.navigation.findNavController
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.viewmodels.SettingsViewModel
 import com.google.firebase.analytics.ktx.analytics
