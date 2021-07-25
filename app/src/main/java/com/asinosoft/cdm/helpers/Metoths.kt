@@ -7,7 +7,6 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.PointF
 import android.net.Uri
-import android.os.Build
 import android.os.SystemClock
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -15,6 +14,7 @@ import android.provider.ContactsContract
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
@@ -27,10 +27,10 @@ import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
+import com.asinosoft.cdm.dialer.isQPlus
 import com.asinosoft.cdm.helpers.Metoths.Companion.Direction.*
 import net.cachapa.expandablelayout.util.FastOutSlowInInterpolator
 import org.jetbrains.anko.wrapContent
-import timber.log.Timber
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
@@ -239,9 +239,11 @@ class Metoths {
         }
 
         fun Vibrator.vibrateSafety(ms: Long) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (isQPlus()) {
                 vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.EFFECT_HEAVY_CLICK))
-            } else vibrate(ms)
+            } else {
+                vibrate(ms)
+            }
         }
 
         fun getFormattedTime(duration: Long): String {
@@ -249,7 +251,7 @@ class Metoths {
             try {
                 str = "${duration / 60}:${duration % 60}"
             } catch (e: Exception) {
-                Timber.e(e)
+                Log.e(null, "getFormattedTime", e)
             }
             return str
         }

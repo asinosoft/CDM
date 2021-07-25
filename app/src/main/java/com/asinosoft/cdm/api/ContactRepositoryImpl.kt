@@ -6,10 +6,10 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Email
 import android.provider.ContactsContract.CommonDataKinds.Phone
+import android.util.Log
 import androidx.core.database.getStringOrNull
 import com.asinosoft.cdm.data.*
 import com.asinosoft.cdm.helpers.StHelper
-import timber.log.Timber
 
 /**
  * Доступ к контактам
@@ -23,12 +23,12 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     private var contactPhones: MutableMap<String, Contact> = mutableMapOf()
 
     fun initialize() {
-        Timber.d("Чтение списка контактов")
+        Log.d(null, "Чтение списка контактов")
         contactPhones = mutableMapOf()
         contacts = context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             null, null, null
-        )!!.let {
+        )!!.use {
             ContactCursorAdapter(it).getAll()
         }
 
@@ -40,7 +40,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         }
 
         contactPhones = index
-        Timber.d("Найдено %s контактов", contacts.size)
+        Log.d(null, "Найдено ${contacts.size} контактов")
     }
 
     override fun getContacts(): Collection<Contact> {
@@ -75,7 +75,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     private fun findContactById(id: Long): Contact? {
-        Timber.d("Find contact by ID %s", id)
+        Log.d(null, "Find contact by ID $id")
         return context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             "${ContactsContract.Data.CONTACT_ID} = ?", arrayOf(id.toString()), null
@@ -139,8 +139,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
                     }
                 ).let { contact ->
                     contact.photoUri = cursor.getStringOrNull(this@ContactCursorAdapter.photoUri)
-                    val mime = cursor.getString(mimeType).dropWhile { c -> c != '/' }
-                    when (mime) {
+                    when (cursor.getString(mimeType).dropWhile { c -> c != '/' }) {
                         "/contact_event" -> parseBirthday(contact)
                         "/phone_v2" -> parsePhone(contact)
                         "/email_v2" -> parseEmail(contact)

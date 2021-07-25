@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.telecom.TelecomManager
+import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
@@ -23,6 +24,7 @@ class Utilities {
         val packageName = activity.application.packageName
         return try {
             if (activity.getSystemService(TelecomManager::class.java).defaultDialerPackage != packageName) {
+                Log.d("ACTION_CHANGE_DEFAULT_DIALER", "true")
                 // Prompt the user with a dialog to select this app to be the default phone app
                 val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
                     .putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
@@ -31,6 +33,7 @@ class Utilities {
             }
             true
         } catch (e: Exception) {
+            Log.e("Fail", e.toString())
             false
         }
     }

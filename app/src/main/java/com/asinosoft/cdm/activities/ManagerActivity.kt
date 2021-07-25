@@ -1,56 +1,43 @@
 package com.asinosoft.cdm.activities
 
 import android.Manifest
+import android.app.role.RoleManager
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.telecom.TelecomManager
+import android.util.Log
 import androidx.activity.viewModels
-import androidx.core.app.ActivityCompat
 import com.asinosoft.cdm.api.Loader
-import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.databinding.ActivityMainBinding
-import com.asinosoft.cdm.dialer.Utilities
+import com.asinosoft.cdm.dialer.isQPlus
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
-import timber.log.Timber
 
 /**
  * Основной класс приложения, отвечает за работу главного экрана (нового) приложения
  */
 class ManagerActivity : BaseActivity() {
     /**
-     * Отслеживает случаи, когда onRefresh срабатывает дважды
+     * Отслеживает случаи, когда onResume срабатывает дважды
      */
     private var isRefreshed: Boolean = false
 
     private val model: ManagerViewModel by viewModels()
-    private var oldSettings: Settings = Settings()
-
-    private val PERMISSIONS = arrayOf(
-        Manifest.permission.READ_CONTACTS,
-        Manifest.permission.CALL_PHONE,
-        Manifest.permission.READ_CALL_LOG,
-        Manifest.permission.WRITE_CALL_LOG
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("Main", "Created")
         super.onCreate(savedInstanceState)
-        oldSettings = Loader.loadSettings(this)
         setContentView(ActivityMainBinding.inflate(layoutInflater).root)
 
-        if (!hasPermissions(*PERMISSIONS)) {
-            requestAllPermissions()
-        }
-
-        if (Utilities().checkDefaultDialer(this)) {
-            checkPermission()
+        withPermission(arrayOf(Manifest.permission.CALL_PHONE)) { permitted ->
+            if (permitted) offerReplaceDefaultDialer()
         }
     }
 
     override fun onResume() {
+        Log.d("Main", "Resumed")
         super.onResume()
 
-        if (Loader.loadSettings(this) == oldSettings) {
+        if (Loader.loadSettings(this) == settings) {
             refreshModel()
         } else {
             recreate()
@@ -58,56 +45,42 @@ class ManagerActivity : BaseActivity() {
     }
 
     override fun onPause() {
+        Log.d("Main", "Paused")
         super.onPause()
         isRefreshed = false
     }
 
-    override fun onDestroy() {
-        Timber.d("onDestroy")
-        offerReplacingDefaultDialer()
-        super.onDestroy()
-    }
-
-    private fun requestAllPermissions() {
-        ActivityCompat.requestPermissions(this, PERMISSIONS, 0)
-    }
-
-    private fun hasPermissions(vararg permissions: String): Boolean {
-        for (permission in permissions) {
-            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                return false
-            }
-        }
-        return true
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        model.refresh()
-        checkSelfPermission(Manifest.permission.READ_CONTACTS)
-        this.onResume()
-    }
-
     private fun refreshModel() {
-        if (!isRefreshed && PackageManager.PERMISSION_GRANTED == checkSelfPermission(Manifest.permission.READ_CONTACTS)) {
-            isRefreshed = true
-            model.refresh()
+        if (isRefreshed) return
+
+        withPermission(
+            arrayOf(
+                Manifest.permission.READ_CONTACTS,
+                Manifest.permission.READ_CALL_LOG
+            )
+        ) { permitted ->
+            if (permitted) model.refresh()
         }
+        isRefreshed = true
     }
 
-    private fun checkPermission() {
-        Utilities().askForPermissions(this, Utilities().MUST_HAVE_PERMISSIONS)
-    }
-
-    private fun offerReplacingDefaultDialer() {
-        if (getSystemService(TelecomManager::class.java).defaultDialerPackage != packageName) {
-            Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
-                .putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
-                .let(::startActivity)
+    private fun offerReplaceDefaultDialer() {
+        val currentDialer = getSystemService(TelecomManager::class.java).defaultDialerPackage
+        if (currentDialer != packageName) {
+            Log.d("Main", "Менеджер звонков: $currentDialer")
+            if (isQPlus()) {
+                val roleManager = getSystemService(RoleManager::class.java)
+                if (roleManager.isRoleAvailable(RoleManager.ROLE_DIALER) &&
+                    !roleManager.isRoleHeld(RoleManager.ROLE_DIALER)
+                ) {
+                    val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER)
+                    launcher.launch(intent)
+                }
+            } else {
+                val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
+                    .putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
+                launcher.launch(intent)
+            }
         }
     }
 }

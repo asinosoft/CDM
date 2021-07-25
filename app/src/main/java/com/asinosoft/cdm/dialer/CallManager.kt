@@ -5,32 +5,54 @@ import android.net.Uri
 import android.telecom.Call
 import android.telecom.InCallService
 import android.telecom.VideoProfile
+import android.util.Log
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 
 class CallManager {
 
     companion object {
-        var call: Call? = null
-        var inCallService: InCallService? = null
+        private var call: Call? = null
+        private var inCallService: InCallService? = null
+
+        fun isCalled(): Boolean = null != call
+
+        fun setCall(service: InCallService, value: Call) {
+            Log.d("CallManager", "setCall")
+            inCallService = service
+            call = value
+        }
+
+        fun resetCall() {
+            Log.d("CallManager", "resetCall")
+            call = null
+        }
 
         fun accept() {
+            Log.d("CallManager", "accept")
             call?.answer(VideoProfile.STATE_AUDIO_ONLY)
         }
 
         fun reject() {
-            if (call != null) {
-                if (call!!.state == Call.STATE_RINGING) {
-                    call!!.reject(false, null)
+            Log.d("CallManager", "reject")
+            call?.let { call ->
+                if (call.state == Call.STATE_RINGING) {
+                    call.reject(false, null)
                 } else {
-                    call!!.disconnect()
+                    call.disconnect()
                 }
             }
         }
 
+        fun setMuted(muted: Boolean) {
+            inCallService?.setMuted(muted)
+        }
+
+        fun setAudioRoute(route: Int) {
+            inCallService?.setAudioRoute(route)
+        }
+
         fun registerCallback(callback: Call.Callback) {
-            if (call != null) {
-                call!!.registerCallback(callback)
-            }
+            call?.registerCallback(callback)
         }
 
         fun unregisterCallback(callback: Call.Callback) {
@@ -56,23 +78,26 @@ class CallManager {
         }
 
         fun getCallContact(context: Context, callback: (CallContact) -> Unit) {
+            Log.d("CallManager", "getCallContact")
             if (call == null || call!!.details == null || call!!.details!!.handle == null) {
+                Log.w("CallManager", "NO CONTACT")
                 callback(CallContact())
                 return
             }
 
             val uri = Uri.decode(call!!.details.handle.toString())
+            Log.w("CallManager", uri)
             if (uri.startsWith("tel:")) {
                 val number = uri.substringAfter("tel:")
-                var callContact = CallContact(number)
+                Log.w("CallManager", "number = $number")
+                val callContact = CallContact(number)
                 ContactRepositoryImpl(context).getContactByPhone(number)?.let {
+                    Log.w("CallManager", "found = ${it.name}")
                     callContact.name = it.name
                     callContact.photoUri = it.photoUri ?: ""
                 }
 
-                if (callContact.name != callContact.number) {
-                    callback(callContact)
-                }
+                callback(callContact)
             }
         }
     }

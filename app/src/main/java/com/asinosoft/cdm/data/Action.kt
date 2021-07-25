@@ -6,12 +6,12 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.asinosoft.cdm.R
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
-import timber.log.Timber
 
 /**
  * Конкретное действие для конкретного контакта (звонок/смс/письмо/чат и т.д.)
@@ -100,7 +100,7 @@ class Action(
     }
 
     private fun phoneCall(context: Context) {
-        Timber.i("phoneCall: %s", value)
+        Log.i("Action", "phoneCall: $value")
         if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.CALL_PHONE
@@ -109,41 +109,42 @@ class Action(
             return
         }
         Firebase.analytics.logEvent("action_phone_call", Bundle.EMPTY)
+
         Intent(Intent.ACTION_CALL, Uri.parse("tel:" + Uri.encode(value)))
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             .let { context.startActivity(it) }
     }
 
     private fun sms(context: Context) {
-        Timber.i("sms: %s", value)
+        Log.i("Action", "sms: $value")
         Firebase.analytics.logEvent("action_phone_sms", Bundle.EMPTY)
-        Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$value"))
+        Intent(Intent.ACTION_SENDTO, Uri.parse("sms:$value"))
             .let { context.startActivity(it) }
     }
 
     private fun email(context: Context) {
-        Timber.i("email: %s", value)
+        Log.i("Action", "email: $value")
         Firebase.analytics.logEvent("action_email", Bundle.EMPTY)
         Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$value"))
             .let { context.startActivity(it) }
     }
 
     private fun skypeChat(context: Context) {
-        Timber.i("skypeChat: %s", value)
+        Log.i("Action", "skypeChat: $value")
         Firebase.analytics.logEvent("action_skype_chat", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW, Uri.parse("skype:$value?chat"))
             .let { context.startActivity(it) }
     }
 
     private fun skypeCall(context: Context) {
-        Timber.i("skypeCall: %s", value)
+        Log.i("Action", "skypeCall: $value")
         Firebase.analytics.logEvent("action_skype_call", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW, Uri.parse("skype:$value"))
             .let { context.startActivity(it) }
     }
 
     private fun telegramChat(context: Context) {
-        Timber.i("telegramChat: %s (%s)", id, value)
+        Log.i("Action", "telegramChat: $id ($value)")
         Firebase.analytics.logEvent("action_telegram_chat", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
@@ -155,7 +156,7 @@ class Action(
     }
 
     private fun telegramCall(context: Context) {
-        Timber.i("telegramCall: %s (%s)", id, value)
+        Log.i("Action", "telegramCall: $id ($value)")
         Firebase.analytics.logEvent("action_telegram_call", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
@@ -167,7 +168,7 @@ class Action(
     }
 
     private fun telegramVideo(context: Context) {
-        Timber.i("telegramVideo: %s (%s)", id, value)
+        Log.i("Action", "telegramVideo: $id ($value)")
         Firebase.analytics.logEvent("action_telegram_video", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
@@ -179,7 +180,7 @@ class Action(
     }
 
     private fun viberChat(context: Context) {
-        Timber.i("viberChat: %s (%s)", id, value)
+        Log.i("Action", "viberChat: $id ($value)")
         Firebase.analytics.logEvent("action_viber_chat", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
@@ -192,7 +193,7 @@ class Action(
     }
 
     private fun viberCall(context: Context) {
-        Timber.i("viberCallt: %s (%s)", id, value)
+        Log.i("Action", "viberCall: $id ($value)")
         Firebase.analytics.logEvent("action_viber_call", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
@@ -205,7 +206,7 @@ class Action(
     }
 
     private fun whatsappChat(context: Context) {
-        Timber.i("whatsappChat: %s (%s)", id, value)
+        Log.i("Action", "whatsappChat: $id ($value)")
         Firebase.analytics.logEvent("action_whatsapp_chat", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
@@ -217,7 +218,7 @@ class Action(
     }
 
     private fun whatsappCall(context: Context) {
-        Timber.i("whatsappCall: %s (%s)", id, value)
+        Log.i("Action", "whatsappCall: $id ($value)")
         Firebase.analytics.logEvent("action_whatsapp_call", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
@@ -229,7 +230,7 @@ class Action(
     }
 
     private fun whatsappVideo(context: Context) {
-        Timber.i("whatsappVideo: %s (%s)", id, value)
+        Log.i("Action", "whatsappVideo: $id ($value)")
         Firebase.analytics.logEvent("action_whatsapp_video", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(

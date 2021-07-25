@@ -21,14 +21,14 @@ class NotificationActionReceiver : BroadcastReceiver() {
             MUTE_CALL -> {
                 isMicrophoneOn = !isMicrophoneOn
                 OngoingCallActivity().audioManager.isMicrophoneMute = !isMicrophoneOn
-                CallManager.inCallService?.setMuted(!isMicrophoneOn)
+                CallManager.setMuted(!isMicrophoneOn)
             }
             SPEAKER_CALL -> {
                 isSpeakerOn = !isSpeakerOn
                 OngoingCallActivity().audioManager.isSpeakerphoneOn = isSpeakerOn
                 val newRoute =
                     if (isSpeakerOn) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
-                CallManager.inCallService?.setAudioRoute(newRoute)
+                CallManager.setAudioRoute(newRoute)
             }
         }
     }

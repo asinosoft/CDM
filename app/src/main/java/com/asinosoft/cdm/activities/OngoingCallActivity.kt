@@ -1,5 +1,6 @@
 package com.asinosoft.cdm.activities
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
@@ -8,37 +9,34 @@ import android.content.pm.ActivityInfo
 import android.graphics.*
 import android.media.AudioManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.PowerManager
 import android.provider.MediaStore
 import android.telecom.Call
 import android.telecom.CallAudioState
+import android.telecom.PhoneAccount
+import android.telecom.TelecomManager
+import android.util.Log
 import android.util.Size
 import android.view.View
 import android.view.WindowManager
 import android.widget.RemoteViews
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.view.isVisible
 import com.agik.AGIKSwipeButton.Controller.OnSwipeCompleteListener
 import com.agik.AGIKSwipeButton.View.Swipe_Button_View
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.dialer.*
 import kotlinx.android.synthetic.main.activity_ongoing_call.*
 import kotlinx.android.synthetic.main.call_notification_two.*
 import kotlinx.android.synthetic.main.keyboard.*
 import kotlinx.android.synthetic.main.on_going_call.*
 import org.jetbrains.anko.audioManager
+import org.jetbrains.anko.telecomManager
 import java.util.*
 
 class OngoingCallActivity : BaseActivity() {
-
-    lateinit var context: Context
-    var contactDialer: Contact? = null
-
     // bools
     private var isSpeakerOn = false
     private var isMicrophoneOn = true
@@ -53,10 +51,31 @@ class OngoingCallActivity : BaseActivity() {
     private val CALL_NOTIFICATION_ID = 1
     val MINUTE_SECONDS = 60
 
-    @RequiresApi(Build.VERSION_CODES.N)
+    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("Call", "Created")
         super.onCreate(savedInstanceState)
+
+        if (intent.action == Intent.ACTION_CALL && intent.data != null) {
+            withPermission(arrayOf(Manifest.permission.CALL_PHONE)) { permitted ->
+                if (permitted) {
+                    val phoneAccount =
+                        telecomManager.getDefaultOutgoingPhoneAccount(PhoneAccount.SCHEME_TEL)
+                    Bundle().apply {
+                        putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, phoneAccount)
+                        putBoolean(TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE, false)
+                        putBoolean(TelecomManager.EXTRA_START_CALL_WITH_SPEAKERPHONE, false)
+                        telecomManager.placeCall(intent.data, this)
+                    }
+                } else {
+                    finish()
+                }
+            }
+        }
+
         setContentView(R.layout.activity_ongoing_call)
+
+        Log.d("Call", "View created")
 
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
@@ -66,6 +85,7 @@ class OngoingCallActivity : BaseActivity() {
 
         audioManager.mode = AudioManager.MODE_IN_CALL
         CallManager.getCallContact(this) { contact ->
+            Log.d("Call", "Contact = ${contact.number}")
             callContact = contact
             callContactAvatar = getCallContactAvatar()
             runOnUiThread {
@@ -86,8 +106,8 @@ class OngoingCallActivity : BaseActivity() {
                 activateCall()
             }
 
-            @SuppressLint("UseCompatLoadingForDrawables", "ResourceAsColor")
             override fun onSwipe_Reverse(swipeView: Swipe_Button_View) {
+                endCall()
             }
         })
 
@@ -95,7 +115,6 @@ class OngoingCallActivity : BaseActivity() {
             override fun onSwipe_Forward(swipeView: Swipe_Button_View) {
             }
 
-            @SuppressLint("UseCompatLoadingForDrawables", "ResourceAsColor")
             override fun onSwipe_Reverse(swipeView: Swipe_Button_View) {
                 endCall()
                 start.visibility = View.GONE
@@ -104,7 +123,10 @@ class OngoingCallActivity : BaseActivity() {
         })
 
         CallManager.registerCallback(callCallback)
-        updateCallState(CallManager.getState())
+        if (CallManager.isCalled()) {
+            updateCallState(CallManager.getState())
+        }
+        Log.d("Call", "Creation complete")
     }
 
     private fun updateOtherPersonsInfo() {
@@ -147,6 +169,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun initProximitySensor() {
+        Log.d("Call", "initProximitySensor")
         val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
         proximityWakeLock = powerManager.newWakeLock(
             PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK,
@@ -156,17 +179,18 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
+        Log.d("Call", "Back pressed")
         // In case the dialpad is opened, pressing the back button will close it
         if (keyboard_wrapper.isVisible) {
             keyboard_wrapper.visibility = View.GONE
-            swithToCallingUI()
-            return
+            switchToCallingUI()
         } else {
             super.onBackPressed()
         }
     }
 
     override fun onDestroy() {
+        Log.d("Call", "Destroy")
         super.onDestroy()
         notificationManager.cancel(CALL_NOTIFICATION_ID)
         CallManager.unregisterCallback(callCallback)
@@ -179,11 +203,13 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     fun activateCall() {
+        Log.d("Call", "activateCall")
         CallManager.accept()
-        swithToCallingUI()
+        switchToCallingUI()
     }
 
     fun endCall() {
+        Log.d("Call", "endCall")
         CallManager.reject()
         if (proximityWakeLock?.isHeld == true) {
             proximityWakeLock!!.release()
@@ -233,8 +259,7 @@ class OngoingCallActivity : BaseActivity() {
         }
     }
 
-    @SuppressLint("RestrictedApi")
-    fun swithToCallingUI() {
+    fun switchToCallingUI() {
         // Change the buttons layout
         answer_reject_buttons.visibility = View.GONE
         text_status.visibility = View.VISIBLE
@@ -248,14 +273,12 @@ class OngoingCallActivity : BaseActivity() {
         button_speaker.visibility = View.VISIBLE
     }
 
-    @SuppressLint("RestrictedApi")
-    private fun visibilityInomingCall() {
+    private fun visibilityIncomingCall() {
         // Change the buttons layout
-        answer_reject_buttons.visibility = View.VISIBLE
-        reject_btn2.visibility - View.GONE
-        answer_btn.visibility = View.GONE
-        reject_btn.visibility = View.GONE
-        reject_btn2.visibility = View.INVISIBLE
+        // answer_reject_buttons.visibility = View.VISIBLE
+        answer_btn.visibility = View.VISIBLE
+        reject_btn.visibility = View.VISIBLE
+        reject_btn2.visibility - View.INVISIBLE
         button_hold.visibility = View.INVISIBLE
         button_mute.visibility = View.INVISIBLE
         button_keypad.visibility = View.INVISIBLE
@@ -270,7 +293,6 @@ class OngoingCallActivity : BaseActivity() {
         reject_btn2.visibility - View.GONE
         answer_btn.visibility = View.GONE
         reject_btn.visibility = View.GONE
-        reject_btn2.visibility = View.GONE
         button_hold.visibility = View.GONE
         button_mute.visibility = View.GONE
         button_keypad.visibility = View.GONE
@@ -278,15 +300,17 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun toggleMicrophone() {
+        Log.d("Call", "Toggle MIC")
         Utilities().toggleViewActivation(button_mute)
         audioManager.isMicrophoneMute = button_mute.isActivated
         val drawable =
             if (button_mute.isActivated) R.drawable.ic_mic_off_black_24dp else R.drawable.ic_mic_black_24dp
         button_mute.setImageDrawable(getDrawable(drawable))
-        CallManager.inCallService?.setMuted(button_mute.isActivated)
+        CallManager.setMuted(button_mute.isActivated)
     }
 
     private fun toggleSpeaker() {
+        Log.d("Call", "Toggle SPEAKER")
         Utilities().toggleViewActivation(button_speaker)
         audioManager.isSpeakerphoneOn = button_speaker.isActivated
         val drawable =
@@ -294,7 +318,7 @@ class OngoingCallActivity : BaseActivity() {
         button_speaker.setImageDrawable(getDrawable(drawable))
         val newRoute =
             if (button_speaker.isActivated) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
-        CallManager.inCallService?.setAudioRoute(newRoute)
+        CallManager.setAudioRoute(newRoute)
     }
 
     fun toggleMicOff() {
@@ -303,7 +327,7 @@ class OngoingCallActivity : BaseActivity() {
             if (isMicrophoneOn) R.drawable.ic_microphone_vector else R.drawable.ic_microphone_off_vector
         notification_mic_off.setImageDrawable(getDrawable(drawable))
         audioManager.isMicrophoneMute = !isMicrophoneOn
-        CallManager.inCallService?.setMuted(!isMicrophoneOn)
+        CallManager.setMuted(!isMicrophoneOn)
     }
 
     fun toggleSpeakOff() {
@@ -314,10 +338,11 @@ class OngoingCallActivity : BaseActivity() {
         audioManager.isSpeakerphoneOn = isSpeakerOn
         val newRoute =
             if (isSpeakerOn) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
-        CallManager.inCallService?.setAudioRoute(newRoute)
+        CallManager.setAudioRoute(newRoute)
     }
 
     private fun toggleHold() {
+        Log.d("Call", "Toggle HOLD")
         Utilities().toggleViewActivation(button_hold)
         CallManager.hold(button_hold.isActivated)
     }
@@ -350,7 +375,7 @@ class OngoingCallActivity : BaseActivity() {
         button_keypad.setOnClickListener {
             if (keyboard_wrapper.isVisible) {
                 keyboard_wrapper.visibility = View.GONE
-                swithToCallingUI()
+                switchToCallingUI()
             } else {
                 keyboard_wrapper.visibility = View.VISIBLE
                 viewKeyboard()
@@ -463,8 +488,8 @@ class OngoingCallActivity : BaseActivity() {
             .setChannelId(channelId)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
 
-        if (contactDialer?.photoUri != null) {
-            builder.setLargeIcon(getCircularBitmap(callContactAvatar!!))
+        callContactAvatar?.let {
+            builder.setLargeIcon(getCircularBitmap(it))
         }
 
         val notification = builder.build()
@@ -516,14 +541,15 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun updateCallState(state: Int) {
+        Log.d("Call", "STATE → $state")
         when (state) {
-            Call.STATE_RINGING -> visibilityInomingCall()
+            Call.STATE_RINGING -> visibilityIncomingCall()
             Call.STATE_ACTIVE -> {
                 callStarted()
-                swithToCallingUI()
+                switchToCallingUI()
             }
             Call.STATE_DISCONNECTED -> endCall()
-            Call.STATE_CONNECTING, Call.STATE_DIALING -> swithToCallingUI()
+            Call.STATE_CONNECTING, Call.STATE_DIALING -> switchToCallingUI()
         }
 
         if (state == Call.STATE_DISCONNECTED || state == Call.STATE_DISCONNECTING) {

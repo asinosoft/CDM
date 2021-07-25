@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.net.Uri
 import android.provider.ContactsContract
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -13,7 +14,6 @@ import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.helpers.Keys.Companion.CALL_HISTORY_LIMIT
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.*
 
 class ManagerViewModel(application: Application) : AndroidViewModel(application) {
@@ -32,22 +32,22 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
 
             val callHistory = calls.value
             if (null == callHistory) {
-                Timber.d("Первая загрузка истории звонков")
+                Log.d(null, "Первая загрузка истории звонков")
                 val latestCalls = CallHistoryRepositoryImpl(contactRepository).getLatestHistory(
                     getApplication(),
                     Date(),
                     CALL_HISTORY_LIMIT,
                     CallHistoryFilter()
                 )
-                Timber.d("Найдено %s звонков", latestCalls.size)
+                Log.d(null, "Найдено ${latestCalls.size} звонков")
                 calls.postValue(latestCalls)
             } else {
-                Timber.d("Проверка новых звонков")
+                Log.d(null, "Проверка новых звонков")
                 val newCalls = CallHistoryRepositoryImpl(contactRepository).getNewestHistory(
                     getApplication(),
                     callHistory.firstOrNull()?.timestamp ?: Date()
                 )
-                Timber.d("Найдено %s звонков", newCalls.size)
+                Log.d(null, "Найдено ${newCalls.size} звонков")
 
                 // Объединяем новую историю и старую, исключая из неё контакты, которые отметились в новой
                 val newContacts = newCalls.map { it.contact }
@@ -59,7 +59,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
 
     fun getMoreCalls() {
         viewModelScope.launch(Dispatchers.IO) {
-            Timber.d("Подгрузка старой истории звонков")
+            Log.d(null, "Подгрузка старой истории звонков")
             val callHistory = calls.value ?: listOf()
             val oldestCalls = CallHistoryRepositoryImpl(contactRepository).getLatestHistory(
                 getApplication(),
@@ -67,7 +67,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
                 CALL_HISTORY_LIMIT,
                 CallHistoryFilter(callHistory.map { it.contact })
             )
-            Timber.d("Найдено %s звонков", oldestCalls.size)
+            Log.d(null, "Найдено ${oldestCalls.size} звонков")
             calls.postValue(callHistory + oldestCalls)
         }
     }
@@ -80,6 +80,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun getContactByUri(context: Context, uri: Uri): Contact? {
+        Log.d(null, "Поиск контакта: $uri")
         val projections = arrayOf(ContactsContract.Contacts._ID)
         val cursor = context.contentResolver.query(uri, projections, null, null, null)
         if (cursor != null && cursor.moveToFirst()) {

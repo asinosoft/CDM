@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="?attr/popupColor">
 
 
     <!-- Call Timer -->
@@ -202,9 +202,8 @@
         android:layout_marginBottom="50dp"
         android:scaleType="center"
         android:src="@drawable/outline_call_24"
-        android:tint="@color/green"
-        android:visibility="gone"
-        app:backgroundTint="@color/white"
+        android:visibility="visible"
+        app:backgroundTint="@color/green"
         app:fabCustomSize="62dp"
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -219,9 +218,8 @@
         android:layout_marginBottom="50dp"
         android:scaleType="center"
         android:src="@drawable/outline_call_end_24"
-        android:tint="@color/red"
-        android:visibility="gone"
-        app:backgroundTint="@color/white"
+        android:visibility="visible"
+        app:backgroundTint="@color/red"
         app:fabCustomSize="62dp"
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
