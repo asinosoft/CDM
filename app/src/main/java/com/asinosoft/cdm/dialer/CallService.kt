@@ -10,10 +10,10 @@ class CallService : InCallService() {
 
     override fun onCallAdded(call: Call) {
         Log.i("CallService", "Call added: ${call.details.handle}")
-        val intent = Intent(this, OngoingCallActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(intent)
-        CallManager.setCall(this, call)
+        CallManager.setCall(call)
+        Intent(this, OngoingCallActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            .let { startActivity(it) }
     }
 
     override fun onCallRemoved(call: Call) {

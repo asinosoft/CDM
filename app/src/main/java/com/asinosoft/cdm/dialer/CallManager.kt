@@ -1,24 +1,19 @@
 package com.asinosoft.cdm.dialer
 
-import android.content.Context
 import android.net.Uri
 import android.telecom.Call
-import android.telecom.InCallService
 import android.telecom.VideoProfile
 import android.util.Log
-import com.asinosoft.cdm.api.ContactRepositoryImpl
 
 class CallManager {
 
     companion object {
         private var call: Call? = null
-        private var inCallService: InCallService? = null
 
         fun isCalled(): Boolean = null != call
 
-        fun setCall(service: InCallService, value: Call) {
+        fun setCall(value: Call) {
             Log.d("CallManager", "setCall")
-            inCallService = service
             call = value
         }
 
@@ -41,14 +36,6 @@ class CallManager {
                     call.disconnect()
                 }
             }
-        }
-
-        fun setMuted(muted: Boolean) {
-            inCallService?.setMuted(muted)
-        }
-
-        fun setAudioRoute(route: Int) {
-            inCallService?.setAudioRoute(route)
         }
 
         fun registerCallback(callback: Call.Callback) {
@@ -77,28 +64,8 @@ class CallManager {
             }
         }
 
-        fun getCallContact(context: Context, callback: (CallContact) -> Unit) {
-            Log.d("CallManager", "getCallContact")
-            if (call == null || call!!.details == null || call!!.details!!.handle == null) {
-                Log.w("CallManager", "NO CONTACT")
-                callback(CallContact())
-                return
-            }
-
-            val uri = Uri.decode(call!!.details.handle.toString())
-            Log.w("CallManager", uri)
-            if (uri.startsWith("tel:")) {
-                val number = uri.substringAfter("tel:")
-                Log.w("CallManager", "number = $number")
-                val callContact = CallContact(number)
-                ContactRepositoryImpl(context).getContactByPhone(number)?.let {
-                    Log.w("CallManager", "found = ${it.name}")
-                    callContact.name = it.name
-                    callContact.photoUri = it.photoUri ?: ""
-                }
-
-                callback(callContact)
-            }
+        fun getCallPhone(): Uri? {
+            return call?.details?.handle
         }
     }
 }
