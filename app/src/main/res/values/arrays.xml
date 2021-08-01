@@ -9,4 +9,35 @@
         <item>reply</item>
         <item>reply_all</item>
     </string-array>
+
+    <array name="themes">
+        <item>@style/AppTheme.Light</item>
+        <item>@style/AppTheme.Gray</item>
+        <item>@style/AppTheme.Dark</item>
+    </array>
+
+    <string-array name="themeNames">
+        <item>@string/theme_light</item>
+        <item>@string/theme_gray</item>
+        <item>@string/theme_dark</item>
+    </string-array>
+
+    <array name="backgrounds">
+        <item>@drawable/background_1</item>
+        <item>@drawable/background_2</item>
+        <item>@drawable/background_3</item>
+        <item>@drawable/background_4</item>
+        <item>@drawable/background_5</item>
+        <item>@drawable/background_6</item>
+    </array>
+
+    <string-array name="backgroundNames">
+        <item>ромбы</item>
+        <item>тёмно-серый</item>
+        <item>синий</item>
+        <item>черный</item>
+        <item>кирпичи</item>
+        <item>дерево</item>
+    </string-array>
+
 </resources>

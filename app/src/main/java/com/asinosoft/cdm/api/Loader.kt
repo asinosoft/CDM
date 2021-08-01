@@ -1,6 +1,7 @@
 package com.asinosoft.cdm.api
 
 import android.content.Context
+import android.util.Log
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
@@ -12,16 +13,24 @@ import com.google.gson.Gson
  * Класс загрузчика настроек.
  */
 object Loader {
+    private var settings: Settings? = null
+
     /**
      * Загрузка настроек
      */
-    fun loadSettings(context: Context): Settings {
+    fun loadSettings(context: Context, refresh: Boolean = false): Settings {
+        if (!refresh && null != settings) {
+            return settings!!
+        }
+
         val preferences = context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
-        val settings = preferences.getString(Keys.Settings, null)
-        if (settings == null) {
+        val json = preferences.getString(Keys.Settings, null)
+        Log.d("Loader::loadSettings", json ?: "(empty)")
+        if (json == null) {
             return Settings()
         }
-        return Gson().fromJson(settings, Settings().javaClass) ?: Settings()
+        settings = Gson().fromJson(json, Settings().javaClass) ?: Settings()
+        return settings!!
     }
 
     fun loadContactSettings(context: Context, contact: Contact): DirectActions {
@@ -78,6 +87,7 @@ object Loader {
      * Сохранение настроек
      */
     fun saveSettings(context: Context, settings: Settings) {
+        Log.d("Loader::saveSettings", settings.toString())
         context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
             .edit()
             .putString(Keys.Settings, Gson().toJson(settings))

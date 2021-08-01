@@ -51,16 +51,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         )
     }
 
-    fun setTheme(theme: Int) {
-        settings.theme = theme
-        save()
-    }
-
-    fun setLayout(layout: Boolean) {
-        settings.historyButtom = layout
-        save()
-    }
-
     fun setBackgroundImage(uri: String?) {
         (getApplication() as Context)
             .getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)

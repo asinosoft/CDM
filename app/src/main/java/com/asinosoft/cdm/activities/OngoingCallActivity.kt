@@ -1,14 +1,17 @@
 package com.asinosoft.cdm.activities
 
-import android.Manifest
+import android.Manifest.permission.CALL_PHONE
+import android.Manifest.permission.READ_PHONE_STATE
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.graphics.*
 import android.media.AudioManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.PowerManager
@@ -24,12 +27,14 @@ import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.dialer.*
+import com.asinosoft.cdm.fragments.PhoneAccountSelectionDialog
 import kotlinx.android.synthetic.main.activity_ongoing_call.*
 import kotlinx.android.synthetic.main.call_notification_two.*
 import kotlinx.android.synthetic.main.keyboard.*
 import kotlinx.android.synthetic.main.on_going_call.*
 import org.jetbrains.anko.audioManager
 import org.jetbrains.anko.telecomManager
+import org.jetbrains.anko.telephonyManager
 import java.util.*
 
 class OngoingCallActivity : BaseActivity() {
@@ -57,17 +62,8 @@ class OngoingCallActivity : BaseActivity() {
         if (intent.action == Intent.ACTION_CALL && intent.data != null) {
             // Исходящий звонок
             contactUri = intent.data
-            withPermission(arrayOf(Manifest.permission.CALL_PHONE)) { permitted ->
-                if (permitted) {
-                    val phoneAccount =
-                        telecomManager.getDefaultOutgoingPhoneAccount(PhoneAccount.SCHEME_TEL)
-                    Bundle().apply {
-                        putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, phoneAccount)
-                        putBoolean(TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE, false)
-                        putBoolean(TelecomManager.EXTRA_START_CALL_WITH_SPEAKERPHONE, false)
-                        telecomManager.placeCall(intent.data, this)
-                    }
-                }
+            withPermission(arrayOf(CALL_PHONE, READ_PHONE_STATE)) { permitted ->
+                if (permitted) placeCall(contactUri)
             }
         } else {
             // Входящий звонок
@@ -101,6 +97,38 @@ class OngoingCallActivity : BaseActivity() {
             updateCallState(CallManager.getState())
         }
         Log.d("Call", "Creation complete")
+    }
+
+    private fun placeCall(contact: Uri?) {
+        Log.d("Call::placeCall", contact.toString())
+        if (PackageManager.PERMISSION_GRANTED == checkSelfPermission(CALL_PHONE)) {
+            selectPhoneAccount { phoneAccount ->
+                Bundle().apply {
+                    putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, phoneAccount)
+                    putBoolean(TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE, false)
+                    putBoolean(TelecomManager.EXTRA_START_CALL_WITH_SPEAKERPHONE, false)
+                    telecomManager.placeCall(contact, this)
+                }
+            }
+        } else {
+            Log.d("PLACE CALL", "NO PERMISSION!!!")
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun selectPhoneAccount(onSelect: (PhoneAccountHandle) -> Unit) {
+        val accounts = telecomManager.callCapablePhoneAccounts
+        if (1 == accounts.size || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            onSelect(accounts[0])
+        } else {
+            val slots = accounts.mapNotNull { telephonyManager.createForPhoneAccountHandle(it) }
+            PhoneAccountSelectionDialog(
+                slots,
+                { index -> onSelect(accounts[index]) },
+                { finish() }
+            )
+                .show(supportFragmentManager, "Select SIM")
+        }
     }
 
     private fun findContact(uri: Uri): CallContact {
@@ -247,7 +275,6 @@ class OngoingCallActivity : BaseActivity() {
 
     fun switchToCallingUI() {
         // Change the buttons layout
-        answer_reject_buttons.visibility = View.GONE
         text_status.visibility = View.VISIBLE
         text_caller.visibility = View.VISIBLE
         answer_btn.visibility = View.GONE
@@ -261,7 +288,6 @@ class OngoingCallActivity : BaseActivity() {
 
     private fun visibilityIncomingCall() {
         // Change the buttons layout
-        // answer_reject_buttons.visibility = View.VISIBLE
         answer_btn.visibility = View.VISIBLE
         reject_btn.visibility = View.VISIBLE
         reject_btn2.visibility = View.INVISIBLE
@@ -272,7 +298,6 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun viewKeyboard() {
-        answer_reject_buttons.visibility = View.GONE
         text_caller_number.visibility = View.GONE
         text_status.visibility = View.GONE
         text_caller.visibility = View.GONE

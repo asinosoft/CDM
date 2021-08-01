@@ -1,7 +1,9 @@
 package com.asinosoft.cdm.fragments
 
+import android.content.Context
 import android.content.res.Resources
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.databinding.FragmentFavoritesSettingsBinding
+import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
 import com.asinosoft.cdm.viewmodels.SettingsViewModel
@@ -70,11 +73,12 @@ class FavoritesSettingsFragment : Fragment() {
             v.pickBorderColor.image?.setColorFilter(color)
         }
 
-        when (model.settings.theme) {
-            R.style.AppTheme_Light -> v.lightThemeButton.setBackgroundColor(colorSelected)
-            R.style.AppTheme_Gray -> v.grayThemeButton.setBackgroundColor(colorSelected)
-            R.style.AppTheme_Dark -> v.darkThemeButton.setBackgroundColor(colorSelected)
-        }
+        val themeNames = resources.getStringArray(R.array.themeNames)
+        v.theme.text = themeNames.elementAtOrElse(model.settings.theme) { themeNames.get(0) }
+
+        val background = activity?.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
+            ?.getString(Keys.BACKGROUND_IMAGE, null)
+        v.background.text = background
     }
 
     private fun setFavoritesLayout(layout: Boolean) {
@@ -210,20 +214,15 @@ class FavoritesSettingsFragment : Fragment() {
 
         v.btnFavoritesLast.setOnClickListener { setFavoritesLayout(false) }
 
-        v.lightThemeButton.onClick {
-            model.settings.theme = R.style.AppTheme_Light
-            activity?.recreate()
-        }
-        v.grayThemeButton.onClick {
-            model.settings.theme = R.style.AppTheme_Gray
-            activity?.recreate()
-        }
-        v.darkThemeButton.onClick {
-            model.settings.theme = R.style.AppTheme_Dark
-            activity?.recreate()
+        v.themes.onClick {
+            ThemeSelectionDialog { theme ->
+                Log.d("selected", theme.toString())
+                model.settings.theme = theme
+                activity?.recreate()
+            }.show(parentFragmentManager, "Select theme")
         }
 
-        v.btnSelectBackground.onClick {
+        v.backgrounds.onClick {
             findNavController().navigate(R.id.action_select_background)
         }
     }

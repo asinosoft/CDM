@@ -130,12 +130,10 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
                 time = timeFormat.format(date),
                 typeCall = cursor.getInt(colType),
                 duration = cursor.getLong(colDuration),
-                contact = contactRepository.getContactByPhone(phoneNumber) ?: Contact(
-                    0,
-                    phoneNumber
-                ).apply {
-                    actions.add(Action(0, Action.Type.PhoneCall, phoneNumber, ""))
-                }
+                contact = contactRepository.getContactByPhone(phoneNumber)
+                    ?: Contact(0, phoneNumber).apply {
+                        actions.add(Action(0, Action.Type.PhoneCall, phoneNumber, ""))
+                    }
             )
         }
     }

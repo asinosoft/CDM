@@ -16,6 +16,7 @@ data class Settings(
     var rightButton: Action.Type = Action.Type.PhoneCall,
     var topButton: Action.Type = Action.Type.Email,
     var bottomButton: Action.Type = Action.Type.Sms,
+    var checkDefaultDialer: Boolean = true,
 
     /**
      * Режим главного окна:

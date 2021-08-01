@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.asinosoft.cdm.R
 import com.google.firebase.analytics.ktx.analytics
@@ -80,9 +79,7 @@ class Action(
     }
 
     fun perform(context: Context) {
-        if (0 == id) {
-            Toast.makeText(context, "%s отсутствует".format(type.name), Toast.LENGTH_LONG).show()
-        } else when (type) {
+        when (type) {
             Type.Email -> email(context)
             Type.PhoneCall -> phoneCall(context)
             Type.Sms -> sms(context)

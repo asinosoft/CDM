@@ -3,6 +3,8 @@
     <string name="setting_count_buttons">Количество кнопок контактов:</string>
     <string name="settings_size_buttons">Кнопки избранных контактов:</string>
 
+    <string name="cancel">Отмена</string>
+
     <!-- Passcode lock -->
     <string name="digit_one">1</string>
     <!-- In the English locale, digit 1 has no text on it. This is simply empty space. If your locale has text on digit 1, then translate-->
@@ -93,7 +95,7 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="themes">Темы</string>
+    <string name="themes">Тема</string>
     <string name="theme_light">светлая</string>
     <string name="theme_gray">серая</string>
     <string name="theme_dark">тёмная</string>
@@ -109,10 +111,21 @@
     <string name="settings_tab_appearance">Оформление</string>
     <string name="settings_tab_actions">Действия</string>
     <string name="settings_tab_about">О приложении</string>
+    <string name="dialer_settings">Дозвонщик</string>
+    <string name="default_dialer">Установить по-умолчанию</string>
+    <string name="sim_usage_settings">Исходящие звонки</string>
+    <string name="sim_selection_title">Звонить через</string>
     <string name="photo">Фото</string>
     <string name="version">Версия: %s</string>
     <string name="background_default">Стандартный</string>
     <string name="background_custom">Выбрать из галереи</string>
     <string name="digit_star">*</string>
     <string name="digit_jail">#</string>
+
+    <string name="sim_state_absent">нет сим-карты</string>
+    <string name="sim_state_locked">заблокирована</string>
+    <string name="sim_state_not_ready">не готова</string>
+    <string name="sim_state_error">ошибка</string>
+    <string name="sim_state_network_locked">сеть недоступна</string>
+    <string name="sim_state_ready">доступна</string>
 </resources>
