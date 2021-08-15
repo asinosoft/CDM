@@ -2,7 +2,9 @@ package com.asinosoft.cdm.api
 
 import android.content.Context
 import android.database.Cursor
+import android.net.Uri
 import android.provider.CallLog
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
@@ -121,6 +123,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
         private fun getOne(): CallHistoryItem {
             val phoneNumber = cursor.getString(colNumber)
             val date = cursor.getLong(colDate)
+            val photo = Uri.parse("android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}")
 
             return CallHistoryItem(
                 phone = phoneNumber,
@@ -131,7 +134,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
                 typeCall = cursor.getInt(colType),
                 duration = cursor.getLong(colDuration),
                 contact = contactRepository.getContactByPhone(phoneNumber)
-                    ?: Contact(0, phoneNumber).apply {
+                    ?: Contact(0, phoneNumber, photo).apply {
                         actions.add(Action(0, Action.Type.PhoneCall, phoneNumber, ""))
                     }
             )

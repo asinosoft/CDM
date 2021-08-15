@@ -8,6 +8,7 @@ import android.provider.ContactsContract.CommonDataKinds.Email
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.util.Log
 import androidx.core.database.getStringOrNull
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.*
 import com.asinosoft.cdm.helpers.StHelper
 
@@ -128,17 +129,18 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
             val result = HashMap<Long, Contact>()
 
             while (cursor.moveToNext()) {
-                val id = cursor.getLong(contactId)
+                val id: Long = cursor.getLong(contactId)
+                val photo: Uri = Uri.parse(cursor.getStringOrNull(this@ContactCursorAdapter.photoUri) ?: "android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}")
                 result.getOrPut(
                     id,
                     {
                         Contact(
                             id,
-                            cursor.getStringOrNull(this@ContactCursorAdapter.displayName) ?: ""
+                            cursor.getStringOrNull(this@ContactCursorAdapter.displayName) ?: "",
+                            photo
                         )
                     }
                 ).let { contact ->
-                    contact.photoUri = cursor.getStringOrNull(this@ContactCursorAdapter.photoUri)
                     when (cursor.getString(mimeType).dropWhile { c -> c != '/' }) {
                         "/contact_event" -> parseBirthday(contact)
                         "/phone_v2" -> parsePhone(contact)

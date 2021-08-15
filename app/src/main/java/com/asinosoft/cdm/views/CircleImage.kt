@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.*
@@ -56,8 +55,9 @@ class CircleImage @JvmOverloads constructor(
     var contact: Contact? = null
         set(value) {
             field = value
-            if (value?.photoUri != null) updatePhoto(value.photoUri!!.toUri())
-            else setImageResource(R.drawable.ic_default_photo)
+            value?.let {
+                updatePhoto(it.photoUri)
+            }
         }
 
     var size: Int = this.width

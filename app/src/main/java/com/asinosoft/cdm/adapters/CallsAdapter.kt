@@ -95,7 +95,7 @@ class CallsAdapter(
     }
 
     private fun bindCallHistoryItem(v: CalllogObjectBinding, call: CallHistoryItem) {
-        v.imageContact.setImageDrawable(call.contact.getPhoto(context))
+        v.imageContact.setImageURI(call.contact.photoUri)
         v.name.text = call.contact.name
         v.number.text = "${call.prettyPhone}, ${Metoths.getFormattedTime(call.duration)}"
         v.timeContact.text = call.time

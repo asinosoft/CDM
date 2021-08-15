@@ -115,7 +115,7 @@ class ContactActionsAdapter(private val contact: Contact) :
         }
 
         fun bindSkype(item: Item, actions: List<Action>) {
-            numberType.text = item.description // context.getString(R.string.type_skype)
+            numberType.text = item.description
             number.text = item.name
             mCustomMiddle.setBackgroundResource(R.drawable.ic_skype_chat)
             mCustomRight.setBackgroundResource(R.drawable.ic_skype_call)
@@ -130,7 +130,7 @@ class ContactActionsAdapter(private val contact: Contact) :
         }
 
         fun bindTelegram(item: Item, actions: List<Action>) {
-            numberType.text = item.description // context.getString(R.string.type_telegram)
+            numberType.text = item.description
             number.text = item.name
             mCustomLeft.setBackgroundResource(R.drawable.ic_telegram_chat)
             mCustomMiddle.setBackgroundResource(R.drawable.ic_telegram_call)
@@ -148,7 +148,7 @@ class ContactActionsAdapter(private val contact: Contact) :
         }
 
         fun bindViber(item: Item, actions: List<Action>) {
-            numberType.text = item.description // context.getString(R.string.type_viber)
+            numberType.text = item.description
             number.text = StHelper.convertNumber(item.name)
             mCustomLeft.visibility = View.INVISIBLE
             mCustomMiddle.setBackgroundResource(R.drawable.ic_viber_chat)
@@ -163,7 +163,7 @@ class ContactActionsAdapter(private val contact: Contact) :
         }
 
         fun bindWhatsApp(item: Item, actions: List<Action>) {
-            numberType.text = item.description // context.getString(R.string.type_whatsapp)
+            numberType.text = item.description
             number.text = StHelper.convertNumber(item.name)
             mCustomLeft.setBackgroundResource(R.drawable.ic_whatsapp_chat)
             mCustomMiddle.setBackgroundResource(R.drawable.ic_whatsapp_call)

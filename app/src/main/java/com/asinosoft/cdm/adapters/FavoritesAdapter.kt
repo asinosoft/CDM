@@ -84,7 +84,7 @@ class FavoritesAdapter(
                 if (null == contact) {
                     setImageResource(R.drawable.plus)
                 } else {
-                    setImageDrawable(contact!!.getPhoto(context))
+                    setImageURI(contact?.photoUri)
                 }
                 lockableNestedScrollView = callsLayoutManager
                 deleteCir = deleteButton

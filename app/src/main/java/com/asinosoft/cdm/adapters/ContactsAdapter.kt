@@ -4,9 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ContactItemBinding
 import com.asinosoft.cdm.helpers.Metoths.Companion.setColoredText
@@ -49,8 +47,7 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.Holder>() {
         RecyclerView.ViewHolder(v.root) {
 
         fun bind(contact: Contact) {
-            contact.photoUri?.let { v.imageContact.setImageURI(it.toUri()) }
-                ?: v.imageContact.setImageResource(R.drawable.ic_default_photo)
+            v.imageContact.setImageURI(contact.photoUri)
             v.name.text = contact.name
             var tNum = ""
             contact.phones.forEach {

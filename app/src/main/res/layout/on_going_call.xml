@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="?attr/popupColor">
 
-
     <!-- Call Timer -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guide_status_bar"
@@ -28,31 +27,19 @@
 
     </TextView>
 
-    <FrameLayout
-        android:id="@+id/frameLayout"
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/image_placeholder"
         android:layout_width="110dp"
         android:layout_height="110dp"
+        android:contentDescription="@string/photo"
         app:layout_constraintBottom_toTopOf="@+id/text_caller"
         app:layout_constraintEnd_toEndOf="@+id/text_caller"
         app:layout_constraintStart_toStartOf="@+id/text_caller"
-        app:layout_constraintTop_toBottomOf="@+id/text_stopwatch">
-
-        <ImageView
-            android:id="@+id/image_placeholder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/ic_account_circle_black_24dp">
-
-        </ImageView>
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/image_photo"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            app:civ_border_width="0dp" />
-
-    </FrameLayout>
+        app:layout_constraintTop_toBottomOf="@+id/text_stopwatch"
+        app:shapeAppearanceOverlay="@style/RoundImage"
+        app:srcCompat="@drawable/ic_default_photo"
+        app:strokeColor="?attr/colorAccent"
+        app:strokeWidth="1dp" />
 
     <TextView
         android:id="@+id/text_caller"
@@ -63,12 +50,10 @@
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
-        android:textColor="@color/black"
         android:textSize="25sp"
         android:textStyle="normal"
         app:layout_constraintBottom_toTopOf="@+id/text_caller_number"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="Евгений" />
 
@@ -81,12 +66,10 @@
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
-        android:textColor="@color/black"
         android:textSize="15sp"
         android:textStyle="normal"
         app:layout_constraintBottom_toTopOf="@+id/text_status"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="+79039051968" />
 
@@ -96,12 +79,50 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-        android:textColor="@color/red"
         app:layout_constraintBottom_toTopOf="@+id/guide_eye_level"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="@+id/text_caller_number"
+        app:layout_constraintStart_toStartOf="parent"
         tools:text="@string/status_call_active" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_status"
+        tools:ignore="UseCompoundDrawables">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/image_sim"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="@string/sim_used"
+                android:src="@drawable/ic_sim"
+                app:tint="?attr/colorAccent" />
+
+            <TextView
+                android:id="@+id/text_sim"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textColor="?attr/colorAccent"
+                tools:text="1" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/text_operator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="@string/sim_operator" />
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guide_eye_level"
@@ -119,6 +140,7 @@
         android:background="@drawable/ripple_oval"
         android:backgroundTint="@color/selector_button_icon"
         android:clickable="true"
+        android:contentDescription="@string/action_mute"
         android:focusable="true"
         android:padding="16dp"
         android:src="@drawable/ic_mic_off_black_24dp"
@@ -140,6 +162,7 @@
         android:background="@drawable/ripple_oval"
         android:backgroundTint="@color/selector_button_icon"
         android:clickable="true"
+        android:contentDescription="@string/action_hold"
         android:focusable="true"
         android:padding="16dp"
         android:src="@drawable/outline_pause_24"
@@ -161,6 +184,7 @@
         android:background="@drawable/ripple_oval"
         android:backgroundTint="@color/selector_button_icon"
         android:clickable="true"
+        android:contentDescription="@string/action_speaker"
         android:focusable="true"
         android:padding="16dp"
         android:src="@drawable/outline_volume_up_24"
@@ -181,6 +205,7 @@
         android:background="@drawable/ripple_oval"
         android:backgroundTint="@color/selector_button_icon"
         android:clickable="true"
+        android:contentDescription="@string/action_keyboard"
         android:focusable="true"
         android:padding="16dp"
         android:src="@drawable/outline_dialpad_24"
@@ -200,6 +225,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginBottom="50dp"
+        android:contentDescription="@string/action_answer"
         android:scaleType="center"
         android:src="@drawable/outline_call_24"
         android:visibility="invisible"
@@ -216,6 +242,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="50dp"
+        android:contentDescription="@string/action_hangup"
         android:scaleType="center"
         android:src="@drawable/outline_call_end_24"
         android:visibility="invisible"
@@ -232,6 +259,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="40dp"
         android:backgroundTint="@color/red"
+        android:contentDescription="@string/action_hangup"
         android:src="@drawable/outline_call_end_24"
         android:tint="@color/white"
         android:visibility="visible"

@@ -67,5 +67,9 @@ class CallManager {
         fun getCallPhone(): Uri? {
             return call?.details?.handle
         }
+
+        fun getCallDetails(): Call.Details? {
+            return call?.details
+        }
     }
 }

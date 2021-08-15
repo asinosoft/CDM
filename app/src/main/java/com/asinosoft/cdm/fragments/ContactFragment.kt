@@ -65,7 +65,7 @@ class ContactFragment : Fragment() {
         })
 
         v.toolbar.title = model.getContactName()
-        v.image.setImageDrawable(model.getContactPhoto())
+        v.image.setImageURI(model.getContactPhoto())
     }
 
     private inner class ContactPagesAdapter(

@@ -6,23 +6,21 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
-import android.graphics.*
+import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.PowerManager
-import android.provider.MediaStore
 import android.telecom.*
 import android.util.Log
-import android.util.Size
 import android.view.View
 import android.view.WindowManager
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.ContactRepositoryImpl
@@ -43,8 +41,8 @@ class OngoingCallActivity : BaseActivity() {
     private var isMicrophoneOn = true
     private var isCallEnded = false
     private var callDuration = 0
-    private var callContact: CallContact? = null
-    private var callContactAvatar: Bitmap? = null
+    private lateinit var callContact: CallContact
+    private val channelId = "simple_dialer_channel"
     private var proximityWakeLock: PowerManager.WakeLock? = null
     private var callTimer = Timer()
 
@@ -68,6 +66,10 @@ class OngoingCallActivity : BaseActivity() {
         } else {
             // Входящий звонок
             contactUri = CallManager.getCallPhone()
+
+            CallManager.getCallDetails()?.let {
+                initSimInfo(it)
+            }
         }
 
         if (null == contactUri) {
@@ -75,10 +77,7 @@ class OngoingCallActivity : BaseActivity() {
         }
 
         callContact = findContact(contactUri)
-        callContactAvatar = getCallContactAvatar()
         updateOtherPersonsInfo()
-
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         clickToButtons()
         addLockScreenFlags()
@@ -97,6 +96,13 @@ class OngoingCallActivity : BaseActivity() {
             updateCallState(CallManager.getState())
         }
         Log.d("Call", "Creation complete")
+    }
+
+    private fun initSimInfo(details: Call.Details) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val info = telephonyManager.createForPhoneAccountHandle(details.accountHandle)
+            text_operator.text = info?.simOperatorName ?: "Неизвестно"
+        }
     }
 
     private fun placeCall(contact: Uri?) {
@@ -132,35 +138,34 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun findContact(uri: Uri): CallContact {
-        Log.d("Call", "initContact $uri")
+        Log.d("Call", "findContact $uri")
         val number = Uri.decode(uri.toString()).substringAfter("tel:")
-        Log.d("Call", "number = $number")
         return ContactRepositoryImpl(this).getContactByPhone(number)?.let {
-            Log.w("CallManager", "found = ${it.name}")
+            Log.d("Call", "found = ${it.name}")
             return CallContact(
                 it.name,
-                it.photoUri ?: "",
+                it.photoUri,
                 number
             )
-        } ?: CallContact("", "", number)
+        } ?: CallContact(
+            "",
+            Uri.parse("android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}"),
+            number
+        )
     }
 
     private fun updateOtherPersonsInfo() {
-        callContact?.let { contact ->
-            text_status.text =
-                if (contact.name.isNotEmpty()) contact.name else getString(R.string.unknown_caller)
-            if (contact.name != "null") {
-                text_caller.text = contact.name
-                text_caller_number.text = contact.number
-            } else {
-                text_caller.text = contact.number
-                text_caller_number.visibility = View.GONE
-            }
+        text_status.text =
+            if (callContact.name.isNotEmpty()) callContact.name else getString(R.string.unknown_caller)
+        if (callContact.name != "null") {
+            text_caller.text = callContact.name
+            text_caller_number.text = callContact.number
+        } else {
+            text_caller.text = callContact.number
+            text_caller_number.visibility = View.GONE
         }
 
-        callContactAvatar?.let {
-            image_placeholder.setImageBitmap(it)
-        }
+        image_placeholder.setImageURI(callContact.photoUri)
     }
 
     @SuppressLint("NewApi")
@@ -184,10 +189,9 @@ class OngoingCallActivity : BaseActivity() {
 
     private fun initProximitySensor() {
         Log.d("Call", "initProximitySensor")
-        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-        proximityWakeLock = powerManager.newWakeLock(
+        proximityWakeLock = getSystemService(PowerManager::class.java).newWakeLock(
             PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK,
-            "com.simplemobiletools.dialer.pro:wake_lock"
+            "com.asinosoft.cdm:wake_lock"
         )
         proximityWakeLock!!.acquire(10 * MINUTE_SECONDS * 1000L)
     }
@@ -414,18 +418,24 @@ class OngoingCallActivity : BaseActivity() {
         input_text.addCharacter(char)
     }
 
-    private fun setupNotification() {
-        val callState = CallManager.getState()
-        val channelId = "simple_dialer_channel"
-        if (isOreoPlus()) {
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val name = "call_notification_channel"
-
-            NotificationChannel(channelId, name, importance).apply {
-                setSound(null, null)
-                notificationManager.createNotificationChannel(this)
+    private fun registerNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Log.d("Call", "Register notification channel: $channelId")
+            with(NotificationManagerCompat.from(this)) {
+                createNotificationChannel(
+                    NotificationChannel(
+                        channelId,
+                        getString(R.string.app_name),
+                        NotificationManager.IMPORTANCE_DEFAULT
+                    )
+                )
             }
         }
+    }
+
+    private fun setupNotification() {
+        val callState = CallManager.getState()
+        registerNotificationChannel()
 
         val openAppIntent = Intent(this, OngoingCallActivity::class.java)
         openAppIntent.flags = Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
@@ -454,7 +464,7 @@ class OngoingCallActivity : BaseActivity() {
         )
 
         val callerName =
-            if (callContact != null && callContact!!.name.isNotEmpty()) callContact!!.name else getString(
+            if (callContact.name.isNotEmpty()) callContact.name else getString(
                 R.string.unknown_caller
             )
         val contentTextId = when (callState) {
@@ -488,7 +498,7 @@ class OngoingCallActivity : BaseActivity() {
         }
 
         val builder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.icon_full_144)
+            .setSmallIcon(R.drawable.app_icon_512)
             .setContentIntent(openAppPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setCategory(Notification.CATEGORY_CALL)
@@ -496,51 +506,18 @@ class OngoingCallActivity : BaseActivity() {
             .setOngoing(true)
             .setSound(null)
             .setUsesChronometer(callState == Call.STATE_ACTIVE)
-            .setChannelId(channelId)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
 
-        callContactAvatar?.let {
-            builder.setLargeIcon(getCircularBitmap(it))
-        }
+        builder.setLargeIcon(
+            contentResolver.openAssetFileDescriptor(callContact.photoUri, "r")?.let {
+                BitmapFactory.decodeStream(
+                    it.createInputStream(),
+                )
+            }
+        )
 
         val notification = builder.build()
         notificationManager.notify(CALL_NOTIFICATION_ID, notification)
-    }
-
-    private fun getCallContactAvatar(): Bitmap? {
-        var bitmap: Bitmap? = null
-        if (callContact?.photoUri?.isNotEmpty() == true) {
-            val photoUri = Uri.parse(callContact!!.photoUri)
-            try {
-                bitmap = if (isQPlus()) {
-                    val tmbSize = resources.getDimension(R.dimen.list_avatar_size).toInt()
-                    contentResolver.loadThumbnail(photoUri, Size(tmbSize, tmbSize), null)
-                } else {
-                    MediaStore.Images.Media.getBitmap(contentResolver, photoUri)
-                }
-
-                bitmap = getCircularBitmap(bitmap!!)
-            } catch (ignored: Exception) {
-                return null
-            }
-        }
-
-        return bitmap
-    }
-
-    private fun getCircularBitmap(bitmap: Bitmap): Bitmap {
-        val output = Bitmap.createBitmap(bitmap.width, bitmap.width, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(output)
-        val paint = Paint()
-        val rect = Rect(0, 0, bitmap.width, bitmap.height)
-        val radius = bitmap.width / 2.toFloat()
-
-        paint.isAntiAlias = true
-        canvas.drawARGB(0, 0, 0, 0)
-        canvas.drawCircle(radius, radius, radius, paint)
-        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
-        canvas.drawBitmap(bitmap, rect, rect, paint)
-        return output
     }
 
     @SuppressLint("NewApi")

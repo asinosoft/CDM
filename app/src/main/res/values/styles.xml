@@ -1,4 +1,4 @@
-<resources>            android:layout_height="64dp"
+<resources>
 
     <style name="Caption" parent="Widget.AppCompat.TextView">
         <item name="android:gravity">center</item>
@@ -20,5 +20,10 @@
 
     <style name="TabLayoutText" parent="TextAppearance.MaterialComponents.Button">
         <item name="android:textSize">@dimen/tabTextSize</item>
+    </style>
+
+    <style name="RoundImage">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
     </style>
 </resources>

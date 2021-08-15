@@ -2,6 +2,7 @@ package com.asinosoft.cdm.viewmodels
 
 import android.app.Application
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -43,7 +44,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
 
     fun getContactName(): String = contact.name
 
-    fun getContactPhoto() = contact.getPhoto(getApplication())
+    fun getContactPhoto(): Uri = contact.photoUri
 
     private fun getContactAction(direction: Direction): Action {
         return when (direction) {

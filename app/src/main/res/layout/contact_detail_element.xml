@@ -25,7 +25,7 @@
                 android:layout_height="25dp"
                 android:paddingTop="5dp"
                 android:textSize="15sp"
-                tools:text="@string/describe" />
+                tools:text="John Doe" />
 
             <TextView
                 android:id="@+id/number_id"
@@ -34,7 +34,7 @@
                 android:paddingTop="3dp"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="18sp"
-                tools:text="@string/describe">
+                tools:text="+7-900-800-70-60">
 
             </TextView>
         </LinearLayout>
