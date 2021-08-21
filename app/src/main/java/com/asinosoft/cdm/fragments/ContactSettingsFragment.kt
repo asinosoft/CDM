@@ -72,7 +72,6 @@ class ContactSettingsFragment : Fragment() {
 
     private fun setDragListener(cir: CircularImageView) {
         cir.setOnLongClickListener {
-            it.bringToFront()
             val myShadow = View.DragShadowBuilder(it)
 
             it.startDrag(

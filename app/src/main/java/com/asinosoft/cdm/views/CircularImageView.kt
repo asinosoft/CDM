@@ -317,14 +317,12 @@ open class CircularImageView @JvmOverloads constructor(
     }
 
     private fun manageElevation() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            outlineProvider = if (!shadowEnable) object : ViewOutlineProvider() {
-                override fun getOutline(view: View?, outline: Outline?) {
-                    outline?.setOval(0, 0, heightCircle, heightCircle)
-                }
-            } else {
-                null
+        outlineProvider = if (!shadowEnable) object : ViewOutlineProvider() {
+            override fun getOutline(view: View?, outline: Outline?) {
+                outline?.setOval(0, 0, heightCircle, heightCircle)
             }
+        } else {
+            null
         }
     }
 

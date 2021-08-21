@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.asinosoft.cdm.api.CallHistoryItem
@@ -57,6 +58,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun setContactAction(direction: Direction, action: Action) {
+        Log.d("Contact", "set: $direction → ${action.type}")
         Firebase.analytics.logEvent(
             "contact_set_action",
             Bundle().apply {
@@ -76,6 +78,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun swapContactAction(one: Direction, another: Direction) {
+        Log.d("Contact", "swap: $one ↔ $another")
         getContactAction(one).apply {
             setContactAction(one, getContactAction(another)).also {
                 setContactAction(another, this)
@@ -84,6 +87,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun saveContactSettings(context: Context) {
+        Log.d("Contact", "save settings")
         Loader.saveContactSettings(context, contact, actions)
     }
 
