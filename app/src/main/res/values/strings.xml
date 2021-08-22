@@ -61,7 +61,7 @@
     <string name="dialer_settings">Дозвонщик</string>
     <string name="default_dialer">Установить по-умолчанию</string>
     <string name="sim_usage_settings">Исходящие звонки</string>
-    <string name="sim_selection_title">Звонить через</string>
+    <string name="sim_selection_title">Выберите SIM</string>
     <string name="sim_used">Звонок через SIM</string>
     <string name="sim_operator">Оператор</string>
     <string name="photo">Фото</string>

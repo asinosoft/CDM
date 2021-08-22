@@ -23,9 +23,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.adapters.StringsWithIconsAdapter
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.dialer.*
-import com.asinosoft.cdm.fragments.PhoneAccountSelectionDialog
 import kotlinx.android.synthetic.main.activity_ongoing_call.*
 import kotlinx.android.synthetic.main.call_notification_two.*
 import kotlinx.android.synthetic.main.keyboard.*
@@ -127,13 +127,23 @@ class OngoingCallActivity : BaseActivity() {
         if (1 == accounts.size || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             onSelect(accounts[0])
         } else {
-            val slots = accounts.mapNotNull { telephonyManager.createForPhoneAccountHandle(it) }
-            PhoneAccountSelectionDialog(
-                slots,
-                { index -> onSelect(accounts[index]) },
-                { finish() }
-            )
-                .show(supportFragmentManager, "Select SIM")
+            val slots: Array<String> =
+                accounts.mapNotNull { telephonyManager.createForPhoneAccountHandle(it)?.simOperatorName }
+                    .toTypedArray()
+            val icons: Array<Int> = arrayOf(R.drawable.ic_sim1, R.drawable.ic_sim2, R.drawable.ic_sim3)
+            val adapter = StringsWithIconsAdapter(this, slots, icons)
+
+            AlertDialog.Builder(this)
+                .setTitle(R.string.sim_selection_title)
+                .setAdapter(adapter) { dialog, index ->
+                    dialog.dismiss()
+                    onSelect(accounts[index])
+                }
+                .setOnDismissListener {
+                    finish()
+                }
+                .create()
+                .show()
         }
     }
 

@@ -22,11 +22,10 @@
         android:paddingTop="10dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <androidx.fragment.app.FragmentContainerView
+        <include
             android:id="@+id/keyboard"
             android:name="com.asinosoft.cdm.fragments.KeyboardFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            layout="@layout/keyboard" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
