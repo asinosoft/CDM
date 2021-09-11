@@ -24,7 +24,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     private var contactPhones: MutableMap<String, Contact> = mutableMapOf()
 
     fun initialize() {
-        Log.d(null, "Чтение списка контактов")
+        Log.d("CDM|contacts", "Чтение списка контактов")
         contactPhones = mutableMapOf()
         contacts = context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
@@ -45,10 +45,12 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     override fun getContacts(): Collection<Contact> {
+        Log.d("CDM|contacts", "Список контактов")
         return contacts.values
     }
 
     override fun getContactById(id: Long): Contact? {
+        Log.d("CDM|contacts", "Поиск контакта по ID $id")
         return contacts[id] ?: findContactById(id)?.also { cache(it) }
     }
 
@@ -65,6 +67,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     override fun getContactByPhone(phone: String): Contact? {
+        Log.d("CDM|contacts", "Поиск контакта по телефону $phone")
         return contactPhones[phone] ?: findContactByPhone(phone)?.also { cache(it) }
     }
 
@@ -76,7 +79,6 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     private fun findContactById(id: Long): Contact? {
-        Log.d(null, "Find contact by ID $id")
         return context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             "${ContactsContract.Data.CONTACT_ID} = ?", arrayOf(id.toString()), null

@@ -35,7 +35,7 @@ import org.jetbrains.anko.vibrator
  * Интерфейс главного окна (избранные + последние звонки)
  */
 class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
-    private lateinit var v: ActivityManagerBinding
+    private var v: ActivityManagerBinding? = null
     private val model: ManagerViewModel by activityViewModels()
 
     /**
@@ -80,8 +80,12 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
     ): View {
         v = ActivityManagerBinding.inflate(layoutInflater)
         pickedPosition = savedInstanceState?.getInt("pickedPosition") ?: 0
-        initView()
-        return v.root
+        return v!!.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        v = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -97,20 +101,20 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
         findNavController().navigate(R.id.action_open_phone_history, bundleOf("phone" to phone))
     }
 
-    private fun initView() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         favoritesFirst = !Loader.loadSettings(requireContext()).historyButtom
         val callsLayoutManager = LockableLayoutManager(requireContext(), favoritesFirst)
 
         initFavorites(callsLayoutManager)
         initCallHistory(callsLayoutManager)
 
-        v.fabKeyboard.supportImageTintList = null
-        v.fabKeyboard.setOnClickListener {
+        v!!.fabKeyboard.supportImageTintList = null
+        v!!.fabKeyboard.setOnClickListener {
             findNavController().navigate(R.id.action_open_search)
         }
 
         model.calls.observe(viewLifecycleOwner) { calls ->
-            (v.rvCalls.adapter as CallsAdapter).setList(calls)
+            (v!!.rvCalls.adapter as CallsAdapter).setList(calls)
         }
     }
 
@@ -118,7 +122,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
         val context: Context = requireContext()
         favoritesView = FavoritesFragmentBinding.inflate(
             layoutInflater,
-            v.root,
+            v!!.root,
             false
         ).apply {
             rvFavorites.layoutManager =
@@ -186,12 +190,12 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
     }
 
     private fun initCallHistory(callsLayoutManager: LockableLayoutManager) {
-        v.rvCalls.adapter = CallsAdapter(requireContext(), favoritesView, this)
-        v.rvCalls.layoutManager = callsLayoutManager
-        v.rvCalls.isNestedScrollingEnabled = true
+        v!!.rvCalls.adapter = CallsAdapter(requireContext(), favoritesView, this)
+        v!!.rvCalls.layoutManager = callsLayoutManager
+        v!!.rvCalls.isNestedScrollingEnabled = true
 
         // Подгрузка истории звонков, когда список докрутился до последнего элемента
-        v.rvCalls.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        v!!.rvCalls.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 

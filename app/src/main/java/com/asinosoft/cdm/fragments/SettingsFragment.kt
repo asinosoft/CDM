@@ -12,7 +12,6 @@ import com.asinosoft.cdm.databinding.FragmentSettingsBinding
 import com.google.android.material.tabs.TabLayoutMediator
 
 class SettingsFragment : Fragment() {
-    private lateinit var v: FragmentSettingsBinding
     private val tabLabels = arrayOf(
         R.string.settings_tab_appearance,
         R.string.settings_tab_actions,
@@ -24,18 +23,15 @@ class SettingsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        v = FragmentSettingsBinding.inflate(inflater, container, false)
-        return v.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        val v = FragmentSettingsBinding.inflate(inflater, container, false)
 
         v.pages.adapter = SettingsPagesAdapter(requireActivity())
 
         TabLayoutMediator(v.tabs, v.pages) { tab, position ->
             tab.setText(tabLabels[position])
         }.attach()
+        
+        return v.root
     }
 
     private inner class SettingsPagesAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {

@@ -19,7 +19,6 @@ import com.asinosoft.cdm.viewmodels.SettingsViewModel
  * Интерфейс выбора фоновой картинки
  */
 class SelectBackgroundFragment : Fragment(), BackgroundsAdapter.Handler {
-    private lateinit var v: FragmentSelectBackgroundBinding
     private val model: SettingsViewModel by activityViewModels()
 
     private val backgroundImageActivityResult =
@@ -36,7 +35,7 @@ class SelectBackgroundFragment : Fragment(), BackgroundsAdapter.Handler {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        v = FragmentSelectBackgroundBinding.inflate(inflater, container, false)
+        val v = FragmentSelectBackgroundBinding.inflate(inflater, container, false)
         v.backgrounds.layoutManager =
             GridLayoutManager(requireContext(), 1, GridLayoutManager.VERTICAL, false)
 

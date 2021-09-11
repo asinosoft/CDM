@@ -25,44 +25,51 @@ import com.asinosoft.cdm.views.CircularImageView
 import org.jetbrains.anko.image
 
 class ContactSettingsFragment : Fragment() {
-    private val viewModel: DetailHistoryViewModel by activityViewModels()
-    private lateinit var v: ContactSettingsBinding
+    private val model: DetailHistoryViewModel by activityViewModels()
+    private var v: ContactSettingsBinding? = null
+    private var actions: Collection<Action> = listOf()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        v = ContactSettingsBinding.inflate(inflater)
+        v = ContactSettingsBinding.inflate(inflater, container, false)
+        return v!!.root
+    }
 
-        v.cirLeft.direction = Metoths.Companion.Direction.LEFT
-        v.cirRight.direction = Metoths.Companion.Direction.RIGHT
-        v.cirTop.direction = Metoths.Companion.Direction.TOP
-        v.cirBottom.direction = Metoths.Companion.Direction.DOWN
-
-        v.cirBottom.let(this@ContactSettingsFragment::setDragListener)
-        v.cirTop.let(this@ContactSettingsFragment::setDragListener)
-        v.cirLeft.let(this@ContactSettingsFragment::setDragListener)
-        v.cirRight.let(this@ContactSettingsFragment::setDragListener)
-
-        val settings = viewModel.getGlobalSettings(requireContext())
-        setAllCirs(settings)
-
-        v.rvActions.layoutManager = GridLayoutManager(requireContext(), 5)
-        v.rvActions.adapter = ActionsAdapter()
-
-        return v.root
+    override fun onDestroyView() {
+        super.onDestroyView()
+        v = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        v!!.cirLeft.direction = Metoths.Companion.Direction.LEFT
+        v!!.cirRight.direction = Metoths.Companion.Direction.RIGHT
+        v!!.cirTop.direction = Metoths.Companion.Direction.TOP
+        v!!.cirBottom.direction = Metoths.Companion.Direction.DOWN
 
-        viewModel.availableActions.observe(viewLifecycleOwner) {
-            (v.rvActions.adapter as ActionsAdapter).setActions(it)
+        v!!.cirBottom.let(this@ContactSettingsFragment::setDragListener)
+        v!!.cirTop.let(this@ContactSettingsFragment::setDragListener)
+        v!!.cirLeft.let(this@ContactSettingsFragment::setDragListener)
+        v!!.cirRight.let(this@ContactSettingsFragment::setDragListener)
+
+        val settings = model.getGlobalSettings(requireContext())
+        setAllCirs(settings)
+
+        v!!.rvActions.layoutManager = GridLayoutManager(requireContext(), 5)
+        v!!.rvActions.adapter = ActionsAdapter()
+
+        model.availableActions.observe(viewLifecycleOwner) { actions ->
+            actions?.let { (v!!.rvActions.adapter as ActionsAdapter).setActions(it) }
         }
 
-        viewModel.directActions.observe(viewLifecycleOwner) {
-            setData(it)
+        model.directActions.observe(viewLifecycleOwner) { actions ->
+            actions?.let { setData(it) }
+        }
+
+        model.contact.observe(viewLifecycleOwner) { contact ->
+            contact?.let { actions = contact.actions }
         }
     }
 
@@ -96,7 +103,7 @@ class ContactSettingsFragment : Fragment() {
                     when (item) {
                         is CircularImageView -> {
                             cir.swapCir(item)
-                            v.invalidate()
+                            v!!.invalidate()
                             cir.invalidate()
                         }
                         is Action.Type -> {
@@ -110,7 +117,7 @@ class ContactSettingsFragment : Fragment() {
                     when (item) {
                         is CircularImageView -> {
                             cir.swapCir(item)
-                            v.invalidate()
+                            v!!.invalidate()
                         }
                         is Action.Type -> {
                             cir.setImageResource(Action.resourceByType(cir.action))
@@ -121,7 +128,7 @@ class ContactSettingsFragment : Fragment() {
                 DragEvent.ACTION_DROP -> {
                     when (val item = event.localState) {
                         is CircularImageView -> {
-                            viewModel.swapContactAction(cir.direction, item.direction)
+                            model.swapContactAction(cir.direction, item.direction)
                         }
                         is Action.Type -> {
                             setContactAction(cir.direction, item)
@@ -137,7 +144,7 @@ class ContactSettingsFragment : Fragment() {
     }
 
     override fun onStop() {
-        viewModel.saveContactSettings(requireContext())
+        model.saveContactSettings(requireContext())
         super.onStop()
     }
 
@@ -147,19 +154,19 @@ class ContactSettingsFragment : Fragment() {
     }
 
     private fun setContactAction(direction: Metoths.Companion.Direction, type: Action.Type) {
-        val actions = viewModel.getContact().actions.filter { it.type == type }
+        val actions = this.actions.filter { it.type == type }
         when (actions.size) {
             0 -> {
-                viewModel.setContactAction(direction, Action(0, type, "", ""))
+                model.setContactAction(direction, Action(0, type, "", ""))
             }
             1 -> {
-                viewModel.setContactAction(direction, actions[0])
+                model.setContactAction(direction, actions[0])
             }
             else -> {
                 val dialog =
                     AlertDialogUtils.dialogListWithoutConfirm(requireContext(), "Выберите номер")
                 val adapter = SelectorAdapter(actions.map { it.value }) { selectedNumber ->
-                    viewModel.setContactAction(
+                    model.setContactAction(
                         direction,
                         actions.find { it.value == selectedNumber }!!
                     )
@@ -174,34 +181,34 @@ class ContactSettingsFragment : Fragment() {
     }
 
     private fun setData(directActions: DirectActions) {
-        v.cirRight.action = directActions.right.type
-        v.cirLeft.action = directActions.left.type
-        v.cirTop.action = directActions.top.type
-        v.cirBottom.action = directActions.down.type
-        v.cirRight.let(this::setCirData)
-        v.cirLeft.let(this::setCirData)
-        v.cirTop.let(this::setCirData)
-        v.cirBottom.let(this::setCirData)
+        v!!.cirRight.action = directActions.right.type
+        v!!.cirLeft.action = directActions.left.type
+        v!!.cirTop.action = directActions.top.type
+        v!!.cirBottom.action = directActions.down.type
+        v!!.cirRight.let(this::setCirData)
+        v!!.cirLeft.let(this::setCirData)
+        v!!.cirTop.let(this::setCirData)
+        v!!.cirBottom.let(this::setCirData)
 
-        v.textLeft.text = directActions.left.value
-        v.textRight.text = directActions.right.value
-        v.textTop.text = directActions.top.value
-        v.textBottom.text = directActions.down.value
+        v!!.textLeft.text = directActions.left.value
+        v!!.textRight.text = directActions.right.value
+        v!!.textTop.text = directActions.top.value
+        v!!.textBottom.text = directActions.down.value
     }
 
     private fun setAllCirs(settings: Settings) {
         settings.borderWidthCirs.toFloat().let {
-            v.cirBottom.borderWidth = it
-            v.cirTop.borderWidth = it
-            v.cirRight.borderWidth = it
-            v.cirLeft.borderWidth = it
+            v!!.cirBottom.borderWidth = it
+            v!!.cirTop.borderWidth = it
+            v!!.cirRight.borderWidth = it
+            v!!.cirLeft.borderWidth = it
         }
 
         settings.colorBorder.let {
-            v.cirBottom.borderColor = it
-            v.cirTop.borderColor = it
-            v.cirRight.borderColor = it
-            v.cirLeft.borderColor = it
+            v!!.cirBottom.borderColor = it
+            v!!.cirTop.borderColor = it
+            v!!.cirRight.borderColor = it
+            v!!.cirLeft.borderColor = it
         }
     }
 }

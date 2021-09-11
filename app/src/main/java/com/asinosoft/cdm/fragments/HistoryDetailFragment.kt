@@ -14,23 +14,28 @@ import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
  * Фрагмент вкладки "Истории" в детальной информации по элементу истории
  */
 class HistoryDetailFragment : Fragment() {
-    private val viewModel: DetailHistoryViewModel by activityViewModels()
+    private val model: DetailHistoryViewModel by activityViewModels()
+    private var v: HistoryDetailFragmentBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val bindings = HistoryDetailFragmentBinding.inflate(inflater)
+    ): View {
+        v = HistoryDetailFragmentBinding.inflate(inflater, container, false)
+        return v!!.root
+    }
 
-        viewModel.callHistory.observe(
-            requireActivity(),
-            { calls ->
-                bindings.rvContactCalls.adapter =
-                    HistoryDetailsCallsAdapter(requireContext(), calls)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        v = null
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        model.callHistory.observe(viewLifecycleOwner) { calls ->
+            calls?.let {
+                v!!.rvContactCalls.adapter = HistoryDetailsCallsAdapter(requireContext(), it)
             }
-        )
-
-        return bindings.root
+        }
     }
 }

@@ -27,9 +27,10 @@ object Loader {
         val json = preferences.getString(Keys.Settings, null)
         Log.d("Loader::loadSettings", json ?: "(empty)")
         if (json == null) {
-            return Settings()
+            settings = Settings()
+        } else {
+            settings = Gson().fromJson(json, Settings().javaClass) ?: Settings()
         }
-        settings = Gson().fromJson(json, Settings().javaClass) ?: Settings()
         return settings!!
     }
 

@@ -2,11 +2,11 @@ package com.asinosoft.cdm.viewmodels
 
 import android.app.Application
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.api.CallHistoryRepositoryImpl
 import com.asinosoft.cdm.api.ContactRepositoryImpl
@@ -17,42 +17,55 @@ import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.helpers.Metoths.Companion.Direction
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Данные для окна Просмотр контакта
  */
 class DetailHistoryViewModel(application: Application) : AndroidViewModel(application) {
-    private lateinit var contact: Contact
-    private lateinit var actions: DirectActions
+    private lateinit var _contact: Contact
+    private lateinit var _actions: DirectActions
+    private var haveUnsavedChanges: Boolean = false
 
+    val contact: MutableLiveData<Contact> = MutableLiveData()
     val callHistory: MutableLiveData<List<CallHistoryItem>> = MutableLiveData()
-    val availableActions: MutableLiveData<List<Action.Type>> = MutableLiveData()
     val directActions: MutableLiveData<DirectActions> = MutableLiveData()
+    val availableActions: MutableLiveData<List<Action.Type>> = MutableLiveData()
 
     fun initialize(context: Context, contactId: Long) {
-        contact = ContactRepositoryImpl(context).getContactById(contactId)!!
+        viewModelScope.launch(Dispatchers.IO) {
+            val contactRepository = ContactRepositoryImpl(context)
 
-        val contactRepository = ContactRepositoryImpl(context)
-        callHistory.value =
-            CallHistoryRepositoryImpl(contactRepository).getHistoryByContact(context, contact)
+            contactRepository.getContactById(contactId)?.let {
+                _contact = it
+                _actions = Loader.loadContactSettings(context, it)
 
-        actions = Loader.loadContactSettings(context, contact)
-        directActions.value = actions
-        availableActions.value = getAvailableActions()
+                contact.postValue(_contact)
+                directActions.postValue(_actions)
+                availableActions.postValue(getAvailableActions())
+                haveUnsavedChanges = false
+
+                val calls =
+                    CallHistoryRepositoryImpl(contactRepository).getHistoryByContact(context, it)
+                callHistory.postValue(calls)
+            }
+        }
     }
 
-    fun getContact(): Contact = contact
-
-    fun getContactName(): String = contact.name
-
-    fun getContactPhoto(): Uri = contact.photoUri
+    fun clear() {
+        contact.postValue(null)
+        directActions.postValue(null)
+        availableActions.postValue(null)
+        callHistory.postValue(null)
+    }
 
     private fun getContactAction(direction: Direction): Action {
         return when (direction) {
-            Direction.LEFT -> actions.left
-            Direction.RIGHT -> actions.right
-            Direction.TOP -> actions.top
-            Direction.DOWN -> actions.down
+            Direction.LEFT -> _actions.left
+            Direction.RIGHT -> _actions.right
+            Direction.TOP -> _actions.top
+            Direction.DOWN -> _actions.down
             else -> throw Exception("Unknown direction: $direction")
         }
     }
@@ -67,14 +80,15 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
             }
         )
         when (direction) {
-            Direction.LEFT -> actions.left = action
-            Direction.RIGHT -> actions.right = action
-            Direction.TOP -> actions.top = action
-            Direction.DOWN -> actions.down = action
+            Direction.LEFT -> _actions.left = action
+            Direction.RIGHT -> _actions.right = action
+            Direction.TOP -> _actions.top = action
+            Direction.DOWN -> _actions.down = action
             else -> throw Exception("Unknown direction: $direction")
         }
-        directActions.value = actions
-        availableActions.value = getAvailableActions()
+        haveUnsavedChanges = true
+        directActions.postValue(_actions)
+        availableActions.postValue(getAvailableActions())
     }
 
     fun swapContactAction(one: Direction, another: Direction) {
@@ -88,15 +102,18 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
 
     fun saveContactSettings(context: Context) {
         Log.d("Contact", "save settings")
-        Loader.saveContactSettings(context, contact, actions)
+        if (haveUnsavedChanges) {
+            Loader.saveContactSettings(context, _contact, _actions)
+            haveUnsavedChanges = false
+        }
     }
 
     fun getGlobalSettings(context: Context) = Loader.loadSettings(context)
 
     private fun getAvailableActions(): List<Action.Type> =
-        contact.actions
+        _contact.actions
             .filter {
-                it != actions.left && it != actions.right && it != actions.top && it != actions.down
+                it != _actions.left && it != _actions.right && it != _actions.top && it != _actions.down
             }
             .map { it.type }.distinct()
 }

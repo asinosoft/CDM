@@ -2,6 +2,7 @@ package com.asinosoft.cdm.api
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.FavoriteContact
@@ -51,7 +52,7 @@ class FavoriteContactRepositoryImplTest {
         val favoriteContactRepository =
             FavoriteContactRepositoryImpl(mockContext, mockContactRepository)
 
-        val addedContact = FavoriteContact(Contact(1, "John Doe"))
+        val addedContact = FavoriteContact(Contact(1, "John Doe", Uri.EMPTY))
 
         favoriteContactRepository.addContact(addedContact)
 
@@ -74,7 +75,7 @@ class FavoriteContactRepositoryImplTest {
         val favoriteContactRepository =
             FavoriteContactRepositoryImpl(mockContext, mockContactRepository)
 
-        val newContact = FavoriteContact(Contact(77, "John Doe"))
+        val newContact = FavoriteContact(Contact(77, "John Doe", Uri.EMPTY))
 
         favoriteContactRepository.replaceContact(1, newContact)
 
@@ -94,9 +95,9 @@ class FavoriteContactRepositoryImplTest {
         val favoriteContactRepository =
             FavoriteContactRepositoryImpl(mockContext, mockContactRepository)
 
-        val alphaMale = FavoriteContact(Contact(22, "Alpha Male"))
-        val betaTester = FavoriteContact(Contact(33, "Beta Tester"))
-        val gammaRay = FavoriteContact(Contact(44, "Gamma Ray"))
+        val alphaMale = FavoriteContact(Contact(22, "Alpha Male", Uri.EMPTY))
+        val betaTester = FavoriteContact(Contact(33, "Beta Tester", Uri.EMPTY))
+        val gammaRay = FavoriteContact(Contact(44, "Gamma Ray", Uri.EMPTY))
 
         favoriteContactRepository.replaceContact(0, alphaMale)
         favoriteContactRepository.replaceContact(1, betaTester)

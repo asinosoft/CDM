@@ -21,7 +21,7 @@ import com.asinosoft.cdm.views.CircularImageView
  */
 class ActionSettingsFragment : Fragment() {
     private val model: SettingsViewModel by activityViewModels()
-    private lateinit var v: FragmentActionSettingsBinding
+    private var v: FragmentActionSettingsBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,32 +29,37 @@ class ActionSettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         v = FragmentActionSettingsBinding.inflate(inflater, container, false)
-        return v.root
+        return v!!.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        v = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initActionButton(
-            v.cirTop,
+            v!!.cirTop,
             Metoths.Companion.Direction.TOP,
             model.settings.topButton
         )
 
         initActionButton(
-            v.cirBottom,
+            v!!.cirBottom,
             Metoths.Companion.Direction.DOWN,
             model.settings.bottomButton
         )
 
         initActionButton(
-            v.cirLeft,
+            v!!.cirLeft,
             Metoths.Companion.Direction.LEFT,
             model.settings.leftButton
         )
 
         initActionButton(
-            v.cirRight,
+            v!!.cirRight,
             Metoths.Companion.Direction.RIGHT,
             model.settings.rightButton
         )
@@ -74,8 +79,8 @@ class ActionSettingsFragment : Fragment() {
     }
 
     private fun initActionList() {
-        v.rvActions.layoutManager = GridLayoutManager(requireContext(), 5)
-        v.rvActions.adapter = ActionsAdapter().apply {
+        v!!.rvActions.layoutManager = GridLayoutManager(requireContext(), 5)
+        v!!.rvActions.adapter = ActionsAdapter().apply {
             setActions(Action.Type.values().asList())
         }
     }

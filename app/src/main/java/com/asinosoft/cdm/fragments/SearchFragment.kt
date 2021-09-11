@@ -21,9 +21,7 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 
 class SearchFragment : Fragment() {
-    private lateinit var v: ActivitySearchBinding
     private val model: ManagerViewModel by activityViewModels()
-    private lateinit var keyboard: KeyboardFragment
     private val contactsAdapter = ContactsAdapter()
     private var contacts = listOf<Contact>()
 
@@ -33,13 +31,14 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         Firebase.analytics.logEvent("activity_search", Bundle.EMPTY)
-        v = ActivitySearchBinding.inflate(layoutInflater)
-        keyboard = childFragmentManager.findFragmentById(R.id.keyboard) as KeyboardFragment
-        initActivity()
+        val v = ActivitySearchBinding.inflate(layoutInflater)
+        initActivity(v)
         return v.root
     }
 
-    private fun initActivity() {
+    private fun initActivity(v: ActivitySearchBinding) {
+        val keyboard = childFragmentManager.findFragmentById(R.id.keyboard) as KeyboardFragment
+
         model.contacts.observe(viewLifecycleOwner) { contacts ->
             this.contacts = contacts.filter { contact -> contact.phones.isNotEmpty() }
                 .sortedBy { it.name }
