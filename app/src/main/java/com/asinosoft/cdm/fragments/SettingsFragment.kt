@@ -30,7 +30,7 @@ class SettingsFragment : Fragment() {
         TabLayoutMediator(v.tabs, v.pages) { tab, position ->
             tab.setText(tabLabels[position])
         }.attach()
-        
+
         return v.root
     }
 

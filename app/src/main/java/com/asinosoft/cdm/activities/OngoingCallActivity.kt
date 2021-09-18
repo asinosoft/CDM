@@ -33,7 +33,7 @@ import org.jetbrains.anko.telephonyManager
 import java.util.*
 
 class OngoingCallActivity : BaseActivity() {
-    private lateinit var v : ActivityOngoingCallBinding
+    private lateinit var v: ActivityOngoingCallBinding
 
     // bools
     private var isCallEnded = false
@@ -128,7 +128,8 @@ class OngoingCallActivity : BaseActivity() {
             val slots: Array<String> =
                 accounts.mapNotNull { telephonyManager.createForPhoneAccountHandle(it)?.simOperatorName }
                     .toTypedArray()
-            val icons: Array<Int> = arrayOf(R.drawable.ic_sim1, R.drawable.ic_sim2, R.drawable.ic_sim3)
+            val icons: Array<Int> =
+                arrayOf(R.drawable.ic_sim1, R.drawable.ic_sim2, R.drawable.ic_sim3)
             val adapter = StringsWithIconsAdapter(this, slots, icons)
 
             AlertDialog.Builder(this)

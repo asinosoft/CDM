@@ -60,7 +60,10 @@ class ContactFragment : Fragment() {
         v!!.tabs.setViewPager(v!!.pages)
 
         model.contact.observe(viewLifecycleOwner) { contact ->
-            contact?.let { v!!.image.setImageURI(it.photoUri) }
+            contact?.let {
+                v!!.image.setImageURI(it.photoUri)
+                v!!.name.text = it.name
+            }
         }
     }
 }

@@ -1,69 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<github.chenupt.dragtoplayout.DragTopLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drag_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ContactFragment"
-    android:orientation="vertical">
+    tools:context=".fragments.ContactFragment">
 
-    <github.chenupt.dragtoplayout.DragTopLayout
-        android:id="@+id/drag_layout"
+    <ImageView
+        android:id="@+id/image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="300dp"
+        android:contentDescription="@string/photo"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_default_photo" />
 
-        <ImageView
-            android:id="@+id/image"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/name"
             android:layout_width="match_parent"
-            tools:src="@drawable/ic_default_photo"
-            android:scaleType="centerCrop"
-            android:contentDescription="@string/photo"
-            android:layout_height="300dp"/>
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/contact_name_size"
+            style="@style/Caption"
+            tools:text="@string/unknown_caller" />
 
-        <LinearLayout
+        <com.ogaclejapan.smarttablayout.SmartTabLayout
+            android:id="@+id/tabs"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="225dp"
-            android:orientation="vertical">
+            android:layout_height="48dp"
+            app:stl_clickable="true"
+            app:stl_defaultTabBackground="?attr/selectableItemBackground"
+            app:stl_defaultTabTextAllCaps="true"
+            app:stl_defaultTabTextColor="?attr/colorOnPrimary"
+            app:stl_defaultTabTextHorizontalPadding="16dp"
+            app:stl_defaultTabTextMinWidth="0dp"
+            app:stl_defaultTabTextSize="12sp"
+            app:stl_distributeEvenly="false"
+            app:stl_dividerColor="#4D000000"
+            app:stl_dividerThickness="1dp"
+            app:stl_drawDecorationAfterTab="false"
+            app:stl_indicatorAlwaysInCenter="false"
+            app:stl_indicatorColor="#40C4FF"
+            app:stl_indicatorCornerRadius="2dp"
+            app:stl_indicatorGravity="bottom"
+            app:stl_indicatorInFront="false"
+            app:stl_indicatorInterpolation="smart"
+            app:stl_indicatorThickness="4dp"
+            app:stl_indicatorWidth="auto"
+            app:stl_indicatorWithoutPadding="false"
+            app:stl_overlineColor="#4D000000"
+            app:stl_overlineThickness="0dp"
+            app:stl_titleOffset="24dp"
+            app:stl_underlineColor="#4D000000"
+            app:stl_underlineThickness="1dp" />
 
-            <com.ogaclejapan.smarttablayout.SmartTabLayout
-                android:id="@+id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                app:stl_indicatorAlwaysInCenter="false"
-                app:stl_indicatorWithoutPadding="false"
-                app:stl_indicatorInFront="false"
-                app:stl_indicatorInterpolation="smart"
-                app:stl_indicatorGravity="bottom"
-                app:stl_indicatorColor="#40C4FF"
-                app:stl_indicatorThickness="4dp"
-                app:stl_indicatorWidth="auto"
-                app:stl_indicatorCornerRadius="2dp"
-                app:stl_overlineColor="#4D000000"
-                app:stl_overlineThickness="0dp"
-                app:stl_underlineColor="#4D000000"
-                app:stl_underlineThickness="1dp"
-                app:stl_dividerColor="#4D000000"
-                app:stl_dividerThickness="1dp"
-                app:stl_defaultTabBackground="?attr/selectableItemBackground"
-                app:stl_defaultTabTextAllCaps="true"
-                app:stl_defaultTabTextColor="#FC000000"
-                app:stl_defaultTabTextSize="12sp"
-                app:stl_defaultTabTextHorizontalPadding="16dp"
-                app:stl_defaultTabTextMinWidth="0dp"
-                app:stl_distributeEvenly="false"
-                app:stl_clickable="true"
-                app:stl_titleOffset="24dp"
-                app:stl_drawDecorationAfterTab="false"
-                />
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/pages"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-            <androidx.viewpager.widget.ViewPager
-                android:id="@+id/pages"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+    </LinearLayout>
 
-        </LinearLayout>
-
-    </github.chenupt.dragtoplayout.DragTopLayout>
-
-</LinearLayout>
+</github.chenupt.dragtoplayout.DragTopLayout>
