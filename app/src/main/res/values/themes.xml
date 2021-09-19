@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="BaseTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
         <item name="android:listViewStyle">@style/TransparentListView</item>
         <item name="android:expandableListViewStyle">@style/TransparentExpandableListView</item>
         <item name="android:windowTranslucentNavigation">false</item>
@@ -64,5 +66,11 @@
         <item name="android:navigationBarColor">@color/system_navbar_color_dark</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_dark</item>
+    </style>
+
+    <!-- Переопределяем цвета текста и кнопок в диалоге, чтобы он выглядел нормально в тёмных темах -->
+    <style name="AlertDialogTheme" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="colorPrimary">@color/text_color_light</item>
+        <item name="android:textColor">@color/active_tab_text_light</item>
     </style>
 </resources>
