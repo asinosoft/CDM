@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:contextClickable="true"
     tools:context=".fragments.KeyboardFragment">
 
     <LinearLayout
@@ -17,8 +18,8 @@
             android:id="@+id/image_clear"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_margin="8dp"
+            android:contentDescription="@string/close_keyboard"
             android:src="?attr/closeIcon" />
 
         <TextView
@@ -35,6 +36,7 @@
             android:layout_height="32dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            android:contentDescription="@string/delete"
             android:src="?attr/backspaceIcon" />
 
     </LinearLayout>
@@ -65,10 +67,7 @@
                     android:id="@+id/one_btn"
                     android:layout_width="@dimen/passcode_btn"
                     android:layout_height="@dimen/passcode_btn"
-                    android:layout_marginStart="@dimen/passcode_btn_margin"
-                    android:layout_marginTop="@dimen/passcode_btn_margin"
-                    android:layout_marginEnd="@dimen/passcode_btn_margin"
-                    android:layout_marginBottom="@dimen/passcode_btn_margin"
+                    android:layout_margin="8dp"
                     android:background="@drawable/numeric_button"
                     android:clickable="true"
                     android:focusable="true"
@@ -86,6 +85,7 @@
                         android:layout_height="24dp"
                         android:layout_marginTop="10dp"
                         android:alpha="0.4"
+                        android:contentDescription="@string/voicemail"
                         android:src="?attr/voicemailIcon"
                         android:textAppearance="?android:attr/textAppearanceSmall" />
                 </LinearLayout>
@@ -497,6 +497,7 @@
                 android:layout_width="@dimen/passcode_btn"
                 android:layout_height="@dimen/passcode_btn"
                 android:layout_margin="@dimen/passcode_btn_margin"
+                android:contentDescription="@string/call"
                 android:hapticFeedbackEnabled="true"
                 android:padding="5dp"
                 android:src="?attr/callIcon"
@@ -507,10 +508,11 @@
 
     <ImageView
         android:id="@+id/settingsButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="10dp"
-        android:padding="8dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/contact_tab_settings"
+        android:padding="4dp"
         android:src="?attr/settingsIcon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

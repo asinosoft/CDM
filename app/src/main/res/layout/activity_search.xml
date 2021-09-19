@@ -12,17 +12,6 @@
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:src="?attr/keyboardIcon"
-        app:layout_constraintBottom_toTopOf="@id/layout_keyboard"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:tint="?android:attr/colorBackground" />
-
     <LinearLayout
         android:id="@+id/layout_keyboard"
         android:layout_width="match_parent"

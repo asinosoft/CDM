@@ -25,16 +25,20 @@
             android:layout_height="64dp"
             android:layout_gravity="end"
             android:layout_marginEnd="-64dp"
+            android:padding="8dp"
             android:src="@drawable/ic_phone_call"
-            android:visibility="visible" />
+            android:visibility="visible"
+            app:civ_border_width="0dp" />
 
         <com.asinosoft.cdm.views.CircularImageView
             android:id="@+id/imageRightAction"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_marginStart="-64dp"
+            android:padding="8dp"
             android:src="@drawable/ic_whatsapp_chat"
-            android:visibility="visible" />
+            android:visibility="visible"
+            app:civ_border_width="0dp" />
 
         <RelativeLayout
             android:id="@+id/drag_layout"
@@ -47,10 +51,10 @@
                 android:id="@+id/imageContact"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
+                android:layout_margin="8dp"
                 android:src="@drawable/ic_default_photo"
                 app:civ_border_color="?android:attr/colorPrimary"
-                app:civ_border_width="1dp"
-                />
+                app:civ_border_width="1dp" />
 
             <TextView
                 android:id="@+id/name"
@@ -81,9 +85,9 @@
                 android:layout_below="@id/name"
                 android:layout_marginTop="2dp"
                 android:layout_toEndOf="@id/typeCall"
-                tools:text="number"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                tools:text="number" />
 
             <TextView
                 android:id="@+id/timeContact"
@@ -93,9 +97,9 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="13dp"
-                tools:text="time"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                tools:text="time" />
 
             <TextView
                 android:id="@+id/dateContact"
@@ -104,9 +108,9 @@
                 android:layout_above="@id/timeContact"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="16dp"
-                tools:text="date"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                tools:text="date" />
 
         </RelativeLayout>
 

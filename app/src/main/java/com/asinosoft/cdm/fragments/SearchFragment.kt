@@ -47,8 +47,6 @@ class SearchFragment : Fragment() {
 
         v.rvFilteredContacts.adapter = contactsAdapter
 
-        v.fab.setOnClickListener { v.layoutKeyboard.toggle() }
-
         contactsAdapter.doOnClickContact { contact ->
             findNavController().navigate(
                 R.id.action_open_contact,
@@ -74,7 +72,7 @@ class SearchFragment : Fragment() {
         }
 
         keyboard.onCloseButtonClick {
-            findNavController().popBackStack()
+            v.layoutKeyboard.toggle()
         }
     }
 

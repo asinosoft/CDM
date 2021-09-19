@@ -27,7 +27,8 @@
             android:layout_marginEnd="-64dp"
             android:padding="8dp"
             android:src="@drawable/ic_phone_call"
-            android:visibility="visible" />
+            android:visibility="visible"
+            app:civ_border_width="0dp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageRightAction"
@@ -36,7 +37,8 @@
             android:layout_marginStart="-64dp"
             android:padding="8dp"
             android:src="@drawable/ic_whatsapp_chat"
-            android:visibility="visible" />
+            android:visibility="visible"
+            app:civ_border_width="0dp" />
 
         <RelativeLayout
             android:id="@+id/drag_layout"
@@ -51,7 +53,9 @@
                 android:layout_height="64dp"
                 android:clickable="false"
                 android:padding="8dp"
-                android:src="@drawable/ic_default_photo" />
+                android:src="@drawable/ic_default_photo"
+                app:civ_border_color="?android:attr/colorPrimary"
+                app:civ_border_width="1dp" />
 
             <TextView
                 android:id="@+id/name"
@@ -60,7 +64,9 @@
                 android:layout_marginStart="4dp"
                 android:layout_toEndOf="@id/imageContact"
                 android:clickable="false"
+                android:ellipsize="end"
                 android:gravity="bottom|center"
+                android:singleLine="true"
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textStyle="normal"

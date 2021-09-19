@@ -12,6 +12,7 @@
         android:layout_height="64dp"
         android:src="@drawable/ic_whatsapp_chat"
         android:visibility="invisible"
+        app:civ_border_width="0dp"
         tools:ignore="MissingConstraints" />
 
     <com.asinosoft.cdm.views.CircleImage

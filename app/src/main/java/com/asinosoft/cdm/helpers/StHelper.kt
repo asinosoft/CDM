@@ -15,7 +15,7 @@ object StHelper {
             val clearNumber = clearNonNumbers.replace(number, "")
             val phoneUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance()
             val numberForm: Phonenumber.PhoneNumber? = phoneUtil.parse(clearNumber, "RU")
-            phoneUtil.format(numberForm, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL)
+            phoneUtil.format(numberForm, PhoneNumberUtil.PhoneNumberFormat.E164)
         } catch (e: Exception) {
             number
         }
