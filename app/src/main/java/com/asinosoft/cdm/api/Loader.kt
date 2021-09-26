@@ -88,6 +88,7 @@ object Loader {
      * Сохранение настроек
      */
     fun saveSettings(context: Context, settings: Settings) {
+        this.settings = settings
         Log.d("Loader::saveSettings", settings.toString())
         context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
             .edit()

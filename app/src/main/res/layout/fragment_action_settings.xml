@@ -7,16 +7,6 @@
     android:orientation="vertical"
     tools:context=".fragments.ActionSettingsFragment">
 
-    <TextView
-        android:id="@+id/caption"
-        style="@style/Caption"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/actions"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="300dp"
@@ -27,7 +17,8 @@
             android:layout_width="86dp"
             android:layout_height="86dp"
             android:layout_centerInParent="true"
-            android:src="@drawable/ic_default_photo" />
+            android:src="@drawable/ic_default_photo"
+            app:civ_border_width="0dp" />
 
         <com.asinosoft.cdm.views.CircularImageView
             android:id="@+id/cirTop"
@@ -36,7 +27,8 @@
             android:layout_above="@id/contact"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="10dp"
-            android:src="@drawable/ic_default_photo" />
+            android:src="@drawable/ic_default_photo"
+            app:civ_border_width="0dp" />
 
         <com.asinosoft.cdm.views.CircularImageView
             android:id="@+id/cirBottom"
@@ -45,7 +37,8 @@
             android:layout_below="@id/contact"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
-            android:src="@drawable/ic_default_photo" />
+            android:src="@drawable/ic_default_photo"
+            app:civ_border_width="0dp" />
 
         <com.asinosoft.cdm.views.CircularImageView
             android:id="@+id/cirLeft"
@@ -54,7 +47,8 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="10dp"
             android:layout_toStartOf="@id/contact"
-            android:src="@drawable/ic_default_photo" />
+            android:src="@drawable/ic_default_photo"
+            app:civ_border_width="0dp" />
 
         <com.asinosoft.cdm.views.CircularImageView
             android:id="@+id/cirRight"
@@ -63,22 +57,16 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="10dp"
             android:layout_toEndOf="@id/contact"
-            android:src="@drawable/ic_default_photo" />
+            android:src="@drawable/ic_default_photo"
+            app:civ_border_width="0dp" />
 
     </RelativeLayout>
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/available_actions"
-        android:textAlignment="center"
-        android:textColor="@color/purple" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_actions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:contentDescription="@string/available_actions"
         tools:itemCount="3"
         tools:listitem="@layout/action_item" />

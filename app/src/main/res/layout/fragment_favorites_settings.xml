@@ -1,216 +1,196 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".fragments.FavoritesSettingsFragment">
 
-    <ImageButton
-        android:id="@+id/btn_favorites_first"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:contentDescription="@string/favorites_first_button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btn_favorites_last"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/caption"
-        app:layout_constraintVertical_bias="0"
-        app:srcCompat="@drawable/ic_layout_mode" />
+    <RelativeLayout
+        android:id="@+id/layoutGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <ImageButton
-        android:id="@+id/btn_favorites_last"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:contentDescription="@string/favorites_last_button"
-        android:rotation="180"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btn_favorites_first"
-        app:layout_constraintTop_toBottomOf="@id/caption"
-        app:layout_constraintVertical_bias="0"
-        app:srcCompat="@drawable/ic_layout_mode" />
+        <TextView
+            android:id="@+id/layoutCaption"
+            style="@style/Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="@string/favorites" />
 
-    <TextView
-        android:id="@+id/caption"
-        style="@style/Caption"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/favorites"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ImageButton
+            android:id="@+id/btn_favorites_first"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutCaption"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="64dp"
+            android:contentDescription="@string/favorites_first_button"
+            app:srcCompat="@drawable/ic_layout_mode" />
 
-    <TextView
-        android:id="@+id/text_favorite_size"
+        <ImageButton
+            android:id="@+id/btn_favorites_last"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutCaption"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="64dp"
+            android:contentDescription="@string/favorites_last_button"
+            android:rotation="180"
+            app:srcCompat="@drawable/ic_layout_mode" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btn_favorites_first"
+            android:layout_alignStart="@id/btn_favorites_first"
+            android:layout_alignEnd="@id/btn_favorites_first"
+            android:text="@string/favorites_first"
+            android:textAlignment="center" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btn_favorites_last"
+            android:layout_alignStart="@id/btn_favorites_last"
+            android:layout_alignEnd="@id/btn_favorites_last"
+            android:text="@string/favorites_last"
+            android:textAlignment="center" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/themeGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/themeCaption"
+            style="@style/Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="@string/themes" />
+
+        <Button
+            android:id="@+id/themes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/themeCaption"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/theme_light" />
+
+        <Button
+            android:id="@+id/backgrounds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/themeCaption"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="64dp"
+            android:text="@string/background" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/avatarGroup"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginTop="24dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/img_favorite"
+            android:layout_width="86dp"
+            android:layout_height="86dp"
+            android:layout_centerInParent="true"
+            android:contentDescription="@string/favorites_sample"
+            android:src="@drawable/ic_default_photo" />
+
+        <Button
+            android:id="@+id/pick_border_color"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/palette"
+            android:contentDescription="@string/favorites_border_color" />
+
+    </RelativeLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:gravity="center"
-        android:text="@string/favorites_size"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_favorites_first" />
+        android:orientation="vertical">
 
-    <com.xw.repo.BubbleSeekBar
-        android:id="@+id/sb_favorite_size"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:paddingHorizontal="20dp"
-        app:bsb_auto_adjust_section_mark="true"
-        app:bsb_max="300"
-        app:bsb_min="30"
-        app:bsb_second_track_color="@color/blue"
-        app:bsb_touch_to_seek="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_favorite_size" />
+        <TextView
+            android:id="@+id/text_favorite_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="@string/favorites_size" />
 
-    <TextView
-        android:id="@+id/text_column_count"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/favorites_columns_count"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sb_favorite_size" />
+        <com.xw.repo.BubbleSeekBar
+            android:id="@+id/sb_favorite_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:paddingHorizontal="20dp"
+            app:bsb_auto_adjust_section_mark="true"
+            app:bsb_max="300"
+            app:bsb_min="30"
+            app:bsb_second_track_color="@color/blue"
+            app:bsb_touch_to_seek="true" />
 
-    <com.xw.repo.BubbleSeekBar
-        android:id="@+id/sb_column_count"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:paddingHorizontal="20dp"
-        app:bsb_auto_adjust_section_mark="true"
-        app:bsb_max="4"
-        app:bsb_min="1"
-        app:bsb_progress="1"
-        app:bsb_second_track_color="@color/blue"
-        app:bsb_section_count="3"
-        app:bsb_section_text_position="below_section_mark"
-        app:bsb_show_section_mark="true"
-        app:bsb_show_section_text="true"
-        app:bsb_show_thumb_text="true"
-        app:bsb_touch_to_seek="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_column_count" />
+        <TextView
+            android:id="@+id/text_column_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/favorites_columns_count" />
 
-    <TextView
-        android:id="@+id/text_border_width"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/favorites_border_width"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sb_column_count" />
+        <com.xw.repo.BubbleSeekBar
+            android:id="@+id/sb_column_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:paddingHorizontal="20dp"
+            app:bsb_auto_adjust_section_mark="true"
+            app:bsb_max="4"
+            app:bsb_min="1"
+            app:bsb_progress="1"
+            app:bsb_second_track_color="@color/blue"
+            app:bsb_section_count="3"
+            app:bsb_section_text_position="below_section_mark"
+            app:bsb_show_section_mark="true"
+            app:bsb_show_section_text="true"
+            app:bsb_show_thumb_text="true"
+            app:bsb_touch_to_seek="true" />
 
-    <com.xw.repo.BubbleSeekBar
-        android:id="@+id/sb_border_width"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:paddingHorizontal="20dp"
-        app:bsb_auto_adjust_section_mark="true"
-        app:bsb_max="16"
-        app:bsb_min="0"
-        app:bsb_progress="1"
-        app:bsb_second_track_color="@color/blue"
-        app:bsb_touch_to_seek="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_border_width" />
+        <TextView
+            android:id="@+id/text_border_width"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/favorites_border_width" />
 
-    <Button
-        android:id="@+id/pick_border_color"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        android:background="@drawable/palette"
-        android:contentDescription="@string/favorites_border_color"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sb_border_width" />
+        <com.xw.repo.BubbleSeekBar
+            android:id="@+id/sb_border_width"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:paddingHorizontal="20dp"
+            app:bsb_auto_adjust_section_mark="true"
+            app:bsb_max="16"
+            app:bsb_min="0"
+            app:bsb_progress="1"
+            app:bsb_second_track_color="@color/blue"
+            app:bsb_touch_to_seek="true" />
+    </LinearLayout>
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/img_favorite"
-        android:layout_width="86dp"
-        android:layout_height="86dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="@string/favorites_sample"
-        android:src="@drawable/ic_default_photo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sb_border_width" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/favorites_first"
-        app:layout_constraintBottom_toTopOf="@id/btn_favorites_first"
-        app:layout_constraintLeft_toLeftOf="@id/btn_favorites_first"
-        app:layout_constraintRight_toRightOf="@id/btn_favorites_first" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/favorites_last"
-        app:layout_constraintBottom_toTopOf="@id/btn_favorites_last"
-        app:layout_constraintLeft_toLeftOf="@id/btn_favorites_last"
-        app:layout_constraintRight_toRightOf="@id/btn_favorites_last" />
-
-    <TextView
-        android:id="@+id/themes"
-        style="@style/Caption"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="start"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:text="@string/themes"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/img_favorite" />
-
-    <TextView
-        android:id="@+id/theme"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:paddingStart="40dp"
-        android:paddingEnd="24dp"
-        app:layout_constraintBottom_toBottomOf="@id/themes"
-        app:layout_constraintStart_toStartOf="@id/themes"
-        tools:text="светлая" />
-
-    <TextView
-        android:id="@+id/backgrounds"
-        style="@style/Caption"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="start"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:text="@string/background"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/themes" />
-
-    <TextView
-        android:id="@+id/background"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:paddingStart="40dp"
-        android:paddingEnd="24dp"
-        app:layout_constraintBottom_toBottomOf="@id/backgrounds"
-        app:layout_constraintStart_toStartOf="@id/backgrounds"
-        tools:text="стандартный" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

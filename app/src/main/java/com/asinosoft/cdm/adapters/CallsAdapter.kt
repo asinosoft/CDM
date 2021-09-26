@@ -13,7 +13,7 @@ import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
-import com.asinosoft.cdm.databinding.CalllogObjectBinding
+import com.asinosoft.cdm.databinding.ItemCallBinding
 import com.asinosoft.cdm.helpers.Metoths
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
@@ -44,7 +44,7 @@ class CallsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
         val view = when (viewType) {
             TYPE_FAVORITES -> favorites
-            TYPE_CALL_ITEM -> CalllogObjectBinding.inflate(
+            TYPE_CALL_ITEM -> ItemCallBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -90,11 +90,11 @@ class CallsAdapter(
 
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
         when (holder.v) {
-            is CalllogObjectBinding -> bindCallHistoryItem(holder.v, calls[position - 1])
+            is ItemCallBinding -> bindCallHistoryItem(holder.v, calls[position - 1])
         }
     }
 
-    private fun bindCallHistoryItem(v: CalllogObjectBinding, call: CallHistoryItem) {
+    private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem) {
         v.imageContact.setImageURI(call.contact.photoUri)
         v.name.text = call.contact.name
         v.number.text = "${call.prettyPhone}, ${Metoths.getFormattedTime(call.duration)}"

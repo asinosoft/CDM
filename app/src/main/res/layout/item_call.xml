@@ -19,7 +19,7 @@
         app:rightItem="@id/imageLeftAction"
         app:swipeDirection="left|right">
 
-        <com.asinosoft.cdm.views.CircularImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageLeftAction"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -30,7 +30,7 @@
             android:visibility="visible"
             app:civ_border_width="0dp" />
 
-        <com.asinosoft.cdm.views.CircularImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageRightAction"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -47,7 +47,7 @@
             android:clickable="true"
             android:focusable="true">
 
-            <com.asinosoft.cdm.views.CircularImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imageContact"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
@@ -76,6 +76,7 @@
                 android:layout_height="20dp"
                 android:layout_below="@id/name"
                 android:layout_toEndOf="@id/imageContact"
+                android:contentDescription="@string/state_call_ringing"
                 android:src="@drawable/baseline_call_made_24" />
 
             <TextView

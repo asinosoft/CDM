@@ -1,6 +1,5 @@
 package com.asinosoft.cdm.fragments
 
-import android.content.Context
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
@@ -12,7 +11,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.databinding.FragmentFavoritesSettingsBinding
-import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
 import com.asinosoft.cdm.viewmodels.SettingsViewModel
@@ -78,11 +76,7 @@ class FavoritesSettingsFragment : Fragment() {
         }
 
         val themeNames = resources.getStringArray(R.array.themeNames)
-        v!!.theme.text = themeNames.elementAtOrElse(model.settings.theme) { themeNames.get(0) }
-
-        val background = activity?.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
-            ?.getString(Keys.BACKGROUND_IMAGE, null)
-        v!!.background.text = background
+        v!!.themes.text = themeNames.elementAtOrElse(model.settings.theme) { themeNames.get(0) }
     }
 
     private fun setFavoritesLayout(layout: Boolean) {

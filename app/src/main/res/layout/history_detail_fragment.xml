@@ -12,6 +12,6 @@
         android:layout_height="match_parent"
         android:nestedScrollingEnabled="true"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/calllog_object" />
+        tools:listitem="@layout/item_call" />
 
 </FrameLayout>

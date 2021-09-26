@@ -79,7 +79,7 @@ class ActionSettingsFragment : Fragment() {
     }
 
     private fun initActionList() {
-        v!!.rvActions.layoutManager = GridLayoutManager(requireContext(), 5)
+        v!!.rvActions.layoutManager = GridLayoutManager(requireContext(), 4)
         v!!.rvActions.adapter = ActionsAdapter().apply {
             setActions(Action.Type.values().asList())
         }

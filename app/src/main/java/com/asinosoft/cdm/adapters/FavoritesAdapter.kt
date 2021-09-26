@@ -15,7 +15,7 @@ import com.asinosoft.cdm.api.FavoriteContactRepository
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.FavoriteContact
-import com.asinosoft.cdm.databinding.ItemCirBinding
+import com.asinosoft.cdm.databinding.ItemFavoriteBinding
 import com.asinosoft.cdm.helpers.ItemTouchCallbackCir
 import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
@@ -44,7 +44,7 @@ class FavoritesAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        Holder(ItemCirBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        Holder(ItemFavoriteBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     override fun getItemCount() = favorites.getContacts().size
 
@@ -73,7 +73,7 @@ class FavoritesAdapter(
         notifyItemChanged(adapterPosition)
     }
 
-    inner class Holder(val v: ItemCirBinding) : RecyclerView.ViewHolder(v.root) {
+    inner class Holder(val v: ItemFavoriteBinding) : RecyclerView.ViewHolder(v.root) {
 
         fun bind(n: Int, favorite: FavoriteContact) {
             v.actionView.setSize(settings.sizeCirs)

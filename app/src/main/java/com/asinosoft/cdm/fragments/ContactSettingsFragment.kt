@@ -16,7 +16,6 @@ import com.asinosoft.cdm.adapters.ActionsAdapter
 import com.asinosoft.cdm.adapters.SelectorAdapter
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
-import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.databinding.ContactSettingsBinding
 import com.asinosoft.cdm.helpers.AlertDialogUtils
 import com.asinosoft.cdm.helpers.Metoths
@@ -54,10 +53,7 @@ class ContactSettingsFragment : Fragment() {
         v!!.cirLeft.let(this@ContactSettingsFragment::setDragListener)
         v!!.cirRight.let(this@ContactSettingsFragment::setDragListener)
 
-        val settings = model.getGlobalSettings(requireContext())
-        setAllCirs(settings)
-
-        v!!.rvActions.layoutManager = GridLayoutManager(requireContext(), 5)
+        v!!.rvActions.layoutManager = GridLayoutManager(requireContext(), 4)
         v!!.rvActions.adapter = ActionsAdapter()
 
         model.availableActions.observe(viewLifecycleOwner) { actions ->
@@ -194,21 +190,5 @@ class ContactSettingsFragment : Fragment() {
         v!!.textRight.text = directActions.right.value
         v!!.textTop.text = directActions.top.value
         v!!.textBottom.text = directActions.down.value
-    }
-
-    private fun setAllCirs(settings: Settings) {
-        settings.borderWidthCirs.toFloat().let {
-            v!!.cirBottom.borderWidth = it
-            v!!.cirTop.borderWidth = it
-            v!!.cirRight.borderWidth = it
-            v!!.cirLeft.borderWidth = it
-        }
-
-        settings.colorBorder.let {
-            v!!.cirBottom.borderColor = it
-            v!!.cirTop.borderColor = it
-            v!!.cirRight.borderColor = it
-            v!!.cirLeft.borderColor = it
-        }
     }
 }
