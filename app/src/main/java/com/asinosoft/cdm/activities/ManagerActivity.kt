@@ -26,9 +26,7 @@ class ManagerActivity : BaseActivity() {
 
         withPermission(arrayOf(READ_CONTACTS, READ_CALL_LOG, CALL_PHONE)) { ok ->
             if (ok && settings.checkDefaultDialer) {
-                withPermission(arrayOf(CALL_PHONE)) { permitted ->
-                    if (permitted) setDefaultDialer()
-                }
+                setDefaultDialer()
             }
         }
     }
@@ -53,9 +51,9 @@ class ManagerActivity : BaseActivity() {
     private fun refreshModel() {
         if (isRefreshed) return
 
-        withPermission(arrayOf(READ_CONTACTS, READ_CALL_LOG)) { permitted ->
-            if (permitted) model.refresh()
+        if (hasPermissions(arrayOf(READ_CONTACTS, READ_CALL_LOG))) {
+            model.refresh()
+            isRefreshed = true
         }
-        isRefreshed = true
     }
 }
