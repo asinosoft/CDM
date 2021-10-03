@@ -24,7 +24,7 @@ class ManagerActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(ActivityMainBinding.inflate(layoutInflater).root)
 
-        withPermission(arrayOf(READ_CONTACTS, READ_CALL_LOG, CALL_PHONE)) { ok ->
+        withPermission(arrayOf(READ_CONTACTS, READ_CALL_LOG, READ_PHONE_STATE, CALL_PHONE)) { ok ->
             if (ok && settings.checkDefaultDialer) {
                 setDefaultDialer()
             }

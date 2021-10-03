@@ -10,7 +10,7 @@ class CallService : InCallService() {
 
     override fun onCallAdded(call: Call) {
         Log.i("CallService", "Call added: ${call.details.handle}")
-        CallManager.setCall(call)
+        CallManager.call = call
         Intent(this, OngoingCallActivity::class.java)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             .let { startActivity(it) }

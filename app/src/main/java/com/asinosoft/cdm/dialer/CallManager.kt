@@ -1,6 +1,5 @@
 package com.asinosoft.cdm.dialer
 
-import android.net.Uri
 import android.telecom.Call
 import android.telecom.VideoProfile
 import android.util.Log
@@ -8,14 +7,7 @@ import android.util.Log
 class CallManager {
 
     companion object {
-        private var call: Call? = null
-
-        fun isCalled(): Boolean = null != call
-
-        fun setCall(value: Call) {
-            Log.d("CallManager", "setCall")
-            call = value
-        }
+        var call: Call? = null
 
         fun resetCall() {
             Log.d("CallManager", "resetCall")
@@ -46,12 +38,6 @@ class CallManager {
             call?.unregisterCallback(callback)
         }
 
-        fun getState() = if (call == null) {
-            Call.STATE_DISCONNECTED
-        } else {
-            call!!.state
-        }
-
         fun keypad(c: Char) {
             call?.playDtmfTone(c)
             call?.stopDtmfTone()
@@ -62,14 +48,6 @@ class CallManager {
                 if (hold) call!!.hold()
                 else call!!.unhold()
             }
-        }
-
-        fun getCallPhone(): Uri? {
-            return call?.details?.handle
-        }
-
-        fun getCallDetails(): Call.Details? {
-            return call?.details
         }
     }
 }

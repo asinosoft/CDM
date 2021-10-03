@@ -25,7 +25,7 @@ import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.dialer.isQPlus
 import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.Metoths
-import com.asinosoft.cdm.helpers.TelecomHelper
+import com.asinosoft.cdm.helpers.isDefaultDialer
 
 /**
  * Базовый клас с поддержкой тем
@@ -106,7 +106,7 @@ open class BaseActivity : AppCompatActivity() {
      */
     fun setDefaultDialer() {
         Log.d("BaseActivity::setDefaultDialer", packageName)
-        if (TelecomHelper.isDefaultDialer(this)) {
+        if (isDefaultDialer()) {
             return
         }
 

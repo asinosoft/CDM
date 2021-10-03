@@ -32,7 +32,7 @@
     <string name="describe">describe</string>
 
     <string name="type_birthday">День рождения</string>
-    <string name="state_call_ringing">Входящий вызов</string>
+    <string name="state_call_ringing">Входящий звонок</string>
     <string name="state_call_active">Текущий вызов</string>
     <string name="unknown_caller">Неизвестный номер</string>
     <string name="open_keyboard">Открыть клавиатуру</string>
@@ -80,4 +80,10 @@
     <string name="sim_state_error">ошибка</string>
     <string name="sim_state_network_locked">сеть недоступна</string>
     <string name="sim_state_ready">доступна</string>
+
+    <string name="microphone">Микрофон</string>
+    <string name="speaker">Динамик</string>
+    <string name="sim">SIM</string>
+    <string name="decline_call">Отклонить вызов</string>
+    <string name="accept_call">Принять вызов</string>
 </resources>

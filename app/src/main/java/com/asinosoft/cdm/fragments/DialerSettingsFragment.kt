@@ -12,7 +12,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.activities.BaseActivity
-import com.asinosoft.cdm.helpers.TelecomHelper
+import com.asinosoft.cdm.helpers.getAvailableSimSlots
 import com.asinosoft.cdm.viewmodels.SettingsViewModel
 
 /**
@@ -57,25 +57,24 @@ class DialerSettingsFragment : PreferenceFragmentCompat() {
             preferenceScreen.addPreference(it)
         }
 
-        TelecomHelper.getSimSlotList(context).forEachIndexed { index, slot ->
+        context.getAvailableSimSlots().forEach { slot ->
             CheckBoxPreference(context).apply {
-                key = "SIM $index"
+                key = "SIM ${slot.id}"
                 isChecked = true
-                when (slot.simState) {
+                when (slot.state) {
                     SIM_STATE_READY -> {
-                        title = "SIM $index : ${slot.simOperatorName}"
+                        title = "SIM ${slot.id} : ${slot.operator}"
                         check(true)
                     }
                     else -> {
-                        val state = TelecomHelper.getSimStateText(context, slot.simState)
-                        title = "SIM $index : $state"
+                        title = "SIM ${slot.id} : ${slot.getStateText(context)}"
                         isEnabled = false
                         check(false)
                     }
                 }
                 setOnPreferenceChangeListener { preference, newValue ->
                     // TODO: сохранить в настройках список сим-карт, доступных для звонков
-                    Log.d("SIM $index", "$preference ->  $newValue")
+                    Log.d("SIM ${slot.id}", "$preference ->  $newValue")
                     true
                 }
             }.also {

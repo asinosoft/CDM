@@ -19,14 +19,15 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.RemoteViews
+import androidx.activity.viewModels
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.adapters.StringsWithIconsAdapter
-import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.databinding.ActivityOngoingCallBinding
 import com.asinosoft.cdm.dialer.*
+import com.asinosoft.cdm.viewmodels.CallViewModel
 import org.jetbrains.anko.audioManager
 import org.jetbrains.anko.telecomManager
 import org.jetbrains.anko.telephonyManager
@@ -34,11 +35,11 @@ import java.util.*
 
 class OngoingCallActivity : BaseActivity() {
     private lateinit var v: ActivityOngoingCallBinding
+    private val model: CallViewModel by viewModels()
 
     // bools
     private var isCallEnded = false
     private var callDuration = 0
-    private lateinit var callContact: CallContact
     private val channelId = "simple_dialer_channel"
     private var proximityWakeLock: PowerManager.WakeLock? = null
     private var callTimer = Timer()
@@ -54,27 +55,23 @@ class OngoingCallActivity : BaseActivity() {
         v = ActivityOngoingCallBinding.inflate(layoutInflater)
         setContentView(v.root)
 
-        val contactUri: Uri?
         if (intent.action == Intent.ACTION_CALL && intent.data != null) {
             // Исходящий звонок
-            contactUri = intent.data
-            withPermission(arrayOf(CALL_PHONE, READ_PHONE_STATE)) { permitted ->
-                if (permitted) placeCall(contactUri)
+            Log.d("CDM|call", "outgoing → ${intent.data}")
+            model.setContactUri(this, intent.data)
+            withPermission(arrayOf(CALL_PHONE)) { permitted ->
+                if (permitted) placeCall(intent.data)
             }
+            updateCallState(Call.STATE_DIALING)
         } else {
             // Входящий звонок
-            contactUri = CallManager.getCallPhone()
-
-            CallManager.getCallDetails()?.let {
-                initSimInfo(it)
+            CallManager.call?.let { call ->
+                Log.d("CDM|call", "incoming → ${call.details.handle}")
+                model.setCall(this, call)
+                updateCallState(call.state)
             }
         }
 
-        if (null == contactUri) {
-            return finish()
-        }
-
-        callContact = findContact(contactUri)
         updateOtherPersonsInfo()
 
         clickToButtons()
@@ -90,17 +87,7 @@ class OngoingCallActivity : BaseActivity() {
         }
 
         CallManager.registerCallback(callCallback)
-        if (CallManager.isCalled()) {
-            updateCallState(CallManager.getState())
-        }
         Log.d("Call", "Creation complete")
-    }
-
-    private fun initSimInfo(details: Call.Details) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val info = telephonyManager.createForPhoneAccountHandle(details.accountHandle)
-            v.ongoingCallLayout.textOperator.text = info?.simOperatorName ?: "Неизвестно"
-        }
     }
 
     private fun placeCall(contact: Uri?) {
@@ -135,8 +122,8 @@ class OngoingCallActivity : BaseActivity() {
             AlertDialog.Builder(this)
                 .setTitle(R.string.sim_selection_title)
                 .setAdapter(adapter) { dialog, index ->
-                    dialog.dismiss()
                     onSelect(accounts[index])
+                    dialog.dismiss()
                 }
                 .setOnDismissListener {
                     finish()
@@ -146,35 +133,10 @@ class OngoingCallActivity : BaseActivity() {
         }
     }
 
-    private fun findContact(uri: Uri): CallContact {
-        Log.d("Call", "findContact $uri")
-        val number = Uri.decode(uri.toString()).substringAfter("tel:")
-        return ContactRepositoryImpl(this).getContactByPhone(number)?.let {
-            Log.d("Call", "found = ${it.name}")
-            return CallContact(
-                it.name,
-                it.photoUri,
-                number
-            )
-        } ?: CallContact(
-            "",
-            Uri.parse("android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}"),
-            number
-        )
-    }
-
     private fun updateOtherPersonsInfo() {
-        v.ongoingCallLayout.textStatus.text =
-            if (callContact.name.isNotEmpty()) callContact.name else getString(R.string.unknown_caller)
-        if (callContact.name != "null") {
-            v.ongoingCallLayout.textCaller.text = callContact.name
-            v.ongoingCallLayout.textCallerNumber.text = callContact.number
-        } else {
-            v.ongoingCallLayout.textCaller.text = callContact.number
-            v.ongoingCallLayout.textCallerNumber.visibility = View.GONE
-        }
-
-        v.ongoingCallLayout.imagePlaceholder.setImageURI(callContact.photoUri)
+        v.ongoingCallLayout.textCaller.text = model.getCallerName()
+        v.ongoingCallLayout.textCallerNumber.text = model.getCallerNumber()
+        v.ongoingCallLayout.imagePlaceholder.setImageURI(model.getCallerPhoto())
     }
 
     @SuppressLint("NewApi")
@@ -255,8 +217,7 @@ class OngoingCallActivity : BaseActivity() {
         isCallEnded = true
         if (callDuration > 0) {
             runOnUiThread {
-                v.ongoingCallLayout.textStopwatch.text =
-                    "${callDuration.getFormattedDuration()}"
+                v.ongoingCallLayout.textStatus.text = callDuration.getFormattedDuration()
                 Handler().postDelayed(
                     { finish() },
                     3000
@@ -273,7 +234,7 @@ class OngoingCallActivity : BaseActivity() {
             callDuration++
             runOnUiThread {
                 if (!isCallEnded) {
-                    v.ongoingCallLayout.textStopwatch.text = callDuration.getFormattedDuration()
+                    v.ongoingCallLayout.textStatus.text = callDuration.getFormattedDuration()
                 }
             }
         }
@@ -286,13 +247,14 @@ class OngoingCallActivity : BaseActivity() {
         }
     }
 
-    fun switchToCallingUI() {
+    private fun switchToCallingUI() {
         // Change the buttons layout
+        Log.d("CMD|call", "switchToCallingUI")
         v.ongoingCallLayout.textStatus.visibility = View.VISIBLE
         v.ongoingCallLayout.textCaller.visibility = View.VISIBLE
         v.ongoingCallLayout.answerBtn.visibility = View.GONE
         v.ongoingCallLayout.rejectBtn.visibility = View.GONE
-        v.ongoingCallLayout.rejectBtn2.visibility = View.VISIBLE
+        v.ongoingCallLayout.disconnect.visibility = View.VISIBLE
         v.ongoingCallLayout.buttonHold.visibility = View.VISIBLE
         v.ongoingCallLayout.buttonMute.visibility = View.VISIBLE
         v.ongoingCallLayout.buttonKeypad.visibility = View.VISIBLE
@@ -301,9 +263,10 @@ class OngoingCallActivity : BaseActivity() {
 
     private fun visibilityIncomingCall() {
         // Change the buttons layout
+        Log.d("CMD|call", "visibilityIncomingCall")
         v.ongoingCallLayout.answerBtn.visibility = View.VISIBLE
         v.ongoingCallLayout.rejectBtn.visibility = View.VISIBLE
-        v.ongoingCallLayout.rejectBtn2.visibility = View.INVISIBLE
+        v.ongoingCallLayout.disconnect.visibility = View.INVISIBLE
         v.ongoingCallLayout.buttonHold.visibility = View.INVISIBLE
         v.ongoingCallLayout.buttonMute.visibility = View.INVISIBLE
         v.ongoingCallLayout.buttonKeypad.visibility = View.INVISIBLE
@@ -311,10 +274,11 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun viewKeyboard() {
+        Log.d("CMD|call", "viewKeyboard")
         v.ongoingCallLayout.textCallerNumber.visibility = View.GONE
         v.ongoingCallLayout.textStatus.visibility = View.GONE
         v.ongoingCallLayout.textCaller.visibility = View.GONE
-        v.ongoingCallLayout.rejectBtn2.visibility - View.GONE
+        v.ongoingCallLayout.disconnect.visibility - View.GONE
         v.ongoingCallLayout.answerBtn.visibility = View.GONE
         v.ongoingCallLayout.rejectBtn.visibility = View.GONE
         v.ongoingCallLayout.buttonHold.visibility = View.GONE
@@ -327,9 +291,9 @@ class OngoingCallActivity : BaseActivity() {
         Log.d("Call", "Toggle MIC")
         Utilities().toggleViewActivation(v.ongoingCallLayout.buttonMute)
         audioManager.isMicrophoneMute = v.ongoingCallLayout.buttonMute.isActivated
-        val drawable =
+        val microphoneIcon =
             if (v.ongoingCallLayout.buttonMute.isActivated) R.drawable.ic_mic_off_black_24dp else R.drawable.ic_mic_black_24dp
-        v.ongoingCallLayout.buttonMute.setImageDrawable(getDrawable(drawable))
+        v.ongoingCallLayout.buttonMute.setImageResource(microphoneIcon)
         getSystemService(InCallService::class.java)?.setMuted(v.ongoingCallLayout.buttonMute.isActivated)
     }
 
@@ -337,9 +301,9 @@ class OngoingCallActivity : BaseActivity() {
         Log.d("Call", "Toggle SPEAKER")
         Utilities().toggleViewActivation(v.ongoingCallLayout.buttonSpeaker)
         audioManager.isSpeakerphoneOn = v.ongoingCallLayout.buttonSpeaker.isActivated
-        val drawable =
+        val speakerIcon =
             if (v.ongoingCallLayout.buttonSpeaker.isActivated) R.drawable.ic_baseline_volume_off_24 else R.drawable.outline_volume_up_24
-        v.ongoingCallLayout.buttonSpeaker.setImageDrawable(getDrawable(drawable))
+        v.ongoingCallLayout.buttonSpeaker.setImageResource(speakerIcon)
         val newRoute =
             if (v.ongoingCallLayout.buttonSpeaker.isActivated) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
         getSystemService(InCallService::class.java)?.setAudioRoute(newRoute)
@@ -357,7 +321,7 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoingCallLayout.answerBtn.setOnClickListener {
             activateCall()
         }
-        v.ongoingCallLayout.rejectBtn2.setOnClickListener {
+        v.ongoingCallLayout.disconnect.setOnClickListener {
             endCall()
         }
         v.ongoingCallLayout.rejectBtn.setOnClickListener {
@@ -423,25 +387,33 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun setupNotification() {
-        val callState = CallManager.getState()
+        Log.d("CMD|call", "setupNotification")
         registerNotificationChannel()
 
         val openAppIntent = Intent(this, OngoingCallActivity::class.java)
         openAppIntent.flags = Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
-        val openAppPendingIntent = PendingIntent.getActivity(this, 0, openAppIntent, 0)
+        val openAppPendingIntent =
+            PendingIntent.getActivity(this, 0, openAppIntent, PendingIntent.FLAG_IMMUTABLE)
 
         val acceptCallIntent = Intent(this, NotificationActionReceiver::class.java)
         acceptCallIntent.action = ACCEPT_CALL
         val acceptPendingIntent =
-            PendingIntent.getBroadcast(this, 0, acceptCallIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+            PendingIntent.getBroadcast(
+                this,
+                0,
+                acceptCallIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT + PendingIntent.FLAG_IMMUTABLE
+            )
 
         val muteCallIntent = Intent(this, NotificationActionReceiver::class.java)
         muteCallIntent.action = MUTE_CALL
-        val mutePendingIntent = PendingIntent.getActivity(this, 0, muteCallIntent, 0)
+        val mutePendingIntent =
+            PendingIntent.getActivity(this, 0, muteCallIntent, PendingIntent.FLAG_IMMUTABLE)
 
         val speakerCallIntent = Intent(this, NotificationActionReceiver::class.java)
         speakerCallIntent.action = SPEAKER_CALL
-        val speakerPendingIntent = PendingIntent.getActivity(this, 0, speakerCallIntent, 0)
+        val speakerPendingIntent =
+            PendingIntent.getActivity(this, 0, speakerCallIntent, PendingIntent.FLAG_IMMUTABLE)
 
         val declineCallIntent = Intent(this, NotificationActionReceiver::class.java)
         declineCallIntent.action = DECLINE_CALL
@@ -449,13 +421,10 @@ class OngoingCallActivity : BaseActivity() {
             this,
             1,
             declineCallIntent,
-            PendingIntent.FLAG_CANCEL_CURRENT
+            PendingIntent.FLAG_CANCEL_CURRENT + PendingIntent.FLAG_IMMUTABLE
         )
 
-        val callerName =
-            if (callContact.name.isNotEmpty()) callContact.name else getString(
-                R.string.unknown_caller
-            )
+        val callState = model.getCallState()
         val contentTextId = when (callState) {
             Call.STATE_RINGING -> R.string.state_call_ringing
             Call.STATE_DIALING -> R.string.status_call_dialing
@@ -464,8 +433,8 @@ class OngoingCallActivity : BaseActivity() {
             else -> R.string.state_call_active
         }
 
-        val collapsedView = RemoteViews(packageName, R.layout.call_notification_two).apply {
-            setTextViewText(R.id.notification_caller_name, callerName)
+        val collapsedView = RemoteViews(packageName, R.layout.call_notification).apply {
+            setTextViewText(R.id.notification_caller_name, model.getCallerName())
             setTextViewText(R.id.notification_call_status, getString(contentTextId))
             setViewVisibility(
                 R.id.notification_accept_call,
@@ -484,10 +453,12 @@ class OngoingCallActivity : BaseActivity() {
             setOnClickPendingIntent(R.id.notification_accept_call, acceptPendingIntent)
             setOnClickPendingIntent(R.id.notification_speaker, speakerPendingIntent)
             setOnClickPendingIntent(R.id.notification_mic_off, mutePendingIntent)
+
+            setImageViewResource(R.id.sim, model.getSimSlotIcon())
         }
 
         val builder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.app_icon_512)
+            .setSmallIcon(R.drawable.outline_call_24)
             .setContentIntent(openAppPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setCategory(Notification.CATEGORY_CALL)
@@ -498,7 +469,7 @@ class OngoingCallActivity : BaseActivity() {
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
 
         builder.setLargeIcon(
-            contentResolver.openAssetFileDescriptor(callContact.photoUri, "r")?.let {
+            contentResolver.openAssetFileDescriptor(model.getCallerPhoto(), "r")?.let {
                 BitmapFactory.decodeStream(
                     it.createInputStream(),
                 )
@@ -533,17 +504,13 @@ class OngoingCallActivity : BaseActivity() {
             callTimer.cancel()
         }
 
-        val statusTextId = when (state) {
-            Call.STATE_RINGING -> R.string.state_call_ringing
-            Call.STATE_DIALING -> R.string.status_call_dialing
-            Call.STATE_ACTIVE -> R.string.status_call_active
-            Call.STATE_HOLDING -> R.string.status_call_holding
-            else -> 0
-        }
-
-        if (statusTextId != 0) {
-            v.ongoingCallLayout.textStatus.text = getString(statusTextId)
-        }
+        v.ongoingCallLayout.textStatus.text = model.getCallStateName(this)
+        v.ongoingCallLayout.textStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            model.getSimSlotIcon(),
+            0,
+            0,
+            0
+        )
 
         setupNotification()
     }
