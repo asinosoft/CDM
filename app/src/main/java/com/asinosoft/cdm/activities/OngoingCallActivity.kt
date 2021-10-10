@@ -1,13 +1,11 @@
 package com.asinosoft.cdm.activities
 
 import android.Manifest.permission.CALL_PHONE
-import android.Manifest.permission.READ_PHONE_STATE
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
@@ -136,7 +134,7 @@ class OngoingCallActivity : BaseActivity() {
     private fun updateOtherPersonsInfo() {
         v.ongoingCallLayout.textCaller.text = model.getCallerName()
         v.ongoingCallLayout.textCallerNumber.text = model.getCallerNumber()
-        v.ongoingCallLayout.imagePlaceholder.setImageURI(model.getCallerPhoto())
+        v.ongoingCallLayout.imagePlaceholder.setImageBitmap(model.getCallerPhoto())
     }
 
     @SuppressLint("NewApi")
@@ -468,13 +466,7 @@ class OngoingCallActivity : BaseActivity() {
             .setUsesChronometer(callState == Call.STATE_ACTIVE)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
 
-        builder.setLargeIcon(
-            contentResolver.openAssetFileDescriptor(model.getCallerPhoto(), "r")?.let {
-                BitmapFactory.decodeStream(
-                    it.createInputStream(),
-                )
-            }
-        )
+        builder.setLargeIcon(model.getCallerPhoto())
 
         val notification = builder.build()
         notificationManager.notify(CALL_NOTIFICATION_ID, notification)

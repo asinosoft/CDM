@@ -1,6 +1,7 @@
 package com.asinosoft.cdm.viewmodels
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.telecom.Call
 import android.util.Log
@@ -8,13 +9,14 @@ import androidx.lifecycle.ViewModel
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.helpers.getAvailableSimSlots
+import com.asinosoft.cdm.helpers.loadResourceAsBitmap
+import com.asinosoft.cdm.helpers.loadUriAsBitmap
 
 class CallViewModel : ViewModel() {
     private var callState: Int = Call.STATE_DISCONNECTED
     private var callerName: String = "Unknown"
     private var callerNumber: String = ""
-    private var callerPhoto: Uri =
-        Uri.parse("android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}")
+    private var callerPhoto: Bitmap? = null
     private var operatorName: String = "Unknown"
     private var simSlotIcon: Int = R.drawable.ic_sim
 
@@ -22,9 +24,13 @@ class CallViewModel : ViewModel() {
         Log.d("CDM|call", "url = $contactUri")
         callerNumber = Uri.decode(contactUri.toString()).substringAfter("tel:")
         Log.d("CDM|call", "number = $callerNumber")
-        ContactRepositoryImpl(context).getContactByPhone(callerNumber)?.let { contact ->
+        val contact = ContactRepositoryImpl(context).getContactByPhone(callerNumber)
+        if (null == contact) {
+            callerName = "Unknown"
+            callerPhoto = context.loadResourceAsBitmap(R.drawable.ic_default_photo)
+        } else {
             callerName = contact.name
-            callerPhoto = contact.photoUri
+            callerPhoto = context.loadUriAsBitmap(contact.photoUri)
             Log.d("CDM|call", "contact = $callerName, photo = $callerPhoto")
         }
     }
