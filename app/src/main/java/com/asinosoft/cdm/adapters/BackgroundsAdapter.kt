@@ -1,5 +1,6 @@
 package com.asinosoft.cdm.adapters
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +20,7 @@ class BackgroundsAdapter(
     RecyclerView.Adapter<BackgroundsAdapter.BackgroundItemHolder>() {
 
     interface Handler {
-        fun onSelectBackground(uri: String?)
+        fun onSelectBackground(uri: Uri?)
         fun onCustomBackground()
     }
 
@@ -71,7 +72,7 @@ class BackgroundsAdapter(
                     root.onClick {
                         val uri =
                             "android.resource://com.asinosoft.cdm/drawable/" + backgrounds[position - 1]
-                        handler.onSelectBackground(uri)
+                        handler.onSelectBackground(Uri.parse(uri))
                     }
                 }
         }

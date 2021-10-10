@@ -1,6 +1,7 @@
 package com.asinosoft.cdm.fragments
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,7 +25,7 @@ class SelectBackgroundFragment : Fragment(), BackgroundsAdapter.Handler {
     private val backgroundImageActivityResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             result.data?.data?.let { uri ->
-                model.setBackgroundImage(uri.toString())
+                model.setBackgroundImage(uri)
                 (activity as BaseActivity).applyBackgroundImage()
                 findNavController(this).popBackStack()
             }
@@ -48,7 +49,7 @@ class SelectBackgroundFragment : Fragment(), BackgroundsAdapter.Handler {
         return v.root
     }
 
-    override fun onSelectBackground(uri: String?) {
+    override fun onSelectBackground(uri: Uri?) {
         model.setBackgroundImage(uri)
         (activity as BaseActivity).applyBackgroundImage()
         findNavController(this).popBackStack()

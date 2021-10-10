@@ -17,7 +17,7 @@ class ContactActionsAdapter(private val contact: Contact) :
 
     private lateinit var context: Context
     private val groups = contact.actions.groupBy { Item(it.type.group, it.value, it.description) }
-    private val keys = groups.keys.toList().sortedBy { it.group }
+    private val keys = groups.keys.toList().sortedBy { it.group.order }
 
     inner class Item(val group: Action.Group, val name: String, val description: String) {
         override fun equals(other: Any?): Boolean {

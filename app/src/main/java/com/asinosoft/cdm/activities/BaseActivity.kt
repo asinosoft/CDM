@@ -3,14 +3,12 @@ package com.asinosoft.cdm.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.role.RoleManager
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.Bundle
 import android.telecom.TelecomManager
 import android.util.Log
@@ -23,9 +21,9 @@ import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.dialer.isQPlus
-import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.isDefaultDialer
+import java.io.File
 
 /**
  * Базовый клас с поддержкой тем
@@ -134,17 +132,9 @@ open class BaseActivity : AppCompatActivity() {
 
     private fun getBackgroundImage(): Drawable? {
         return try {
-            getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
-                .getString(Keys.BACKGROUND_IMAGE, null)
-                ?.let {
-                    contentResolver.openAssetFileDescriptor(Uri.parse(it), "r")?.let {
-                        BitmapFactory.decodeStream(
-                            it.createInputStream(),
-                        ).let {
-                            scaleToScreen(it)
-                        }
-                    }
-                }
+            File(filesDir, "background").inputStream().use {
+                scaleToScreen(BitmapFactory.decodeStream(it))
+            }
         } catch (ex: Exception) {
             null
         }
@@ -157,9 +147,10 @@ open class BaseActivity : AppCompatActivity() {
 
         val canvas = Canvas(background)
 
-        val scale: Float = height.toFloat() / bitmap.height
+        val scale: Float = (width.toFloat() / bitmap.width)
+            .coerceAtLeast(height.toFloat() / bitmap.height)
         val xTranslation: Float = (width - bitmap.width * scale) / 2.0f
-        val yTranslation = 0.0f
+        val yTranslation: Float = (height - bitmap.height * scale) / 2.0f
 
         val transformation = Matrix()
         transformation.postTranslate(xTranslation, yTranslation)
