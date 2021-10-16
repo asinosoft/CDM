@@ -193,10 +193,8 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         private fun parseBirthday(contact: Contact) {
             val date = cursor.getString(data1)
 
-            StHelper.parseDateToddMMyyyy(date)?.let { dateDMY ->
-                contact.age = StHelper.parseToMillis(date)
-                contact.birthday = dateDMY
-            }
+            contact.age = StHelper.parseToYears(date)
+            contact.birthday = StHelper.parseDateToddMMyyyy(date)
         }
 
         private fun parsePhone(contact: Contact) {

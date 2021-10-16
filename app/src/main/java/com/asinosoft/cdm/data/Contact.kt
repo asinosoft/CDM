@@ -8,7 +8,7 @@ data class Contact(
     val photoUri: Uri
 ) {
     var birthday: String? = null
-    var age: String? = null
+    var age: Int = 0
 
     var actions = mutableSetOf<Action>()
     val phones: List<Action> by lazy {

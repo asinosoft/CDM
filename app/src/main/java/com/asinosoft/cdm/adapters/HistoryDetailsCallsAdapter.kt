@@ -1,5 +1,6 @@
 package com.asinosoft.cdm.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.provider.CallLog
@@ -49,7 +50,11 @@ class HistoryDetailsCallsAdapter(
     }
 
     private fun bindCallHistoryItem(v: ContactCallItemBinding, call: CallHistoryItem) {
-        v.number.text = "${call.prettyPhone}, ${Metoths.getFormattedTime(call.duration)}"
+        v.number.text = context.resources.getString(
+            R.string.call_contact_number,
+            call.prettyPhone,
+            Metoths.getFormattedTime(call.duration)
+        )
         v.time.text = call.time
         v.date.text = formatDate(call.timestamp)
 
@@ -65,6 +70,7 @@ class HistoryDetailsCallsAdapter(
         }
 
         v.swipeLayout.setOnActionsListener(object : SwipeLayout.SwipeActionsListener {
+            @SuppressLint("NotifyDataSetChanged")
             override fun onOpen(direction: Int, isContinuous: Boolean) {
                 when (direction) {
                     SwipeLayout.RIGHT -> {
@@ -88,9 +94,9 @@ class HistoryDetailsCallsAdapter(
 
     private fun formatDate(date: Date): String {
         if (date.after(today)) {
-            return "Сегодня,"
+            return context.getString(R.string.date_today) + ','
         } else if (date.after(yesterday)) {
-            return "Вчера,"
+            return context.getString(R.string.date_yesterday) + ','
         } else {
             return prettyDateFormat.format(date) + ','
         }

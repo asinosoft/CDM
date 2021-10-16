@@ -1,11 +1,13 @@
 package com.asinosoft.cdm.fragments
 
 import android.content.ClipData
+import android.os.Build
 import android.os.Bundle
 import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -77,11 +79,11 @@ class ContactSettingsFragment : Fragment() {
         cir.setOnLongClickListener {
             val myShadow = View.DragShadowBuilder(it)
 
-            it.startDrag(
+            ViewCompat.startDragAndDrop(
+                it,
                 ClipData.newPlainText(cir.action.name, cir.action.name),
-                myShadow,
-                cir,
-                0
+                myShadow, cir,
+                if (Build.VERSION.SDK_INT >= 24) View.DRAG_FLAG_GLOBAL else 0
             )
         }
 
@@ -160,13 +162,19 @@ class ContactSettingsFragment : Fragment() {
             }
             else -> {
                 val dialog =
-                    AlertDialogUtils.dialogListWithoutConfirm(requireContext(), "Выберите номер")
+                    AlertDialogUtils.dialogListWithoutConfirm(
+                        requireContext(),
+                        requireContext().getString(R.string.select_number)
+                    )
                 val adapter = SelectorAdapter(actions.map { it.value }) { selectedNumber ->
                     model.setContactAction(
                         direction,
                         actions.find { it.value == selectedNumber }!!
                     )
                     dialog.dismiss()
+                }
+                dialog.setOnCancelListener {
+                    model.setContactAction(direction, model.getContactAction(direction))
                 }
                 val recyclerView = dialog.findViewById<RecyclerView>(R.id.recycler_popup)
                 recyclerView.layoutManager = LinearLayoutManager(requireContext())

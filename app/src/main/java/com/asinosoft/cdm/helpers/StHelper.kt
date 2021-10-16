@@ -2,13 +2,12 @@ package com.asinosoft.cdm.helpers
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
-import java.text.DateFormat
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
 object StHelper {
-    private val clearNonNumbers = Regex("\\D+") // чтобы не компилировать регексп на каждый вызов функции
+    private val clearNonNumbers =
+        Regex("\\D+") // чтобы не компилировать регексп на каждый вызов функции
 
     fun convertNumber(number: String): String {
         return try {
@@ -21,30 +20,19 @@ object StHelper {
         }
     }
 
-    fun parseDateToddMMyyyy(time: String?): String? {
-        val inputPattern = "yyyy-MM-dd"
-        val outputPattern = "dd MMMM yyyy г."
-        val inputFormat = SimpleDateFormat(inputPattern)
-        val outputFormat = SimpleDateFormat(outputPattern)
-        var date: Date? = null
-        var str: String? = null
-        try {
-            date = inputFormat.parse(time)
-            str = outputFormat.format(date)
-        } catch (e: ParseException) {
-            e.printStackTrace()
-        }
-        return str
+    fun parseDateToddMMyyyy(time: String): String {
+        return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(time)?.let { date ->
+            return SimpleDateFormat("dd MMMM yyyy г.", Locale.getDefault()).format(date)
+        } ?: ""
     }
 
-    fun parseToMillis(time: String?): String {
-        val str_date = time
-        val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd")
-        val date = formatter.parse(str_date) as Date
-        val dateToMillis = System.currentTimeMillis()
-        val ageInMillis = dateToMillis - date.time
-        val age = ageInMillis / 1000 / 60 / 60 / 24 / 366
-        return age.toString()
+    fun parseToYears(time: String): Int {
+        return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(time)?.let { date ->
+            val dateToMillis = System.currentTimeMillis()
+            val ageInMillis = dateToMillis - date.time
+            val age = ageInMillis / 1000 / 60 / 60 / 24 / 366
+            return age.toInt()
+        } ?: 0
     }
 
     fun today(): Date {

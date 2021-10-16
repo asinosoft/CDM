@@ -1,89 +1,120 @@
 <resources>
-    <string name="app_name">Manager</string>
+    <string name="app_name" translatable="false">Manager</string>
 
-    <string name="cancel">Отмена</string>
-    <string name="delete">Удалить</string>
-    <string name="call">Вызов</string>
-    <string name="voicemail">Голосовая почта</string>
+    <!--Call State-->
+    <string name="status_call_disconnected">Disconnected</string>
+    <string name="status_call_incoming">Incoming call</string>
+    <string name="status_call_active">Current call</string>
+    <string name="status_call_dialing">Dialing…</string>
+    <string name="status_call_holding">Call on hold</string>
+
+    <!-- Notification -->
+    <string name="active_call_notification_text">Call…</string>
+    <string name="channel_name">notifications</string>
+    <string name="channel_description">On Going Call</string>
+    <string name="action_answer">Answer</string>
+    <string name="action_hangup">Hangup</string>
+    <string name="action_mute">Mute</string>
+    <string name="action_hold">Hold</string>
+    <string name="action_speaker">Speaker</string>
+    <string name="action_keyboard">Keyboard</string>
+
+    <!-- Common words -->
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="call">Call</string>
+    <string name="voicemail">Voice mail</string>
 
     <!-- Passcode lock -->
-    <string name="digit_one">1</string>
+    <string name="digit_one" translatable="false">1</string>
     <!-- In the English locale, digit 1 has no text on it. This is simply empty space. If your locale has text on digit 1, then translate-->
     <string name="digit_one_text">&#8203;</string>
-    <string name="digit_two">2</string>
-    <string name="digit_two_text">ABC\nАБВГ</string>
-    <string name="digit_three">3</string>
-    <string name="digit_three_text">DEF\nДЕЖЗ</string>
-    <string name="digit_four">4</string>
-    <string name="digit_four_text">GHI\nИЙКЛ</string>
-    <string name="digit_five">5</string>
-    <string name="digit_five_text">JKL\nМНОП</string>
-    <string name="digit_six">6</string>
-    <string name="digit_six_text">MNO\nРСТУ</string>
-    <string name="digit_seven">7</string>
-    <string name="digit_seven_text">PQRS\nФХЦЧ</string>
-    <string name="digit_eight">8</string>
-    <string name="digit_eight_text">TUV\nШЩЬЫ</string>
-    <string name="digit_nine">9</string>
-    <string name="digit_nine_text">WXYZ\nЬЭЮЯ</string>
-    <string name="digit_zero">0</string>
-    <string name="digit_zero_text">+</string>
+    <string name="digit_two" translatable="false">2</string>
+    <string name="digit_two_text">ABC</string>
+    <string name="digit_three" translatable="false">3</string>
+    <string name="digit_three_text">DEF</string>
+    <string name="digit_four" translatable="false">4</string>
+    <string name="digit_four_text">GHI</string>
+    <string name="digit_five" translatable="false">5</string>
+    <string name="digit_five_text">JKL</string>
+    <string name="digit_six" translatable="false">6</string>
+    <string name="digit_six_text">MNO</string>
+    <string name="digit_seven" translatable="false">7</string>
+    <string name="digit_seven_text">PQRS</string>
+    <string name="digit_eight" translatable="false">8</string>
+    <string name="digit_eight_text">TUV</string>
+    <string name="digit_nine" translatable="false">9</string>
+    <string name="digit_nine_text">WXYZ</string>
+    <string name="digit_zero" translatable="false">0</string>
+    <string name="digit_zero_text" translatable="false">+</string>
 
-    <string name="describe">describe</string>
+    <string name="type_birthday">Birthday</string>
+    <string name="state_call_ringing">Incoming</string>
+    <string name="state_call_active">Active call</string>
+    <string name="unknown_caller">Unknown caller</string>
+    <string name="open_keyboard">Open keyboard</string>
+    <string name="close_keyboard">Close keyboard</string>
+    <string name="favorites">Favorites</string>
+    <string name="favorites_first">first</string>
+    <string name="favorites_last">last</string>
+    <string name="favorites_first_button">Favorites - first</string>
+    <string name="favorites_last_button">Favorites - last</string>
+    <string name="favorites_border_color">Border color</string>
+    <string name="favorites_size">Size:</string>
+    <string name="favorites_columns_count">Columns count:</string>
+    <string name="favorites_border_width">Border width:</string>
+    <string name="favorites_sample">Sample</string>
+    <string name="available_actions">Available actions</string>
 
-    <string name="type_birthday">День рождения</string>
-    <string name="state_call_ringing">Входящий звонок</string>
-    <string name="state_call_active">Текущий вызов</string>
-    <string name="unknown_caller">Неизвестный номер</string>
-    <string name="open_keyboard">Открыть клавиатуру</string>
-    <string name="close_keyboard">Закрыть клавиатуру</string>
-    <string name="favorites">Избранные контакты</string>
-    <string name="favorites_first">cверху</string>
-    <string name="favorites_last">cнизу</string>
-    <string name="favorites_first_button">Избранные - cверху</string>
-    <string name="favorites_last_button">Избранные - cнизу</string>
-    <string name="favorites_border_color">Цвет обводки</string>
-    <string name="favorites_size">Размер:</string>
-    <string name="favorites_columns_count">Количество колонок:</string>
-    <string name="favorites_border_width">Ширина обводки кнопок:</string>
-    <string name="favorites_sample">Пример кнопки избранного контакта</string>
-    <string name="available_actions">Доступные действия</string>
+    <string name="themes">Theme</string>
+    <string name="theme_light">light</string>
+    <string name="theme_gray">gray</string>
+    <string name="theme_dark">dark</string>
+    <string name="actions">Actions</string>
+    <string name="background">Background</string>
+    <string name="remove_background">Remove background</string>
+    <string name="contact_tab_history">History</string>
+    <string name="contact_tab_actions">Contact</string>
+    <string name="contact_tab_settings">Settings</string>
+    <string name="settings_tab_appearance">Appearance</string>
+    <string name="settings_tab_actions">Actions</string>
+    <string name="settings_tab_about">About</string>
+    <string name="dialer_settings">Dialer</string>
+    <string name="default_dialer">Set default</string>
+    <string name="sim_usage_settings">SIM usage</string>
+    <string name="sim_selection_title">Select SIM</string>
+    <string name="sim_used">SIM used</string>
+    <string name="sim_operator">Operator</string>
+    <string name="photo">Photo</string>
+    <string name="background_default">Default</string>
+    <string name="background_custom">Custom</string>
+    <string name="digit_star" translatable="false">*</string>
+    <string name="digit_jail" translatable="false">#</string>
+    <string name="call_contact_number" translatable="false">%s, %s</string>
 
-    <string name="themes">Тема</string>
-    <string name="theme_light">светлая</string>
-    <string name="theme_gray">серая</string>
-    <string name="theme_dark">тёмная</string>
-    <string name="actions">Действия</string>
-    <string name="background">Фон</string>
-    <string name="remove_background">Удалить фон</string>
-    <string name="contact_tab_history">История</string>
-    <string name="contact_tab_actions">Контакт</string>
-    <string name="contact_tab_settings">Настройки</string>
-    <string name="settings_tab_appearance">Оформление</string>
-    <string name="settings_tab_actions">Действия</string>
-    <string name="settings_tab_about">О приложении</string>
-    <string name="dialer_settings">Дозвонщик</string>
-    <string name="default_dialer">Установить по-умолчанию</string>
-    <string name="sim_usage_settings">Исходящие звонки</string>
-    <string name="sim_selection_title">Выберите SIM</string>
-    <string name="sim_used">Звонок через SIM</string>
-    <string name="sim_operator">Оператор</string>
-    <string name="photo">Фото</string>
-    <string name="background_default">Стандартный</string>
-    <string name="background_custom">Выбрать из галереи</string>
-    <string name="digit_star">*</string>
-    <string name="digit_jail">#</string>
+    <string name="sim_state_absent">empty</string>
+    <string name="sim_state_locked">locked</string>
+    <string name="sim_state_not_ready">not ready</string>
+    <string name="sim_state_error">error</string>
+    <string name="sim_state_network_locked">network locked</string>
+    <string name="sim_state_ready">ready</string>
 
-    <string name="sim_state_absent">нет сим-карты</string>
-    <string name="sim_state_locked">заблокирована</string>
-    <string name="sim_state_not_ready">не готова</string>
-    <string name="sim_state_error">ошибка</string>
-    <string name="sim_state_network_locked">сеть недоступна</string>
-    <string name="sim_state_ready">доступна</string>
-
-    <string name="microphone">Микрофон</string>
-    <string name="speaker">Динамик</string>
+    <string name="microphone">Microphone</string>
+    <string name="speaker">Speaker</string>
     <string name="sim">SIM</string>
-    <string name="decline_call">Отклонить вызов</string>
-    <string name="accept_call">Принять вызов</string>
+    <string name="decline_call">Decline call</string>
+    <string name="accept_call">Accept call</string>
+
+    <string name="date_today">Today</string>
+    <string name="date_yesterday">Yesterday</string>
+    <string name="select_number">Select number</string>
+
+    <plurals name="age">
+        <item quantity="zero">%d years</item>
+        <item quantity="one">%d year</item>
+        <item quantity="two">%d years</item>
+        <item quantity="few">%d years</item>
+        <item quantity="many">%d years</item>
+        <item quantity="other">%d years</item>
+    </plurals>
 </resources>

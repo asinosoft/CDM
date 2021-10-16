@@ -60,7 +60,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
         callHistory.postValue(null)
     }
 
-    private fun getContactAction(direction: Direction): Action {
+    fun getContactAction(direction: Direction): Action {
         return when (direction) {
             Direction.LEFT -> _actions.left
             Direction.RIGHT -> _actions.right
@@ -107,8 +107,6 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
             haveUnsavedChanges = false
         }
     }
-
-    fun getGlobalSettings(context: Context) = Loader.loadSettings(context)
 
     private fun getAvailableActions(): List<Action.Type> =
         _contact.actions

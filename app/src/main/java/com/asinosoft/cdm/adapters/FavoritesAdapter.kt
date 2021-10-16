@@ -8,6 +8,7 @@ import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.*
@@ -109,15 +110,15 @@ class FavoritesAdapter(
                     replaceListener(this@Holder)
                 }
                 dragListener = {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        startDragAndDrop(
-                            ClipData.newPlainText(
-                                Keys.adapterPos,
-                                absoluteAdapterPosition.toString()
-                            ),
-                            View.DragShadowBuilder(this), 0, View.DRAG_FLAG_GLOBAL
-                        )
-                    }
+                    ViewCompat.startDragAndDrop(
+                        v.root,
+                        ClipData.newPlainText(
+                            Keys.adapterPos,
+                            absoluteAdapterPosition.toString()
+                        ),
+                        View.DragShadowBuilder(this), 0,
+                        if (Build.VERSION.SDK_INT >= 24) View.DRAG_FLAG_GLOBAL else 0
+                    )
                 }
                 openContact = this@FavoritesAdapter.openContact
                 pickContact = { pickContact(absoluteAdapterPosition) }

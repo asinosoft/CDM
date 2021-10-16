@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.databinding.ActivityDetailHistoryBinding
 import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
 import com.google.firebase.analytics.ktx.analytics
@@ -51,9 +52,18 @@ class ContactFragment : Fragment() {
         v!!.pages.adapter = FragmentPagerItemAdapter(
             childFragmentManager,
             FragmentPagerItems.with(requireContext())
-                .add("Контакт", ContactDetailFragment::class.java)
-                .add("История", HistoryDetailFragment::class.java)
-                .add("Настройки", ContactSettingsFragment::class.java)
+                .add(
+                    resources.getString(R.string.contact_tab_actions),
+                    ContactDetailFragment::class.java
+                )
+                .add(
+                    resources.getString(R.string.contact_tab_history),
+                    HistoryDetailFragment::class.java
+                )
+                .add(
+                    resources.getString(R.string.contact_tab_settings),
+                    ContactSettingsFragment::class.java
+                )
                 .create()
         )
 

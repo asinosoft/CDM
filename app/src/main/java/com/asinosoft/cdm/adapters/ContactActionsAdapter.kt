@@ -73,14 +73,14 @@ class ContactActionsAdapter(private val contact: Contact) :
         private val mCustomLeft = itemView.findViewById<ImageButton>(R.id.callBtnNumber)
         private var mCustomMiddle = itemView.findViewById<ImageButton>(R.id.msgBtnNumber)
         private var mCustomRight = itemView.findViewById<ImageButton>(R.id.videoBtnNumber)
-        private var numberType = itemView.findViewById<TextView>(R.id.discription_id)
+        private var numberType = itemView.findViewById<TextView>(R.id.description_id)
         private var number = itemView.findViewById<TextView>(R.id.number_id)
         private var bText = itemView.findViewById<TextView>(R.id.bText)
 
-        fun bindBirthday(birthday: String?, age: String?) {
+        fun bindBirthday(birthday: String?, age: Int) {
             numberType.text = context.getString(R.string.type_birthday)
             number.text = birthday
-            bText.text = "$age лет"
+            bText.text = view.resources.getQuantityString(R.plurals.age, age, age)
             bText.visibility = View.VISIBLE
             mCustomLeft.visibility = View.GONE
             mCustomMiddle.visibility = View.GONE
