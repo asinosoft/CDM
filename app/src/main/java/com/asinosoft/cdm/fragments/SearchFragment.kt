@@ -19,6 +19,7 @@ import com.asinosoft.cdm.helpers.Metoths.Companion.toggle
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 class SearchFragment : Fragment() {
     private val model: ManagerViewModel by activityViewModels()
@@ -73,6 +74,12 @@ class SearchFragment : Fragment() {
 
         keyboard.onCloseButtonClick {
             v.layoutKeyboard.toggle()
+            v.fabKeyboard.show()
+        }
+
+        v.fabKeyboard.onClick {
+            v.layoutKeyboard.toggle()
+            v.fabKeyboard.hide()
         }
     }
 

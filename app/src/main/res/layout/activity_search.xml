@@ -28,4 +28,19 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_keyboard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:contentDescription="@string/action_keyboard"
+        android:focusable="true"
+        android:src="@drawable/twotone_keyboard_24"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="?android:attr/colorBackground" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

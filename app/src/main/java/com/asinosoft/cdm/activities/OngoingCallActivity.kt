@@ -114,7 +114,7 @@ class OngoingCallActivity : BaseActivity() {
                 accounts.mapNotNull { telephonyManager.createForPhoneAccountHandle(it)?.simOperatorName }
                     .toTypedArray()
             val icons: Array<Int> =
-                arrayOf(R.drawable.ic_sim1, R.drawable.ic_sim2, R.drawable.ic_sim3)
+                arrayOf(R.drawable.sim1, R.drawable.sim2, R.drawable.sim3)
             val adapter = StringsWithIconsAdapter(this, slots, icons)
 
             AlertDialog.Builder(this)
@@ -456,7 +456,7 @@ class OngoingCallActivity : BaseActivity() {
         }
 
         val builder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.outline_call_24)
+            .setSmallIcon(R.drawable.call)
             .setContentIntent(openAppPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setCategory(Notification.CATEGORY_CALL)

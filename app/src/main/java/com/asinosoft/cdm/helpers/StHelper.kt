@@ -21,18 +21,26 @@ object StHelper {
     }
 
     fun parseDateToddMMyyyy(time: String): String {
-        return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(time)?.let { date ->
-            return SimpleDateFormat("dd MMMM yyyy г.", Locale.getDefault()).format(date)
-        } ?: ""
+        try {
+            return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(time)?.let { date ->
+                return SimpleDateFormat("dd MMMM yyyy г.", Locale.getDefault()).format(date)
+            } ?: ""
+        } catch (e: Exception) {
+            return ""
+        }
     }
 
     fun parseToYears(time: String): Int {
-        return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(time)?.let { date ->
-            val dateToMillis = System.currentTimeMillis()
-            val ageInMillis = dateToMillis - date.time
-            val age = ageInMillis / 1000 / 60 / 60 / 24 / 366
-            return age.toInt()
-        } ?: 0
+        try {
+            return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(time)?.let { date ->
+                val dateToMillis = System.currentTimeMillis()
+                val ageInMillis = dateToMillis - date.time
+                val age = ageInMillis / 1000 / 60 / 60 / 24 / 366
+                return age.toInt()
+            } ?: 0
+        } catch (e: Exception) {
+            return 0
+        }
     }
 
     fun today(): Date {

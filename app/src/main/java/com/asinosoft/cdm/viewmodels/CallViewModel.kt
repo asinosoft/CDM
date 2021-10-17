@@ -18,7 +18,7 @@ class CallViewModel : ViewModel() {
     private var callerNumber: String = ""
     private var callerPhoto: Bitmap? = null
     private var operatorName: String = "Unknown"
-    private var simSlotIcon: Int = R.drawable.ic_sim
+    private var simSlotIcon: Int = R.drawable.sim1
 
     fun setContactUri(context: Context, contactUri: Uri?) {
         Log.d("CDM|call", "url = $contactUri")
@@ -41,10 +41,10 @@ class CallViewModel : ViewModel() {
             ?.let { slot ->
                 operatorName = slot.operator
                 simSlotIcon = when (slot.id) {
-                    1 -> R.drawable.ic_sim1
-                    2 -> R.drawable.ic_sim2
-                    3 -> R.drawable.ic_sim3
-                    else -> R.drawable.ic_sim
+                    1 -> R.drawable.sim1
+                    2 -> R.drawable.sim2
+                    3 -> R.drawable.sim3
+                    else -> R.drawable.sim1
                 }
                 Log.d("CDM|call", "sim = ${slot.id}, operator = ${slot.operator}")
             }
