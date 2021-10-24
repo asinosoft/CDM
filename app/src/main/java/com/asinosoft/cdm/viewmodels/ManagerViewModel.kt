@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.asinosoft.cdm.api.*
+import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.helpers.Keys.Companion.CALL_HISTORY_LIMIT
@@ -79,16 +80,36 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
         )
     }
 
-    fun getContactByUri(context: Context, uri: Uri): Contact? {
+    fun getContactByUri(context: Context, uri: Uri?): Contact? {
         Log.d(null, "Поиск контакта: $uri")
-        val projections = arrayOf(ContactsContract.Contacts._ID)
-        val cursor = context.contentResolver.query(uri, projections, null, null, null)
-        if (cursor != null && cursor.moveToFirst()) {
-            val columnId = cursor.getColumnIndex(projections[0])
-            val id = cursor.getLong(columnId)
-            cursor.close()
-            return contactRepository.getContactById(id)
+        return uri?.let {
+            val projections = arrayOf(ContactsContract.Contacts._ID)
+            val cursor = context.contentResolver.query(uri, projections, null, null, null)
+            if (cursor != null && cursor.moveToFirst()) {
+                val columnId = cursor.getColumnIndex(projections[0])
+                val id = cursor.getLong(columnId)
+                cursor.close()
+                return contactRepository.getContactById(id)
+            } else {
+                return null
+            }
         }
-        return null
+    }
+
+    /**
+     * Изменение настроек действий контакта в соответствии с выбранным телефоном
+     */
+    fun setContactPhone(contact: Contact, phone: Action) {
+        val settings = Loader.loadContactSettings(getApplication(), contact)
+        if (settings.top.type == phone.type) {
+            settings.top = phone
+        } else if (settings.down.type == phone.type) {
+            settings.down = phone
+        } else if (settings.left.type == phone.type) {
+            settings.left = phone
+        } else if (settings.right.type == phone.type) {
+            settings.right = phone
+        }
+        Loader.saveContactSettings(getApplication(), contact, settings)
     }
 }

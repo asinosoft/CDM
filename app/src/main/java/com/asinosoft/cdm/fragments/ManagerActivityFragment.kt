@@ -26,6 +26,7 @@ import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.databinding.FavoritesFragmentBinding
 import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
+import com.asinosoft.cdm.helpers.SelectPhoneDialog
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import com.asinosoft.cdm.views.CirLayoutManager
 import com.asinosoft.cdm.views.LockableLayoutManager
@@ -66,8 +67,19 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
      */
     private val pickContact =
         registerForActivityResult(ActivityResultContracts.PickContact()) { uri ->
-            if (null != uri) {
-                model.getContactByUri(requireContext(), uri)?.let { contact ->
+            model.getContactByUri(requireContext(), uri)?.let { contact ->
+                if (contact.phones.count() > 1) {
+                    SelectPhoneDialog(
+                        requireContext(),
+                        contact.phones,
+                        { action ->
+                            run {
+                                model.setContactPhone(contact, action)
+                                favoritesAdapter.setItem(pickedPosition, FavoriteContact(contact))
+                            }
+                        }
+                    ).show()
+                } else {
                     favoritesAdapter.setItem(pickedPosition, FavoriteContact(contact))
                 }
             }

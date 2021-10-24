@@ -6,10 +6,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.data.Action
 
 class SelectorAdapter(
-    private val data: List<String>,
-    private val callBack: (String) -> Unit
+    private val data: List<Action>,
+    private val callBack: (Action) -> Unit
 ) : RecyclerView.Adapter<SelectorAdapter.Holder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -25,12 +26,12 @@ class SelectorAdapter(
         }
     }
 
-    private fun onItemSelected(item: String) {
+    private fun onItemSelected(item: Action) {
         callBack(item)
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bind(data[position])
+        holder.bind(data[position].value)
     }
 
     override fun getItemCount() = data.size

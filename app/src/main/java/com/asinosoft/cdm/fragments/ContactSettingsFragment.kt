@@ -11,16 +11,12 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.R
 import com.asinosoft.cdm.adapters.ActionsAdapter
-import com.asinosoft.cdm.adapters.SelectorAdapter
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.databinding.ContactSettingsBinding
-import com.asinosoft.cdm.helpers.AlertDialogUtils
 import com.asinosoft.cdm.helpers.Metoths
+import com.asinosoft.cdm.helpers.SelectPhoneDialog
 import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
 import com.asinosoft.cdm.views.CircularImageView
 import org.jetbrains.anko.image
@@ -161,25 +157,12 @@ class ContactSettingsFragment : Fragment() {
                 model.setContactAction(direction, actions[0])
             }
             else -> {
-                val dialog =
-                    AlertDialogUtils.dialogListWithoutConfirm(
-                        requireContext(),
-                        requireContext().getString(R.string.select_number)
-                    )
-                val adapter = SelectorAdapter(actions.map { it.value }) { selectedNumber ->
-                    model.setContactAction(
-                        direction,
-                        actions.find { it.value == selectedNumber }!!
-                    )
-                    dialog.dismiss()
-                }
-                dialog.setOnCancelListener {
-                    model.setContactAction(direction, model.getContactAction(direction))
-                }
-                val recyclerView = dialog.findViewById<RecyclerView>(R.id.recycler_popup)
-                recyclerView.layoutManager = LinearLayoutManager(requireContext())
-                recyclerView.adapter = adapter
-                dialog.show()
+                SelectPhoneDialog(
+                    requireContext(),
+                    actions,
+                    { selected -> model.setContactAction(direction, selected) },
+                    { model.setContactAction(direction, model.getContactAction(direction)) }
+                )
             }
         }
     }
