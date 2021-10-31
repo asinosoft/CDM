@@ -50,7 +50,8 @@
                 android:padding="16dp"
                 app:civ_border_color="?android:attr/colorPrimary"
                 app:civ_border_width="1dp"
-                tools:src="@drawable/baseline_call_made_24" />
+                tools:src="@drawable/ic_call_outgoing"
+                android:contentDescription="@string/status_call_incoming" />
 
             <TextView
                 android:id="@+id/date"

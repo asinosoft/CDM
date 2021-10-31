@@ -1,6 +1,14 @@
 <resources>
     <string name="app_name" translatable="false">Manager</string>
 
+    <!-- Call Type -->
+    <string name="call_type_outgoing">Outgoing</string>
+    <string name="call_type_incoming">Incoming</string>
+    <string name="call_type_missed">Missed</string>
+    <string name="call_type_blocked">Blocked</string>
+    <string name="call_type_rejected">Rejected</string>
+    <string name="call_type_other">Call type</string>
+
     <!--Call State-->
     <string name="status_call_disconnected">Disconnected</string>
     <string name="status_call_incoming">Incoming call</string>
@@ -70,6 +78,7 @@
     <string name="theme_light">light</string>
     <string name="theme_gray">gray</string>
     <string name="theme_dark">dark</string>
+    <string name="theme_dark2">dark 2</string>
     <string name="actions">Actions</string>
     <string name="background">Background</string>
     <string name="remove_background">Remove background</string>

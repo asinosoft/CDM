@@ -300,7 +300,7 @@ class OngoingCallActivity : BaseActivity() {
         Utilities().toggleViewActivation(v.ongoingCallLayout.buttonSpeaker)
         audioManager.isSpeakerphoneOn = v.ongoingCallLayout.buttonSpeaker.isActivated
         val speakerIcon =
-            if (v.ongoingCallLayout.buttonSpeaker.isActivated) R.drawable.ic_baseline_volume_off_24 else R.drawable.outline_volume_up_24
+            if (v.ongoingCallLayout.buttonSpeaker.isActivated) R.drawable.ic_volume_off else R.drawable.ic_volume_on
         v.ongoingCallLayout.buttonSpeaker.setImageResource(speakerIcon)
         val newRoute =
             if (v.ongoingCallLayout.buttonSpeaker.isActivated) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE

@@ -17,7 +17,6 @@ import com.asinosoft.cdm.helpers.StHelper
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import com.zerobranch.layout.SwipeLayout
-import org.jetbrains.anko.imageResource
 import java.util.*
 
 /**
@@ -59,14 +58,15 @@ class HistoryDetailsCallsAdapter(
         v.date.text = formatDate(call.timestamp)
 
         val directActions = Loader.loadContactSettings(context, call.contact)
-        v.imageLeftAction.imageResource = Action.resourceByType(directActions.left.type)
-        v.imageRightAction.imageResource = Action.resourceByType(directActions.right.type)
+        v.imageLeftAction.setImageResource(Action.resourceByType(directActions.left.type))
+        v.imageRightAction.setImageResource(Action.resourceByType(directActions.right.type))
 
         when (call.typeCall) {
-            CallLog.Calls.OUTGOING_TYPE -> v.type.setImageResource(R.drawable.baseline_call_made_24)
-            CallLog.Calls.INCOMING_TYPE -> v.type.setImageResource(R.drawable.baseline_call_received_24)
-            CallLog.Calls.MISSED_TYPE -> v.type.setImageResource(R.drawable.baseline_call_missed_24)
-            CallLog.Calls.BLOCKED_TYPE -> v.type.setImageResource(R.drawable.baseline_call_canceled_24)
+            CallLog.Calls.OUTGOING_TYPE -> v.type.setImageResource(R.drawable.ic_call_outgoing)
+            CallLog.Calls.INCOMING_TYPE -> v.type.setImageResource(R.drawable.ic_call_incoming)
+            CallLog.Calls.MISSED_TYPE -> v.type.setImageResource(R.drawable.ic_call_missed)
+            CallLog.Calls.BLOCKED_TYPE -> v.type.setImageResource(R.drawable.ic_call_blocked)
+            CallLog.Calls.REJECTED_TYPE -> v.type.setImageResource(R.drawable.ic_call_rejected)
         }
 
         v.swipeLayout.setOnActionsListener(object : SwipeLayout.SwipeActionsListener {

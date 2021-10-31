@@ -81,7 +81,7 @@
             android:clickable="true"
             android:contentDescription="@string/speaker"
             android:focusable="true"
-            android:src="@drawable/outline_volume_up_24"
+            android:src="@drawable/ic_volume_on"
             android:visibility="gone"
             app:tint="@color/white" />
 

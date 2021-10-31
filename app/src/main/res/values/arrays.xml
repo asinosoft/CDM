@@ -14,12 +14,14 @@
         <item>@style/AppTheme.Light</item>
         <item>@style/AppTheme.Gray</item>
         <item>@style/AppTheme.Dark</item>
+        <item>@style/AppTheme.Dark2</item>
     </array>
 
     <string-array name="themeNames">
         <item>@string/theme_light</item>
         <item>@string/theme_gray</item>
         <item>@string/theme_dark</item>
+        <item>@string/theme_dark2</item>
     </string-array>
 
     <array name="backgrounds">

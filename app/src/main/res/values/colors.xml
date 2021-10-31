@@ -31,6 +31,7 @@
     <color name="text_color_light">#1F1F1F</color>
     <color name="text_color_gray">#FAFAFA</color>
     <color name="text_color_dark">#FAFAFA</color>
+    <color name="text_color_bright">#FFFFFF</color>
 
     <color name="subtext_color_light">#6A6A6A</color>
     <color name="subtext_color_gray">#9B9B9B</color>
@@ -106,5 +107,7 @@
     <color name="red_phone">#ef5350</color>
 
     <color name="star_yellow">#FFEB3B</color>
+
+    <color name="transparent">#00000000</color>
 
 </resources>

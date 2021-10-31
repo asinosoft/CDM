@@ -128,7 +128,7 @@
                         android:gravity="center"
                         android:text="@string/digit_two_text"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@color/textSecondary" />
+                        android:textColor="?android:attr/textColorSecondary" />
                 </LinearLayout>
 
             </com.skyfishjy.library.RippleBackground>
@@ -166,7 +166,7 @@
                         android:gravity="center"
                         android:text="@string/digit_three_text"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@color/textSecondary" />
+                        android:textColor="?android:attr/textColorSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -211,7 +211,7 @@
                         android:gravity="center"
                         android:text="@string/digit_four_text"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@color/textSecondary" />
+                        android:textColor="?android:attr/textColorSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -248,7 +248,7 @@
                         android:gravity="center"
                         android:text="@string/digit_five_text"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@color/textSecondary" />
+                        android:textColor="?android:attr/textColorSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -285,7 +285,7 @@
                         android:gravity="center"
                         android:text="@string/digit_six_text"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@color/textSecondary" />
+                        android:textColor="?android:attr/textColorSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -330,7 +330,7 @@
                         android:gravity="center"
                         android:text="@string/digit_seven_text"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@color/textSecondary" />
+                        android:textColor="?android:attr/textColorSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -367,7 +367,7 @@
                         android:gravity="center"
                         android:text="@string/digit_eight_text"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@color/textSecondary" />
+                        android:textColor="?android:attr/textColorSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -404,7 +404,7 @@
                         android:gravity="center"
                         android:text="@string/digit_nine_text"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@color/textSecondary" />
+                        android:textColor="?android:attr/textColorSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -451,7 +451,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/digit_jail"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@color/textSecondary" />
+                        android:textColor="?android:attr/textColorSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
@@ -491,7 +491,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/digit_zero_text"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@color/textSecondary" />
+                        android:textColor="?android:attr/textColorSecondary" />
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 

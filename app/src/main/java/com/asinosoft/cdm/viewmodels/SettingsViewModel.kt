@@ -49,6 +49,10 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 R.drawable.background_4,
                 R.drawable.background_5,
                 R.drawable.background_6,
+                R.drawable.background_7,
+                R.drawable.background_8,
+                R.drawable.background_9,
+                R.drawable.background_10,
             )
         )
     }
@@ -62,6 +66,9 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             context.contentResolver.openInputStream(uri)?.copyTo(
                 File(context.filesDir, "background").outputStream()
             )
+
+            // Переключаемся в специальную тёмную тему
+            settings.theme = 3
         }
     }
 

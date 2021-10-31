@@ -81,7 +81,7 @@
                 android:layout_toEndOf="@id/imageContact"
                 android:clickable="false"
                 android:gravity="top"
-                android:textColor="@color/textSecondary"
+                android:textColor="?android:attr/textColorSecondary"
                 android:textSize="16sp"
                 tools:text="+7 890 123-45-67" />
 

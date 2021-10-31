@@ -68,6 +68,24 @@
         <item name="popupColor">@color/popup_color_dark</item>
     </style>
 
+    <!-- Специальная тема с белым текстом, которая включается при фоновых картинках -->
+    <style name="AppTheme.Dark2" parent="BaseTheme">
+        <item name="colorAccent">@color/selected_button_dark</item>
+        <item name="colorOnPrimary">@color/tab_text_dark</item>
+        <item name="colorOnSurface">@color/tab_text_dark</item>
+        <item name="colorPrimary">@color/active_tab_text_dark</item>
+        <item name="colorSecondary">@color/floating_button_dark</item>
+        <item name="android:colorAccent">@color/keyboard_border_dark</item>
+        <item name="android:colorBackground">@color/background_dark</item>
+        <item name="android:colorPrimary">@color/photo_border_dark</item>
+        <item name="android:textColor">@color/text_color_bright</item>
+        <item name="android:textColorSecondary">@color/text_color_dark</item>
+        <item name="android:statusBarColor">@color/system_navbar_color_dark</item>
+        <item name="android:navigationBarColor">@color/system_navbar_color_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="popupColor">@color/popup_color_dark</item>
+    </style>
+
     <!-- Переопределяем цвета текста и кнопок в диалоге, чтобы он выглядел нормально в тёмных темах -->
     <style name="AlertDialogTheme" parent="Theme.MaterialComponents.Light.Dialog.Alert">
         <item name="colorPrimary">@color/text_color_light</item>

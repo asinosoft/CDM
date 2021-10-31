@@ -123,7 +123,7 @@
         android:contentDescription="@string/action_speaker"
         android:focusable="true"
         android:padding="16dp"
-        android:src="@drawable/outline_volume_up_24"
+        android:src="@drawable/ic_volume_on"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/button_hold"
         app:layout_constraintEnd_toEndOf="parent"

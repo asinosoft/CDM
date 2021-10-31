@@ -76,8 +76,8 @@
                 android:layout_height="20dp"
                 android:layout_below="@id/name"
                 android:layout_toEndOf="@id/imageContact"
-                android:contentDescription="@string/state_call_ringing"
-                android:src="@drawable/baseline_call_made_24" />
+                android:contentDescription="@string/call_type_other"
+                android:src="@drawable/ic_call_outgoing" />
 
             <TextView
                 android:id="@+id/number"
