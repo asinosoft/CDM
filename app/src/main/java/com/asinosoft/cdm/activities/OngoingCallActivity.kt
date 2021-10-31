@@ -2,7 +2,8 @@ package com.asinosoft.cdm.activities
 
 import android.Manifest.permission.CALL_PHONE
 import android.annotation.SuppressLint
-import android.app.*
+import android.app.AlertDialog
+import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,16 +17,11 @@ import android.telecom.*
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.RemoteViews
-import androidx.activity.viewModels
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.adapters.StringsWithIconsAdapter
 import com.asinosoft.cdm.databinding.ActivityOngoingCallBinding
 import com.asinosoft.cdm.dialer.*
-import com.asinosoft.cdm.viewmodels.CallViewModel
 import org.jetbrains.anko.audioManager
 import org.jetbrains.anko.telecomManager
 import org.jetbrains.anko.telephonyManager
@@ -33,18 +29,25 @@ import java.util.*
 
 class OngoingCallActivity : BaseActivity() {
     private lateinit var v: ActivityOngoingCallBinding
-    private val model: CallViewModel by viewModels()
 
     // bools
     private var isCallEnded = false
     private var callDuration = 0
-    private val channelId = "simple_dialer_channel"
     private var proximityWakeLock: PowerManager.WakeLock? = null
     private var callTimer = Timer()
 
     // Finals
     private val CALL_NOTIFICATION_ID = 1
     val MINUTE_SECONDS = 60
+
+    private val callCallback = object : Call.Callback() {
+        override fun onStateChanged(call: Call, state: Int) {
+            super.onStateChanged(call, state)
+            CallManager.setCallState(state)
+            updateCallState(state)
+            NotificationManager(applicationContext).show(state)
+        }
+    }
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,17 +59,14 @@ class OngoingCallActivity : BaseActivity() {
         if (intent.action == Intent.ACTION_CALL && intent.data != null) {
             // Исходящий звонок
             Log.d("CDM|call", "outgoing → ${intent.data}")
-            model.setContactUri(this, intent.data)
             withPermission(arrayOf(CALL_PHONE)) { permitted ->
                 if (permitted) placeCall(intent.data)
             }
             updateCallState(Call.STATE_DIALING)
         } else {
             // Входящий звонок
-            CallManager.call?.let { call ->
-                Log.d("CDM|call", "incoming → ${call.details.handle}")
-                model.setCall(this, call)
-                updateCallState(call.state)
+            CallManager.getCallState()?.let { callState ->
+                updateCallState(callState)
             }
         }
 
@@ -132,9 +132,9 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun updateOtherPersonsInfo() {
-        v.ongoingCallLayout.textCaller.text = model.getCallerName()
-        v.ongoingCallLayout.textCallerNumber.text = model.getCallerNumber()
-        v.ongoingCallLayout.imagePlaceholder.setImageBitmap(model.getCallerPhoto())
+        v.ongoingCallLayout.textCaller.text = CallManager.getCallerName()
+        v.ongoingCallLayout.textCallerNumber.text = CallManager.getPhoneNumber()
+        v.ongoingCallLayout.imagePlaceholder.setImageBitmap(CallManager.getCallerPhoto())
     }
 
     @SuppressLint("NewApi")
@@ -180,7 +180,6 @@ class OngoingCallActivity : BaseActivity() {
         Log.d("Call", "Destroy")
         super.onDestroy()
         notificationManager.cancel(CALL_NOTIFICATION_ID)
-        CallManager.unregisterCallback(callCallback)
         callTimer.cancel()
         if (proximityWakeLock?.isHeld == true) {
             proximityWakeLock!!.release()
@@ -369,120 +368,9 @@ class OngoingCallActivity : BaseActivity() {
         v.keyboard.inputText.addCharacter(char)
     }
 
-    private fun registerNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Log.d("Call", "Register notification channel: $channelId")
-            with(NotificationManagerCompat.from(this)) {
-                createNotificationChannel(
-                    NotificationChannel(
-                        channelId,
-                        getString(R.string.app_name),
-                        NotificationManager.IMPORTANCE_DEFAULT
-                    )
-                )
-            }
-        }
-    }
-
-    private fun setupNotification() {
-        Log.d("CMD|call", "setupNotification")
-        registerNotificationChannel()
-
-        val openAppIntent = Intent(this, OngoingCallActivity::class.java)
-        openAppIntent.flags = Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
-        val openAppPendingIntent =
-            PendingIntent.getActivity(this, 0, openAppIntent, PendingIntent.FLAG_IMMUTABLE)
-
-        val acceptCallIntent = Intent(this, NotificationActionReceiver::class.java)
-        acceptCallIntent.action = ACCEPT_CALL
-        val acceptPendingIntent =
-            PendingIntent.getBroadcast(
-                this,
-                0,
-                acceptCallIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT + PendingIntent.FLAG_IMMUTABLE
-            )
-
-        val muteCallIntent = Intent(this, NotificationActionReceiver::class.java)
-        muteCallIntent.action = MUTE_CALL
-        val mutePendingIntent =
-            PendingIntent.getActivity(this, 0, muteCallIntent, PendingIntent.FLAG_IMMUTABLE)
-
-        val speakerCallIntent = Intent(this, NotificationActionReceiver::class.java)
-        speakerCallIntent.action = SPEAKER_CALL
-        val speakerPendingIntent =
-            PendingIntent.getActivity(this, 0, speakerCallIntent, PendingIntent.FLAG_IMMUTABLE)
-
-        val declineCallIntent = Intent(this, NotificationActionReceiver::class.java)
-        declineCallIntent.action = DECLINE_CALL
-        val declinePendingIntent = PendingIntent.getBroadcast(
-            this,
-            1,
-            declineCallIntent,
-            PendingIntent.FLAG_CANCEL_CURRENT + PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val callState = model.getCallState()
-        val contentTextId = when (callState) {
-            Call.STATE_RINGING -> R.string.state_call_ringing
-            Call.STATE_DIALING -> R.string.status_call_dialing
-            Call.STATE_DISCONNECTED -> R.string.status_call_disconnected
-            Call.STATE_DISCONNECTING -> R.string.status_call_disconnected
-            else -> R.string.state_call_active
-        }
-
-        val collapsedView = RemoteViews(packageName, R.layout.call_notification).apply {
-            setTextViewText(R.id.notification_caller_name, model.getCallerName())
-            setTextViewText(R.id.notification_call_status, getString(contentTextId))
-            setViewVisibility(
-                R.id.notification_accept_call,
-                if (callState == Call.STATE_RINGING) View.VISIBLE else View.GONE
-            )
-            setViewVisibility(
-                R.id.notification_mic_off,
-                if (callState == Call.STATE_ACTIVE) View.VISIBLE else View.GONE
-            )
-            setViewVisibility(
-                R.id.notification_speaker,
-                if (callState == Call.STATE_ACTIVE) View.VISIBLE else View.GONE
-            )
-
-            setOnClickPendingIntent(R.id.notification_decline_call, declinePendingIntent)
-            setOnClickPendingIntent(R.id.notification_accept_call, acceptPendingIntent)
-            setOnClickPendingIntent(R.id.notification_speaker, speakerPendingIntent)
-            setOnClickPendingIntent(R.id.notification_mic_off, mutePendingIntent)
-
-            setImageViewResource(R.id.sim, model.getSimSlotIcon())
-        }
-
-        val builder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.call)
-            .setContentIntent(openAppPendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setCategory(Notification.CATEGORY_CALL)
-            .setCustomContentView(collapsedView)
-            .setOngoing(true)
-            .setSound(null)
-            .setUsesChronometer(callState == Call.STATE_ACTIVE)
-            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-
-        builder.setLargeIcon(model.getCallerPhoto())
-
-        val notification = builder.build()
-        notificationManager.notify(CALL_NOTIFICATION_ID, notification)
-    }
-
-    @SuppressLint("NewApi")
-    private val callCallback = object : Call.Callback() {
-        override fun onStateChanged(call: Call, state: Int) {
-            super.onStateChanged(call, state)
-            updateCallState(state)
-        }
-    }
-
-    private fun updateCallState(state: Int) {
-        Log.d("Call", "STATE → $state")
-        when (state) {
+    private fun updateCallState(callState: Int) {
+        Log.d("Call", "STATE → $callState")
+        when (callState) {
             Call.STATE_RINGING -> visibilityIncomingCall()
             Call.STATE_ACTIVE -> {
                 callStarted()
@@ -492,18 +380,16 @@ class OngoingCallActivity : BaseActivity() {
             Call.STATE_CONNECTING, Call.STATE_DIALING -> switchToCallingUI()
         }
 
-        if (state == Call.STATE_DISCONNECTED || state == Call.STATE_DISCONNECTING) {
+        if (callState == Call.STATE_DISCONNECTED || callState == Call.STATE_DISCONNECTING) {
             callTimer.cancel()
         }
 
-        v.ongoingCallLayout.textStatus.text = model.getCallStateName(this)
+        v.ongoingCallLayout.textStatus.text = CallManager.getCallStateText(this)
         v.ongoingCallLayout.textStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
-            model.getSimSlotIcon(),
+            CallManager.getSimSlotIcon() ?: R.drawable.ic_sim3,
             0,
             0,
             0
         )
-
-        setupNotification()
     }
 }

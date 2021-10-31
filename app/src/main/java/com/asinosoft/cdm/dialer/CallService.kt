@@ -8,9 +8,11 @@ import com.asinosoft.cdm.activities.OngoingCallActivity
 
 class CallService : InCallService() {
 
+    private val notification by lazy { NotificationManager(this) }
+
     override fun onCallAdded(call: Call) {
         Log.i("CallService", "Call added: ${call.details.handle}")
-        CallManager.call = call
+        CallManager.setCall(this, call)
         Intent(this, OngoingCallActivity::class.java)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             .let { startActivity(it) }
@@ -18,6 +20,7 @@ class CallService : InCallService() {
 
     override fun onCallRemoved(call: Call) {
         Log.i("CallService", "Call removed: ${call.details.handle}")
-        CallManager.resetCall()
+        CallManager.resetCall(this)
+        notification.hide()
     }
 }
