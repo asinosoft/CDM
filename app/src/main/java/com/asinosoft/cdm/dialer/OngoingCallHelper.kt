@@ -2,19 +2,11 @@ package com.asinosoft.cdm.dialer
 
 import android.app.NotificationManager
 import android.content.Context
-import android.database.Cursor
-import android.os.Build
 import android.telecom.Call
-import timber.log.Timber
+import com.asinosoft.cdm.R
 import java.util.*
 
 val Context.notificationManager: NotificationManager get() = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-fun isOreoPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-fun isQPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-fun isOreoMr1Plus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1
-
-fun Cursor.getStringValue(key: String) = getString(getColumnIndex(key))
 
 private const val PATH = "com.asinosoft.cdm.dialer.action."
 const val ACCEPT_CALL = PATH + "accept_call"
@@ -37,18 +29,11 @@ fun Int.getFormattedDuration(): String {
     return sb.toString()
 }
 
-fun Int.asString(): String = when (this) {
-    Call.STATE_NEW -> "Новый"
-    Call.STATE_RINGING -> "Входящий вызов"
-    Call.STATE_DIALING -> "Соединение"
-    Call.STATE_ACTIVE -> "Текущий звонок"
-    Call.STATE_HOLDING -> "Удержание"
-    Call.STATE_DISCONNECTED -> "Звонок завершен"
-    Call.STATE_CONNECTING -> "Соединение"
-    Call.STATE_DISCONNECTING -> "Отключение"
-    Call.STATE_SELECT_PHONE_ACCOUNT -> "SELECT_PHONE_ACCOUNT"
-    else -> {
-        Timber.w("Unknown state ${this}")
-        "UNKNOWN"
+fun Context.getCallStateText(callState: Int): CharSequence =
+    when (callState) {
+        Call.STATE_RINGING -> getText(R.string.state_call_ringing)
+        Call.STATE_DIALING -> getText(R.string.status_call_dialing)
+        Call.STATE_ACTIVE -> getText(R.string.status_call_active)
+        Call.STATE_HOLDING -> getText(R.string.status_call_holding)
+        else -> getText(R.string.status_call_disconnected)
     }
-}

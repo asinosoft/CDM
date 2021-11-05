@@ -1,6 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable-hdpi/edit.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable-hdpi/palette.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable-mdpi/outline_backspace_24.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable-xhdpi/numeric_button.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable-xxhdpi/ic_mic_black_24dp.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable-xxhdpi/ic_mic_off_black_24dp.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable-xxxhdpi/ic_account_circle_black_24dp.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable-xxxhdpi/ic_mic_black_24dp.xml" value="0.4265625" />
+        <entry key="app/src/main/res/drawable-xxxhdpi/ic_mic_off_black_24dp.xml" value="0.4265625" />
+        <entry key="app/src/main/res/drawable-xxxhdpi/ic_timer_black_24dp.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable-xxxhdpi/outline_backspace_24.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable-xxxhdpi/ripple_oval.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable/baseline_add_circle_outline_24.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable/baseline_call_canceled_24.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable/baseline_close_24.xml" value="3.4125" />
+        <entry key="app/src/main/res/drawable/edit.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable/ic_call_black_24dp.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable/ic_speaker_on_vector.xml" value="0.3458333333333333" />
+        <entry key="app/src/main/res/drawable/ic_telegram.xml" value="0.3458333333333333" />
+        <entry key="app/src/main/res/drawable/ic_voicemail_24px.xml" value="0.3458333333333333" />
+        <entry key="app/src/main/res/drawable/outline_add_24.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable/outline_backspace_24.xml" value="3.4125" />
+        <entry key="app/src/main/res/drawable/ovalbutton.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable/palette.xml" value="0.56875" />
+        <entry key="app/src/main/res/drawable/ripple_oval.xml" value="2.275" />
+        <entry key="app/src/main/res/drawable/shape.xml" value="0.56875" />
+        <entry key="app/src/main/res/layout/activity_detail_history.xml" value="0.4642210144927536" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.4361413043478261" />
+        <entry key="app/src/main/res/layout/activity_manager.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/activity_search.xml" value="0.4370471014492754" />
+        <entry key="app/src/main/res/layout/alert_dialog_product_search_without_confirm.xml" value="0.43931159420289856" />
+        <entry key="app/src/main/res/layout/call_notification.xml" value="0.3296875" />
+        <entry key="app/src/main/res/layout/call_notification_two.xml" value="0.3296875" />
+        <entry key="app/src/main/res/layout/calllog_object.xml" value="0.42980072463768115" />
+        <entry key="app/src/main/res/layout/contact_detail_element.xml" value="0.4642210144927536" />
+        <entry key="app/src/main/res/layout/contact_detail_fragment.xml" value="0.4642210144927536" />
+        <entry key="app/src/main/res/layout/content_main.xml" value="0.4361413043478261" />
+        <entry key="app/src/main/res/layout/favorites.xml" value="0.42980072463768115" />
+        <entry key="app/src/main/res/layout/favorites_fragment.xml" value="0.4936594202898551" />
+        <entry key="app/src/main/res/layout/fragment_favorites.xml" value="0.3641304347826087" />
+        <entry key="app/src/main/res/layout/fragment_first.xml" value="0.4361413043478261" />
+        <entry key="app/src/main/res/layout/fragment_second.xml" value="0.4361413043478261" />
+        <entry key="app/src/main/res/layout/history_detail_fragment.xml" value="0.4533514492753623" />
+        <entry key="app/src/main/res/layout/history_option_fragment.xml" value="0.27395833333333336" />
+        <entry key="app/src/main/res/layout/item_cir.xml" value="0.5108695652173914" />
+        <entry key="app/src/main/res/layout/keyboard.xml" value="0.4370471014492754" />
+        <entry key="app/src/main/res/layout/main_activiry.xml" value="0.4361413043478261" />
+        <entry key="app/src/main/res/layout/main_activity.xml" value="0.4361413043478261" />
+        <entry key="app/src/main/res/layout/on_going_call.xml" value="0.4569746376811594" />
+        <entry key="app/src/main/res/layout/settings_layout.xml" value="0.4791666666666667" />
+        <entry key="app/src/main/res/menu/menu.xml" value="0.5526041666666667" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

@@ -2,4 +2,7 @@
 <resources>
     <dimen name="passcode_btn">80dp</dimen>
     <dimen name="passcode_btn_margin">10dp</dimen>
+    <dimen name="captionHeight">64dp</dimen>
+    <dimen name="tabTextSize">6pt</dimen>
+    <dimen name="contact_name_size">12pt</dimen>
 </resources>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/managerFragment">
+
+    <fragment
+        android:id="@+id/managerFragment"
+        android:name="com.asinosoft.cdm.fragments.ManagerActivityFragment"
+        tools:layout="@layout/activity_manager">
+        <action
+            android:id="@+id/action_open_search"
+            app:destination="@id/searchFragment"
+            app:enterAnim="@android:animator/fade_in"
+            app:exitAnim="@android:animator/fade_out"
+            app:popEnterAnim="@android:animator/fade_in"
+            app:popExitAnim="@android:animator/fade_out" />
+
+        <!-- для тестов -->
+        <action
+            android:id="@+id/action_open_call"
+            app:destination="@id/callActivity"
+            app:enterAnim="@android:animator/fade_in"
+            app:exitAnim="@android:animator/fade_out"
+            app:popEnterAnim="@android:animator/fade_in"
+            app:popExitAnim="@android:animator/fade_out" />
+        <!-- для тестов -->
+
+        <!-- для тестов -->
+        <action
+            android:id="@+id/action_open_settings"
+            app:destination="@id/settingsActivity"
+            app:enterAnim="@android:animator/fade_in"
+            app:exitAnim="@android:animator/fade_out"
+            app:popEnterAnim="@android:animator/fade_in"
+            app:popExitAnim="@android:animator/fade_out" />
+        <!-- для тестов -->
+
+        <action
+            android:id="@+id/action_open_contact"
+            app:destination="@id/contactFragment"
+            app:enterAnim="@android:animator/fade_in"
+            app:exitAnim="@android:animator/fade_out"
+            app:popEnterAnim="@android:animator/fade_in"
+            app:popExitAnim="@android:animator/fade_out" />
+
+        <action
+            android:id="@+id/action_open_phone_history"
+            app:destination="@id/strayPhoneFragment"
+            app:enterAnim="@android:animator/fade_in"
+            app:exitAnim="@android:animator/fade_out"
+            app:popEnterAnim="@android:animator/fade_in"
+            app:popExitAnim="@android:animator/fade_out" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/contactFragment"
+        android:name="com.asinosoft.cdm.fragments.ContactFragment"
+        tools:layout="@layout/activity_detail_history">
+        <argument
+            android:name="contactId"
+            app:argType="long" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/strayPhoneFragment"
+        android:name="com.asinosoft.cdm.fragments.StrayPhoneFragment"
+        tools:layout="@layout/stray_phone_fragment">
+        <argument
+            android:name="phone"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.asinosoft.cdm.fragments.SearchFragment"
+        tools:layout="@layout/activity_search">
+
+        <action
+            android:id="@+id/action_open_contact"
+            app:destination="@id/contactFragment" />
+        <action
+            android:id="@+id/action_open_settings"
+            app:destination="@id/settingsActivity"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_in_left" />
+    </fragment>
+
+    <activity
+        android:id="@+id/settingsActivity"
+        android:name="com.asinosoft.cdm.activities.SettingsActivity"
+        android:label="SettingsActivity" />
+
+    <!-- Для тестов! -->
+    <activity
+        android:id="@+id/callActivity"
+        android:name="com.asinosoft.cdm.activities.OngoingCallActivity"
+        android:label="OngoingCallActivity" />
+    <!-- для тестов -->
+</navigation>

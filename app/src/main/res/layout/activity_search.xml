@@ -4,23 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.asinosoft.cdm.SearchActivity">
+    tools:context="com.asinosoft.cdm.fragments.SearchFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/rv_filtered_contacts"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/layout_keyboard"
-        android:src="@drawable/twotone_keyboard_24"
-        app:rippleColor="@color/green"
-        android:layout_margin="16dp" />
+        android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     <LinearLayout
         android:id="@+id/layout_keyboard"
@@ -28,14 +18,29 @@
         android:layout_height="wrap_content"
         android:background="@drawable/shape"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:paddingTop="10dp">
+        app:layout_constraintStart_toStartOf="parent">
 
-    <fragment android:name="com.asinosoft.cdm.Keyboard"
-        android:id="@+id/keyboard"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <fragment
+            android:id="@+id/keyboard"
+            android:name="com.asinosoft.cdm.fragments.KeyboardFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_keyboard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:contentDescription="@string/action_keyboard"
+        android:focusable="true"
+        android:src="@drawable/twotone_keyboard_24"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="?android:attr/colorBackground" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

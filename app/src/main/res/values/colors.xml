@@ -1,9 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="background_light">#FFFFFF</color>
+    <color name="background_gray">#252525</color>
+    <color name="background_dark">#000000</color>
+
+    <color name="keyboard_border_light">#A2A59E</color>
+    <color name="keyboard_border_gray">#3E3E3E</color>
+    <color name="keyboard_border_dark">#3E3E3E</color>
+
+    <color name="active_tab_text_light">#1F1F1F</color>
+    <color name="active_tab_text_gray">#FAFAFA</color>
+    <color name="active_tab_text_dark">#FAFAFA</color>
+
+    <color name="tab_text_light">#6A6A6A</color>
+    <color name="tab_text_gray">#9B9B9B</color>
+    <color name="tab_text_dark">#979797</color>
+
+    <color name="selected_button_light">#6A6AFF</color>
+    <color name="selected_button_gray">#6A6AFF</color>
+    <color name="selected_button_dark">#6A6AFF</color>
+
+    <color name="floating_button_light">#1F1F1F</color>
+    <color name="floating_button_gray">#FAFAFA</color>
+    <color name="floating_button_dark">#FAFAFA</color>
+
+    <color name="photo_border_light">#1F1F1F</color>
+    <color name="photo_border_gray">#FAFAFA</color>
+    <color name="photo_border_dark">#FAFAFA</color>
+
+    <color name="text_color_light">#1F1F1F</color>
+    <color name="text_color_gray">#FAFAFA</color>
+    <color name="text_color_dark">#FAFAFA</color>
+    <color name="text_color_bright">#FFFFFF</color>
+
+    <color name="subtext_color_light">#6A6A6A</color>
+    <color name="subtext_color_gray">#9B9B9B</color>
+    <color name="subtext_color_dark">#979797</color>
+
+    <color name="system_navbar_color_light">#FFFFFF</color>
+    <color name="system_navbar_color_gray">#252525</color>
+    <color name="system_navbar_color_dark">#000000</color>
+
+    <color name="popup_color_light">#BEBEBE</color>
+    <color name="popup_color_gray">#BEBEBE</color>
+    <color name="popup_color_dark">#4F4F4F</color>
+
+    <!-- Ненужные цвета -->
+
     <color name="colorPrimary">#008577</color>
+    <color name="colorSecondary">#79b8ff</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="costomGray">#252525</color>
+    <color name="colorAccent">#5199FF</color>
+
+    <color name="textPrimary">#1F1F1F</color>
+    <color name="textSecondary">#6A6A6A</color>
+
+    <color name="border">#A2A59E</color>
+
+    <color name="blue">#5199FF</color>
     <color name="white_gray">#e0dcdc</color>
     <color name="white_gray_light">#f5f3ed</color>
     <color name="nk_color_strike">#2E7D32</color>
@@ -11,6 +65,7 @@
     <color name="gray">#9F9A9A</color>
     <color name="red">#E80202</color>
     <color name="green">#51D50B</color>
+    <color name="purple">#EF2FA2</color>
     <color name="md_grey">#9E9E9E</color>
 
     <!-- Темы -->
@@ -52,5 +107,7 @@
     <color name="red_phone">#ef5350</color>
 
     <color name="star_yellow">#FFEB3B</color>
+
+    <color name="transparent">#00000000</color>
 
 </resources>
