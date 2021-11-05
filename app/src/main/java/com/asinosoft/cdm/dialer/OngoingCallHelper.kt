@@ -2,14 +2,11 @@ package com.asinosoft.cdm.dialer
 
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
+import android.telecom.Call
+import com.asinosoft.cdm.R
 import java.util.*
 
 val Context.notificationManager: NotificationManager get() = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-fun isOreoPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-fun isQPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-fun isOreoMr1Plus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1
 
 private const val PATH = "com.asinosoft.cdm.dialer.action."
 const val ACCEPT_CALL = PATH + "accept_call"
@@ -31,3 +28,12 @@ fun Int.getFormattedDuration(): String {
     sb.append(":").append(String.format(Locale.getDefault(), "%02d", seconds))
     return sb.toString()
 }
+
+fun Context.getCallStateText(callState: Int): CharSequence =
+    when (callState) {
+        Call.STATE_RINGING -> getText(R.string.state_call_ringing)
+        Call.STATE_DIALING -> getText(R.string.status_call_dialing)
+        Call.STATE_ACTIVE -> getText(R.string.status_call_active)
+        Call.STATE_HOLDING -> getText(R.string.status_call_holding)
+        else -> getText(R.string.status_call_disconnected)
+    }

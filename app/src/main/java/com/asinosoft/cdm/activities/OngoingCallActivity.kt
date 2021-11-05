@@ -1,30 +1,24 @@
 package com.asinosoft.cdm.activities
 
-import android.Manifest.permission.CALL_PHONE
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.app.KeyguardManager
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.media.AudioManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.PowerManager
-import android.telecom.*
+import android.telecom.Call
+import android.telecom.CallAudioState
+import android.telecom.InCallService
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.adapters.StringsWithIconsAdapter
 import com.asinosoft.cdm.databinding.ActivityOngoingCallBinding
 import com.asinosoft.cdm.dialer.*
 import org.jetbrains.anko.audioManager
-import org.jetbrains.anko.telecomManager
-import org.jetbrains.anko.telephonyManager
 import java.util.*
 
 class OngoingCallActivity : BaseActivity() {
@@ -37,15 +31,14 @@ class OngoingCallActivity : BaseActivity() {
     private var callTimer = Timer()
 
     // Finals
-    private val CALL_NOTIFICATION_ID = 1
     val MINUTE_SECONDS = 60
 
     private val callCallback = object : Call.Callback() {
         override fun onStateChanged(call: Call, state: Int) {
             super.onStateChanged(call, state)
-            CallManager.setCallState(state)
+            Log.d("CDM|act", "onStateChanged → $state")
             updateCallState(state)
-            NotificationManager(applicationContext).show(state)
+            updateOtherPersonsInfo()
         }
     }
 
@@ -55,19 +48,10 @@ class OngoingCallActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         v = ActivityOngoingCallBinding.inflate(layoutInflater)
         setContentView(v.root)
+        CallManager.registerCallback(callCallback)
 
-        if (intent.action == Intent.ACTION_CALL && intent.data != null) {
-            // Исходящий звонок
-            Log.d("CDM|call", "outgoing → ${intent.data}")
-            withPermission(arrayOf(CALL_PHONE)) { permitted ->
-                if (permitted) placeCall(intent.data)
-            }
-            updateCallState(Call.STATE_DIALING)
-        } else {
-            // Входящий звонок
-            CallManager.getCallState()?.let { callState ->
-                updateCallState(callState)
-            }
+        CallManager.getCall()?.let { call ->
+            updateCallState(call.state)
         }
 
         updateOtherPersonsInfo()
@@ -75,6 +59,7 @@ class OngoingCallActivity : BaseActivity() {
         clickToButtons()
         addLockScreenFlags()
         initProximitySensor()
+        showOnLockScreen()
 
         audioManager.mode = AudioManager.MODE_IN_CALL
         // Detect a nav bar and adapt layout accordingly
@@ -84,51 +69,7 @@ class OngoingCallActivity : BaseActivity() {
             v.frame.setPadding(0, 0, 0, navBarHeight)
         }
 
-        CallManager.registerCallback(callCallback)
         Log.d("Call", "Creation complete")
-    }
-
-    private fun placeCall(contact: Uri?) {
-        Log.d("Call::placeCall", contact.toString())
-        if (PackageManager.PERMISSION_GRANTED == checkSelfPermission(CALL_PHONE)) {
-            selectPhoneAccount { phoneAccount ->
-                Bundle().apply {
-                    putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, phoneAccount)
-                    putBoolean(TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE, false)
-                    putBoolean(TelecomManager.EXTRA_START_CALL_WITH_SPEAKERPHONE, false)
-                    telecomManager.placeCall(contact, this)
-                }
-            }
-        } else {
-            Log.d("PLACE CALL", "NO PERMISSION!!!")
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun selectPhoneAccount(onSelect: (PhoneAccountHandle) -> Unit) {
-        val accounts = telecomManager.callCapablePhoneAccounts
-        if (1 == accounts.size || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            onSelect(accounts[0])
-        } else {
-            val slots: Array<String> =
-                accounts.mapNotNull { telephonyManager.createForPhoneAccountHandle(it)?.simOperatorName }
-                    .toTypedArray()
-            val icons: Array<Int> =
-                arrayOf(R.drawable.sim1, R.drawable.sim2, R.drawable.sim3)
-            val adapter = StringsWithIconsAdapter(this, slots, icons)
-
-            AlertDialog.Builder(this)
-                .setTitle(R.string.sim_selection_title)
-                .setAdapter(adapter) { dialog, index ->
-                    onSelect(accounts[index])
-                    dialog.dismiss()
-                }
-                .setOnDismissListener {
-                    finish()
-                }
-                .create()
-                .show()
-        }
     }
 
     private fun updateOtherPersonsInfo() {
@@ -139,14 +80,14 @@ class OngoingCallActivity : BaseActivity() {
 
     @SuppressLint("NewApi")
     private fun addLockScreenFlags() {
-        if (isOreoMr1Plus()) {
+        if (Build.VERSION.SDK_INT >= 27) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
         } else {
             window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
         }
 
-        if (isOreoPlus()) {
+        if (Build.VERSION.SDK_INT >= 26) {
             (getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager).requestDismissKeyguard(
                 this,
                 null
@@ -165,6 +106,27 @@ class OngoingCallActivity : BaseActivity() {
         proximityWakeLock!!.acquire(10 * MINUTE_SECONDS * 1000L)
     }
 
+    private fun showOnLockScreen() {
+        if (Build.VERSION.SDK_INT >= 27) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+        } else {
+            window.addFlags(
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+                        WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
+                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+            )
+        }
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            (getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager)
+                .requestDismissKeyguard(this, null)
+        } else {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
+        }
+    }
+
     override fun onBackPressed() {
         Log.d("Call", "Back pressed")
         // In case the dialpad is opened, pressing the back button will close it
@@ -179,7 +141,6 @@ class OngoingCallActivity : BaseActivity() {
     override fun onDestroy() {
         Log.d("Call", "Destroy")
         super.onDestroy()
-        notificationManager.cancel(CALL_NOTIFICATION_ID)
         callTimer.cancel()
         if (proximityWakeLock?.isHeld == true) {
             proximityWakeLock!!.release()
@@ -384,7 +345,7 @@ class OngoingCallActivity : BaseActivity() {
             callTimer.cancel()
         }
 
-        v.ongoingCallLayout.textStatus.text = CallManager.getCallStateText(this)
+        v.ongoingCallLayout.textStatus.text = getCallStateText(callState)
         v.ongoingCallLayout.textStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
             CallManager.getSimSlotIcon() ?: R.drawable.ic_sim3,
             0,

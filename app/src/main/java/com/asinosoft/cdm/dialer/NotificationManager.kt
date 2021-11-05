@@ -41,7 +41,7 @@ class NotificationManager(private val context: Context) {
     fun show(callState: Int) {
         val collapsedView = RemoteViews(context.packageName, R.layout.call_notification).apply {
             setTextViewText(R.id.notification_caller_name, CallManager.getCallerName())
-            setTextViewText(R.id.notification_call_status, CallManager.getCallStateText(context))
+            setTextViewText(R.id.notification_call_status, context.getCallStateText(callState))
             setViewVisibility(
                 R.id.notification_accept_call,
                 if (Call.STATE_RINGING == callState) View.VISIBLE else View.GONE
@@ -71,7 +71,7 @@ class NotificationManager(private val context: Context) {
             .setCustomContentView(collapsedView)
             .setOngoing(true)
             .setSound(null)
-            .setUsesChronometer(Call.STATE_ACTIVE == CallManager.getCallState())
+            .setUsesChronometer(Call.STATE_ACTIVE == callState)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
 

@@ -16,7 +16,6 @@ class CallManager {
 
     companion object {
         private var call: Call? = null
-        private var callState: Int = Call.STATE_DISCONNECTED
 
         private var phoneNumber: String? = null
         private var callerName: String? = null
@@ -24,9 +23,7 @@ class CallManager {
         private var operatorName: String? = null
         private var simSlotIcon: Int? = null
 
-        fun setCallState(callState: Int) {
-            this.callState = callState
-        }
+        fun getCall() = call
 
         fun setCall(context: Context, call: Call) {
             Log.d("CDM|call", "setCall → ${call.details.handle} | ${call.state}")
@@ -55,7 +52,7 @@ class CallManager {
                     }
                 }
 
-            NotificationManager(context).show(callState)
+            NotificationManager(context).show(call.state)
         }
 
         fun resetCall(context: Context) {
@@ -105,17 +102,6 @@ class CallManager {
         fun getCallerName() = callerName
 
         fun getCallerPhoto() = callerPhoto
-
-        fun getCallState() = callState
-
-        fun getCallStateText(context: Context) =
-            when (call?.state ?: Call.STATE_DISCONNECTED) {
-                Call.STATE_RINGING -> context.getText(R.string.state_call_ringing)
-                Call.STATE_DIALING -> context.getText(R.string.status_call_dialing)
-                Call.STATE_ACTIVE -> context.getText(R.string.status_call_active)
-                Call.STATE_HOLDING -> context.getText(R.string.status_call_holding)
-                else -> context.getText(R.string.status_call_disconnected)
-            }
 
         fun getOperatorName() = operatorName
 
