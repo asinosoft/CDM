@@ -9,6 +9,7 @@ import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.telecom.TelecomManager
 import android.util.Log
@@ -20,7 +21,6 @@ import androidx.core.content.res.use
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Settings
-import com.asinosoft.cdm.dialer.isQPlus
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.isDefaultDialer
 import java.io.File
@@ -112,7 +112,7 @@ open class BaseActivity : AppCompatActivity() {
             return
         }
 
-        if (isQPlus()) {
+        if (Build.VERSION.SDK_INT >= 29) {
             val roleManager = getSystemService(RoleManager::class.java)
             if (roleManager.isRoleAvailable(RoleManager.ROLE_DIALER) &&
                 !roleManager.isRoleHeld(RoleManager.ROLE_DIALER)

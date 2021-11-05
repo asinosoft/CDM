@@ -60,11 +60,8 @@
         </activity>
 
         <activity
-            android:name=".activities.OngoingCallActivity"
-            android:launchMode="singleInstance"
-            android:parentActivityName=".activities.ManagerActivity"
-            android:screenOrientation="portrait">
-
+            android:name=".activities.DialerActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.CALL" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -116,6 +113,18 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".activities.OngoingCallActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:parentActivityName=".activities.ManagerActivity"
+            android:screenOrientation="portrait"
+            android:showForAllUsers="true"
+            android:showOnLockScreen="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"></activity>
 
         <activity
             android:name=".activities.SettingsActivity"

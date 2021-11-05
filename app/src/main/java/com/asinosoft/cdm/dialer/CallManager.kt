@@ -1,17 +1,64 @@
 package com.asinosoft.cdm.dialer
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.net.Uri
 import android.telecom.Call
 import android.telecom.VideoProfile
 import android.util.Log
+import com.asinosoft.cdm.R
+import com.asinosoft.cdm.api.ContactRepositoryImpl
+import com.asinosoft.cdm.helpers.getAvailableSimSlots
+import com.asinosoft.cdm.helpers.loadResourceAsBitmap
+import com.asinosoft.cdm.helpers.loadUriAsBitmap
 
 class CallManager {
 
     companion object {
-        var call: Call? = null
+        private var call: Call? = null
 
-        fun resetCall() {
+        private var phoneNumber: String? = null
+        private var callerName: String? = null
+        private var callerPhoto: Bitmap? = null
+        private var operatorName: String? = null
+        private var simSlotIcon: Int? = null
+
+        fun getCall() = call
+
+        fun setCall(context: Context, call: Call) {
+            Log.d("CDM|call", "setCall → ${call.details.handle} | ${call.state}")
+
+            this.call = call
+
+            val phone = Uri.decode(call.details.handle.toString()).substringAfter("tel:")
+            val contact = ContactRepositoryImpl(context).getContactByPhone(phone)
+
+            phoneNumber = phone
+
+            callerName = contact?.name ?: phoneNumber
+
+            callerPhoto =
+                if (null == contact) context.loadResourceAsBitmap(R.drawable.ic_default_photo)
+                else context.loadUriAsBitmap(contact.photoUri)
+
+            context.getAvailableSimSlots()
+                .find { slot -> call.details.accountHandle == slot.handle }
+                ?.let { slot ->
+                    operatorName = slot.operator
+                    simSlotIcon = when (slot.id) {
+                        1 -> R.drawable.sim1
+                        2 -> R.drawable.sim2
+                        else -> R.drawable.sim3
+                    }
+                }
+
+            NotificationManager(context).show(call.state)
+        }
+
+        fun resetCall(context: Context) {
             Log.d("CallManager", "resetCall")
             call = null
+            NotificationManager(context).hide()
         }
 
         fun accept() {
@@ -49,5 +96,15 @@ class CallManager {
                 else call!!.unhold()
             }
         }
+
+        fun getPhoneNumber() = phoneNumber
+
+        fun getCallerName() = callerName
+
+        fun getCallerPhoto() = callerPhoto
+
+        fun getOperatorName() = operatorName
+
+        fun getSimSlotIcon() = simSlotIcon
     }
 }

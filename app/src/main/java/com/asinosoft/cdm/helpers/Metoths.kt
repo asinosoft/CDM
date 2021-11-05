@@ -7,6 +7,7 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.PointF
 import android.net.Uri
+import android.os.Build
 import android.os.SystemClock
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -27,7 +28,6 @@ import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
-import com.asinosoft.cdm.dialer.isQPlus
 import com.asinosoft.cdm.helpers.Metoths.Companion.Direction.*
 import net.cachapa.expandablelayout.util.FastOutSlowInInterpolator
 import org.jetbrains.anko.wrapContent
@@ -239,7 +239,7 @@ class Metoths {
         }
 
         fun Vibrator.vibrateSafety(ms: Long) {
-            if (isQPlus()) {
+            if (Build.VERSION.SDK_INT >= 29) {
                 vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.EFFECT_HEAVY_CLICK))
             } else {
                 vibrate(ms)
