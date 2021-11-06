@@ -19,7 +19,6 @@ import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.SelectPhoneDialog
 import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
 import com.asinosoft.cdm.views.CircularImageView
-import org.jetbrains.anko.image
 
 class ContactSettingsFragment : Fragment() {
     private val model: DetailHistoryViewModel by activityViewModels()
@@ -143,7 +142,9 @@ class ContactSettingsFragment : Fragment() {
     }
 
     private fun CircularImageView.swapCir(c: CircularImageView) {
-        this.image = c.image.also { c.image = this.image }
+        val thisImage = this.drawable
+        this.setImageDrawable(c.drawable)
+        c.setImageDrawable(thisImage)
         this.action = c.action.also { c.action = this.action }
     }
 

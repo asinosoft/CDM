@@ -16,7 +16,6 @@ import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
 import com.asinosoft.cdm.viewmodels.SettingsViewModel
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.xw.repo.BubbleSeekBar
-import org.jetbrains.anko.sdk27.coroutines.onClick
 import kotlin.math.roundToInt
 
 /**
@@ -76,7 +75,7 @@ class FavoritesSettingsFragment : Fragment() {
         }
 
         val themeNames = resources.getStringArray(R.array.themeNames)
-        v!!.themes.text = themeNames.elementAtOrElse(model.settings.theme) { themeNames.get(0) }
+        v!!.themes.text = themeNames.elementAtOrElse(model.settings.theme) { themeNames[0] }
     }
 
     private fun setFavoritesLayout(layout: Boolean) {
@@ -125,8 +124,7 @@ class FavoritesSettingsFragment : Fragment() {
             override fun onProgressChanged(
                 bubbleSeekBar: BubbleSeekBar?,
                 progress: Int,
-                progressFloat: Float,
-                fromUser: Boolean
+                progressFloat: Float
             ) {
                 model.settings.sizeCirs = progress
                 v!!.imgFavorite.setSize(progress)
@@ -142,8 +140,7 @@ class FavoritesSettingsFragment : Fragment() {
             override fun getProgressOnFinally(
                 bubbleSeekBar: BubbleSeekBar?,
                 progress: Int,
-                progressFloat: Float,
-                fromUser: Boolean
+                progressFloat: Float
             ) {
             }
         }
@@ -153,8 +150,7 @@ class FavoritesSettingsFragment : Fragment() {
             override fun onProgressChanged(
                 bubbleSeekBar: BubbleSeekBar?,
                 progress: Int,
-                progressFloat: Float,
-                fromUser: Boolean
+                progressFloat: Float
             ) {
                 model.settings.columnsCirs = progress
                 updateFavoritesSizeRange(progress)
@@ -170,8 +166,7 @@ class FavoritesSettingsFragment : Fragment() {
             override fun getProgressOnFinally(
                 bubbleSeekBar: BubbleSeekBar?,
                 progress: Int,
-                progressFloat: Float,
-                fromUser: Boolean
+                progressFloat: Float
             ) {
             }
         }
@@ -181,8 +176,7 @@ class FavoritesSettingsFragment : Fragment() {
             override fun onProgressChanged(
                 bubbleSeekBar: BubbleSeekBar?,
                 progress: Int,
-                progressFloat: Float,
-                fromUser: Boolean
+                progressFloat: Float
             ) {
                 model.settings.borderWidthCirs = progress
                 v!!.imgFavorite.borderWidth = progress
@@ -198,8 +192,7 @@ class FavoritesSettingsFragment : Fragment() {
             override fun getProgressOnFinally(
                 bubbleSeekBar: BubbleSeekBar?,
                 progress: Int,
-                progressFloat: Float,
-                fromUser: Boolean
+                progressFloat: Float
             ) {
             }
         }
@@ -212,7 +205,7 @@ class FavoritesSettingsFragment : Fragment() {
 
         v!!.btnFavoritesLast.setOnClickListener { setFavoritesLayout(false) }
 
-        v!!.themes.onClick {
+        v!!.themes.setOnClickListener {
             ThemeSelectionDialog { theme ->
                 Log.d("selected", theme.toString())
                 model.settings.theme = theme
@@ -220,7 +213,7 @@ class FavoritesSettingsFragment : Fragment() {
             }.show(parentFragmentManager, "Select theme")
         }
 
-        v!!.backgrounds.onClick {
+        v!!.backgrounds.setOnClickListener {
             findNavController().navigate(R.id.action_select_background)
         }
     }

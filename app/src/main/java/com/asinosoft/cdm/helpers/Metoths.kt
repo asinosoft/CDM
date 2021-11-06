@@ -2,16 +2,12 @@ package com.asinosoft.cdm.helpers
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.content.Intent
-import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.PointF
-import android.net.Uri
 import android.os.Build
 import android.os.SystemClock
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.provider.ContactsContract
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -21,16 +17,16 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.view.isVisible
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.helpers.Metoths.Companion.Direction.*
-import net.cachapa.expandablelayout.util.FastOutSlowInInterpolator
-import org.jetbrains.anko.wrapContent
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
@@ -87,48 +83,11 @@ class Metoths {
             this.dispatchTouchEvent(MotionEvent.obtain(downTime, eventTime, action, x, y, 0))
         }
 
-        fun <E> java.util.ArrayList<E>.addUnique(el: E) {
-            if (!this.contains(el)) this.add(el)
-        }
-
         fun MotionEvent.toPointF() = PointF(this.rawX, this.rawY)
         fun View.toPointF() = PointF(this.x, this.y)
 
-        val Int.dp: Int
-            get() = (this * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
-        val Float.dp: Int
-            get() = (this * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
-
-        fun View.setSize(height: Int = -1, width: Int = -1) {
-            this.layoutParams = this.layoutParams.apply {
-                if (height != -1) this.height = height; if (width != -1) this.width = width
-            }
-        }
-
         fun View.setSize(size: Int) {
             this.layoutParams = this.layoutParams.apply { width = size; height = size }
-        }
-
-        fun View.animateTranslation(
-            cirStart: PointF,
-            pointF: PointF,
-            toPointF: PointF,
-            duration: Long = 0L
-        ) {
-            this.animate()
-                .x(cirStart.x - (pointF.x - toPointF.x))
-                .y(cirStart.y - (pointF.y - toPointF.y))
-                .setDuration(duration)
-                .start()
-        }
-
-        /**
-         * Открыть карточку контакта по его id
-         */
-        fun openCardContact(idContact: String, context: Context) {
-            Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, idContact)
-            }.let(context::startActivity)
         }
 
         fun View.translateDiff(cirStart: PointF, diff: PointF, duration: Long = 0L) {
@@ -164,7 +123,7 @@ class Metoths {
             dropY: Boolean = false
         ): PointF {
             val pointF = event.toPointF()
-            var r = PointF(this.x - pointF.x, this.y - pointF.y)
+            val r = PointF(this.x - pointF.x, this.y - pointF.y)
             radius?.let {
                 r.set(
                     if (r.x.absoluteValue > it) it * r.x.sign else r.x,
@@ -207,7 +166,7 @@ class Metoths {
         }
 
         fun Boolean.toVisibility(gone: Boolean = false) =
-            if (this) View.VISIBLE else if (!gone) View.INVISIBLE else View.GONE
+            if (this) VISIBLE else if (!gone) INVISIBLE else View.GONE
 
         fun TextView.setColoredText(text: String, @ColorInt color: Int = Color.BLUE) {
             SpannableString(this.text).apply {
@@ -222,7 +181,7 @@ class Metoths {
 
         fun View.toggle(duration: Long = 500L, animation: Boolean = false) {
             if (animation) {
-                ValueAnimator.ofInt(this.measuredHeight, if (this.height == 1) wrapContent else 1)
+                ValueAnimator.ofInt(this.measuredHeight, if (this.height == 1) ViewGroup.LayoutParams.WRAP_CONTENT else 1)
                     .apply {
                         this.duration = duration
                         addUpdateListener {

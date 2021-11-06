@@ -27,6 +27,7 @@
 
         <activity
             android:name=".activities.ManagerActivity"
+            android:exported="true"
             android:screenOrientation="portrait">
 
             <intent-filter>
@@ -60,8 +61,17 @@
         </activity>
 
         <activity
-            android:name=".activities.DialerActivity"
-            android:exported="true">
+            android:name=".activities.OngoingCallActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:parentActivityName=".activities.ManagerActivity"
+            android:screenOrientation="portrait"
+            android:showForAllUsers="true"
+            android:showOnLockScreen="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.CALL" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -106,36 +116,32 @@
 
                 <data android:scheme="tel" />
             </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.CALL_BUTTON" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
+
         </activity>
 
         <activity
-            android:name=".activities.OngoingCallActivity"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:launchMode="singleInstance"
-            android:parentActivityName=".activities.ManagerActivity"
-            android:screenOrientation="portrait"
-            android:showForAllUsers="true"
-            android:showOnLockScreen="true"
-            android:showWhenLocked="true"
-            android:turnScreenOn="true"></activity>
-
-        <activity
             android:name=".activities.SettingsActivity"
+            android:exported="false"
             android:parentActivityName=".activities.ManagerActivity"
             android:screenOrientation="portrait" />
 
         <service
             android:name=".dialer.CallService"
+            android:enabled="true"
+            android:exported="false"
             android:permission="android.permission.BIND_INCALL_SERVICE">
             <meta-data
                 android:name="android.telecom.IN_CALL_SERVICE_UI"
+                android:value="true" />
+            <meta-data
+                android:name="android.telecom.IN_CALL_SERVICE_RINGING"
                 android:value="true" />
             <intent-filter>
                 <action android:name="android.telecom.InCallService" />
@@ -144,6 +150,7 @@
 
         <receiver
             android:name=".dialer.NotificationActionReceiver"
+            android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.simplemobiletools.dialer.action.ACCEPT_CALL" />

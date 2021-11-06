@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.asinosoft.cdm.databinding.KeyboardBinding
+import com.asinosoft.cdm.helpers.runOnUiThread
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
-import org.jetbrains.anko.support.v4.runOnUiThread
 
 /**
  * Класс кастомной клавиатуры.
@@ -58,72 +58,74 @@ class KeyboardFragment : Fragment() {
         v!!.oneBtn.setOnClickListener {
             v!!.ripple1.startRippleAnimation()
             Handler().postDelayed(
-                { runOnUiThread { v!!.ripple1.stopRippleAnimation() } },
-                500 / 3
+                {
+                    context?.runOnUiThread { v!!.ripple1.stopRippleAnimation() }
+                },
+                167
             )
             takeValue("1")
         }
         v!!.twoBtn.setOnClickListener {
             v!!.ripple2.startRippleAnimation()
             Handler().postDelayed(
-                { runOnUiThread { v!!.ripple2.stopRippleAnimation() } },
-                500 / 3
+                { context?.runOnUiThread { v!!.ripple2.stopRippleAnimation() } },
+                167
             )
             takeValue("2")
         }
         v!!.threeBtn.setOnClickListener {
             v!!.ripple3.startRippleAnimation()
             Handler().postDelayed(
-                { runOnUiThread { v!!.ripple3.stopRippleAnimation() } },
-                500 / 3
+                { context?.runOnUiThread { v!!.ripple3.stopRippleAnimation() } },
+                167
             )
             takeValue("3")
         }
         v!!.fourBtn.setOnClickListener {
             v!!.ripple4.startRippleAnimation()
             Handler().postDelayed(
-                { runOnUiThread { v!!.ripple4.stopRippleAnimation() } },
-                500 / 3
+                { context?.runOnUiThread { v!!.ripple4.stopRippleAnimation() } },
+                167
             )
             takeValue("4")
         }
         v!!.fiveBtn.setOnClickListener {
             v!!.ripple5.startRippleAnimation()
             Handler().postDelayed(
-                { runOnUiThread { v!!.ripple5.stopRippleAnimation() } },
-                500 / 3
+                { context?.runOnUiThread { v!!.ripple5.stopRippleAnimation() } },
+                167
             )
             takeValue("5")
         }
         v!!.sixBtn.setOnClickListener {
             v!!.ripple6.startRippleAnimation()
             Handler().postDelayed(
-                { runOnUiThread { v!!.ripple6.stopRippleAnimation() } },
-                500 / 3
+                { context?.runOnUiThread { v!!.ripple6.stopRippleAnimation() } },
+                167
             )
             takeValue("6")
         }
         v!!.sevenBtn.setOnClickListener {
             v!!.ripple7.startRippleAnimation()
             Handler().postDelayed(
-                { runOnUiThread { v!!.ripple7.stopRippleAnimation() } },
-                500 / 3
+                { context?.runOnUiThread { v!!.ripple7.stopRippleAnimation() } },
+                167
             )
             takeValue("7")
         }
         v!!.eightBtn.setOnClickListener {
             v!!.ripple8.startRippleAnimation()
             Handler().postDelayed(
-                { runOnUiThread { v!!.ripple8.stopRippleAnimation() } },
-                500 / 3
+                { context?.runOnUiThread { v!!.ripple8.stopRippleAnimation() } },
+                167
             )
             takeValue("8")
         }
         v!!.nineBtn.setOnClickListener {
             v!!.ripple9.startRippleAnimation()
             Handler().postDelayed(
-                { runOnUiThread { v!!.ripple9.stopRippleAnimation() } },
-                500 / 3
+                { context?.runOnUiThread { v!!.ripple9.stopRippleAnimation() } },
+                167
             )
             takeValue("9")
         }
@@ -142,11 +144,11 @@ class KeyboardFragment : Fragment() {
             v!!.ripple0.startRippleAnimation()
             Handler().postDelayed(
                 {
-                    runOnUiThread {
+                    context?.runOnUiThread {
                         v!!.ripple0.stopRippleAnimation()
                     }
                 },
-                500 / 3
+                167
             )
             takeValue("0")
         }

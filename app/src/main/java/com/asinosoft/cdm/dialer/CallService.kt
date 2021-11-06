@@ -19,10 +19,15 @@ class CallService : InCallService() {
         }
     }
 
-    override fun onCallAdded(call: Call) {
-        Log.i("CallService", "Call added: ${call.details.handle}")
-        CallManager.setCall(this, call)
+    override fun onCreate() {
+        Log.d("CDM|CallService::onCreate", "")
+        super.onCreate()
         CallManager.registerCallback(callback)
+    }
+
+    override fun onCallAdded(call: Call) {
+        Log.i("CDM|CallService", "Call added: ${call.details.handle}")
+        CallManager.setCall(this, call)
         Intent(this, OngoingCallActivity::class.java)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             .let { startActivity(it) }
@@ -30,13 +35,13 @@ class CallService : InCallService() {
     }
 
     override fun onCallRemoved(call: Call) {
-        Log.i("CallService", "Call removed: ${call.details.handle}")
-        CallManager.resetCall(this)
-        CallManager.unregisterCallback(callback)
+        Log.i("CDM|CallService", "Call removed: ${call.details.handle}")
+        CallManager.resetCall()
         notification.hide()
     }
 
     override fun onDestroy() {
+        Log.d("CDM|CallService::onDestroy", "")
         super.onDestroy()
         CallManager.unregisterCallback(callback)
         notification.hide()

@@ -10,10 +10,9 @@ import android.telephony.TelephonyManager.SIM_STATE_READY
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.asinosoft.cdm.data.SimSlot
-import org.jetbrains.anko.telecomManager
 
 fun Context.isDefaultDialer(): Boolean {
-    Log.d("TelecomManager::isDefaultDialer", telecomManager.defaultDialerPackage)
+    Log.d("CDM::isDefaultDialer", telecomManager.defaultDialerPackage)
     return packageName == telecomManager.defaultDialerPackage
 }
 

@@ -89,7 +89,7 @@ object Loader {
      */
     fun saveSettings(context: Context, settings: Settings) {
         this.settings = settings
-        Log.d("Loader::saveSettings", settings.toString())
+        Log.d("CDM|Loader::saveSettings", settings.toString())
         context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
             .edit()
             .putString(Keys.Settings, Gson().toJson(settings))

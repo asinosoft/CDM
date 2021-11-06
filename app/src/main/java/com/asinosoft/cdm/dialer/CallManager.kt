@@ -26,7 +26,7 @@ class CallManager {
         fun getCall() = call
 
         fun setCall(context: Context, call: Call) {
-            Log.d("CDM|call", "setCall → ${call.details.handle} | ${call.state}")
+            Log.d("CDM|CallManager::setCall", "→ ${call.details.handle} | ${call.state}")
 
             this.call = call
 
@@ -51,23 +51,20 @@ class CallManager {
                         else -> R.drawable.sim3
                     }
                 }
-
-            NotificationManager(context).show(call.state)
         }
 
-        fun resetCall(context: Context) {
-            Log.d("CallManager", "resetCall")
+        fun resetCall() {
+            Log.d("CDM|CallManager::resetCall", "")
             call = null
-            NotificationManager(context).hide()
         }
 
         fun accept() {
-            Log.d("CallManager", "accept")
+            Log.d("CDM|CallManager::accept", "")
             call?.answer(VideoProfile.STATE_AUDIO_ONLY)
         }
 
         fun reject() {
-            Log.d("CallManager", "reject")
+            Log.d("CDM|CallManager::reject", "")
             call?.let { call ->
                 if (call.state == Call.STATE_RINGING) {
                     call.reject(false, null)

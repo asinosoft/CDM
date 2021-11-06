@@ -27,10 +27,10 @@ import com.asinosoft.cdm.databinding.FavoritesFragmentBinding
 import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.helpers.SelectPhoneDialog
+import com.asinosoft.cdm.helpers.vibrator
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import com.asinosoft.cdm.views.CirLayoutManager
 import com.asinosoft.cdm.views.LockableLayoutManager
-import org.jetbrains.anko.vibrator
 
 /**
  * Интерфейс главного окна (избранные + последние звонки)
@@ -106,7 +106,10 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
     }
 
     override fun onClickContact(contact: Contact) {
-        findNavController().navigate(R.id.action_open_contact, bundleOf("contactId" to contact.id))
+        findNavController().navigate(
+            R.id.action_open_contact_fragment,
+            bundleOf("contactId" to contact.id)
+        )
     }
 
     override fun onClickPhone(phone: String) {
@@ -159,12 +162,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
                 callsLayoutManager,
                 btnDelete,
                 btnEdit,
-                { contact ->
-                    findNavController().navigate(
-                        R.id.action_open_contact,
-                        bundleOf("contactId" to contact.id)
-                    )
-                },
+                { contact -> onClickContact(contact) },
                 { position -> pickedPosition = position; pickContact.launch(null) },
                 { indexOfFrontChild = it },
                 context,

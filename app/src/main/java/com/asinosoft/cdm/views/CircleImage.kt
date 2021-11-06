@@ -28,12 +28,9 @@ import com.asinosoft.cdm.helpers.Metoths.Companion.toVisibility
 import com.asinosoft.cdm.helpers.Metoths.Companion.translateDiff
 import com.asinosoft.cdm.helpers.Metoths.Companion.translateTo
 import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
+import com.asinosoft.cdm.helpers.vibrator
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
-import org.jetbrains.anko.sdk27.coroutines.onClick
-import org.jetbrains.anko.sdk27.coroutines.onLongClick
-import org.jetbrains.anko.sdk27.coroutines.onTouch
-import org.jetbrains.anko.vibrator
 
 class CircleImage @JvmOverloads constructor(
     context: Context,
@@ -92,12 +89,10 @@ class CircleImage @JvmOverloads constructor(
     }
 
     private fun initClick() {
-        onClick {
+        setOnClickListener {
             if (isLongClick) {
                 isLongClick = false
-                return@onClick
-            }
-            if (!isMoving) {
+            } else if (!isMoving) {
                 contact?.let {
                     openContact(it)
                 } ?: pickContact()
@@ -106,12 +101,15 @@ class CircleImage @JvmOverloads constructor(
     }
 
     private fun initLongClickWithDrag() {
-        onLongClick {
-            if (!isMoving) {
+        setOnLongClickListener {
+            if (isMoving) {
+                false
+            } else {
                 isLongClick = true
                 dragListener()
                 setOptionalCirsVisible(true)
                 makeTouch(MotionEvent.ACTION_UP)
+                true
             }
         }
     }
@@ -143,9 +141,13 @@ class CircleImage @JvmOverloads constructor(
     }
 
     private fun initTouch() {
-        onTouch { _, event ->
-            if (contact != null)
+        setOnTouchListener { _, event ->
+            if (contact == null) {
+                performClick()
+            } else {
                 touchEvent(event)
+                false
+            }
         }
     }
 

@@ -24,7 +24,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     private var contactPhones: MutableMap<String, Contact> = mutableMapOf()
 
     fun initialize() {
-        Log.d("CDM|contacts", "Чтение списка контактов")
+        Log.d("CDM|Contacts::initialize", "Чтение списка контактов")
         contactPhones = mutableMapOf()
         contacts = context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
@@ -41,20 +41,19 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         }
 
         contactPhones = index
-        Log.d(null, "Найдено ${contacts.size} контактов")
+        Log.d("CDM|Contacts::initialize", "Найдено ${contacts.size} контактов")
     }
 
     override fun getContacts(): Collection<Contact> {
-        Log.d("CDM|contacts", "Список контактов")
         return contacts.values
     }
 
     override fun getContactById(id: Long): Contact? {
-        Log.d("CDM|contacts", "Поиск контакта по ID $id")
         return contacts[id] ?: findContactById(id)?.also { cache(it) }
     }
 
     override fun getContactByUri(uri: Uri): Contact? {
+        Log.d("CDM|Contacts", "Поиск контакта по URI $uri")
         val projections = arrayOf(ContactsContract.Contacts._ID)
         val cursor = context.contentResolver.query(uri, projections, null, null, null)
         if (cursor != null && cursor.moveToFirst()) {
@@ -67,7 +66,6 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     override fun getContactByPhone(phone: String): Contact? {
-        Log.d("CDM|contacts", "Поиск контакта по телефону $phone")
         return contactPhones[phone] ?: findContactByPhone(phone)?.also { cache(it) }
     }
 
@@ -79,6 +77,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     private fun findContactById(id: Long): Contact? {
+        Log.d("CDM|Contacts", "Поиск контакта по ID $id")
         return context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             "${ContactsContract.Data.CONTACT_ID} = ?", arrayOf(id.toString()), null
@@ -88,6 +87,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     private fun findContactByPhone(phone: String): Contact? {
+        Log.d("CDM|Contacts", "Поиск контакта по телефону $phone")
         context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, arrayOf(ContactsContract.Data.CONTACT_ID),
             "${ContactsContract.Data.MIMETYPE} = ? AND ${ContactsContract.Data.DATA4} = ?",

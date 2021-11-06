@@ -97,7 +97,7 @@ class Action(
     }
 
     private fun phoneCall(context: Context) {
-        Log.i("Action", "phoneCall: $value")
+        Log.i("CDM|Action", "phoneCall: $value")
         if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.CALL_PHONE
@@ -113,35 +113,35 @@ class Action(
     }
 
     private fun sms(context: Context) {
-        Log.i("Action", "sms: $value")
+        Log.i("CDM|Action", "sms: $value")
         Firebase.analytics.logEvent("action_phone_sms", Bundle.EMPTY)
         Intent(Intent.ACTION_SENDTO, Uri.parse("sms:$value"))
             .let { context.startActivity(it) }
     }
 
     private fun email(context: Context) {
-        Log.i("Action", "email: $value")
+        Log.i("CDM|Action", "email: $value")
         Firebase.analytics.logEvent("action_email", Bundle.EMPTY)
         Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$value"))
             .let { context.startActivity(it) }
     }
 
     private fun skypeChat(context: Context) {
-        Log.i("Action", "skypeChat: $value")
+        Log.i("CDM|Action", "skypeChat: $value")
         Firebase.analytics.logEvent("action_skype_chat", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW, Uri.parse("skype:$value?chat"))
             .let { context.startActivity(it) }
     }
 
     private fun skypeCall(context: Context) {
-        Log.i("Action", "skypeCall: $value")
+        Log.i("CDM|Action", "skypeCall: $value")
         Firebase.analytics.logEvent("action_skype_call", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW, Uri.parse("skype:$value"))
             .let { context.startActivity(it) }
     }
 
     private fun telegramChat(context: Context) {
-        Log.i("Action", "telegramChat: $id ($value)")
+        Log.i("CDM|Action", "telegramChat: $id ($value)")
         Firebase.analytics.logEvent("action_telegram_chat", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
@@ -153,7 +153,7 @@ class Action(
     }
 
     private fun telegramCall(context: Context) {
-        Log.i("Action", "telegramCall: $id ($value)")
+        Log.i("CDM|Action", "telegramCall: $id ($value)")
         Firebase.analytics.logEvent("action_telegram_call", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
@@ -165,7 +165,7 @@ class Action(
     }
 
     private fun telegramVideo(context: Context) {
-        Log.i("Action", "telegramVideo: $id ($value)")
+        Log.i("CDM|Action", "telegramVideo: $id ($value)")
         Firebase.analytics.logEvent("action_telegram_video", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
@@ -177,7 +177,7 @@ class Action(
     }
 
     private fun viberChat(context: Context) {
-        Log.i("Action", "viberChat: $id ($value)")
+        Log.i("CDM|Action", "viberChat: $id ($value)")
         Firebase.analytics.logEvent("action_viber_chat", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
@@ -190,7 +190,7 @@ class Action(
     }
 
     private fun viberCall(context: Context) {
-        Log.i("Action", "viberCall: $id ($value)")
+        Log.i("CDM|Action", "viberCall: $id ($value)")
         Firebase.analytics.logEvent("action_viber_call", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
@@ -203,7 +203,7 @@ class Action(
     }
 
     private fun whatsappChat(context: Context) {
-        Log.i("Action", "whatsappChat: $id ($value)")
+        Log.i("CDM|Action", "whatsappChat: $id ($value)")
         Firebase.analytics.logEvent("action_whatsapp_chat", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
@@ -215,7 +215,7 @@ class Action(
     }
 
     private fun whatsappCall(context: Context) {
-        Log.i("Action", "whatsappCall: $id ($value)")
+        Log.i("CDM|Action", "whatsappCall: $id ($value)")
         Firebase.analytics.logEvent("action_whatsapp_call", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
@@ -227,7 +227,7 @@ class Action(
     }
 
     private fun whatsappVideo(context: Context) {
-        Log.i("Action", "whatsappVideo: $id ($value)")
+        Log.i("CDM|Action", "whatsappVideo: $id ($value)")
         Firebase.analytics.logEvent("action_whatsapp_video", Bundle.EMPTY)
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
