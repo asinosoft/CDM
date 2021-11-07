@@ -1,5 +1,6 @@
 package com.asinosoft.cdm.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PointF
 import android.net.Uri
@@ -140,14 +141,13 @@ class CircleImage @JvmOverloads constructor(
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initTouch() {
         setOnTouchListener { _, event ->
-            if (contact == null) {
-                performClick()
-            } else {
+            if (contact != null) {
                 touchEvent(event)
-                false
             }
+            false
         }
     }
 
