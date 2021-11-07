@@ -34,9 +34,7 @@ open class BaseActivity : AppCompatActivity() {
     private var actionWithPermission: (Boolean) -> Unit = {}
 
     protected val launcher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            Log.d("CDM|Activity::activityResult", it.toString())
-        }
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
     @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,7 +101,7 @@ open class BaseActivity : AppCompatActivity() {
      * Предлагает пользователю установить приложение дозвонщиком по-умолчанию
      */
     fun setDefaultDialer() {
-        Log.d("CDM|Activity::setDefaultDialer", packageName)
+        Log.d("CDM|Activity", "setDefaultDialer → $packageName")
         if (isDefaultDialer()) {
             return
         }

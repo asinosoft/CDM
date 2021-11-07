@@ -1,23 +1,40 @@
 package com.asinosoft.cdm.helpers
 
+import android.app.KeyguardManager
+import android.app.NotificationManager
 import android.content.Context
 import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
+import android.os.PowerManager
+import android.os.Vibrator
+import android.telecom.InCallService
 import android.telecom.TelecomManager
 import android.telephony.TelephonyManager
 
 inline val Context.audioManager: AudioManager
-    get() = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    get() = getSystemService(AudioManager::class.java)
+
+inline val Context.callService: InCallService
+    get() = getSystemService(InCallService::class.java)
+
+inline val Context.keyguardManager: KeyguardManager
+    get() = getSystemService(KeyguardManager::class.java)
+
+inline val Context.notificationManager: NotificationManager
+    get() = getSystemService(NotificationManager::class.java) as NotificationManager
+
+inline val Context.powerManager: PowerManager
+    get() = getSystemService(PowerManager::class.java)
 
 inline val Context.telecomManager: TelecomManager
-    get() = getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+    get() = getSystemService(TelecomManager::class.java)
 
 inline val Context.telephonyManager: TelephonyManager
-    get() = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+    get() = getSystemService(TelephonyManager::class.java)
 
-inline val Context.vibrator: android.os.Vibrator
-    get() = getSystemService(Context.VIBRATOR_SERVICE) as android.os.Vibrator
+inline val Context.vibrator: Vibrator
+    get() = getSystemService(Vibrator::class.java)
 
 fun Context.runOnUiThread(f: Context.() -> Unit) {
     if (Looper.getMainLooper() === Looper.myLooper()) f() else ContextHelper.handler.post { f() }

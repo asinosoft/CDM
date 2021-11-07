@@ -24,7 +24,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     private var contactPhones: MutableMap<String, Contact> = mutableMapOf()
 
     fun initialize() {
-        Log.d("CDM|Contacts::initialize", "Чтение списка контактов")
+        Log.d("CDM|Contacts", "Чтение списка контактов")
         contactPhones = mutableMapOf()
         contacts = context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
@@ -41,7 +41,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         }
 
         contactPhones = index
-        Log.d("CDM|Contacts::initialize", "Найдено ${contacts.size} контактов")
+        Log.d("CDM|Contacts", "Найдено ${contacts.size} контактов")
     }
 
     override fun getContacts(): Collection<Contact> {

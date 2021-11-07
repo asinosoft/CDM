@@ -340,7 +340,7 @@ open class CircularImageView @JvmOverloads constructor(
     }
 
     private fun drawShadow() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+        if (Build.VERSION.SDK_INT < 28) {
             setLayerType(View.LAYER_TYPE_SOFTWARE, paintShadow)
         }
 
@@ -426,15 +426,10 @@ open class CircularImageView @JvmOverloads constructor(
         }
 
     private fun drawableToBitmap(drawable: Drawable?): Bitmap? =
-        drawable?.let {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && drawable is VectorDrawable) {
-                drawable.vectorDrawableToBitmap()
-            } else {
-                when (drawable) {
-                    is BitmapDrawable -> drawable.bitmapDrawableToBitmap()
-                    else -> drawable.toBitmap()
-                }
-            }
+        when (drawable) {
+            is BitmapDrawable -> drawable.bitmapDrawableToBitmap()
+            is VectorDrawable -> drawable.vectorDrawableToBitmap()
+            else -> drawable?.toBitmap()
         }
 
     private fun VectorDrawable.vectorDrawableToBitmap(): Bitmap {

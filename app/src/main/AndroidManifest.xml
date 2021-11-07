@@ -60,17 +60,16 @@
             </intent-filter>
         </activity>
 
+
         <activity
-            android:name=".activities.OngoingCallActivity"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:launchMode="singleInstance"
-            android:parentActivityName=".activities.ManagerActivity"
-            android:screenOrientation="portrait"
-            android:showForAllUsers="true"
-            android:showOnLockScreen="true"
-            android:showWhenLocked="true"
-            android:turnScreenOn="true">
+            android:name=".activities.DialActivity"
+            android:enabled="true"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.CALL" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
 
             <intent-filter>
                 <action android:name="android.intent.action.CALL" />
@@ -78,14 +77,26 @@
                 <data android:scheme="tel" />
             </intent-filter>
 
-            <intent-filter>
-                <action android:name="android.intent.action.DIAL" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activities.OngoingCallActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:label="@string/call"
+            android:launchMode="singleInstance"
+            android:parentActivityName=".activities.ManagerActivity"
+            android:screenOrientation="portrait"
+            android:showForAllUsers="true"
+            android:showOnLockScreen="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            tools:targetApi="27">
 
             <intent-filter>
                 <action android:name="android.intent.action.DIAL" />
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:scheme="tel" />
             </intent-filter>
 
@@ -93,35 +104,16 @@
                 <action android:name="android.intent.action.DIAL" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:mimeType="vnd.android.cursor.item/phone" />
-                <data android:mimeType="vnd.android.cursor.item/person" />
             </intent-filter>
 
             <intent-filter>
-                <action android:name="android.intent.action.DIAL" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="voicemail" />
-            </intent-filter>
-
-            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.DIAL" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="tel" />
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.intent.action.CALL_BUTTON" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
 
         </activity>
@@ -135,17 +127,21 @@
         <service
             android:name=".dialer.CallService"
             android:enabled="true"
-            android:exported="false"
+            android:exported="true"
             android:permission="android.permission.BIND_INCALL_SERVICE">
+
             <meta-data
                 android:name="android.telecom.IN_CALL_SERVICE_UI"
                 android:value="true" />
+
             <meta-data
                 android:name="android.telecom.IN_CALL_SERVICE_RINGING"
                 android:value="true" />
+
             <intent-filter>
                 <action android:name="android.telecom.InCallService" />
             </intent-filter>
+
         </service>
 
         <receiver

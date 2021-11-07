@@ -2,13 +2,11 @@ package com.asinosoft.cdm.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Vibrator
 import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -166,7 +164,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
                 { position -> pickedPosition = position; pickContact.launch(null) },
                 { indexOfFrontChild = it },
                 context,
-                context.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
+                context.vibrator
             )
             rvFavorites.adapter = favoritesAdapter
 

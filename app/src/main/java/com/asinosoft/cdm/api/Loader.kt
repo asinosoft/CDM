@@ -25,7 +25,7 @@ object Loader {
 
         val preferences = context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
         val json = preferences.getString(Keys.Settings, null)
-        Log.d("Loader::loadSettings", json ?: "(empty)")
+        Log.d("Loader", "loadSettings → $json")
         if (json == null) {
             settings = Settings()
         } else {
@@ -89,7 +89,7 @@ object Loader {
      */
     fun saveSettings(context: Context, settings: Settings) {
         this.settings = settings
-        Log.d("CDM|Loader::saveSettings", settings.toString())
+        Log.d("CDM|Loader", "saveSettings → $settings")
         context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
             .edit()
             .putString(Keys.Settings, Gson().toJson(settings))
