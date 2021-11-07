@@ -1,6 +1,8 @@
 package com.asinosoft.cdm.adapters
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.CallLog
 import android.view.LayoutInflater
@@ -131,11 +133,11 @@ class CallsAdapter(
                 when (direction) {
                     SwipeLayout.RIGHT -> {
                         Firebase.analytics.logEvent("history_swipe_right", Bundle.EMPTY)
-                        directActions.right.perform(context)
+                        performSwipeAction(directActions.right, call)
                     }
                     SwipeLayout.LEFT -> {
                         Firebase.analytics.logEvent("history_swipe_left", Bundle.EMPTY)
-                        directActions.left.perform(context)
+                        performSwipeAction(directActions.left, call)
                     }
                 }
 
@@ -157,4 +159,15 @@ class CallsAdapter(
     }
 
     inner class HolderHistory(val v: ViewBinding) : RecyclerView.ViewHolder(v.root)
+
+    private fun performSwipeAction(action: Action, item: CallHistoryItem) {
+        if (action.type == Action.Type.PhoneCall) {
+            // Звонок делаем по тому телефону, который в истории, а не который в настройках контакта!
+            Intent(Intent.ACTION_CALL, Uri.parse("tel:" + Uri.encode(item.phone)))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                .let { context.startActivity(it) }
+        } else {
+            action.perform(context)
+        }
+    }
 }

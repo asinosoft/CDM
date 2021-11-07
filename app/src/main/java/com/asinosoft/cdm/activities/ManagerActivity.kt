@@ -20,11 +20,18 @@ class ManagerActivity : BaseActivity() {
     private val model: ManagerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("Main", "Created")
+        Log.d("CDM|Main", "Created")
         super.onCreate(savedInstanceState)
         setContentView(ActivityMainBinding.inflate(layoutInflater).root)
 
-        withPermission(arrayOf(READ_CONTACTS, READ_CALL_LOG, READ_PHONE_STATE, CALL_PHONE)) { ok ->
+        withPermission(
+            arrayOf(
+                READ_CONTACTS,
+                READ_CALL_LOG,
+                READ_PHONE_STATE,
+                CALL_PHONE
+            )
+        ) { ok ->
             if (ok && settings.checkDefaultDialer) {
                 setDefaultDialer()
             }
@@ -32,7 +39,7 @@ class ManagerActivity : BaseActivity() {
     }
 
     override fun onResume() {
-        Log.d("Main", "Resumed")
+        Log.d("CDM|Main", "Resumed")
         super.onResume()
 
         if (Loader.loadSettings(this, true) == settings) {
@@ -43,7 +50,7 @@ class ManagerActivity : BaseActivity() {
     }
 
     override fun onPause() {
-        Log.d("Main", "Paused")
+        Log.d("CDM|Main", "Paused")
         super.onPause()
         isRefreshed = false
     }

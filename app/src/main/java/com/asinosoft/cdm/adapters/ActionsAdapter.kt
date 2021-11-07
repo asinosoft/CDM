@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.databinding.ActionItemBinding
 import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
-import org.jetbrains.anko.vibrator
+import com.asinosoft.cdm.helpers.vibrator
 
 /**
  * Адаптер списка действий доступных для контакта (звонок/смс/письмо/вотсап-чат/вотсап-звонок и т.д.)

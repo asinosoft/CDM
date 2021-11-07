@@ -37,7 +37,7 @@
         <!-- для тестов -->
 
         <action
-            android:id="@+id/action_open_contact"
+            android:id="@+id/action_open_contact_fragment"
             app:destination="@id/contactFragment"
             app:enterAnim="@android:animator/fade_in"
             app:exitAnim="@android:animator/fade_out"
@@ -77,7 +77,7 @@
         tools:layout="@layout/activity_search">
 
         <action
-            android:id="@+id/action_open_contact"
+            android:id="@+id/action_open_found_contact"
             app:destination="@id/contactFragment" />
         <action
             android:id="@+id/action_open_settings"

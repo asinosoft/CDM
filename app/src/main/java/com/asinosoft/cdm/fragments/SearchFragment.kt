@@ -19,7 +19,6 @@ import com.asinosoft.cdm.helpers.Metoths.Companion.toggle
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
-import org.jetbrains.anko.sdk27.coroutines.onClick
 
 class SearchFragment : Fragment() {
     private val model: ManagerViewModel by activityViewModels()
@@ -50,7 +49,7 @@ class SearchFragment : Fragment() {
 
         contactsAdapter.doOnClickContact { contact ->
             findNavController().navigate(
-                R.id.action_open_contact,
+                R.id.action_open_found_contact,
                 bundleOf("contactId" to contact.id)
             )
         }
@@ -77,7 +76,7 @@ class SearchFragment : Fragment() {
             v.fabKeyboard.show()
         }
 
-        v.fabKeyboard.onClick {
+        v.fabKeyboard.setOnClickListener {
             v.layoutKeyboard.toggle()
             v.fabKeyboard.hide()
         }

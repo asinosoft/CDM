@@ -8,7 +8,6 @@ import androidx.viewbinding.ViewBinding
 import com.asinosoft.cdm.databinding.BackgroundItemCustomBinding
 import com.asinosoft.cdm.databinding.BackgroundItemDefaultBinding
 import com.asinosoft.cdm.databinding.BackgroundItemImageBinding
-import org.jetbrains.anko.sdk27.coroutines.onClick
 
 /**
  * Адаптер списка фоновых изображений
@@ -38,7 +37,7 @@ class BackgroundsAdapter(
                     parent,
                     false
                 ).also {
-                    it.root.onClick {
+                    it.root.setOnClickListener {
                         handler.onSelectBackground(null)
                     }
                 }
@@ -48,7 +47,7 @@ class BackgroundsAdapter(
                     parent,
                     false
                 ).also {
-                    it.root.onClick {
+                    it.root.setOnClickListener {
                         handler.onCustomBackground()
                     }
                 }
@@ -69,7 +68,7 @@ class BackgroundsAdapter(
             is BackgroundItemImageBinding ->
                 holder.view.apply {
                     image.setImageResource(backgrounds[position - 1])
-                    root.onClick {
+                    root.setOnClickListener {
                         val uri =
                             "android.resource://com.asinosoft.cdm/drawable/" + backgrounds[position - 1]
                         handler.onSelectBackground(Uri.parse(uri))

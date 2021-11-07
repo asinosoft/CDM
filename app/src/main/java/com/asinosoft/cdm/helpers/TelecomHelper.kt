@@ -6,14 +6,14 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.net.Uri
+import android.telecom.PhoneAccountHandle
 import android.telephony.TelephonyManager.SIM_STATE_READY
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.asinosoft.cdm.data.SimSlot
-import org.jetbrains.anko.telecomManager
 
 fun Context.isDefaultDialer(): Boolean {
-    Log.d("TelecomManager::isDefaultDialer", telecomManager.defaultDialerPackage)
+    Log.d("CDM|default dialer", telecomManager.defaultDialerPackage)
     return packageName == telecomManager.defaultDialerPackage
 }
 
@@ -36,6 +36,10 @@ fun Context.getAvailableSimSlots(): List<SimSlot> {
             address.substringAfter("tel:")
         )
     }
+}
+
+fun Context.getSimSlot(handle: PhoneAccountHandle): SimSlot? {
+    return getAvailableSimSlots().find { slot -> handle == slot.handle }
 }
 
 @SuppressLint("MissingPermission")

@@ -53,13 +53,6 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    fun clear() {
-        contact.postValue(null)
-        directActions.postValue(null)
-        availableActions.postValue(null)
-        callHistory.postValue(null)
-    }
-
     fun getContactAction(direction: Direction): Action {
         return when (direction) {
             Direction.LEFT -> _actions.left

@@ -40,12 +40,6 @@ class ContactFragment : Fragment() {
         return v!!.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        model.clear()
-        v = null
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Firebase.analytics.logEvent("activity_contact", Bundle.EMPTY)
 

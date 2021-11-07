@@ -1,12 +1,9 @@
 package com.asinosoft.cdm.dialer
 
-import android.app.NotificationManager
 import android.content.Context
 import android.telecom.Call
 import com.asinosoft.cdm.R
 import java.util.*
-
-val Context.notificationManager: NotificationManager get() = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
 private const val PATH = "com.asinosoft.cdm.dialer.action."
 const val ACCEPT_CALL = PATH + "accept_call"
