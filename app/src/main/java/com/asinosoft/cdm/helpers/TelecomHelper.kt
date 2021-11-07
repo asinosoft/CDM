@@ -21,19 +21,13 @@ fun Context.isDefaultDialer(): Boolean {
 fun Context.getAvailableSimSlots(): List<SimSlot> {
     return telecomManager.callCapablePhoneAccounts.mapIndexed { index, account ->
         val phoneAccount = telecomManager.getPhoneAccount(account)
-        var label = phoneAccount.label.toString()
-        var address = phoneAccount.address.toString()
-        if (address.startsWith("tel:") && address.substringAfter("tel:").isNotEmpty()) {
-            address = Uri.decode(address.substringAfter("tel:"))
-            label += " ($address)"
-        }
 
         SimSlot(
             index + 1,
             phoneAccount.accountHandle,
             SIM_STATE_READY,
-            label,
-            address.substringAfter("tel:")
+            phoneAccount.label.toString(),
+            phoneAccount.address.schemeSpecificPart
         )
     }
 }

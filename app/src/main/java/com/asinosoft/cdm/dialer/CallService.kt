@@ -18,15 +18,23 @@ class CallService : InCallService() {
         }
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        calls?.firstOrNull()?.let { call ->
+            onCallAdded(call)
+        }
+    }
+
     override fun onCallAdded(call: Call) {
         Log.i("CDM|CallService", "add → ${call.details.handle}")
         CallManager.setCall(call)
         call.registerCallback(callback)
+        notification.show(call, call.state)
+
         Intent(this, OngoingCallActivity::class.java).let { activity ->
             activity.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
             startActivity(activity)
         }
-        notification.show(call, call.state)
     }
 
     override fun onCallRemoved(call: Call) {

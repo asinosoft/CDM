@@ -4,8 +4,8 @@ import android.Manifest.permission.*
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Loader
-import com.asinosoft.cdm.databinding.ActivityMainBinding
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 
 /**
@@ -22,7 +22,7 @@ class ManagerActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("CDM|Main", "Created")
         super.onCreate(savedInstanceState)
-        setContentView(ActivityMainBinding.inflate(layoutInflater).root)
+        setContentView(R.layout.activity_main)
 
         withPermission(
             arrayOf(

@@ -163,7 +163,7 @@ class CallsAdapter(
     private fun performSwipeAction(action: Action, item: CallHistoryItem) {
         if (action.type == Action.Type.PhoneCall) {
             // Звонок делаем по тому телефону, который в истории, а не который в настройках контакта!
-            Intent(Intent.ACTION_CALL, Uri.parse("tel:" + Uri.encode(item.phone)))
+            Intent(Intent.ACTION_CALL, Uri.fromParts("tel", item.phone, null))
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .let { context.startActivity(it) }
         } else {

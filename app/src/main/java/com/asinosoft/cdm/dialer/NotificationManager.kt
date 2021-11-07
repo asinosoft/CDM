@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.telecom.Call
 import android.util.Log
@@ -37,7 +36,7 @@ class NotificationManager(private val context: Context) {
                     NotificationChannel(
                         CHANNEL_ID,
                         context.getString(R.string.app_name),
-                        NotificationManager.IMPORTANCE_DEFAULT
+                        NotificationManager.IMPORTANCE_HIGH
                     )
                 )
             }
@@ -45,7 +44,7 @@ class NotificationManager(private val context: Context) {
     }
 
     fun show(call: Call, callState: Int) {
-        val phone = Uri.decode(call.details.handle.toString()).substringAfter("tel:")
+        val phone = call.details.handle.schemeSpecificPart
         val contact = ContactRepositoryImpl(context).getContactByPhone(phone)
 
         val photo =
@@ -85,7 +84,7 @@ class NotificationManager(private val context: Context) {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.call)
             .setContentIntent(openAppIntent())
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(Notification.CATEGORY_CALL)
             .setCustomContentView(collapsedView)
             .setOngoing(true)
@@ -93,6 +92,7 @@ class NotificationManager(private val context: Context) {
             .setUsesChronometer(Call.STATE_ACTIVE == callState)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+            .setFullScreenIntent(openAppIntent(), true)
 
         builder.setLargeIcon(photo)
 
@@ -120,7 +120,7 @@ class NotificationManager(private val context: Context) {
             Intent(context, NotificationActionReceiver::class.java).apply {
                 action = ACCEPT_CALL
             },
-            PendingIntent.FLAG_CANCEL_CURRENT + PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
     private fun declineCallIntent() =
@@ -128,7 +128,7 @@ class NotificationManager(private val context: Context) {
             context,
             1,
             Intent(context, NotificationActionReceiver::class.java).apply { action = DECLINE_CALL },
-            PendingIntent.FLAG_CANCEL_CURRENT + PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
     private fun toggleMuteIntent() =

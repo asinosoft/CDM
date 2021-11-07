@@ -62,7 +62,7 @@ class SearchFragment : Fragment() {
         keyboard.onCallButtonClick { phoneNumber ->
             Firebase.analytics.logEvent("call_from_search", Bundle.EMPTY)
             findNavController().popBackStack()
-            Intent(Intent.ACTION_CALL, Uri.parse("tel:" + Uri.encode(phoneNumber)))
+            Intent(Intent.ACTION_CALL, Uri.fromParts("tel", phoneNumber, null))
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .let { startActivity(it) }
         }

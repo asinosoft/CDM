@@ -107,7 +107,7 @@ class Action(
         }
         Firebase.analytics.logEvent("action_phone_call", Bundle.EMPTY)
 
-        Intent(Intent.ACTION_CALL, Uri.parse("tel:" + Uri.encode(value)))
+        Intent(Intent.ACTION_CALL, Uri.fromParts("tel", value, null))
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             .let { context.startActivity(it) }
     }

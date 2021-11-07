@@ -2,7 +2,6 @@ package com.asinosoft.cdm.activities
 
 import android.annotation.SuppressLint
 import android.media.AudioManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -57,7 +56,7 @@ class OngoingCallActivity : BaseActivity() {
         setContentView(v.root)
 
         call.registerCallback(callCallback)
-        setCallerInfo(call.details.handle)
+        setCallerInfo(call.details.handle.schemeSpecificPart)
         updateCallState(call.state)
 
         clickToButtons()
@@ -71,8 +70,7 @@ class OngoingCallActivity : BaseActivity() {
         }
     }
 
-    private fun setCallerInfo(uri: Uri?) {
-        val phone = Uri.decode(uri.toString()).substringAfter("tel:")
+    private fun setCallerInfo(phone: String) {
         val contact = ContactRepositoryImpl(this).getContactByPhone(phone)
 
         val photo =
