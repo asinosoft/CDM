@@ -2,11 +2,11 @@ package com.asinosoft.cdm.activities
 
 import android.Manifest.permission.*
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
+import timber.log.Timber
 
 /**
  * Основной класс приложения, отвечает за работу главного экрана (нового) приложения
@@ -20,7 +20,7 @@ class ManagerActivity : BaseActivity() {
     private val model: ManagerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("CDM|Main", "Created")
+        Timber.d("onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -39,7 +39,7 @@ class ManagerActivity : BaseActivity() {
     }
 
     override fun onResume() {
-        Log.d("CDM|Main", "Resumed")
+        Timber.d("onResume")
         super.onResume()
 
         if (Loader.loadSettings(this, true) == settings) {
@@ -50,7 +50,7 @@ class ManagerActivity : BaseActivity() {
     }
 
     override fun onPause() {
-        Log.d("CDM|Main", "Paused")
+        Timber.d("onPause")
         super.onPause()
         isRefreshed = false
     }

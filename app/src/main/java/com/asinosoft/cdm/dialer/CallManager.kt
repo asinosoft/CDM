@@ -2,7 +2,7 @@ package com.asinosoft.cdm.dialer
 
 import android.telecom.Call
 import android.telecom.VideoProfile
-import android.util.Log
+import timber.log.Timber
 
 class CallManager {
 
@@ -12,22 +12,22 @@ class CallManager {
         fun getCall() = call
 
         fun setCall(call: Call) {
-            Log.d("CDM|CallManager", "setCall → ${call.details.handle} | ${call.state}")
+            Timber.d("setCall → ${call.details.handle} | ${call.state}")
             this.call = call
         }
 
         fun resetCall() {
-            Log.d("CDM|CallManager", "resetCall")
+            Timber.d("resetCall")
             call = null
         }
 
         fun accept() {
-            Log.d("CDM|CallManager", "accept")
+            Timber.d("accept")
             call?.answer(VideoProfile.STATE_AUDIO_ONLY)
         }
 
         fun reject() {
-            Log.d("CDM|CallManager", "reject")
+            Timber.d("reject")
             call?.let { call ->
                 if (call.state == Call.STATE_RINGING) {
                     call.reject(false, null)

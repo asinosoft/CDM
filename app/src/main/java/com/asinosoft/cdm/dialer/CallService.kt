@@ -3,8 +3,8 @@ package com.asinosoft.cdm.dialer
 import android.content.Intent
 import android.telecom.Call
 import android.telecom.InCallService
-import android.util.Log
 import com.asinosoft.cdm.activities.OngoingCallActivity
+import timber.log.Timber
 
 class CallService : InCallService() {
     private val notification by lazy { NotificationManager(this) }
@@ -26,19 +26,19 @@ class CallService : InCallService() {
     }
 
     override fun onCallAdded(call: Call) {
-        Log.i("CDM|CallService", "add → ${call.details.handle}")
+        Timber.i("Новый звонок → %s", call.details.handle)
         CallManager.setCall(call)
         call.registerCallback(callback)
         notification.show(call, call.state)
 
         Intent(this, OngoingCallActivity::class.java).let { activity ->
-            activity.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
+            activity.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
             startActivity(activity)
         }
     }
 
     override fun onCallRemoved(call: Call) {
-        Log.i("CDM|CallService", "remove → ${call.details.handle}")
+        Timber.i("Звонок завершён → %s", call.details.handle)
         CallManager.resetCall()
         call.unregisterCallback(callback)
         notification.hide()

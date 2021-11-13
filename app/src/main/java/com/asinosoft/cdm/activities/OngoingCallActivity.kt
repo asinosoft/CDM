@@ -9,7 +9,6 @@ import android.os.PowerManager
 import android.telecom.Call
 import android.telecom.CallAudioState
 import android.telecom.PhoneAccountHandle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.core.view.isVisible
@@ -21,6 +20,7 @@ import com.asinosoft.cdm.dialer.addCharacter
 import com.asinosoft.cdm.dialer.getCallStateText
 import com.asinosoft.cdm.dialer.getFormattedDuration
 import com.asinosoft.cdm.helpers.*
+import timber.log.Timber
 import java.util.*
 
 /**
@@ -39,7 +39,7 @@ class OngoingCallActivity : BaseActivity() {
     private val callCallback = object : Call.Callback() {
         override fun onStateChanged(call: Call, state: Int) {
             super.onStateChanged(call, state)
-            Log.d("CDM|Call", "onStateChanged → $state")
+            Timber.d("onStateChanged → %s", getCallStateText(state))
             updateCallState(state)
             updateSimSlotInfo(call.details.accountHandle)
         }
@@ -47,7 +47,7 @@ class OngoingCallActivity : BaseActivity() {
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("CDM|Call", "onCreate")
+        Timber.d("onCreate")
         super.onCreate(savedInstanceState)
 
         call = CallManager.getCall() ?: return finish()
@@ -113,7 +113,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        Log.d("CDM|Call", "onBackPressed")
+        Timber.d("onBackPressed")
         // In case the dialpad is opened, pressing the back button will close it
         if (v.keyboardWrapper.isVisible) {
             v.keyboardWrapper.visibility = View.GONE
@@ -124,7 +124,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     override fun onDestroy() {
-        Log.d("CDM|Call", "Destroy")
+        Timber.d("onDestroy")
         super.onDestroy()
         callTimer.cancel()
         if (true == proximityWakeLock?.isHeld()) {
@@ -135,13 +135,13 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun activateCall() {
-        Log.d("CDM|Call", "activateCall")
+        Timber.d("activateCall")
         CallManager.accept()
         switchToCallingUI()
     }
 
     private fun endCall() {
-        Log.d("CDM|Call", "endCall")
+        Timber.d("endCall")
         if (isCallEnded) {
             finish()
             return
@@ -228,7 +228,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun toggleMicrophone() {
-        Log.d("CDM|Call", "toggleMicrophone")
+        Timber.d("toggleMicrophone")
         v.ongoingCallLayout.buttonMute.isActivated = !v.ongoingCallLayout.buttonMute.isActivated
         audioManager.isMicrophoneMute = v.ongoingCallLayout.buttonMute.isActivated
         val microphoneIcon =
@@ -238,7 +238,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun toggleSpeaker() {
-        Log.d("CDM|Call", "toggleSpeaker")
+        Timber.d("toggleSpeaker")
         v.ongoingCallLayout.buttonSpeaker.isActivated =
             !v.ongoingCallLayout.buttonSpeaker.isActivated
         audioManager.isSpeakerphoneOn = v.ongoingCallLayout.buttonSpeaker.isActivated
@@ -251,7 +251,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun toggleHold() {
-        Log.d("CDM|Call", "toggleHold")
+        Timber.d("toggleHold")
         v.ongoingCallLayout.buttonHold.isActivated = !v.ongoingCallLayout.buttonHold.isActivated
         CallManager.hold(v.ongoingCallLayout.buttonHold.isActivated)
     }
@@ -313,7 +313,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun updateCallState(callState: Int) {
-        Log.d("CDM|Call", "updateCallState → $callState")
+        Timber.d("updateCallState → %s", getCallStateText(callState))
         when (callState) {
             Call.STATE_RINGING -> visibilityIncomingCall()
             Call.STATE_ACTIVE -> {

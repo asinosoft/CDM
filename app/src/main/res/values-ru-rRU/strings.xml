@@ -9,11 +9,18 @@
     <string name="call_type_other">Звонок</string>
 
     <!-- Статус звонка -->
-    <string name="status_call_disconnected">Звонок завершен</string>
-    <string name="status_call_incoming">Входящий звонок</string>
     <string name="status_call_active">Текущий звонок</string>
+    <string name="status_call_connecting">Соединение…</string>
     <string name="status_call_dialing">Соеденение…</string>
+    <string name="status_call_disconnected">Звонок завершен</string>
+    <string name="status_call_disconnecting">Разъединение</string>
     <string name="status_call_holding">Вызов на удержании</string>
+    <string name="status_call_incoming">Входящий звонок</string>
+    <string name="status_call_new">Новый</string>
+    <string name="status_call_pulling_call">Подключение к звонку</string>
+    <string name="status_call_ringing">Звонок…</string>
+    <string name="status_call_select_phone_account">Выбор SIM</string>
+    <string name="status_call_simulated_ringing">Тестовый звонок</string>
 
     <!-- Уведомления -->
     <string name="active_call_notification_text">Звонок…</string>

@@ -11,7 +11,6 @@ import android.os.Vibrator
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
@@ -27,6 +26,7 @@ import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.helpers.Metoths.Companion.Direction.*
+import timber.log.Timber
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
@@ -181,7 +181,10 @@ class Metoths {
 
         fun View.toggle(duration: Long = 500L, animation: Boolean = false) {
             if (animation) {
-                ValueAnimator.ofInt(this.measuredHeight, if (this.height == 1) ViewGroup.LayoutParams.WRAP_CONTENT else 1)
+                ValueAnimator.ofInt(
+                    this.measuredHeight,
+                    if (this.height == 1) ViewGroup.LayoutParams.WRAP_CONTENT else 1
+                )
                     .apply {
                         this.duration = duration
                         addUpdateListener {
@@ -210,7 +213,7 @@ class Metoths {
             try {
                 str = "${duration / 60}:${duration % 60}"
             } catch (e: Exception) {
-                Log.e(null, "getFormattedTime", e)
+                Timber.e(e)
             }
             return str
         }

@@ -3,7 +3,6 @@ package com.asinosoft.cdm.viewmodels
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -19,6 +18,7 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * Данные для окна Просмотр контакта
@@ -64,7 +64,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun setContactAction(direction: Direction, action: Action) {
-        Log.d("Contact", "set: $direction → ${action.type}")
+        Timber.d("set: %s → %s", direction, action.type)
         Firebase.analytics.logEvent(
             "contact_set_action",
             Bundle().apply {
@@ -85,7 +85,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun swapContactAction(one: Direction, another: Direction) {
-        Log.d("Contact", "swap: $one ↔ $another")
+        Timber.d("swap: %s ↔ %s", one, another)
         getContactAction(one).apply {
             setContactAction(one, getContactAction(another)).also {
                 setContactAction(another, this)
@@ -94,7 +94,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun saveContactSettings(context: Context) {
-        Log.d("Contact", "save settings")
+        Timber.d("Сохранение настроек контакта %s", _contact)
         if (haveUnsavedChanges) {
             Loader.saveContactSettings(context, _contact, _actions)
             haveUnsavedChanges = false

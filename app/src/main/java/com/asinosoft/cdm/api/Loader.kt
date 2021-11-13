@@ -1,13 +1,13 @@
 package com.asinosoft.cdm.api
 
 import android.content.Context
-import android.util.Log
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.helpers.Keys
 import com.google.gson.Gson
+import timber.log.Timber
 
 /**
  * Класс загрузчика настроек.
@@ -25,7 +25,7 @@ object Loader {
 
         val preferences = context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
         val json = preferences.getString(Keys.Settings, null)
-        Log.d("Loader", "loadSettings → $json")
+        Timber.d("Загрузка настроек")
         if (json == null) {
             settings = Settings()
         } else {
@@ -89,7 +89,7 @@ object Loader {
      */
     fun saveSettings(context: Context, settings: Settings) {
         this.settings = settings
-        Log.d("CDM|Loader", "saveSettings → $settings")
+        Timber.d("Сохранение настроек: %s", settings)
         context.getSharedPreferences(Keys.Preference, Context.MODE_PRIVATE)
             .edit()
             .putString(Keys.Settings, Gson().toJson(settings))

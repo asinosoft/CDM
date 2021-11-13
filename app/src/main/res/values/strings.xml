@@ -10,11 +10,18 @@
     <string name="call_type_other">Call type</string>
 
     <!--Call State-->
-    <string name="status_call_disconnected">Disconnected</string>
-    <string name="status_call_incoming">Incoming call</string>
     <string name="status_call_active">Current call</string>
+    <string name="status_call_connecting">Connecting…</string>
     <string name="status_call_dialing">Dialing…</string>
+    <string name="status_call_disconnected">Disconnected</string>
+    <string name="status_call_disconnecting">Disconnecting</string>
     <string name="status_call_holding">Call on hold</string>
+    <string name="status_call_incoming">Incoming call</string>
+    <string name="status_call_new">New</string>
+    <string name="status_call_pulling_call">Pulling call</string>
+    <string name="status_call_ringing">Ringing</string>
+    <string name="status_call_select_phone_account">Select SIM</string>
+    <string name="status_call_simulated_ringing">Simulated ringing</string>
 
     <!-- Notification -->
     <string name="active_call_notification_text">Call…</string>

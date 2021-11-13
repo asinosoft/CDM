@@ -1,7 +1,6 @@
 package com.asinosoft.cdm.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +25,6 @@ class ContactFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         arguments?.getLong("contactId")?.let { contactId ->
-            Log.d("ContactFragment", "ID: $contactId")
             model.initialize(requireContext(), contactId)
         }
     }

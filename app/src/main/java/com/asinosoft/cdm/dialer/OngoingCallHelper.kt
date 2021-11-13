@@ -28,9 +28,16 @@ fun Int.getFormattedDuration(): String {
 
 fun Context.getCallStateText(callState: Int): CharSequence =
     when (callState) {
-        Call.STATE_RINGING -> getText(R.string.state_call_ringing)
-        Call.STATE_DIALING -> getText(R.string.status_call_dialing)
         Call.STATE_ACTIVE -> getText(R.string.status_call_active)
+        Call.STATE_CONNECTING -> getText(R.string.status_call_connecting)
+        Call.STATE_DIALING -> getText(R.string.status_call_dialing)
+        Call.STATE_DISCONNECTED -> getText(R.string.status_call_disconnected)
+        Call.STATE_DISCONNECTING -> getText(R.string.status_call_disconnecting)
         Call.STATE_HOLDING -> getText(R.string.status_call_holding)
-        else -> getText(R.string.status_call_disconnected)
+        Call.STATE_NEW -> getText(R.string.status_call_new)
+        Call.STATE_PULLING_CALL -> getText(R.string.status_call_pulling_call)
+        Call.STATE_RINGING -> getText(R.string.state_call_ringing)
+        Call.STATE_SELECT_PHONE_ACCOUNT -> getText(R.string.status_call_select_phone_account)
+        Call.STATE_SIMULATED_RINGING -> getText(R.string.status_call_ringing)
+        else -> "# $callState"
     }
