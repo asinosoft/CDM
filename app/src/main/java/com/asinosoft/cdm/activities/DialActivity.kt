@@ -28,10 +28,14 @@ class DialActivity : BaseActivity() {
             Timber.d("onCreate → ${intent.data}")
             withPermission(arrayOf(Manifest.permission.CALL_PHONE)) { permitted ->
                 if (permitted) placeCall(intent.data)
-                else Toast.makeText(this, "Не могу сделать вызов", Toast.LENGTH_LONG).show()
+                else {
+                    Toast.makeText(this, "Не могу сделать вызов", Toast.LENGTH_LONG).show()
+                    finish()
+                }
             }
+        } else {
+            finish()
         }
-        finish()
     }
 
     @SuppressLint("MissingPermission")
@@ -52,7 +56,7 @@ class DialActivity : BaseActivity() {
         Timber.d("Выбрать SIM для исходящего звонка")
         val accounts = telecomManager.callCapablePhoneAccounts
         if (1 == accounts.size || Build.VERSION.SDK_INT < 26) {
-            Timber.d("default -> ${accounts[0]}")
+            Timber.d("Без вариантов SIM -> ${accounts[0]}")
             onSelect(accounts[0])
         } else {
             val slots: Array<String> =
