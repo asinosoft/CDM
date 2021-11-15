@@ -7,6 +7,8 @@ import timber.log.Timber
 class CallManager {
 
     companion object {
+        var callService: CallService? = null
+
         private var call: Call? = null
 
         fun getCall() = call

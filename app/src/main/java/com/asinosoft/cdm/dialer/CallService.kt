@@ -20,9 +20,15 @@ class CallService : InCallService() {
 
     override fun onCreate() {
         super.onCreate()
+        CallManager.callService = this
         calls?.firstOrNull()?.let { call ->
             onCallAdded(call)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        CallManager.callService = null
     }
 
     override fun onCallAdded(call: Call) {

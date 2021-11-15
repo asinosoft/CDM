@@ -234,7 +234,7 @@ class OngoingCallActivity : BaseActivity() {
         val microphoneIcon =
             if (v.ongoingCallLayout.buttonMute.isActivated) R.drawable.ic_mic_off_black_24dp else R.drawable.ic_mic_black_24dp
         v.ongoingCallLayout.buttonMute.setImageResource(microphoneIcon)
-        callService.setMuted(v.ongoingCallLayout.buttonMute.isActivated)
+        CallManager.callService?.setMuted(v.ongoingCallLayout.buttonMute.isActivated)
     }
 
     private fun toggleSpeaker() {
@@ -247,7 +247,7 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoingCallLayout.buttonSpeaker.setImageResource(speakerIcon)
         val newRoute =
             if (v.ongoingCallLayout.buttonSpeaker.isActivated) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
-        callService.setAudioRoute(newRoute)
+        CallManager.callService?.setAudioRoute(newRoute)
     }
 
     private fun toggleHold() {

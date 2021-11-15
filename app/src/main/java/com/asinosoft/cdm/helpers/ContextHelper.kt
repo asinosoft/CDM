@@ -8,15 +8,11 @@ import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
 import android.os.Vibrator
-import android.telecom.InCallService
 import android.telecom.TelecomManager
 import android.telephony.TelephonyManager
 
 inline val Context.audioManager: AudioManager
     get() = getSystemService(AudioManager::class.java)
-
-inline val Context.callService: InCallService
-    get() = getSystemService(InCallService::class.java)
 
 inline val Context.keyguardManager: KeyguardManager
     get() = getSystemService(KeyguardManager::class.java)

@@ -21,7 +21,7 @@ android {
         }
     }
     compileSdkVersion 31
-    buildToolsVersion "31.0.0-rc3"
+    buildToolsVersion "31.0.0"
     buildFeatures.viewBinding = true
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -125,8 +125,4 @@ dependencies {
 
     //dialer
     implementation 'com.google.android.material:material:1.4.0'
-
-    // Runtime log-reader
-    debugImplementation 'com.willowtreeapps.hyperion:hyperion-core:0.9.27'
-    debugImplementation 'com.willowtreeapps.hyperion:hyperion-timber:0.9.27'
 }
