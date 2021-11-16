@@ -11,13 +11,14 @@ const val DECLINE_CALL = PATH + "decline_call"
 const val MUTE_CALL = PATH + "mute_call"
 const val SPEAKER_CALL = PATH + "speaker_call"
 
-fun Int.getFormattedDuration(): String {
+fun Long.getFormattedDuration(): String {
     val sb = StringBuilder(8)
-    val hours = this / 3600
-    val minutes = this % 3600 / 60
-    val seconds = this % 60
+    val duration = this / 1000
+    val hours = duration / 3600
+    val minutes = duration % 3600 / 60
+    val seconds = duration % 60
 
-    if (this >= 3600) {
+    if (hours > 0) {
         sb.append(String.format(Locale.getDefault(), "%02d", hours)).append(":")
     }
 

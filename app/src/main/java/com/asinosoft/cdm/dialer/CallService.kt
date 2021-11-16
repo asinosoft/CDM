@@ -1,6 +1,5 @@
 package com.asinosoft.cdm.dialer
 
-import android.content.Intent
 import android.telecom.Call
 import android.telecom.InCallService
 import com.asinosoft.cdm.activities.OngoingCallActivity
@@ -37,10 +36,7 @@ class CallService : InCallService() {
         call.registerCallback(callback)
         notification.show(call, call.state)
 
-        Intent(this, OngoingCallActivity::class.java).let { activity ->
-            activity.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            startActivity(activity)
-        }
+        startActivity(OngoingCallActivity.intent(this))
     }
 
     override fun onCallRemoved(call: Call) {

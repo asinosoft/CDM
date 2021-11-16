@@ -1,6 +1,8 @@
 package com.asinosoft.cdm.activities
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
@@ -30,11 +32,19 @@ class OngoingCallActivity : BaseActivity() {
     private lateinit var v: ActivityOngoingCallBinding
     private lateinit var call: Call
 
+    companion object {
+        private const val ONE_SECOND = 1000
+
+        fun intent(context: Context) = Intent(context, OngoingCallActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+    }
+
     // bools
     private var isCallEnded = false
-    private var callDuration = 0
-    private var proximityWakeLock: PowerManager.WakeLock? = null
+    private var callStartTime = Date()
     private var callTimer = Timer()
+    private var proximityWakeLock: PowerManager.WakeLock? = null
 
     private val callCallback = object : Call.Callback() {
         override fun onStateChanged(call: Call, state: Int) {
@@ -160,9 +170,9 @@ class OngoingCallActivity : BaseActivity() {
         }
 
         isCallEnded = true
-        if (callDuration > 0) {
+        if (Date().time - callStartTime.time > ONE_SECOND) {
             runOnUiThread {
-                v.ongoingCallLayout.textStatus.text = callDuration.getFormattedDuration()
+                v.ongoingCallLayout.textStatus.text = (Date().time - callStartTime.time).getFormattedDuration()
                 Handler().postDelayed(
                     { finish() },
                     3000
@@ -176,16 +186,16 @@ class OngoingCallActivity : BaseActivity() {
 
     private fun getCallTimerUpdateTask() = object : TimerTask() {
         override fun run() {
-            callDuration++
             runOnUiThread {
                 if (!isCallEnded) {
-                    v.ongoingCallLayout.textStatus.text = callDuration.getFormattedDuration()
+                    v.ongoingCallLayout.textStatus.text = (Date().time - callStartTime.time).getFormattedDuration()
                 }
             }
         }
     }
 
     private fun callStarted() {
+        callStartTime = Date()
         try {
             callTimer.scheduleAtFixedRate(getCallTimerUpdateTask(), 1000, 1000)
         } catch (ignored: Exception) {
