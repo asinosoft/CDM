@@ -17,12 +17,22 @@ class ManagerActivity : BaseActivity() {
      */
     private var isRefreshed: Boolean = false
 
+    /**
+     * Один раз после запуска предлагаем поставить сделать приложение звонилкой-по-умолчанию
+     */
+    private var isDialerOffered: Boolean = false
+
     private val model: ManagerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.d("onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+    }
+
+    override fun onResume() {
+        Timber.d("onResume")
+        super.onResume()
 
         withPermission(
             arrayOf(
@@ -32,20 +42,10 @@ class ManagerActivity : BaseActivity() {
                 CALL_PHONE
             )
         ) { ok ->
-            if (ok && settings.checkDefaultDialer) {
-                setDefaultDialer()
+            if (ok) {
+                initialize()
             }
-        }
-    }
 
-    override fun onResume() {
-        Timber.d("onResume")
-        super.onResume()
-
-        if (Loader.loadSettings(this, true) == settings) {
-            refreshModel()
-        } else {
-            recreate()
         }
     }
 
@@ -55,12 +55,32 @@ class ManagerActivity : BaseActivity() {
         isRefreshed = false
     }
 
+    private fun initialize() {
+        if (Loader.loadSettings(this, true) != settings) {
+            recreate()
+        } else {
+            refreshModel();
+            checkDefaultDialer()
+        }
+    }
+
     private fun refreshModel() {
         if (isRefreshed) return
 
         if (hasPermissions(arrayOf(READ_CONTACTS, READ_CALL_LOG))) {
             model.refresh()
             isRefreshed = true
+        }
+    }
+
+    private fun checkDefaultDialer() {
+        if (isDialerOffered) return
+
+        if (hasPermissions(arrayOf(CALL_PHONE, READ_PHONE_STATE))
+            && settings.checkDefaultDialer
+        ) {
+            setDefaultDialer()
+            isDialerOffered = true
         }
     }
 }
