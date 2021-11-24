@@ -26,7 +26,7 @@ import timber.log.Timber
  */
 class NotificationManager(private val context: Context) {
     private val CALL_NOTIFICATION_ID = 1
-    private val CHANNEL_ID = "simple_dialer_channel"
+    private val CHANNEL_ID = "call notification"
 
     init {
         if (Build.VERSION.SDK_INT >= 26) {
@@ -37,7 +37,9 @@ class NotificationManager(private val context: Context) {
                         CHANNEL_ID,
                         context.getString(R.string.app_name),
                         NotificationManager.IMPORTANCE_HIGH
-                    )
+                    ).apply {
+                        setSound(null, null)
+                    }
                 )
             }
         }

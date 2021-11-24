@@ -2,17 +2,16 @@ package com.asinosoft.cdm.dialer
 
 import android.telecom.Call
 import android.telecom.InCallService
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.activities.OngoingCallActivity
 import timber.log.Timber
 
 class CallService : InCallService() {
-    private val notification by lazy { NotificationManager(this) }
-
     private val callback = object : Call.Callback() {
         override fun onStateChanged(call: Call, state: Int) {
             super.onStateChanged(call, state)
             if (state != Call.STATE_DISCONNECTED) {
-                notification.show(call, state)
+                (application as App).notification.show(call, state)
             }
         }
     }
@@ -34,7 +33,7 @@ class CallService : InCallService() {
         Timber.i("Новый звонок → %s", call.details.handle)
         CallManager.setCall(call)
         call.registerCallback(callback)
-        notification.show(call, call.state)
+        (application as App).notification.show(call, call.state)
 
         startActivity(OngoingCallActivity.intent(this))
     }
@@ -43,6 +42,6 @@ class CallService : InCallService() {
         Timber.i("Звонок завершён → %s", call.details.handle)
         CallManager.resetCall()
         call.unregisterCallback(callback)
-        notification.hide()
+        (application as App).notification.hide()
     }
 }
