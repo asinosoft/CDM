@@ -42,10 +42,7 @@ class ManagerActivity : BaseActivity() {
                 CALL_PHONE
             )
         ) { ok ->
-            if (ok) {
-                initialize()
-            }
-
+            if (ok) initialize()
         }
     }
 
@@ -59,7 +56,7 @@ class ManagerActivity : BaseActivity() {
         if (Loader.loadSettings(this, true) != settings) {
             recreate()
         } else {
-            refreshModel();
+            refreshModel()
             checkDefaultDialer()
         }
     }
@@ -76,8 +73,8 @@ class ManagerActivity : BaseActivity() {
     private fun checkDefaultDialer() {
         if (isDialerOffered) return
 
-        if (hasPermissions(arrayOf(CALL_PHONE, READ_PHONE_STATE))
-            && settings.checkDefaultDialer
+        if (hasPermissions(arrayOf(CALL_PHONE, READ_PHONE_STATE)) &&
+            settings.checkDefaultDialer
         ) {
             setDefaultDialer()
             isDialerOffered = true

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Телефон</string>
+
     <!-- Тип звонка -->
     <string name="call_type_outgoing">Исходящий</string>
     <string name="call_type_incoming">Входящий</string>
@@ -77,7 +79,8 @@
     <string name="contact_tab_actions">Контакт</string>
     <string name="contact_tab_settings">Настройки</string>
     <string name="settings_tab_appearance">Оформление</string>
-    <string name="settings_tab_about">О приложении</string>
+    <string name="settings_tab_phone">Телефон</string>
+    <string name="settings_tab_about">Информация</string>
     <string name="settings_tab_actions">Действия</string>
     <string name="dialer_settings">Дозвонщик</string>
     <string name="default_dialer">Установить по-умолчанию</string>

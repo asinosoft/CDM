@@ -27,4 +27,32 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <style name="Tabs">
+        <item name="stl_clickable">true</item>
+        <item name="stl_defaultTabBackground">?attr/selectableItemBackground</item>
+        <item name="stl_defaultTabTextAllCaps">true</item>
+        <item name="stl_defaultTabTextColor">?attr/colorOnPrimary</item>
+        <item name="stl_defaultTabTextHorizontalPadding">16dp</item>
+        <item name="stl_defaultTabTextMinWidth">0dp</item>
+        <item name="stl_defaultTabTextSize">12sp</item>
+        <item name="stl_distributeEvenly">false</item>
+        <item name="stl_dividerColor">#4D000000</item>
+        <item name="stl_dividerThickness">1dp</item>
+        <item name="stl_drawDecorationAfterTab">false</item>
+        <item name="stl_indicatorAlwaysInCenter">false</item>
+        <item name="stl_indicatorColor">#40C4FF</item>
+        <item name="stl_indicatorCornerRadius">2dp</item>
+        <item name="stl_indicatorGravity">bottom</item>
+        <item name="stl_indicatorInFront">false</item>
+        <item name="stl_indicatorInterpolation">smart</item>
+        <item name="stl_indicatorThickness">4dp</item>
+        <item name="stl_indicatorWidth">auto</item>
+        <item name="stl_indicatorWithoutPadding">false</item>
+        <item name="stl_overlineColor">#4D000000</item>
+        <item name="stl_overlineThickness">0dp</item>
+        <item name="stl_titleOffset">24dp</item>
+        <item name="stl_underlineColor">#4D000000</item>
+        <item name="stl_underlineThickness">1dp</item>
+    </style>
 </resources>
