@@ -7,12 +7,59 @@
     tools:context=".fragments.SettingsAboutFragment">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/caption"
         style="@style/Caption"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/settings_tab_about"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:orientation="vertical"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/caption">
+
+        <TextView
+            android:id="@+id/shareApp"
+            style="@style/About"
+            android:text="@string/share_app"
+            app:drawableLeftCompat="@drawable/ic_share" />
+
+        <TextView
+            android:id="@+id/rateUs"
+            style="@style/About"
+            android:text="@string/rate_us"
+            app:drawableLeftCompat="@drawable/ic_star" />
+
+        <TextView
+            android:id="@+id/showLicenses"
+            style="@style/About"
+            android:text="@string/licenses"
+            app:drawableLeftCompat="@drawable/ic_favorite" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <TextView
+            android:id="@+id/version"
+            style="@style/Version"
+            tools:text="v 1.2.3 от 23.11.2021" />
+
+        <TextView
+            android:id="@+id/copyright"
+            style="@style/Version"
+            android:text="@string/copyright" />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

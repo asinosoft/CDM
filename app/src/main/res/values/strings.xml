@@ -126,6 +126,15 @@
     <string name="date_yesterday">Yesterday</string>
     <string name="select_number">Select number</string>
 
+    <!-- About activity -->
+    <string name="share_app">Share app</string>
+    <string name="share_message">Check this phone app:\n%s</string>
+    <string name="share_via">Share</string>
+    <string name="rate_us">Rate us</string>
+    <string name="licenses">Licenses</string>
+    <string name="version" translatable="false">%s / %s</string>
+    <string name="copyright" translatable="false">© AsinoSoft 2021</string>
+
     <plurals name="age">
         <item quantity="zero">%d years</item>
         <item quantity="one">%d year</item>

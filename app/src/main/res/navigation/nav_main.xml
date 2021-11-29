@@ -10,27 +10,15 @@
         tools:layout="@layout/activity_manager">
         <action
             android:id="@+id/action_open_search"
-            app:destination="@id/searchFragment"
-            app:enterAnim="@android:animator/fade_in"
-            app:exitAnim="@android:animator/fade_out"
-            app:popEnterAnim="@android:animator/fade_in"
-            app:popExitAnim="@android:animator/fade_out" />
+            app:destination="@id/searchFragment" />
 
         <action
             android:id="@+id/action_open_contact_fragment"
-            app:destination="@id/contactFragment"
-            app:enterAnim="@android:animator/fade_in"
-            app:exitAnim="@android:animator/fade_out"
-            app:popEnterAnim="@android:animator/fade_in"
-            app:popExitAnim="@android:animator/fade_out" />
+            app:destination="@id/contactFragment" />
 
         <action
             android:id="@+id/action_open_phone_history"
-            app:destination="@id/strayPhoneFragment"
-            app:enterAnim="@android:animator/fade_in"
-            app:exitAnim="@android:animator/fade_out"
-            app:popEnterAnim="@android:animator/fade_in"
-            app:popExitAnim="@android:animator/fade_out" />
+            app:destination="@id/strayPhoneFragment" />
     </fragment>
 
     <fragment
@@ -61,9 +49,7 @@
             app:destination="@id/contactFragment" />
         <action
             android:id="@+id/action_open_settings"
-            app:destination="@id/settingsActivity"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out" />
+            app:destination="@id/settingsActivity" />
     </fragment>
 
     <activity

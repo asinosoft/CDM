@@ -106,6 +106,14 @@
     <string name="date_yesterday">Вчера</string>
     <string name="select_number">Выберите номер</string>
 
+    <!-- About activity -->
+    <string name="share_app">Поделиться</string>
+    <string name="share_message">Попробуй эту звонилку:\n%s</string>
+    <string name="share_via">Поделиться</string>
+    <string name="rate_us">Оценить в Google Play</string>
+    <string name="licenses">Лицензии третьих сторон</string>
+
+
     <plurals name="age">
         <item quantity="one">%d год</item>
         <item quantity="few">%d года</item>

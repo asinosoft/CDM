@@ -18,7 +18,7 @@ import timber.log.Timber
 /**
  * Страница настройки дозвонщика
  *
- * Список сим-карт пока только показывается, но не использвется!
+ * Список сим-карт пока только показывается, но не используется!
  */
 class DialerSettingsFragment : PreferenceFragmentCompat() {
     private val model: SettingsViewModel by activityViewModels()
@@ -30,7 +30,7 @@ class DialerSettingsFragment : PreferenceFragmentCompat() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (findPreference("default_dialer") as SwitchPreference).apply {
+        findPreference<SwitchPreference>("default_dialer")?.apply {
             isChecked = model.settings.checkDefaultDialer
 
             setOnPreferenceChangeListener { preference, newValue ->
