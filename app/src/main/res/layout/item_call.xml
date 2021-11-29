@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeL"
+    android:layout_width="match_parent"
+    android:layout_height="65dp"
+    android:clickable="false"
+    android:focusable="auto"
+    android:focusableInTouchMode="false">
+
+    <com.zerobranch.layout.SwipeLayout
+        android:id="@+id/swipe_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:draggedItem="@id/drag_layout"
+        app:isTogether="true"
+        app:leftItem="@id/imageRightAction"
+        app:rightItem="@id/imageLeftAction"
+        app:swipeDirection="left|right">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageLeftAction"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="-64dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_phone_call"
+            android:visibility="visible"
+            app:civ_border_width="0dp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageRightAction"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="-64dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_whatsapp_chat"
+            android:visibility="visible"
+            app:civ_border_width="0dp" />
+
+        <RelativeLayout
+            android:id="@+id/drag_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imageContact"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_margin="8dp"
+                android:src="@drawable/ic_default_photo"
+                app:civ_border_color="?android:attr/colorPrimary"
+                app:civ_border_width="1dp" />
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginEnd="15dp"
+                android:layout_toStartOf="@+id/dateContact"
+                android:layout_toEndOf="@id/imageContact"
+                android:ellipsize="end"
+                android:padding="4dp"
+                android:singleLine="true"
+                android:textSize="18sp"
+                android:textStyle="normal|bold"
+                tools:text="name" />
+
+            <ImageView
+                android:id="@+id/typeCall"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_below="@id/name"
+                android:layout_toEndOf="@id/imageContact"
+                android:contentDescription="@string/call_type_other"
+                android:src="@drawable/ic_call_outgoing" />
+
+            <TextView
+                android:id="@+id/number"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:layout_below="@id/name"
+                android:layout_marginTop="2dp"
+                android:layout_toEndOf="@id/typeCall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="16sp"
+                tools:text="number" />
+
+            <TextView
+                android:id="@+id/timeContact"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="13dp"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="16sp"
+                tools:text="time" />
+
+            <TextView
+                android:id="@+id/dateContact"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:layout_above="@id/timeContact"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="16dp"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="16sp"
+                tools:text="date" />
+
+        </RelativeLayout>
+
+    </com.zerobranch.layout.SwipeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

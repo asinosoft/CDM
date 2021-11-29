@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "833313753419",
+    "project_id": "contacts-dial-manager",
+    "storage_bucket": "contacts-dial-manager.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:833313753419:android:2eebe51967a41b79e680ce",
+        "android_client_info": {
+          "package_name": "com.asinosoft.cdm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "833313753419-du1p6heagg1cu24rp7qqor0om9hdh672.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1MWdWmVN5RdOe4326ImRlcdK_u8ApZTw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "833313753419-du1p6heagg1cu24rp7qqor0om9hdh672.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -3,21 +3,33 @@ package com.asinosoft.cdm.dialer
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.asinosoft.cdm.OngoingCallActivity
+import android.telecom.CallAudioState
+import com.asinosoft.cdm.activities.OngoingCallActivity
+import com.asinosoft.cdm.helpers.audioManager
+import com.asinosoft.cdm.helpers.callService
 
-class NotificationActionReceiver: BroadcastReceiver() {
+class NotificationActionReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        val action: String? = intent.action
 
-        if (action == OngoingCallActivity().ACTION_ANSWER) {
-            // If the user pressed "Answer" from the notification
-            OngoingCall.answer()
-        }
-        else if (action == OngoingCallActivity().ACTION_HANGUP) {
-            // If the user pressed "Hang up" from the notification
-            OngoingCall.reject()
+        var isSpeakerOn = false
+        var isMicrophoneOn = true
+
+        val action: String? = intent.action
+        when (action) {
+            ACCEPT_CALL -> CallManager.accept()
+            DECLINE_CALL -> CallManager.reject()
+            MUTE_CALL -> {
+                isMicrophoneOn = !isMicrophoneOn
+                context.callService.setMuted(!isMicrophoneOn)
+            }
+            SPEAKER_CALL -> {
+                isSpeakerOn = !isSpeakerOn
+                OngoingCallActivity().audioManager.isSpeakerphoneOn = isSpeakerOn
+                val newRoute =
+                    if (isSpeakerOn) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
+                context.callService.setAudioRoute(newRoute)
+            }
         }
     }
-
 }

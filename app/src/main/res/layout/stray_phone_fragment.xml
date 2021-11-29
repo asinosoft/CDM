@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.asinosoft.cdm.views.CircleImage
+            android:id="@+id/image"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="8dp"
+            app:civ_shadow_radius="0dp"
+            tools:src="@drawable/ic_default_photo" />
+
+        <TextView
+            android:id="@+id/phone"
+            style="@style/Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            tools:text="+7 (913) 912-91-90" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/Caption"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:text="@string/contact_tab_history"
+        app:layout_constraintTop_toBottomOf="@id/image" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/calls"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/contact_call_item" />
+</LinearLayout>

@@ -36,12 +36,13 @@
         </attr>
     </declare-styleable>
 
+    <attr name="backspaceIcon" format="reference" />
+    <attr name="callIcon" format="reference" />
+    <attr name="settingsIcon" format="reference" />
+    <attr name="voicemailIcon" format="reference" />
+    <attr name="popupColor" format="reference" />
 
     <attr name="iconColor" format="reference" />
-    <attr name="secondaryAccentColor" format="reference" />
-    <attr name="dialogBackgroundColor" format="reference" />
-
-    <attr name="overlayColor" format="reference" />
 
     <declare-styleable name="ListItem">
         <attr name="title" format="string" localization="suggested" />

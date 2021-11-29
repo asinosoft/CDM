@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".fragments.ContactSettingsFragment">
+
+    <RelativeLayout
+        android:id="@+id/content4"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp">
+
+        <com.asinosoft.cdm.views.CircularImageView
+            android:id="@+id/contact"
+            android:layout_width="86dp"
+            android:layout_height="86dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_default_photo"
+            app:civ_border_width="0dp" />
+
+        <com.asinosoft.cdm.views.CircularImageView
+            android:id="@+id/cirTop"
+            android:layout_width="86dp"
+            android:layout_height="86dp"
+            android:layout_above="@id/contact"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/ic_default_photo"
+            app:civ_border_width="0dp" />
+
+        <com.asinosoft.cdm.views.CircularImageView
+            android:id="@+id/cirBottom"
+            android:layout_width="86dp"
+            android:layout_height="86dp"
+            android:layout_below="@id/contact"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_default_photo"
+            app:civ_border_width="0dp" />
+
+        <com.asinosoft.cdm.views.CircularImageView
+            android:id="@+id/cirLeft"
+            android:layout_width="86dp"
+            android:layout_height="86dp"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="10dp"
+            android:layout_toStartOf="@id/contact"
+            android:src="@drawable/ic_default_photo"
+            app:civ_border_width="0dp" />
+
+        <com.asinosoft.cdm.views.CircularImageView
+            android:id="@+id/cirRight"
+            android:layout_width="86dp"
+            android:layout_height="86dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@id/contact"
+            android:src="@drawable/ic_default_photo"
+            app:civ_border_width="0dp" />
+
+        <TextView
+            android:id="@+id/text_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/cirTop"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="0dp"
+            tools:text="+79039029019" />
+
+        <TextView
+            android:id="@+id/text_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/cirLeft"
+            android:layout_alignEnd="@id/cirLeft"
+            android:layout_centerInParent="true"
+            tools:text="+79039029019" />
+
+        <TextView
+            android:id="@+id/text_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/cirRight"
+            android:layout_alignStart="@id/cirRight"
+            tools:text="+79039029019" />
+
+        <TextView
+            android:id="@+id/text_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/cirBottom"
+            android:layout_centerHorizontal="true"
+            tools:text="+7903902901" />
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_actions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:contentDescription="@string/available_actions"
+        tools:itemCount="3"
+        tools:listitem="@layout/action_item" />
+
+</LinearLayout>

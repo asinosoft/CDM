@@ -3,39 +3,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.asinosoft.cdm">
 
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_CALL_LOG" />
-    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-
-    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-
-    <uses-permission android:name="android.permission.START_ACTIVITIES_FROM_BACKGROUND" />
-    <uses-permission android:name="android.permission.REQUEST_COMPANION_RUN_IN_BACKGROUND" />
-    <uses-permission android:name="android.permission.REQUEST_COMPANION_USE_DATA_IN_BACKGROUND" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
-    <uses-permission android:name="android.permission.CALL_COMPANION_APP"/>
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/app_icon_512"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
+        android:theme="@style/AppTheme.Light"
         tools:replace="android:icon">
-        <activity android:name=".OngoingCallActivity"></activity>
+
         <activity
-            android:name=".ManagerActivity"
+            android:name=".activities.ManagerActivity"
+            android:exported="true"
             android:screenOrientation="portrait">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
             <!-- For receiving intents -->
             <intent-filter>
@@ -59,37 +57,52 @@
 
                 <data android:mimeType="image/*" />
             </intent-filter>
+        </activity>
 
-            <!-- From Google's Dialer App -->
+
+        <activity
+            android:name=".activities.DialActivity"
+            android:enabled="true"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.CALL" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.CALL" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="tel" />
+            </intent-filter>
+
+        </activity>
+
+        <activity
+            android:name=".activities.OngoingCallActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:label="@string/call"
+            android:launchMode="singleInstance"
+            android:parentActivityName=".activities.ManagerActivity"
+            android:screenOrientation="portrait"
+            android:showForAllUsers="true"
+            android:showOnLockScreen="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            tools:targetApi="27">
+
             <intent-filter>
                 <action android:name="android.intent.action.DIAL" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:mimeType="vnd.android.cursor.item/phone" />
-                <data android:mimeType="vnd.android.cursor.item/person" />
             </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.DIAL" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="voicemail" />
+                <data android:scheme="tel" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.DIAL" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.DIAL" />
@@ -99,37 +112,46 @@
 
                 <data android:scheme="tel" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.CALL_BUTTON" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
         </activity>
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".DetailHistoryActivity" />
-        <activity android:name=".SettingsActivity" />
+
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.ManagerActivity"
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".dialer.CallService"
-            android:permission="android.permission.BIND_INCALL_SERVICE"
-            >
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_INCALL_SERVICE">
+
             <meta-data
                 android:name="android.telecom.IN_CALL_SERVICE_UI"
-                android:value="true"
-                />
+                android:value="true" />
+
+            <meta-data
+                android:name="android.telecom.IN_CALL_SERVICE_RINGING"
+                android:value="true" />
+
             <intent-filter>
                 <action android:name="android.telecom.InCallService" />
             </intent-filter>
+
         </service>
 
-        <receiver android:name=".dialer.NotificationActionReceiver">
+        <receiver
+            android:name=".dialer.NotificationActionReceiver"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
-                <action android:name="Ответить" />
-                <action android:name="Отклонить" />
+                <action android:name="com.asinosoft.cdm.dialer.action.accept_call" />
+                <action android:name="com.asinosoft.cdm.dialer.action.decline_call" />
+                <action android:name="com.asinosoft.cdm.dialer.action.mute_call" />
+                <action android:name="com.asinosoft.cdm.dialer.action.speaker_call" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>
