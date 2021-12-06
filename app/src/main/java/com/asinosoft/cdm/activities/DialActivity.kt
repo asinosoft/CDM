@@ -41,7 +41,7 @@ class DialActivity : BaseActivity() {
     @SuppressLint("MissingPermission")
     private fun placeCall(contact: Uri?) {
         Timber.d("Запустить звонок → $contact")
-        selectPhoneAccount { phoneAccount ->
+        withDefaultPhoneAccount { phoneAccount ->
             Bundle().apply {
                 putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, phoneAccount)
                 putBoolean(TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE, false)
@@ -49,6 +49,13 @@ class DialActivity : BaseActivity() {
                 telecomManager.placeCall(contact, this)
             }
         }
+    }
+
+
+    @SuppressLint("MissingPermission")
+    private fun withDefaultPhoneAccount(onSelect: (PhoneAccountHandle) -> Unit) {
+        val account = telecomManager.getDefaultOutgoingPhoneAccount("tel")
+        account?.let(onSelect)
     }
 
     @SuppressLint("MissingPermission")
