@@ -6,17 +6,16 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Email
 import android.provider.ContactsContract.CommonDataKinds.Phone
-import android.util.Log
 import androidx.core.database.getStringOrNull
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.*
 import com.asinosoft.cdm.helpers.StHelper
+import timber.log.Timber
 
 /**
  * Доступ к контактам
  */
 class ContactRepositoryImpl(private val context: Context) : ContactRepository {
-
     // Полный список контактов
     private var contacts: MutableMap<Long, Contact> = mutableMapOf()
 
@@ -24,7 +23,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     private var contactPhones: MutableMap<String, Contact> = mutableMapOf()
 
     fun initialize() {
-        Log.d("CDM|Contacts", "Чтение списка контактов")
+        Timber.d("Чтение списка контактов")
         contactPhones = mutableMapOf()
         contacts = context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
@@ -41,7 +40,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         }
 
         contactPhones = index
-        Log.d("CDM|Contacts", "Найдено ${contacts.size} контактов")
+        Timber.d("Найдено %d контактов", contacts.size)
     }
 
     override fun getContacts(): Collection<Contact> {
@@ -53,7 +52,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     override fun getContactByUri(uri: Uri): Contact? {
-        Log.d("CDM|Contacts", "Поиск контакта по URI $uri")
+        Timber.d("Поиск контакта по URI $uri")
         val projections = arrayOf(ContactsContract.Contacts._ID)
         val cursor = context.contentResolver.query(uri, projections, null, null, null)
         if (cursor != null && cursor.moveToFirst()) {
@@ -77,7 +76,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     private fun findContactById(id: Long): Contact? {
-        Log.d("CDM|Contacts", "Поиск контакта по ID $id")
+        Timber.d("Поиск контакта по ID %d", id)
         return context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             "${ContactsContract.Data.CONTACT_ID} = ?", arrayOf(id.toString()), null
@@ -87,7 +86,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     private fun findContactByPhone(phone: String): Contact? {
-        Log.d("CDM|Contacts", "Поиск контакта по телефону $phone")
+        Timber.d("Поиск контакта по телефону $phone")
         context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, arrayOf(ContactsContract.Data.CONTACT_ID),
             "${ContactsContract.Data.MIMETYPE} = ? AND ${ContactsContract.Data.DATA4} = ?",
@@ -132,7 +131,10 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
             while (cursor.moveToNext()) {
                 val id: Long = cursor.getLong(contactId)
-                val photo: Uri = Uri.parse(cursor.getStringOrNull(this@ContactCursorAdapter.photoUri) ?: "android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}")
+                val photo: Uri = Uri.parse(
+                    cursor.getStringOrNull(this@ContactCursorAdapter.photoUri)
+                        ?: "android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}"
+                )
                 result.getOrPut(
                     id,
                     {

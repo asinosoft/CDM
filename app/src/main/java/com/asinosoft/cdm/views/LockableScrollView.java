@@ -68,7 +68,7 @@ public class LockableScrollView extends ScrollView {
 
                 mScrollable = difY > difX;
 
-                Log.i("LockableScrollView.java: ", "Scrollable = " + mScrollable);
+                log.d(i("LockableScrollView.java: ", "Scrollable = " + mScrollable);
                 if (mScrollable) return super.onTouchEvent(ev);
                 // only continue to handle the touch event if scrolling enabled
                 return mScrollable; // mScrollable is always false at this point*/

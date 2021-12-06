@@ -3,7 +3,6 @@ package com.asinosoft.cdm.fragments
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.telephony.TelephonyManager.SIM_STATE_READY
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.preference.CheckBoxPreference
@@ -14,11 +13,12 @@ import com.asinosoft.cdm.R
 import com.asinosoft.cdm.activities.BaseActivity
 import com.asinosoft.cdm.helpers.getAvailableSimSlots
 import com.asinosoft.cdm.viewmodels.SettingsViewModel
+import timber.log.Timber
 
 /**
  * Страница настройки дозвонщика
  *
- * Список сим-карт пока только показывается, но не использвется!
+ * Список сим-карт пока только показывается, но не используется!
  */
 class DialerSettingsFragment : PreferenceFragmentCompat() {
     private val model: SettingsViewModel by activityViewModels()
@@ -30,12 +30,12 @@ class DialerSettingsFragment : PreferenceFragmentCompat() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (findPreference("default_dialer") as SwitchPreference).apply {
+        findPreference<SwitchPreference>("default_dialer")?.apply {
             isChecked = model.settings.checkDefaultDialer
 
             setOnPreferenceChangeListener { preference, newValue ->
                 model.settings.checkDefaultDialer = (newValue as Boolean)
-                Log.d("SETTINGS", "$preference -> $newValue (${model.settings.checkDefaultDialer})")
+                Timber.d("%s -> %s, %s", preference, newValue, model.settings.checkDefaultDialer)
                 if (model.settings.checkDefaultDialer) {
                     (requireActivity() as BaseActivity).setDefaultDialer()
                 }
@@ -74,7 +74,7 @@ class DialerSettingsFragment : PreferenceFragmentCompat() {
                 }
                 setOnPreferenceChangeListener { preference, newValue ->
                     // TODO: сохранить в настройках список сим-карт, доступных для звонков
-                    Log.d("SIM ${slot.id}", "$preference ->  $newValue")
+                    Timber.d("SIM %s: %s → %s", slot.id, preference, newValue)
                     true
                 }
             }.also {

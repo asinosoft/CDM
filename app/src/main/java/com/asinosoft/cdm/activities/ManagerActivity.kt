@@ -2,11 +2,11 @@ package com.asinosoft.cdm.activities
 
 import android.Manifest.permission.*
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
+import timber.log.Timber
 
 /**
  * Основной класс приложения, отвечает за работу главного экрана (нового) приложения
@@ -17,12 +17,22 @@ class ManagerActivity : BaseActivity() {
      */
     private var isRefreshed: Boolean = false
 
+    /**
+     * Один раз после запуска предлагаем поставить сделать приложение звонилкой-по-умолчанию
+     */
+    private var isDialerOffered: Boolean = false
+
     private val model: ManagerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("CDM|Main", "Created")
+        Timber.d("onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+    }
+
+    override fun onResume() {
+        Timber.d("onResume")
+        super.onResume()
 
         withPermission(
             arrayOf(
@@ -32,27 +42,23 @@ class ManagerActivity : BaseActivity() {
                 CALL_PHONE
             )
         ) { ok ->
-            if (ok && settings.checkDefaultDialer) {
-                setDefaultDialer()
-            }
-        }
-    }
-
-    override fun onResume() {
-        Log.d("CDM|Main", "Resumed")
-        super.onResume()
-
-        if (Loader.loadSettings(this, true) == settings) {
-            refreshModel()
-        } else {
-            recreate()
+            if (ok) initialize()
         }
     }
 
     override fun onPause() {
-        Log.d("CDM|Main", "Paused")
+        Timber.d("onPause")
         super.onPause()
         isRefreshed = false
+    }
+
+    private fun initialize() {
+        if (Loader.loadSettings(this, true) != settings) {
+            recreate()
+        } else {
+            refreshModel()
+            checkDefaultDialer()
+        }
     }
 
     private fun refreshModel() {
@@ -61,6 +67,17 @@ class ManagerActivity : BaseActivity() {
         if (hasPermissions(arrayOf(READ_CONTACTS, READ_CALL_LOG))) {
             model.refresh()
             isRefreshed = true
+        }
+    }
+
+    private fun checkDefaultDialer() {
+        if (isDialerOffered) return
+
+        if (hasPermissions(arrayOf(CALL_PHONE, READ_PHONE_STATE)) &&
+            settings.checkDefaultDialer
+        ) {
+            setDefaultDialer()
+            isDialerOffered = true
         }
     }
 }

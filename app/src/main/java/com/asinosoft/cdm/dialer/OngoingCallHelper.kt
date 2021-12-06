@@ -11,13 +11,14 @@ const val DECLINE_CALL = PATH + "decline_call"
 const val MUTE_CALL = PATH + "mute_call"
 const val SPEAKER_CALL = PATH + "speaker_call"
 
-fun Int.getFormattedDuration(): String {
+fun Long.getFormattedDuration(): String {
     val sb = StringBuilder(8)
-    val hours = this / 3600
-    val minutes = this % 3600 / 60
-    val seconds = this % 60
+    val duration = this / 1000
+    val hours = duration / 3600
+    val minutes = duration % 3600 / 60
+    val seconds = duration % 60
 
-    if (this >= 3600) {
+    if (hours > 0) {
         sb.append(String.format(Locale.getDefault(), "%02d", hours)).append(":")
     }
 
@@ -28,9 +29,16 @@ fun Int.getFormattedDuration(): String {
 
 fun Context.getCallStateText(callState: Int): CharSequence =
     when (callState) {
-        Call.STATE_RINGING -> getText(R.string.state_call_ringing)
-        Call.STATE_DIALING -> getText(R.string.status_call_dialing)
         Call.STATE_ACTIVE -> getText(R.string.status_call_active)
+        Call.STATE_CONNECTING -> getText(R.string.status_call_connecting)
+        Call.STATE_DIALING -> getText(R.string.status_call_dialing)
+        Call.STATE_DISCONNECTED -> getText(R.string.status_call_disconnected)
+        Call.STATE_DISCONNECTING -> getText(R.string.status_call_disconnecting)
         Call.STATE_HOLDING -> getText(R.string.status_call_holding)
-        else -> getText(R.string.status_call_disconnected)
+        Call.STATE_NEW -> getText(R.string.status_call_new)
+        Call.STATE_PULLING_CALL -> getText(R.string.status_call_pulling_call)
+        Call.STATE_RINGING -> getText(R.string.state_call_ringing)
+        Call.STATE_SELECT_PHONE_ACCOUNT -> getText(R.string.status_call_select_phone_account)
+        Call.STATE_SIMULATED_RINGING -> getText(R.string.status_call_ringing)
+        else -> "# $callState"
     }

@@ -21,7 +21,7 @@ android {
         }
     }
     compileSdkVersion 31
-    buildToolsVersion "31.0.0-rc3"
+    buildToolsVersion "31.0.0"
     buildFeatures.viewBinding = true
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -50,7 +50,6 @@ android {
             versionCode code
             versionName "${name}.${code}"
             testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-            multiDexEnabled true
         }
     } else {
         throw new GradleException("Could not read version.properties!")
@@ -86,15 +85,16 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
     implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
-    implementation 'androidx.fragment:fragment-ktx:1.3.6'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
+    implementation 'androidx.fragment:fragment-ktx:1.4.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
+    implementation 'androidx.preference:preference-ktx:1.1.1'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
@@ -102,10 +102,11 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:3.3.3'
     androidTestImplementation 'androidx.test:runner:1.4.0'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.8.8'
     implementation 'com.github.zerobranch:SwipeLayout:1.3.0'
     implementation 'com.ogaclejapan.smarttablayout:library:2.0.0@aar'
     implementation 'com.ogaclejapan.smarttablayout:utils-v4:2.0.0@aar'
+    implementation 'com.jakewharton.timber:timber:5.0.1'
 
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:28.0.1')
@@ -126,6 +127,7 @@ dependencies {
     //dialer
     implementation 'com.google.android.material:material:1.4.0'
 
-    // due error: Cannot fit requested classes in a single dex file
-    implementation 'com.android.support:multidex:1.0.3'
+    // Runtime log-reader
+    debugImplementation 'com.willowtreeapps.hyperion:hyperion-core:0.9.27'
+    debugImplementation 'com.willowtreeapps.hyperion:hyperion-timber:0.9.27'
 }

@@ -1,6 +1,8 @@
 package com.asinosoft.cdm.activities
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
@@ -9,7 +11,6 @@ import android.os.PowerManager
 import android.telecom.Call
 import android.telecom.CallAudioState
 import android.telecom.PhoneAccountHandle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.core.view.isVisible
@@ -21,6 +22,7 @@ import com.asinosoft.cdm.dialer.addCharacter
 import com.asinosoft.cdm.dialer.getCallStateText
 import com.asinosoft.cdm.dialer.getFormattedDuration
 import com.asinosoft.cdm.helpers.*
+import timber.log.Timber
 import java.util.*
 
 /**
@@ -30,16 +32,24 @@ class OngoingCallActivity : BaseActivity() {
     private lateinit var v: ActivityOngoingCallBinding
     private lateinit var call: Call
 
+    companion object {
+        private const val ONE_SECOND = 1000
+
+        fun intent(context: Context) = Intent(context, OngoingCallActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+    }
+
     // bools
     private var isCallEnded = false
-    private var callDuration = 0
-    private var proximityWakeLock: PowerManager.WakeLock? = null
+    private var callStartTime = Date()
     private var callTimer = Timer()
+    private var proximityWakeLock: PowerManager.WakeLock? = null
 
     private val callCallback = object : Call.Callback() {
         override fun onStateChanged(call: Call, state: Int) {
             super.onStateChanged(call, state)
-            Log.d("CDM|Call", "onStateChanged → $state")
+            Timber.d("onStateChanged → %s", getCallStateText(state))
             updateCallState(state)
             updateSimSlotInfo(call.details.accountHandle)
         }
@@ -47,7 +57,7 @@ class OngoingCallActivity : BaseActivity() {
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("CDM|Call", "onCreate")
+        Timber.d("onCreate")
         super.onCreate(savedInstanceState)
 
         call = CallManager.getCall() ?: return finish()
@@ -113,7 +123,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        Log.d("CDM|Call", "onBackPressed")
+        Timber.d("onBackPressed")
         // In case the dialpad is opened, pressing the back button will close it
         if (v.keyboardWrapper.isVisible) {
             v.keyboardWrapper.visibility = View.GONE
@@ -124,7 +134,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     override fun onDestroy() {
-        Log.d("CDM|Call", "Destroy")
+        Timber.d("onDestroy")
         super.onDestroy()
         callTimer.cancel()
         if (true == proximityWakeLock?.isHeld()) {
@@ -135,13 +145,13 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun activateCall() {
-        Log.d("CDM|Call", "activateCall")
+        Timber.d("activateCall")
         CallManager.accept()
         switchToCallingUI()
     }
 
     private fun endCall() {
-        Log.d("CDM|Call", "endCall")
+        Timber.d("endCall")
         if (isCallEnded) {
             finish()
             return
@@ -160,9 +170,9 @@ class OngoingCallActivity : BaseActivity() {
         }
 
         isCallEnded = true
-        if (callDuration > 0) {
+        if (Date().time - callStartTime.time > ONE_SECOND) {
             runOnUiThread {
-                v.ongoingCallLayout.textStatus.text = callDuration.getFormattedDuration()
+                v.ongoingCallLayout.textStatus.text = (Date().time - callStartTime.time).getFormattedDuration()
                 Handler().postDelayed(
                     { finish() },
                     3000
@@ -176,16 +186,16 @@ class OngoingCallActivity : BaseActivity() {
 
     private fun getCallTimerUpdateTask() = object : TimerTask() {
         override fun run() {
-            callDuration++
             runOnUiThread {
                 if (!isCallEnded) {
-                    v.ongoingCallLayout.textStatus.text = callDuration.getFormattedDuration()
+                    v.ongoingCallLayout.textStatus.text = (Date().time - callStartTime.time).getFormattedDuration()
                 }
             }
         }
     }
 
     private fun callStarted() {
+        callStartTime = Date()
         try {
             callTimer.scheduleAtFixedRate(getCallTimerUpdateTask(), 1000, 1000)
         } catch (ignored: Exception) {
@@ -228,17 +238,17 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun toggleMicrophone() {
-        Log.d("CDM|Call", "toggleMicrophone")
+        Timber.d("toggleMicrophone")
         v.ongoingCallLayout.buttonMute.isActivated = !v.ongoingCallLayout.buttonMute.isActivated
         audioManager.isMicrophoneMute = v.ongoingCallLayout.buttonMute.isActivated
         val microphoneIcon =
             if (v.ongoingCallLayout.buttonMute.isActivated) R.drawable.ic_mic_off_black_24dp else R.drawable.ic_mic_black_24dp
         v.ongoingCallLayout.buttonMute.setImageResource(microphoneIcon)
-        callService.setMuted(v.ongoingCallLayout.buttonMute.isActivated)
+        CallManager.callService?.setMuted(v.ongoingCallLayout.buttonMute.isActivated)
     }
 
     private fun toggleSpeaker() {
-        Log.d("CDM|Call", "toggleSpeaker")
+        Timber.d("toggleSpeaker")
         v.ongoingCallLayout.buttonSpeaker.isActivated =
             !v.ongoingCallLayout.buttonSpeaker.isActivated
         audioManager.isSpeakerphoneOn = v.ongoingCallLayout.buttonSpeaker.isActivated
@@ -247,11 +257,11 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoingCallLayout.buttonSpeaker.setImageResource(speakerIcon)
         val newRoute =
             if (v.ongoingCallLayout.buttonSpeaker.isActivated) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
-        callService.setAudioRoute(newRoute)
+        CallManager.callService?.setAudioRoute(newRoute)
     }
 
     private fun toggleHold() {
-        Log.d("CDM|Call", "toggleHold")
+        Timber.d("toggleHold")
         v.ongoingCallLayout.buttonHold.isActivated = !v.ongoingCallLayout.buttonHold.isActivated
         CallManager.hold(v.ongoingCallLayout.buttonHold.isActivated)
     }
@@ -313,7 +323,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun updateCallState(callState: Int) {
-        Log.d("CDM|Call", "updateCallState → $callState")
+        Timber.d("updateCallState → %s", getCallStateText(callState))
         when (callState) {
             Call.STATE_RINGING -> visibilityIncomingCall()
             Call.STATE_ACTIVE -> {

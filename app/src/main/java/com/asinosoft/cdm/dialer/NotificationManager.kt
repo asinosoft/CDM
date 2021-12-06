@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.telecom.Call
-import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
@@ -20,24 +19,27 @@ import com.asinosoft.cdm.helpers.getSimSlot
 import com.asinosoft.cdm.helpers.loadResourceAsBitmap
 import com.asinosoft.cdm.helpers.loadUriAsBitmap
 import com.asinosoft.cdm.helpers.notificationManager
+import timber.log.Timber
 
 /**
  * Уведомления о входящем/текущем звонке
  */
 class NotificationManager(private val context: Context) {
     private val CALL_NOTIFICATION_ID = 1
-    private val CHANNEL_ID = "simple_dialer_channel"
+    private val CHANNEL_ID = "call notification"
 
     init {
         if (Build.VERSION.SDK_INT >= 26) {
-            Log.d("Call", "Register notification channel: $CHANNEL_ID")
+            Timber.d("Register notification channel: %s", CHANNEL_ID)
             with(NotificationManagerCompat.from(context)) {
                 createNotificationChannel(
                     NotificationChannel(
                         CHANNEL_ID,
                         context.getString(R.string.app_name),
                         NotificationManager.IMPORTANCE_HIGH
-                    )
+                    ).apply {
+                        setSound(null, null)
+                    }
                 )
             }
         }

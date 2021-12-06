@@ -12,8 +12,8 @@
         <item name="callIcon">@drawable/ic_phone_24px</item>
         <item name="closeIcon">@drawable/ic_close_24px</item>
         <item name="settingsIcon">@drawable/ic_cog</item>
-        <item name="searchIcon">@drawable/ic_keyboard</item>
-        <item name="keyboardIcon">@drawable/twotone_keyboard_24</item>
+        <item name="searchIcon">@drawable/ic_dialpad</item>
+        <item name="keyboardIcon">@drawable/ic_keyboard</item>
         <item name="voicemailIcon">@drawable/ic_voicemail_24px</item>
     </style>
 

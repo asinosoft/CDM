@@ -8,12 +8,10 @@ import android.graphics.Canvas
 import android.net.Uri
 import android.telecom.PhoneAccountHandle
 import android.telephony.TelephonyManager.SIM_STATE_READY
-import android.util.Log
 import androidx.core.content.ContextCompat
 import com.asinosoft.cdm.data.SimSlot
 
 fun Context.isDefaultDialer(): Boolean {
-    Log.d("CDM|default dialer", telecomManager.defaultDialerPackage)
     return packageName == telecomManager.defaultDialerPackage
 }
 

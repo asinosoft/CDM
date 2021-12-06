@@ -2,7 +2,6 @@ package com.asinosoft.cdm.fragments
 
 import android.content.res.Resources
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -207,7 +206,6 @@ class FavoritesSettingsFragment : Fragment() {
 
         v!!.themes.setOnClickListener {
             ThemeSelectionDialog { theme ->
-                Log.d("selected", theme.toString())
                 model.settings.theme = theme
                 activity?.recreate()
             }.show(parentFragmentManager, "Select theme")

@@ -12,7 +12,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.telecom.TelecomManager
-import android.util.Log
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +22,7 @@ import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.isDefaultDialer
+import timber.log.Timber
 import java.io.File
 
 /**
@@ -101,7 +101,7 @@ open class BaseActivity : AppCompatActivity() {
      * Предлагает пользователю установить приложение дозвонщиком по-умолчанию
      */
     fun setDefaultDialer() {
-        Log.d("CDM|Activity", "setDefaultDialer → $packageName")
+        Timber.d("setDefaultDialer → %s", packageName)
         if (isDefaultDialer()) {
             return
         }

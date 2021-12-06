@@ -37,7 +37,7 @@
         android:clickable="true"
         android:contentDescription="@string/action_keyboard"
         android:focusable="true"
-        android:src="@drawable/twotone_keyboard_24"
+        android:src="@drawable/ic_keyboard"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

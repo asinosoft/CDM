@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Телефон</string>
+
     <!-- Тип звонка -->
     <string name="call_type_outgoing">Исходящий</string>
     <string name="call_type_incoming">Входящий</string>
@@ -9,11 +11,18 @@
     <string name="call_type_other">Звонок</string>
 
     <!-- Статус звонка -->
-    <string name="status_call_disconnected">Звонок завершен</string>
-    <string name="status_call_incoming">Входящий звонок</string>
     <string name="status_call_active">Текущий звонок</string>
+    <string name="status_call_connecting">Соединение…</string>
     <string name="status_call_dialing">Соеденение…</string>
+    <string name="status_call_disconnected">Звонок завершен</string>
+    <string name="status_call_disconnecting">Разъединение</string>
     <string name="status_call_holding">Вызов на удержании</string>
+    <string name="status_call_incoming">Входящий звонок</string>
+    <string name="status_call_new">Новый</string>
+    <string name="status_call_pulling_call">Подключение к звонку</string>
+    <string name="status_call_ringing">Звонок…</string>
+    <string name="status_call_select_phone_account">Выбор SIM</string>
+    <string name="status_call_simulated_ringing">Тестовый звонок</string>
 
     <!-- Уведомления -->
     <string name="active_call_notification_text">Звонок…</string>
@@ -70,7 +79,8 @@
     <string name="contact_tab_actions">Контакт</string>
     <string name="contact_tab_settings">Настройки</string>
     <string name="settings_tab_appearance">Оформление</string>
-    <string name="settings_tab_about">О приложении</string>
+    <string name="settings_tab_phone">Телефон</string>
+    <string name="settings_tab_about">Информация</string>
     <string name="settings_tab_actions">Действия</string>
     <string name="dialer_settings">Дозвонщик</string>
     <string name="default_dialer">Установить по-умолчанию</string>
@@ -95,6 +105,14 @@
     <string name="date_today">Сегодня</string>
     <string name="date_yesterday">Вчера</string>
     <string name="select_number">Выберите номер</string>
+
+    <!-- About activity -->
+    <string name="share_app">Поделиться</string>
+    <string name="share_message">Попробуй эту звонилку:\n%s</string>
+    <string name="share_via">Поделиться</string>
+    <string name="rate_us">Оценить в Google Play</string>
+    <string name="licenses">Лицензии третьих сторон</string>
+
 
     <plurals name="age">
         <item quantity="one">%d год</item>

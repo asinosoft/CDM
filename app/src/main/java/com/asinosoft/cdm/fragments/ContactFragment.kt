@@ -1,7 +1,6 @@
 package com.asinosoft.cdm.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,13 +19,12 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems
  */
 class ContactFragment : Fragment() {
     private val model: DetailHistoryViewModel by activityViewModels()
-    private var v: ActivityDetailHistoryBinding? = null
+    private lateinit var v: ActivityDetailHistoryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         arguments?.getLong("contactId")?.let { contactId ->
-            Log.d("ContactFragment", "ID: $contactId")
             model.initialize(requireContext(), contactId)
         }
     }
@@ -37,13 +35,13 @@ class ContactFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         v = ActivityDetailHistoryBinding.inflate(inflater, container, false)
-        return v!!.root
+        return v.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Firebase.analytics.logEvent("activity_contact", Bundle.EMPTY)
 
-        v!!.pages.adapter = FragmentPagerItemAdapter(
+        v.pages.adapter = FragmentPagerItemAdapter(
             childFragmentManager,
             FragmentPagerItems.with(requireContext())
                 .add(
@@ -61,12 +59,12 @@ class ContactFragment : Fragment() {
                 .create()
         )
 
-        v!!.tabs.setViewPager(v!!.pages)
+        v.tabs.setViewPager(v.pages)
 
         model.contact.observe(viewLifecycleOwner) { contact ->
             contact?.let {
-                v!!.image.setImageURI(it.photoUri)
-                v!!.name.text = it.name
+                v.image.setImageURI(it.photoUri)
+                v.name.text = it.name
             }
         }
     }
