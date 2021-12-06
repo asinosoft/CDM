@@ -14,6 +14,7 @@ import android.telecom.PhoneAccountHandle
 import android.view.View
 import android.view.WindowManager
 import androidx.core.view.isVisible
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.databinding.ActivityOngoingCallBinding
@@ -36,7 +37,10 @@ class OngoingCallActivity : BaseActivity() {
         private const val ONE_SECOND = 1000
 
         fun intent(context: Context) = Intent(context, OngoingCallActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            action = Intent.ACTION_ANSWER
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                    Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
         }
     }
 
@@ -68,6 +72,7 @@ class OngoingCallActivity : BaseActivity() {
         call.registerCallback(callCallback)
         setCallerInfo(call.details.handle.schemeSpecificPart)
         updateCallState(call.state)
+        updateSimSlotInfo(call.details.accountHandle)
 
         clickToButtons()
         addLockScreenFlags()
@@ -78,6 +83,27 @@ class OngoingCallActivity : BaseActivity() {
         if (hasNavBar()) {
             v.frame.setPadding(0, 0, 0, navBarHeight())
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (application as App).notification.setAppActive(true)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        (application as App).notification.setAppActive(false)
+    }
+
+    override fun onDestroy() {
+        Timber.d("onDestroy")
+        super.onDestroy()
+        callTimer.cancel()
+        if (true == proximityWakeLock?.isHeld()) {
+            proximityWakeLock?.release()
+        }
+
+        endCall()
     }
 
     private fun setCallerInfo(phone: String) {
@@ -133,17 +159,6 @@ class OngoingCallActivity : BaseActivity() {
         }
     }
 
-    override fun onDestroy() {
-        Timber.d("onDestroy")
-        super.onDestroy()
-        callTimer.cancel()
-        if (true == proximityWakeLock?.isHeld()) {
-            proximityWakeLock?.release()
-        }
-
-        endCall()
-    }
-
     private fun activateCall() {
         Timber.d("activateCall")
         CallManager.accept()
@@ -172,7 +187,8 @@ class OngoingCallActivity : BaseActivity() {
         isCallEnded = true
         if (Date().time - callStartTime.time > ONE_SECOND) {
             runOnUiThread {
-                v.ongoingCallLayout.textStatus.text = (Date().time - callStartTime.time).getFormattedDuration()
+                v.ongoingCallLayout.textStatus.text =
+                    (Date().time - callStartTime.time).getFormattedDuration()
                 Handler().postDelayed(
                     { finish() },
                     3000
@@ -188,7 +204,8 @@ class OngoingCallActivity : BaseActivity() {
         override fun run() {
             runOnUiThread {
                 if (!isCallEnded) {
-                    v.ongoingCallLayout.textStatus.text = (Date().time - callStartTime.time).getFormattedDuration()
+                    v.ongoingCallLayout.textStatus.text =
+                        (Date().time - callStartTime.time).getFormattedDuration()
                 }
             }
         }

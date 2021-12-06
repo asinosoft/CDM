@@ -163,7 +163,7 @@ class ContactSettingsFragment : Fragment() {
                     actions,
                     { selected -> model.setContactAction(direction, selected) },
                     { model.setContactAction(direction, model.getContactAction(direction)) }
-                )
+                ).show()
             }
         }
     }

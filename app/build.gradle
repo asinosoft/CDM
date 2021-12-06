@@ -128,6 +128,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
 
     // Runtime log-reader
-    debugImplementation 'com.willowtreeapps.hyperion:hyperion-core:0.9.27'
-    debugImplementation 'com.willowtreeapps.hyperion:hyperion-timber:0.9.27'
+//    debugImplementation 'com.willowtreeapps.hyperion:hyperion-core:0.9.27'
+//    debugImplementation 'com.willowtreeapps.hyperion:hyperion-timber:0.9.27'
 }

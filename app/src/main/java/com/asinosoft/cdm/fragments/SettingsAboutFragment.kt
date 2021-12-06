@@ -47,7 +47,7 @@ class SettingsAboutFragment : Fragment() {
     }
 
     private fun shareApp(): Intent {
-        val url = "https://play.google.com/store/apps/details?id=com.asinosoft.admin.you2face"
+        val url = getString(R.string.share_url)
         val share = getString(R.string.share_via)
         val message = getString(R.string.share_message).format(url)
         val intent = Intent().apply {
@@ -61,7 +61,7 @@ class SettingsAboutFragment : Fragment() {
 
     private fun rateUs(): Intent = Intent(
         Intent.ACTION_VIEW,
-        Uri.parse("market://details?id=com.asinosoft.admin.you2face")
+        Uri.parse(getString(R.string.rate_url))
     )
 
     private fun showLicenses() {
