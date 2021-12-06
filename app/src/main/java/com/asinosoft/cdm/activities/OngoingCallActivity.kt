@@ -64,18 +64,11 @@ class OngoingCallActivity : BaseActivity() {
         Timber.d("onCreate")
         super.onCreate(savedInstanceState)
 
-        call = CallManager.getCall() ?: return finish()
-
         v = ActivityOngoingCallBinding.inflate(layoutInflater)
         setContentView(v.root)
 
-        call.registerCallback(callCallback)
-        setCallerInfo(call.details.handle.schemeSpecificPart)
-        updateCallState(call.state)
-        updateSimSlotInfo(call.details.accountHandle)
-
-        clickToButtons()
-        addLockScreenFlags()
+        initEventListeners()
+        initLockScreenFlags()
         initProximitySensor()
 
         audioManager.mode = AudioManager.MODE_IN_CALL
@@ -88,6 +81,23 @@ class OngoingCallActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         (application as App).notification.setAppActive(true)
+
+        call = CallManager.getCall() ?: return finish()
+        call.registerCallback(callCallback)
+        setCallerInfo(call.details.handle.schemeSpecificPart)
+        updateCallState(call.state)
+        updateSimSlotInfo(call.details.accountHandle)
+    }
+
+    override fun onBackPressed() {
+        Timber.d("onBackPressed")
+        // In case the dialpad is opened, pressing the back button will close it
+        if (v.keyboardWrapper.isVisible) {
+            v.keyboardWrapper.visibility = View.GONE
+            switchToCallingUI()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onPause() {
@@ -118,7 +128,58 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoingCallLayout.imagePlaceholder.setImageBitmap(photo)
     }
 
-    private fun addLockScreenFlags() {
+    @SuppressLint("ResourceAsColor")
+    private fun initEventListeners() {
+
+        v.ongoingCallLayout.answerBtn.setOnClickListener {
+            activateCall()
+        }
+        v.ongoingCallLayout.disconnect.setOnClickListener {
+            endCall()
+        }
+        v.ongoingCallLayout.rejectBtn.setOnClickListener {
+            endCall()
+        }
+
+        v.ongoingCallLayout.buttonSpeaker.setOnClickListener {
+            toggleSpeaker()
+        }
+
+        v.ongoingCallLayout.buttonHold.setOnClickListener {
+            toggleHold()
+        }
+
+        v.ongoingCallLayout.buttonMute.setOnClickListener {
+            toggleMicrophone()
+        }
+
+        v.ongoingCallLayout.buttonKeypad.setOnClickListener {
+            if (v.keyboardWrapper.isVisible) {
+                v.keyboardWrapper.visibility = View.GONE
+                switchToCallingUI()
+            } else {
+                v.keyboardWrapper.visibility = View.VISIBLE
+                viewKeyboard()
+            }
+        }
+
+        v.keyboard.ripple0.setOnClickListener { dialpadPressed('0') }
+        v.keyboard.oneBtn.setOnClickListener { dialpadPressed('1') }
+        v.keyboard.twoBtn.setOnClickListener { dialpadPressed('2') }
+        v.keyboard.threeBtn.setOnClickListener { dialpadPressed('3') }
+        v.keyboard.fourBtn.setOnClickListener { dialpadPressed('4') }
+        v.keyboard.fiveBtn.setOnClickListener { dialpadPressed('5') }
+        v.keyboard.sixBtn.setOnClickListener { dialpadPressed('6') }
+        v.keyboard.sevenBtn.setOnClickListener { dialpadPressed('7') }
+        v.keyboard.eightBtn.setOnClickListener { dialpadPressed('8') }
+        v.keyboard.nineBtn.setOnClickListener { dialpadPressed('9') }
+
+        v.keyboard.ripple0.setOnLongClickListener { dialpadPressed('+'); true }
+
+        v.keyboardWrapper.setBackgroundColor(R.color.white)
+    }
+
+    private fun initLockScreenFlags() {
         if (Build.VERSION.SDK_INT >= 27) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
@@ -145,17 +206,6 @@ class OngoingCallActivity : BaseActivity() {
                 "com.asinosoft.cdm:wake_lock"
             )
             proximityWakeLock?.acquire(600 * 1000L) //
-        }
-    }
-
-    override fun onBackPressed() {
-        Timber.d("onBackPressed")
-        // In case the dialpad is opened, pressing the back button will close it
-        if (v.keyboardWrapper.isVisible) {
-            v.keyboardWrapper.visibility = View.GONE
-            switchToCallingUI()
-        } else {
-            super.onBackPressed()
         }
     }
 
@@ -281,57 +331,6 @@ class OngoingCallActivity : BaseActivity() {
         Timber.d("toggleHold")
         v.ongoingCallLayout.buttonHold.isActivated = !v.ongoingCallLayout.buttonHold.isActivated
         CallManager.hold(v.ongoingCallLayout.buttonHold.isActivated)
-    }
-
-    @SuppressLint("ResourceAsColor")
-    private fun clickToButtons() {
-
-        v.ongoingCallLayout.answerBtn.setOnClickListener {
-            activateCall()
-        }
-        v.ongoingCallLayout.disconnect.setOnClickListener {
-            endCall()
-        }
-        v.ongoingCallLayout.rejectBtn.setOnClickListener {
-            endCall()
-        }
-
-        v.ongoingCallLayout.buttonSpeaker.setOnClickListener {
-            toggleSpeaker()
-        }
-
-        v.ongoingCallLayout.buttonHold.setOnClickListener {
-            toggleHold()
-        }
-
-        v.ongoingCallLayout.buttonMute.setOnClickListener {
-            toggleMicrophone()
-        }
-
-        v.ongoingCallLayout.buttonKeypad.setOnClickListener {
-            if (v.keyboardWrapper.isVisible) {
-                v.keyboardWrapper.visibility = View.GONE
-                switchToCallingUI()
-            } else {
-                v.keyboardWrapper.visibility = View.VISIBLE
-                viewKeyboard()
-            }
-        }
-
-        v.keyboard.ripple0.setOnClickListener { dialpadPressed('0') }
-        v.keyboard.oneBtn.setOnClickListener { dialpadPressed('1') }
-        v.keyboard.twoBtn.setOnClickListener { dialpadPressed('2') }
-        v.keyboard.threeBtn.setOnClickListener { dialpadPressed('3') }
-        v.keyboard.fourBtn.setOnClickListener { dialpadPressed('4') }
-        v.keyboard.fiveBtn.setOnClickListener { dialpadPressed('5') }
-        v.keyboard.sixBtn.setOnClickListener { dialpadPressed('6') }
-        v.keyboard.sevenBtn.setOnClickListener { dialpadPressed('7') }
-        v.keyboard.eightBtn.setOnClickListener { dialpadPressed('8') }
-        v.keyboard.nineBtn.setOnClickListener { dialpadPressed('9') }
-
-        v.keyboard.ripple0.setOnLongClickListener { dialpadPressed('+'); true }
-
-        v.keyboardWrapper.setBackgroundColor(R.color.white)
     }
 
     private fun dialpadPressed(char: Char) {
