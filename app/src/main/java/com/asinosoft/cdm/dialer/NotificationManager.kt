@@ -27,6 +27,9 @@ import timber.log.Timber
 class NotificationManager(private val context: Context) {
     private val CALL_NOTIFICATION_ID = 1
     private val CHANNEL_ID = "call notification"
+    private var isAppActive = false
+    private var callState: Int = Call.STATE_DISCONNECTED
+    private var call: Call? = null
 
     init {
         if (Build.VERSION.SDK_INT >= 26) {
@@ -46,6 +49,30 @@ class NotificationManager(private val context: Context) {
     }
 
     fun show(call: Call, callState: Int) {
+        this.call = call
+        this.callState = callState
+        if (!isAppActive) {
+            update(call, callState)
+        }
+    }
+
+    fun hide() {
+        call = null
+        context.notificationManager.cancel(CALL_NOTIFICATION_ID)
+    }
+
+    fun setAppActive(active: Boolean) {
+        isAppActive = active
+        if (isAppActive) {
+            context.notificationManager.cancel(CALL_NOTIFICATION_ID)
+        } else {
+            call?.let { call ->
+                update(call, callState)
+            }
+        }
+    }
+
+    private fun update(call: Call, callState: Int) {
         val phone = call.details.handle.schemeSpecificPart
         val contact = ContactRepositoryImpl(context).getContactByPhone(phone)
 
@@ -93,6 +120,7 @@ class NotificationManager(private val context: Context) {
             .setSound(null)
             .setUsesChronometer(Call.STATE_ACTIVE == callState)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+            .setWhen(call.details.connectTimeMillis)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setFullScreenIntent(openAppIntent(), true)
 
@@ -101,17 +129,11 @@ class NotificationManager(private val context: Context) {
         context.notificationManager.notify(CALL_NOTIFICATION_ID, builder.build())
     }
 
-    fun hide() {
-        context.notificationManager.cancel(CALL_NOTIFICATION_ID)
-    }
-
     private fun openAppIntent() =
         PendingIntent.getActivity(
             context,
             0,
-            Intent(context, OngoingCallActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
-            },
+            OngoingCallActivity.intent(context),
             PendingIntent.FLAG_IMMUTABLE
         )
 
