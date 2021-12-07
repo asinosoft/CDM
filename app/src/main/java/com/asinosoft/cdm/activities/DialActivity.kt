@@ -51,7 +51,6 @@ class DialActivity : BaseActivity() {
         }
     }
 
-
     @SuppressLint("MissingPermission")
     private fun withDefaultPhoneAccount(onSelect: (PhoneAccountHandle) -> Unit) {
         val account = telecomManager.getDefaultOutgoingPhoneAccount("tel")

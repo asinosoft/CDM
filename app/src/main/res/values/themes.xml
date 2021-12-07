@@ -91,4 +91,15 @@
         <item name="colorPrimary">@color/text_color_light</item>
         <item name="android:textColor">@color/active_tab_text_light</item>
     </style>
+
+    <!-- Специальная прозрачная тема для промежуточной активоности DialActivity -->
+    <style name="Theme.Transparent" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
 </resources>
