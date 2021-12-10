@@ -137,6 +137,12 @@
     <string name="version" translatable="false">%s / %s</string>
     <string name="copyright" translatable="false">© AsinoSoft 2021</string>
 
+    <!-- Permission rationale fragment -->
+    <string name="permission_rationale">
+        We need access to call logs and contact book for name and photo
+    </string>
+    <string name="give_permission">Permit</string>
+
     <plurals name="age">
         <item quantity="zero">%d years</item>
         <item quantity="one">%d year</item>

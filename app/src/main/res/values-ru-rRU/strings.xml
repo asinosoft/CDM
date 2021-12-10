@@ -113,6 +113,11 @@
     <string name="rate_us">Оценить в Google Play</string>
     <string name="licenses">Лицензии третьих сторон</string>
 
+    <!-- Permission rationale fragment -->
+    <string name="permission_rationale">
+        Приложению для работы требуется доступ к истории звонков и к контактам, чтобы показать имя и фото.
+    </string>
+    <string name="give_permission">Разрешить</string>
 
     <plurals name="age">
         <item quantity="one">%d год</item>

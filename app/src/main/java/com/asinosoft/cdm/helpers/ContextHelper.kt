@@ -3,6 +3,7 @@ package com.asinosoft.cdm.helpers
 import android.app.KeyguardManager
 import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
@@ -43,6 +44,12 @@ private object ContextHelper {
 fun Context.hasNavBar(): Boolean {
     val id = resources.getIdentifier("config_showNavigationBar", "bool", "android")
     return id > 0 && resources.getBoolean(id)
+}
+
+fun Context.hasPermissions(permissions: Array<String>): Boolean {
+    return permissions.all {
+        PackageManager.PERMISSION_GRANTED == checkSelfPermission(it)
+    }
 }
 
 fun Context.navBarHeight(): Int {

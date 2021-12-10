@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/shield"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_margin="8dp"
+        android:src="@drawable/ic_security"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/red" />
+
+    <TextView
+        android:id="@+id/rationale"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="40dp"
+        android:text="@string/permission_rationale"
+        android:textAlignment="center"
+        app:layout_constraintTop_toBottomOf="@id/shield" />
+
+    <Button
+        android:id="@+id/give_permission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/give_permission"
+        android:backgroundTint="@color/green"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rationale" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

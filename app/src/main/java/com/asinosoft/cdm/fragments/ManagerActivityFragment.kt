@@ -1,5 +1,6 @@
 package com.asinosoft.cdm.fragments
 
+import android.Manifest
 import android.content.Context
 import android.os.Bundle
 import android.view.DragEvent
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -15,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.adapters.CallsAdapter
 import com.asinosoft.cdm.adapters.FavoritesAdapter
+import com.asinosoft.cdm.adapters.PermissionRationaleAdapter
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.api.FavoriteContactRepositoryImpl
 import com.asinosoft.cdm.api.Loader
@@ -29,6 +32,7 @@ import com.asinosoft.cdm.helpers.vibrator
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import com.asinosoft.cdm.views.CirLayoutManager
 import com.asinosoft.cdm.views.LockableLayoutManager
+import timber.log.Timber
 
 /**
  * Интерфейс главного окна (избранные + последние звонки)
@@ -36,6 +40,11 @@ import com.asinosoft.cdm.views.LockableLayoutManager
 class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
     private var v: ActivityManagerBinding? = null
     private val model: ManagerViewModel by activityViewModels()
+
+    /**
+     * Отслеживает случаи, когда onResume срабатывает дважды
+     */
+    private var isModelRefreshed: Boolean = false
 
     /**
      * Блок избранных контактов
@@ -53,6 +62,8 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
     private var indexOfFrontChild: Int = 0
 
     private lateinit var favoritesAdapter: FavoritesAdapter
+
+    private lateinit var callsAdapter: CallsAdapter
 
     /**
      * Позиция в блоке избранных контактов, для которой был запущен диалог выбора контакта
@@ -93,6 +104,20 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
         return v!!.root
     }
 
+    override fun onPause() {
+        super.onPause()
+        isModelRefreshed = false
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (!isModelRefreshed) {
+            isModelRefreshed = true
+            model.refresh()
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         v = null
@@ -126,9 +151,28 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
             findNavController().navigate(R.id.action_open_search)
         }
 
-        model.calls.observe(viewLifecycleOwner) { calls ->
-            (v!!.rvCalls.adapter as CallsAdapter).setList(calls)
+        model.isBlocked.observe(viewLifecycleOwner) { isBlocked ->
+            if (isBlocked && v!!.rvCalls.adapter !is PermissionRationaleAdapter) {
+                v!!.rvCalls.adapter = PermissionRationaleAdapter(favoritesView.root) {
+                    requestPermissions()
+                }
+            } else if (!isBlocked && v!!.rvCalls.adapter !is CallsAdapter) {
+                v!!.rvCalls.adapter = callsAdapter
+            }
         }
+
+        model.calls.observe(viewLifecycleOwner) { calls ->
+            callsAdapter.setList(calls)
+        }
+    }
+
+    private fun requestPermissions() {
+        Timber.d("requestPermissions")
+        ActivityCompat.requestPermissions(
+            requireActivity(),
+            arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG),
+            1235
+        )
     }
 
     private fun initFavorites(callsLayoutManager: LockableLayoutManager) {
@@ -198,7 +242,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
     }
 
     private fun initCallHistory(callsLayoutManager: LockableLayoutManager) {
-        v!!.rvCalls.adapter = CallsAdapter(requireContext(), favoritesView, this)
+        callsAdapter = CallsAdapter(requireContext(), favoritesView, this)
         v!!.rvCalls.layoutManager = callsLayoutManager
         v!!.rvCalls.isNestedScrollingEnabled = true
 

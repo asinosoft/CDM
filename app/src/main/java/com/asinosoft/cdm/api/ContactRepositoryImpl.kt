@@ -1,6 +1,8 @@
 package com.asinosoft.cdm.api
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.provider.ContactsContract
@@ -53,6 +55,10 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
     override fun getContactByUri(uri: Uri): Contact? {
         Timber.d("Поиск контакта по URI $uri")
+        if (PackageManager.PERMISSION_DENIED == context.checkSelfPermission(Manifest.permission.READ_CONTACTS)) {
+            return null
+        }
+
         val projections = arrayOf(ContactsContract.Contacts._ID)
         val cursor = context.contentResolver.query(uri, projections, null, null, null)
         if (cursor != null && cursor.moveToFirst()) {
@@ -77,6 +83,10 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
     private fun findContactById(id: Long): Contact? {
         Timber.d("Поиск контакта по ID %d", id)
+        if (PackageManager.PERMISSION_DENIED == context.checkSelfPermission(Manifest.permission.READ_CONTACTS)) {
+            return null
+        }
+
         return context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             "${ContactsContract.Data.CONTACT_ID} = ?", arrayOf(id.toString()), null
@@ -87,6 +97,10 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
     private fun findContactByPhone(phone: String): Contact? {
         Timber.d("Поиск контакта по телефону $phone")
+        if (PackageManager.PERMISSION_DENIED == context.checkSelfPermission(Manifest.permission.READ_CONTACTS)) {
+            return null
+        }
+
         context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, arrayOf(ContactsContract.Data.CONTACT_ID),
             "${ContactsContract.Data.MIMETYPE} = ? AND ${ContactsContract.Data.DATA4} = ?",

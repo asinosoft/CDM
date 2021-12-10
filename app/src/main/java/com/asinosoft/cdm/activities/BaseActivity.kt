@@ -1,6 +1,5 @@
 package com.asinosoft.cdm.activities
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.role.RoleManager
 import android.content.Intent
@@ -21,6 +20,7 @@ import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.helpers.Metoths
+import com.asinosoft.cdm.helpers.hasPermissions
 import com.asinosoft.cdm.helpers.isDefaultDialer
 import timber.log.Timber
 import java.io.File
@@ -33,7 +33,7 @@ open class BaseActivity : AppCompatActivity() {
     private var appTheme: Int = R.style.AppTheme_Light
     private var actionWithPermission: (Boolean) -> Unit = {}
 
-    protected val launcher =
+    private val launcher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
     @SuppressLint("ResourceType")
@@ -61,12 +61,6 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
-    fun hasPermissions(permissions: Array<String>): Boolean {
-        return permissions.all {
-            PackageManager.PERMISSION_GRANTED == checkSelfPermission(it)
-        }
-    }
-
     fun withPermission(permissions: Array<String>, callback: (Boolean) -> Unit) {
         actionWithPermission = {}
         if (hasPermissions(permissions)) {
@@ -86,7 +80,7 @@ open class BaseActivity : AppCompatActivity() {
         actionWithPermission.invoke(grantResults.all { PackageManager.PERMISSION_GRANTED == it })
     }
 
-    fun applyBackgroundImage() {
+    private fun applyBackgroundImage() {
         val image = getBackgroundImage()
         val rootView = findViewById<ViewGroup>(android.R.id.content).rootView
         if (null == image) {
@@ -103,10 +97,6 @@ open class BaseActivity : AppCompatActivity() {
     fun setDefaultDialer() {
         Timber.d("setDefaultDialer → %s", packageName)
         if (isDefaultDialer()) {
-            return
-        }
-
-        if (PackageManager.PERMISSION_DENIED == checkSelfPermission(Manifest.permission.CALL_PHONE)) {
             return
         }
 
