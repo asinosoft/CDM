@@ -1,6 +1,5 @@
 package com.asinosoft.cdm.activities
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
@@ -9,9 +8,10 @@ import android.os.Build
 import android.os.Bundle
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
-import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.adapters.StringsWithIconsAdapter
+import com.asinosoft.cdm.helpers.isDefaultDialer
 import com.asinosoft.cdm.helpers.telecomManager
 import com.asinosoft.cdm.helpers.telephonyManager
 import timber.log.Timber
@@ -20,18 +20,28 @@ import timber.log.Timber
  * Невидимая активность для выбора симки и запуска звонка
  */
 class DialActivity : BaseActivity() {
+    private lateinit var contact: Uri
+    private val launcher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (isDefaultDialer()) {
+                placeCall(contact)
+            } else {
+                startActivity(Intent(Intent.ACTION_DIAL, contact))
+                finish()
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.d("onCreate")
         super.onCreate(savedInstanceState)
 
-        if (intent.action == Intent.ACTION_CALL && intent.data != null) {
+        if (intent.data != null) {
             Timber.d("onCreate → ${intent.data}")
-            withPermission(arrayOf(Manifest.permission.CALL_PHONE)) { permitted ->
-                if (permitted) placeCall(intent.data)
-                else {
-                    Toast.makeText(this, "Не могу сделать вызов", Toast.LENGTH_LONG).show()
-                    finish()
-                }
+            contact = intent.data!!
+            if (isDefaultDialer()) {
+                placeCall(contact)
+            } else {
+                setDefaultDialer(launcher)
             }
         } else {
             finish()

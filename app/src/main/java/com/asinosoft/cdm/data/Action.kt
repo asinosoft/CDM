@@ -1,13 +1,11 @@
 package com.asinosoft.cdm.data
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import androidx.core.app.ActivityCompat
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.activities.DialActivity
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import timber.log.Timber
@@ -98,16 +96,9 @@ class Action(
 
     private fun phoneCall(context: Context) {
         Timber.i("phoneCall: %s", value)
-        if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.CALL_PHONE
-            )
-        ) {
-            return
-        }
         Firebase.analytics.logEvent("action_phone_call", Bundle.EMPTY)
-
-        Intent(Intent.ACTION_CALL, Uri.fromParts("tel", value, null))
+        Intent(context, DialActivity::class.java)
+            .setData(Uri.fromParts("tel", value, null))
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             .let { context.startActivity(it) }
     }

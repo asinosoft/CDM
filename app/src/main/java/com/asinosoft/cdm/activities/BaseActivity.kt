@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.telecom.TelecomManager
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -33,7 +34,7 @@ open class BaseActivity : AppCompatActivity() {
     private var appTheme: Int = R.style.AppTheme_Light
     private var actionWithPermission: (Boolean) -> Unit = {}
 
-    private val launcher =
+    private val defaultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
     @SuppressLint("ResourceType")
@@ -94,7 +95,7 @@ open class BaseActivity : AppCompatActivity() {
     /**
      * Предлагает пользователю установить приложение дозвонщиком по-умолчанию
      */
-    fun setDefaultDialer() {
+    fun setDefaultDialer(launcher: ActivityResultLauncher<Intent>? = null) {
         Timber.d("setDefaultDialer → %s", packageName)
         if (isDefaultDialer()) {
             return
@@ -106,7 +107,7 @@ open class BaseActivity : AppCompatActivity() {
                 !roleManager.isRoleHeld(RoleManager.ROLE_DIALER)
             ) {
                 roleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER)
-                    .let { launcher.launch(it) }
+                    .let { (launcher ?: defaultLauncher).launch(it) }
             }
         } else {
             Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
@@ -114,7 +115,7 @@ open class BaseActivity : AppCompatActivity() {
                     TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME,
                     packageName
                 )
-                .let { launcher.launch(it) }
+                .let { (launcher ?: defaultLauncher).launch(it) }
         }
     }
 
