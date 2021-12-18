@@ -108,7 +108,7 @@
 
     <!-- About activity -->
     <string name="share_app">Поделиться</string>
-    <string name="share_message">Попробуй эту звонилку:\n%s</string>
+    <string name="share_message">Попробуй это приложение:\n%s</string>
     <string name="share_via">Поделиться</string>
     <string name="rate_us">Оценить в Google Play</string>
     <string name="licenses">Лицензии третьих сторон</string>
