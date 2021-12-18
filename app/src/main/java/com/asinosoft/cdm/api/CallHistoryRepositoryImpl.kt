@@ -8,6 +8,7 @@ import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
+import timber.log.Timber
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -21,7 +22,8 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
         CallLog.Calls.NUMBER,
         CallLog.Calls.TYPE,
         CallLog.Calls.DATE,
-        CallLog.Calls.DURATION
+        CallLog.Calls.DURATION,
+        CallLog.Calls.COUNTRY_ISO,
     )
 
     override fun getLatestHistory(
@@ -96,6 +98,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
         private val colType = cursor.getColumnIndex(CallLog.Calls.TYPE)
         private val colDate = cursor.getColumnIndex(CallLog.Calls.DATE)
         private val colDuration = cursor.getColumnIndex(CallLog.Calls.DURATION)
+        private val colCountry = cursor.getColumnIndex(CallLog.Calls.COUNTRY_ISO)
 
         fun getAll(): List<CallHistoryItem> {
             val result = java.util.ArrayList<CallHistoryItem>()
@@ -124,10 +127,13 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             val phoneNumber = cursor.getString(colNumber)
             val date = cursor.getLong(colDate)
             val photo = Uri.parse("android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}")
+            val country = cursor.getString(colCountry)
+
+            Timber.d("Found: %s - %s", country, phoneNumber)
 
             return CallHistoryItem(
                 phone = phoneNumber,
-                prettyPhone = StHelper.convertNumber(phoneNumber),
+                prettyPhone = StHelper.convertNumber(phoneNumber, country),
                 timestamp = Date(date),
                 date = dateFormat.format(date),
                 time = timeFormat.format(date),

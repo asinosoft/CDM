@@ -9,12 +9,16 @@ object StHelper {
     private val clearNonNumbers =
         Regex("\\D+") // чтобы не компилировать регексп на каждый вызов функции
 
-    fun convertNumber(number: String): String {
+    fun convertNumber(number: String, country: String? = null): String {
         return try {
             val clearNumber = clearNonNumbers.replace(number, "")
             val phoneUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance()
-            val numberForm: Phonenumber.PhoneNumber? = phoneUtil.parse(clearNumber, "RU")
-            phoneUtil.format(numberForm, PhoneNumberUtil.PhoneNumberFormat.E164)
+            val numberForm: Phonenumber.PhoneNumber? =
+                phoneUtil.parse(clearNumber, country ?: Locale.getDefault().country)
+            if (phoneUtil.isPossibleNumber(numberForm))
+                phoneUtil.format(numberForm, PhoneNumberUtil.PhoneNumberFormat.E164)
+            else
+                clearNumber
         } catch (e: Exception) {
             number
         }
