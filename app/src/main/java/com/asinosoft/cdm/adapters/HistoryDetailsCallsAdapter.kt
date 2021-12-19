@@ -7,13 +7,17 @@ import android.provider.CallLog
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Action
+import com.asinosoft.cdm.databinding.AdvertiserBinding
 import com.asinosoft.cdm.databinding.ContactCallItemBinding
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.StHelper
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import com.zerobranch.layout.SwipeLayout
@@ -28,24 +32,55 @@ class HistoryDetailsCallsAdapter(
 ) :
     RecyclerView.Adapter<HistoryDetailsCallsAdapter.HolderHistory>() {
 
+    companion object {
+        const val TYPE_CALL = 0
+        const val TYPE_ADVERTISER = 1
+    }
+
     private val prettyDateFormat = java.text.SimpleDateFormat("dd MMMM", Locale.getDefault())
     private val today: Date = StHelper.today()
     private val yesterday: Date = Date(today.time - 86400)
 
+    override fun getItemCount() = 1 + calls.size
+
+    override fun getItemViewType(position: Int): Int {
+        if (calls.size < 3) {
+            return if (position >= calls.size) TYPE_ADVERTISER else TYPE_CALL
+        } else {
+            return if (position == 3) TYPE_ADVERTISER else TYPE_CALL
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
-        return HolderHistory(
-            ContactCallItemBinding.inflate(
+        val binding = when (viewType) {
+            TYPE_CALL -> ContactCallItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
-        )
+            TYPE_ADVERTISER -> AdvertiserBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+            else -> throw Exception("Invalid view type: $viewType")
+        }
+        return HolderHistory(binding)
     }
 
-    override fun getItemCount() = calls.size
-
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
-        bindCallHistoryItem(holder.v, calls[position])
+        when (val binding = holder.v) {
+            is ContactCallItemBinding -> bindCallHistoryItem(
+                binding,
+                if (position < 3) calls[position] else calls[position - 1]
+            )
+            is AdvertiserBinding -> bindAdvertiser(binding)
+        }
+    }
+
+    private fun bindAdvertiser(v: AdvertiserBinding) {
+        val adRequest = AdRequest.Builder().build()
+        v.adView.loadAd(adRequest)
     }
 
     private fun bindCallHistoryItem(v: ContactCallItemBinding, call: CallHistoryItem) {
@@ -102,5 +137,5 @@ class HistoryDetailsCallsAdapter(
         }
     }
 
-    inner class HolderHistory(val v: ContactCallItemBinding) : RecyclerView.ViewHolder(v.root)
+    inner class HolderHistory(val v: ViewBinding) : RecyclerView.ViewHolder(v.root)
 }
