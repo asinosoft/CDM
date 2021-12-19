@@ -66,9 +66,7 @@
 
         <activity
             android:name=".activities.DialActivity"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:finishOnTaskLaunch="true"
+            android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
             android:theme="@style/Theme.Transparent">
@@ -88,10 +86,8 @@
 
         <activity
             android:name=".activities.OngoingCallActivity"
-            android:excludeFromRecents="true"
             android:exported="false"
             android:label="@string/call"
-            android:launchMode="singleInstance"
             android:parentActivityName=".activities.ManagerActivity"
             android:screenOrientation="portrait"
             android:showForAllUsers="true"
@@ -157,7 +153,7 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="@string/google_ads_application_id" />
 
     </application>
 

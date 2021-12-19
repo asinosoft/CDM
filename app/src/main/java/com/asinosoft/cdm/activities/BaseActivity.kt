@@ -1,19 +1,13 @@
 package com.asinosoft.cdm.activities
 
 import android.annotation.SuppressLint
-import android.app.role.RoleManager
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Bundle
-import android.telecom.TelecomManager
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.res.use
@@ -22,8 +16,6 @@ import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.hasPermissions
-import com.asinosoft.cdm.helpers.isDefaultDialer
-import timber.log.Timber
 import java.io.File
 
 /**
@@ -33,9 +25,6 @@ open class BaseActivity : AppCompatActivity() {
     protected lateinit var settings: Settings
     private var appTheme: Int = R.style.AppTheme_Light
     private var actionWithPermission: (Boolean) -> Unit = {}
-
-    private val defaultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
     @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,10 +38,7 @@ open class BaseActivity : AppCompatActivity() {
         } catch (e: Exception) {
             appTheme = R.style.AppTheme_Light
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
         applyBackgroundImage()
     }
 
@@ -89,33 +75,6 @@ open class BaseActivity : AppCompatActivity() {
             rootView.setBackgroundColor(backgroundColor)
         } else {
             rootView.background = image
-        }
-    }
-
-    /**
-     * Предлагает пользователю установить приложение дозвонщиком по-умолчанию
-     */
-    fun setDefaultDialer(launcher: ActivityResultLauncher<Intent>? = null) {
-        Timber.d("setDefaultDialer → %s", packageName)
-        if (isDefaultDialer()) {
-            return
-        }
-
-        if (Build.VERSION.SDK_INT >= 29) {
-            val roleManager = getSystemService(RoleManager::class.java)
-            if (roleManager.isRoleAvailable(RoleManager.ROLE_DIALER) &&
-                !roleManager.isRoleHeld(RoleManager.ROLE_DIALER)
-            ) {
-                roleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER)
-                    .let { (launcher ?: defaultLauncher).launch(it) }
-            }
-        } else {
-            Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
-                .putExtra(
-                    TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME,
-                    packageName
-                )
-                .let { (launcher ?: defaultLauncher).launch(it) }
         }
     }
 

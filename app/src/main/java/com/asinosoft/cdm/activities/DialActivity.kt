@@ -8,10 +8,12 @@ import android.os.Build
 import android.os.Bundle
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.appcompat.app.AppCompatActivity
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.adapters.StringsWithIconsAdapter
 import com.asinosoft.cdm.helpers.isDefaultDialer
+import com.asinosoft.cdm.helpers.setDefaultDialer
 import com.asinosoft.cdm.helpers.telecomManager
 import com.asinosoft.cdm.helpers.telephonyManager
 import timber.log.Timber
@@ -19,10 +21,10 @@ import timber.log.Timber
 /**
  * Невидимая активность для выбора симки и запуска звонка
  */
-class DialActivity : BaseActivity() {
+class DialActivity : AppCompatActivity() {
     private lateinit var contact: Uri
     private val launcher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        registerForActivityResult(StartActivityForResult()) {
             if (isDefaultDialer()) {
                 placeCall(contact)
             } else {

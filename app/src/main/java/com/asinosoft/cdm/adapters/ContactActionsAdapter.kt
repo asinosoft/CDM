@@ -59,7 +59,6 @@ class ContactActionsAdapter(private val contact: Contact) :
         } else {
             if (position == 3) TYPE_ADVERTISER else TYPE_ACTION
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewContactInfo {

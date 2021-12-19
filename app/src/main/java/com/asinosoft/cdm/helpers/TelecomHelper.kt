@@ -1,18 +1,51 @@
 package com.asinosoft.cdm.helpers
 
 import android.annotation.SuppressLint
+import android.app.role.RoleManager
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.net.Uri
+import android.os.Build
 import android.telecom.PhoneAccountHandle
+import android.telecom.TelecomManager
 import android.telephony.TelephonyManager.SIM_STATE_READY
+import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.ContextCompat
 import com.asinosoft.cdm.data.SimSlot
+import timber.log.Timber
 
 fun Context.isDefaultDialer(): Boolean {
     return packageName == telecomManager.defaultDialerPackage
+}
+
+/**
+ * Предлагает пользователю установить приложение дозвонщиком по-умолчанию
+ */
+fun Context.setDefaultDialer(launcher: ActivityResultLauncher<Intent>) {
+    Timber.d("setDefaultDialer → %s", packageName)
+    if (isDefaultDialer()) {
+        return
+    }
+
+    if (Build.VERSION.SDK_INT >= 29) {
+        val roleManager = getSystemService(RoleManager::class.java)
+        if (roleManager.isRoleAvailable(RoleManager.ROLE_DIALER) &&
+            !roleManager.isRoleHeld(RoleManager.ROLE_DIALER)
+        ) {
+            roleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER)
+                .let { launcher.launch(it) }
+        }
+    } else {
+        Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
+            .putExtra(
+                TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME,
+                packageName
+            )
+            .let { launcher.launch(it) }
+    }
 }
 
 @SuppressLint("MissingPermission")

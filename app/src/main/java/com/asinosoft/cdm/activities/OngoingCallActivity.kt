@@ -238,7 +238,7 @@ class OngoingCallActivity : BaseActivity() {
                     (Date().time - callStartTime.time).getFormattedDuration()
                 Handler().postDelayed(
                     { finish() },
-                    3000
+                    1000
                 )
             }
         } else {

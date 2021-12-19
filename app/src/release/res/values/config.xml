@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Google AdMob -->
+    <string name="google_ads_application_id" translatable="false">ca-app-pub-1058320783687363~3513831931</string>
+    <string name="google_ads_unit_id" translatable="false">ca-app-pub-1058320783687363/5970228470</string>
+</resources>

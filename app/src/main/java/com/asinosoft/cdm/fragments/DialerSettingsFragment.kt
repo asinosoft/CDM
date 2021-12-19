@@ -4,14 +4,15 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.telephony.TelephonyManager.SIM_STATE_READY
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.activityViewModels
 import androidx.preference.CheckBoxPreference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.activities.BaseActivity
 import com.asinosoft.cdm.helpers.getAvailableSimSlots
+import com.asinosoft.cdm.helpers.setDefaultDialer
 import com.asinosoft.cdm.viewmodels.SettingsViewModel
 import timber.log.Timber
 
@@ -22,6 +23,7 @@ import timber.log.Timber
  */
 class DialerSettingsFragment : PreferenceFragmentCompat() {
     private val model: SettingsViewModel by activityViewModels()
+    private val launcher = registerForActivityResult(StartActivityForResult()) {}
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
@@ -37,7 +39,7 @@ class DialerSettingsFragment : PreferenceFragmentCompat() {
                 model.settings.checkDefaultDialer = (newValue as Boolean)
                 Timber.d("%s -> %s, %s", preference, newValue, model.settings.checkDefaultDialer)
                 if (model.settings.checkDefaultDialer) {
-                    (requireActivity() as BaseActivity).setDefaultDialer()
+                    context?.setDefaultDialer(launcher)
                 }
                 true
             }

@@ -7,7 +7,7 @@ import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.PickContact
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -75,7 +75,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
      * Выбор контакта
      */
     private val pickContact =
-        registerForActivityResult(ActivityResultContracts.PickContact()) { uri ->
+        registerForActivityResult(PickContact()) { uri ->
             model.getContactByUri(requireContext(), uri)?.let { contact ->
                 if (contact.phones.count() > 1) {
                     SelectPhoneDialog(
