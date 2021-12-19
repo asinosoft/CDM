@@ -38,7 +38,10 @@ open class BaseActivity : AppCompatActivity() {
         } catch (e: Exception) {
             appTheme = R.style.AppTheme_Light
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
         applyBackgroundImage()
     }
 
