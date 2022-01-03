@@ -16,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.ContextCompat
 import com.asinosoft.cdm.data.SimSlot
 import timber.log.Timber
+import java.io.FileNotFoundException
 
 fun Context.isDefaultDialer(): Boolean {
     return packageName == telecomManager.defaultDialerPackage
@@ -77,8 +78,12 @@ fun Context.areMultipleSimsAvailable(): Boolean {
 }
 
 fun Context.loadUriAsBitmap(uri: Uri): Bitmap? {
-    return contentResolver.openAssetFileDescriptor(uri, "r")?.let {
-        BitmapFactory.decodeStream(it.createInputStream())
+    return try {
+        contentResolver.openAssetFileDescriptor(uri, "r")?.let {
+            BitmapFactory.decodeStream(it.createInputStream())
+        }
+    } catch (ignored: FileNotFoundException) {
+        null
     }
 }
 
