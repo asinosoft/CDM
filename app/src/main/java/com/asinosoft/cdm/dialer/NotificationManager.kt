@@ -15,21 +15,19 @@ import androidx.core.app.NotificationManagerCompat
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.activities.OngoingCallActivity
 import com.asinosoft.cdm.api.ContactRepositoryImpl
-import com.asinosoft.cdm.helpers.getSimSlot
-import com.asinosoft.cdm.helpers.loadResourceAsBitmap
-import com.asinosoft.cdm.helpers.loadUriAsBitmap
-import com.asinosoft.cdm.helpers.notificationManager
+import com.asinosoft.cdm.helpers.*
 import timber.log.Timber
 
 /**
  * Уведомления о входящем/текущем звонке
  */
 class NotificationManager(private val context: Context) {
-    private val CALL_NOTIFICATION_ID = 1
-    private val CHANNEL_ID = "call notification"
+    companion object {
+        private const val CHANNEL_ID = "Calls"
+    }
+
     private var isAppActive = false
-    private var callState: Int = Call.STATE_DISCONNECTED
-    private var call: Call? = null
+    private val notifications = mutableMapOf<Int, Call>()
 
     init {
         if (Build.VERSION.SDK_INT >= 26) {
@@ -48,39 +46,39 @@ class NotificationManager(private val context: Context) {
         }
     }
 
-    fun show(call: Call, callState: Int) {
-        this.call = call
-        this.callState = callState
-        if (!isAppActive) {
-            update(call, callState)
-        }
-    }
+    fun show(calls: List<Call>) {
+        // Удаляем завершённые звонки
+        notifications
+            .filterKeys { id -> calls.all { call -> call.id() != id } }.keys
+            .forEach { id ->
+                Timber.d("remove # %d", id)
+                notifications.remove(id)
+                context.notificationManager.cancel(id)
+            }
 
-    fun hide() {
-        call = null
-        context.notificationManager.cancel(CALL_NOTIFICATION_ID)
+        // Добавляем уведомления о новых звонках и обновляем текущие
+        calls.forEach { call ->
+            notifications[call.id()] = call
+            update(call)
+        }
     }
 
     fun setAppActive(active: Boolean) {
         isAppActive = active
-        if (isAppActive) {
-            context.notificationManager.cancel(CALL_NOTIFICATION_ID)
-        } else {
-            call?.let { call ->
-                update(call, callState)
-            }
-        }
+        CallService.instance?.calls?.forEach { call -> update(call) }
     }
 
-    private fun update(call: Call, callState: Int) {
+    fun update(call: Call) {
+        Timber.d("update # %d", call.id())
         val phone = call.details.handle.schemeSpecificPart
         val contact = ContactRepositoryImpl(context).getContactByPhone(phone)
+        val callState = call.getCallState()
 
         val photo =
             if (null == contact) context.loadResourceAsBitmap(R.drawable.ic_default_photo)
             else context.loadUriAsBitmap(contact.photoUri)
 
-        val collapsedView = RemoteViews(context.packageName, R.layout.call_notification).apply {
+        val view = RemoteViews(context.packageName, R.layout.call_notification).apply {
             setTextViewText(R.id.notification_caller_name, contact?.name)
             setTextViewText(R.id.notification_call_status, context.getCallStateText(callState))
             setViewVisibility(
@@ -96,8 +94,8 @@ class NotificationManager(private val context: Context) {
                 if (Call.STATE_ACTIVE == callState) View.VISIBLE else View.GONE
             )
 
-            setOnClickPendingIntent(R.id.notification_decline_call, declineCallIntent())
-            setOnClickPendingIntent(R.id.notification_accept_call, acceptCallIntent())
+            setOnClickPendingIntent(R.id.notification_decline_call, declineCallIntent(call))
+            setOnClickPendingIntent(R.id.notification_accept_call, acceptCallIntent(call))
             setOnClickPendingIntent(R.id.notification_speaker, toggleSpeakerIntent())
             setOnClickPendingIntent(R.id.notification_mic_off, toggleMuteIntent())
 
@@ -112,46 +110,53 @@ class NotificationManager(private val context: Context) {
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.call)
-            .setContentIntent(openAppIntent())
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(openAppIntent(call))
+            .setPriority(if (isAppActive) NotificationCompat.PRIORITY_LOW else NotificationCompat.PRIORITY_HIGH)
             .setCategory(Notification.CATEGORY_CALL)
-            .setCustomContentView(collapsedView)
+            .setCustomContentView(view)
             .setOngoing(true)
             .setSound(null)
             .setUsesChronometer(Call.STATE_ACTIVE == callState)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setWhen(call.details.connectTimeMillis)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            .setFullScreenIntent(openAppIntent(), true)
+            .setFullScreenIntent(openAppIntent(call), true)
 
         builder.setLargeIcon(photo)
 
-        context.notificationManager.notify(CALL_NOTIFICATION_ID, builder.build())
+        context.notificationManager.notify(call.id(), builder.build())
     }
 
-    private fun openAppIntent() =
+    private fun openAppIntent(call: Call) =
         PendingIntent.getActivity(
             context,
             0,
-            OngoingCallActivity.intent(context),
-            PendingIntent.FLAG_IMMUTABLE
+            OngoingCallActivity.intent(context, call),
+            if (Build.VERSION.SDK_INT >= 31)
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+            else
+                PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-    private fun acceptCallIntent() =
+    private fun acceptCallIntent(call: Call) =
         PendingIntent.getBroadcast(
             context,
             0,
             Intent(context, NotificationActionReceiver::class.java).apply {
                 action = ACCEPT_CALL
+                putExtra("call_id", call.id())
             },
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-    private fun declineCallIntent() =
+    private fun declineCallIntent(call: Call) =
         PendingIntent.getBroadcast(
             context,
             1,
-            Intent(context, NotificationActionReceiver::class.java).apply { action = DECLINE_CALL },
+            Intent(context, NotificationActionReceiver::class.java).apply {
+                action = DECLINE_CALL
+                putExtra("call_id", call.id())
+            },
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -159,9 +164,7 @@ class NotificationManager(private val context: Context) {
         PendingIntent.getActivity(
             context,
             0,
-            Intent(context, NotificationActionReceiver::class.java).apply {
-                action = MUTE_CALL
-            },
+            Intent(context, NotificationActionReceiver::class.java).apply { action = MUTE_CALL },
             PendingIntent.FLAG_IMMUTABLE
         )
 

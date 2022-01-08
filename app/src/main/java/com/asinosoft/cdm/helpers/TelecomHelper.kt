@@ -73,6 +73,7 @@ fun Context.areMultipleSimsAvailable(): Boolean {
     return try {
         telecomManager.callCapablePhoneAccounts.size > 1
     } catch (ignored: Exception) {
+        Timber.e(ignored)
         false
     }
 }
@@ -83,6 +84,7 @@ fun Context.loadUriAsBitmap(uri: Uri): Bitmap? {
             BitmapFactory.decodeStream(it.createInputStream())
         }
     } catch (ignored: FileNotFoundException) {
+        Timber.e(ignored)
         null
     }
 }
