@@ -18,11 +18,11 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
         when (intent.action) {
             ACCEPT_CALL -> {
-                val call = CallService.instance?.getCallById(intent.getIntExtra("call_id", 0))
+                val call = CallService.instance?.getCall(intent.data)
                 call?.accept()
             }
             DECLINE_CALL -> {
-                val call = CallService.instance?.getCallById(intent.getIntExtra("call_id", 0))
+                val call = CallService.instance?.getCall(intent.data)
                 call?.reject()
             }
             MUTE_CALL -> {

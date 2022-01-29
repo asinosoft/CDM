@@ -31,23 +31,21 @@ class OngoingCallActivity : BaseActivity() {
         private const val ONE_SECOND = 1000
 
         fun intent(context: Context, call: Call) =
-            Intent(context, OngoingCallActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                        Intent.FLAG_ACTIVITY_SINGLE_TOP
-                putExtra("call_id", call.id())
-            }
+            Intent(context, OngoingCallActivity::class.java)
+                .setData(call.details.handle)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
     // bools
     private var isCallEnded = false
-    private var callStartTime = Date()
+    private var callStartTime: Long = 0L
     private var callTimer = Timer()
     private var proximityWakeLock: PowerManager.WakeLock? = null
 
     private val callCallback = object : Call.Callback() {
         override fun onStateChanged(call: Call, state: Int) {
             super.onStateChanged(call, state)
-            Timber.d("Call # %d | state → %s", call.id(), getCallStateText(state))
+            Timber.d("Call # %s | state → %s", call.details.handle, getCallStateText(state))
 
             updateCallState(state)
             updateSimSlotInfo(call.details.accountHandle)
@@ -57,10 +55,7 @@ class OngoingCallActivity : BaseActivity() {
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val callId = intent.getIntExtra("call_id", 0)
-        Timber.d("onCreate # %d", callId)
-        call = CallService.instance?.getCallById(callId)
+        Timber.d("onCreate # %s", intent.data)
 
         v = ActivityOngoingCallBinding.inflate(layoutInflater)
         setContentView(v.root)
@@ -77,9 +72,11 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     override fun onResume() {
-        Timber.d("onResume # %d", call?.id())
+        Timber.d("onResume # %s", intent.data)
 
         (application as App).notification.setAppActive(true)
+
+        call = CallService.instance?.getCall(intent?.data)
 
         call?.let {
             it.registerCallback(callCallback)
@@ -92,7 +89,7 @@ class OngoingCallActivity : BaseActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        Timber.d("onNewIntent # %d", intent?.getIntExtra("call_id", 0))
+        Timber.d("onNewIntent # %s", intent?.data?.schemeSpecificPart)
         setIntent(intent)
     }
 
@@ -121,11 +118,6 @@ class OngoingCallActivity : BaseActivity() {
         }
 
         super.onDestroy()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        call?.let { outState.putInt("call_id", it.id()) }
-        super.onSaveInstanceState(outState)
     }
 
     private fun setCallerInfo(phone: String) {
@@ -219,19 +211,19 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun activateCall() {
-        Timber.d("activateCall # %d", call?.id())
+        Timber.d("activateCall # %s", call?.phone)
         call?.accept()
         switchToCallingUI()
     }
 
     private fun endCall() {
-        Timber.d("endCall # %d", call?.id())
+        Timber.d("endCall # %s", call?.phone)
         call?.reject()
     }
 
     private fun onCallStarted() {
-        Timber.d("onCallStarted # %d", call?.id())
-        callStartTime = Date()
+        Timber.d("onCallStarted # %s", call?.phone)
+        callStartTime = call?.details?.connectTimeMillis ?: Date().time
         try {
             callTimer.scheduleAtFixedRate(getCallTimerUpdateTask(), 1000, 1000)
         } catch (ignored: Exception) {
@@ -240,7 +232,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun onCallEnded() {
-        Timber.d("onCallEnded # %d", call?.id())
+        Timber.d("onCallEnded # %s", call?.phone)
         if (isCallEnded) {
             finish()
             return
@@ -257,10 +249,10 @@ class OngoingCallActivity : BaseActivity() {
         }
 
         isCallEnded = true
-        if (Date().time - callStartTime.time > ONE_SECOND) {
+        if (Date().time - callStartTime > ONE_SECOND) {
             runOnUiThread {
                 v.ongoingCallLayout.textStatus.text =
-                    (Date().time - callStartTime.time).getFormattedDuration()
+                    (Date().time - callStartTime).getFormattedDuration()
                 Handler().postDelayed(
                     { finish() },
                     1000
@@ -277,7 +269,7 @@ class OngoingCallActivity : BaseActivity() {
             runOnUiThread {
                 if (!isCallEnded) {
                     v.ongoingCallLayout.textStatus.text =
-                        (Date().time - callStartTime.time).getFormattedDuration()
+                        (Date().time - callStartTime).getFormattedDuration()
                 }
             }
         }
@@ -326,7 +318,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun toggleMicrophone() {
-        Timber.d("toggleMicrophone # %d", call?.id())
+        Timber.d("toggleMicrophone # %s", call?.phone)
         v.ongoingCallLayout.buttonMute.isActivated = !v.ongoingCallLayout.buttonMute.isActivated
         audioManager.isMicrophoneMute = v.ongoingCallLayout.buttonMute.isActivated
         val microphoneIcon =
@@ -336,7 +328,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun toggleSpeaker() {
-        Timber.d("toggleSpeaker # %d", call?.id())
+        Timber.d("toggleSpeaker # %s", call?.phone)
         v.ongoingCallLayout.buttonSpeaker.isActivated =
             !v.ongoingCallLayout.buttonSpeaker.isActivated
         audioManager.isSpeakerphoneOn = v.ongoingCallLayout.buttonSpeaker.isActivated
@@ -349,7 +341,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun toggleHold() {
-        Timber.d("toggleHold # %d", call?.id())
+        Timber.d("toggleHold # %s", call?.phone)
         if (v.ongoingCallLayout.buttonHold.isActivated) {
             v.ongoingCallLayout.buttonHold.isActivated = false
             call?.hold()

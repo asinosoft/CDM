@@ -49,7 +49,7 @@ class NotificationManager(private val context: Context) {
     fun show(calls: List<Call>) {
         // Удаляем завершённые звонки
         notifications
-            .filterKeys { id -> calls.all { call -> call.id() != id } }.keys
+            .filterKeys { id -> calls.all { call -> call.id != id } }.keys
             .forEach { id ->
                 Timber.d("remove # %d", id)
                 notifications.remove(id)
@@ -58,7 +58,7 @@ class NotificationManager(private val context: Context) {
 
         // Добавляем уведомления о новых звонках и обновляем текущие
         calls.forEach { call ->
-            notifications[call.id()] = call
+            notifications[call.id] = call
             update(call)
         }
     }
@@ -69,7 +69,7 @@ class NotificationManager(private val context: Context) {
     }
 
     fun update(call: Call) {
-        Timber.d("update # %d", call.id())
+        Timber.d("update # %d → %s", call.id, call.phone)
         val phone = call.details.handle.schemeSpecificPart
         val contact = ContactRepositoryImpl(context).getContactByPhone(phone)
         val callState = call.getCallState()
@@ -124,7 +124,7 @@ class NotificationManager(private val context: Context) {
 
         builder.setLargeIcon(photo)
 
-        context.notificationManager.notify(call.id(), builder.build())
+        context.notificationManager.notify(call.id, builder.build())
     }
 
     private fun openAppIntent(call: Call) =
@@ -142,29 +142,25 @@ class NotificationManager(private val context: Context) {
         PendingIntent.getBroadcast(
             context,
             0,
-            Intent(context, NotificationActionReceiver::class.java).apply {
-                action = ACCEPT_CALL
-                putExtra("call_id", call.id())
-            },
-            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            Intent(context, NotificationActionReceiver::class.java).setAction(ACCEPT_CALL)
+                .setData(call.details.handle),
+            PendingIntent.FLAG_IMMUTABLE
         )
 
     private fun declineCallIntent(call: Call) =
         PendingIntent.getBroadcast(
             context,
             1,
-            Intent(context, NotificationActionReceiver::class.java).apply {
-                action = DECLINE_CALL
-                putExtra("call_id", call.id())
-            },
-            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            Intent(context, NotificationActionReceiver::class.java).setAction(DECLINE_CALL)
+                .setData(call.details.handle),
+            PendingIntent.FLAG_IMMUTABLE
         )
 
     private fun toggleMuteIntent() =
         PendingIntent.getActivity(
             context,
             0,
-            Intent(context, NotificationActionReceiver::class.java).apply { action = MUTE_CALL },
+            Intent(context, NotificationActionReceiver::class.java).setAction(MUTE_CALL),
             PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -172,7 +168,7 @@ class NotificationManager(private val context: Context) {
         PendingIntent.getActivity(
             context,
             0,
-            Intent(context, NotificationActionReceiver::class.java).apply { action = SPEAKER_CALL },
+            Intent(context, NotificationActionReceiver::class.java).setAction(SPEAKER_CALL),
             PendingIntent.FLAG_IMMUTABLE
         )
 }

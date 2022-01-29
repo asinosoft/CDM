@@ -3,9 +3,12 @@ package com.asinosoft.cdm.helpers
 import android.os.Build
 import android.telecom.Call
 import android.telecom.VideoProfile
-import java.util.*
 
-fun Call.id(): Int = Objects.hash(details.handle.toString(), details.accountHandle.id)
+val Call.id: Int
+    get() = details.handle.hashCode()
+
+val Call.phone: String
+    get() = details.handle.schemeSpecificPart
 
 fun Call.getCallState(): Int =
     if (Build.VERSION.SDK_INT >= 31) {

@@ -1,10 +1,11 @@
 package com.asinosoft.cdm.dialer
 
+import android.net.Uri
 import android.telecom.Call
 import android.telecom.InCallService
 import com.asinosoft.cdm.App
 import com.asinosoft.cdm.activities.OngoingCallActivity
-import com.asinosoft.cdm.helpers.id
+import com.asinosoft.cdm.helpers.phone
 import timber.log.Timber
 
 class CallService : InCallService() {
@@ -15,7 +16,7 @@ class CallService : InCallService() {
     private val callback = object : Call.Callback() {
         override fun onStateChanged(call: Call, state: Int) {
             super.onStateChanged(call, state)
-            Timber.d("Call # %d | state → %s", call.id(), getCallStateText(state))
+            Timber.d("Call # %s | state → %s", call.phone, getCallStateText(state))
 
             (application as App).notification.update(call)
         }
@@ -49,6 +50,6 @@ class CallService : InCallService() {
         (application as App).notification.show(calls)
     }
 
-    fun getCallById(id: Int): Call? =
-        calls.find { call -> call.id() == id }
+    fun getCall(phone: Uri?): Call? =
+        calls.find { call -> call.details.handle == phone }
 }
