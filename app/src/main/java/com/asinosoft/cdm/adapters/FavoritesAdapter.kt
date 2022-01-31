@@ -11,7 +11,7 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.*
+import com.asinosoft.cdm.* // ktlint-disable no-wildcard-imports
 import com.asinosoft.cdm.api.FavoriteContactRepository
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Contact

@@ -3,7 +3,7 @@ package com.asinosoft.cdm.detail_contact
 import com.asinosoft.cdm.helpers.StHelper
 import org.junit.Assert
 import org.junit.Test
-import java.util.*
+import java.util.* // ktlint-disable no-wildcard-imports
 
 class StHelperTest {
     @Test

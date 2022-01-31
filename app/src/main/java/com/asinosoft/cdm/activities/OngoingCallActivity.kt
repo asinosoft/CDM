@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
-import android.os.*
+import android.os.* // ktlint-disable no-wildcard-imports
 import android.telecom.Call
 import android.telecom.CallAudioState
 import android.telecom.PhoneAccountHandle
@@ -15,10 +15,10 @@ import com.asinosoft.cdm.App
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.databinding.ActivityOngoingCallBinding
-import com.asinosoft.cdm.dialer.*
-import com.asinosoft.cdm.helpers.*
+import com.asinosoft.cdm.dialer.* // ktlint-disable no-wildcard-imports
+import com.asinosoft.cdm.helpers.* // ktlint-disable no-wildcard-imports
 import timber.log.Timber
-import java.util.*
+import java.util.* // ktlint-disable no-wildcard-imports
 
 /**
  * Активность текущего звонка
@@ -36,10 +36,8 @@ class OngoingCallActivity : BaseActivity() {
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
-    // bools
-    private var isCallEnded = false
     private var callStartTime: Long = 0L
-    private var callTimer = Timer()
+    private var callTimer: Timer? = null
     private var proximityWakeLock: PowerManager.WakeLock? = null
 
     private val callCallback = object : Call.Callback() {
@@ -76,14 +74,10 @@ class OngoingCallActivity : BaseActivity() {
 
         (application as App).notification.setAppActive(true)
 
-        call = CallService.instance?.getCall(intent?.data)
-
-        call?.let {
-            it.registerCallback(callCallback)
-            setCallerInfo(it.details.handle.schemeSpecificPart)
-            updateCallState(it.getCallState())
-            updateSimSlotInfo(it.details.accountHandle)
+        CallService.instance?.getCall(intent?.data)?.let {
+            setCurrentCall(it)
         }
+
         super.onResume()
     }
 
@@ -97,8 +91,7 @@ class OngoingCallActivity : BaseActivity() {
         Timber.d("onBackPressed")
         // In case the dialpad is opened, pressing the back button will close it
         if (v.keyboardWrapper.isVisible) {
-            v.keyboardWrapper.visibility = View.GONE
-            switchToCallingUI()
+            toggleKeyboard()
         } else {
             super.onBackPressed()
         }
@@ -112,12 +105,24 @@ class OngoingCallActivity : BaseActivity() {
 
     override fun onDestroy() {
         Timber.d("onDestroy")
-        callTimer.cancel()
+        callTimer?.cancel()
         if (true == proximityWakeLock?.isHeld()) {
             proximityWakeLock?.release()
         }
 
         super.onDestroy()
+    }
+
+    private fun setCurrentCall(call: Call) {
+        this.call = call
+        call.registerCallback(callCallback)
+        setCallerInfo(call.details.handle.schemeSpecificPart)
+        updateCallState(call.callState)
+        updateSimSlotInfo(call.details.accountHandle)
+
+        if (Call.STATE_HOLDING == call.callState) {
+            call.unhold()
+        }
     }
 
     private fun setCallerInfo(phone: String) {
@@ -186,10 +191,10 @@ class OngoingCallActivity : BaseActivity() {
             setTurnScreenOn(true)
         } else {
             window.addFlags(
-                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-                        WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
-                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                        or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                        or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                        or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
             )
         }
 
@@ -210,10 +215,21 @@ class OngoingCallActivity : BaseActivity() {
         }
     }
 
+    private fun initTimer() {
+        callStartTime = call?.details?.connectTimeMillis ?: Date().time
+        try {
+            callTimer?.cancel()
+            callTimer = Timer().apply {
+                scheduleAtFixedRate(getCallTimerUpdateTask(), 1000, 1000)
+            }
+        } catch (ignored: Exception) {
+            Timber.e(ignored)
+        }
+    }
+
     private fun activateCall() {
         Timber.d("activateCall # %s", call?.phone)
         call?.accept()
-        switchToCallingUI()
     }
 
     private fun endCall() {
@@ -221,20 +237,12 @@ class OngoingCallActivity : BaseActivity() {
         call?.reject()
     }
 
-    private fun onCallStarted() {
-        Timber.d("onCallStarted # %s", call?.phone)
-        callStartTime = call?.details?.connectTimeMillis ?: Date().time
-        try {
-            callTimer.scheduleAtFixedRate(getCallTimerUpdateTask(), 1000, 1000)
-        } catch (ignored: Exception) {
-            Timber.e(ignored)
-        }
-    }
-
     private fun onCallEnded() {
         Timber.d("onCallEnded # %s", call?.phone)
-        if (isCallEnded) {
-            finish()
+        callTimer?.cancel()
+
+        CallService.instance?.getNextCall()?.let {
+            setCurrentCall(it)
             return
         }
 
@@ -248,7 +256,6 @@ class OngoingCallActivity : BaseActivity() {
             Timber.e(ignored)
         }
 
-        isCallEnded = true
         if (Date().time - callStartTime > ONE_SECOND) {
             runOnUiThread {
                 v.ongoingCallLayout.textStatus.text =
@@ -267,7 +274,7 @@ class OngoingCallActivity : BaseActivity() {
     private fun getCallTimerUpdateTask() = object : TimerTask() {
         override fun run() {
             runOnUiThread {
-                if (!isCallEnded) {
+                if (Call.STATE_ACTIVE == call?.callState) {
                     v.ongoingCallLayout.textStatus.text =
                         (Date().time - callStartTime).getFormattedDuration()
                 }
@@ -276,6 +283,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun switchToCallingUI() {
+        v.keyboardWrapper.visibility = View.GONE
         v.ongoingCallLayout.answerBtn.visibility = View.INVISIBLE
         v.ongoingCallLayout.rejectBtn.visibility = View.INVISIBLE
         v.ongoingCallLayout.disconnect.visibility = View.VISIBLE
@@ -286,6 +294,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun switchToRingingUI() {
+        v.keyboardWrapper.visibility = View.GONE
         v.ongoingCallLayout.answerBtn.visibility = View.VISIBLE
         v.ongoingCallLayout.rejectBtn.visibility = View.VISIBLE
         v.ongoingCallLayout.disconnect.visibility = View.INVISIBLE
@@ -296,6 +305,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun switchToKeyboard() {
+        v.keyboardWrapper.visibility = View.VISIBLE
         v.ongoingCallLayout.answerBtn.visibility = View.INVISIBLE
         v.ongoingCallLayout.rejectBtn.visibility = View.INVISIBLE
         v.ongoingCallLayout.disconnect.visibility = View.INVISIBLE
@@ -309,10 +319,8 @@ class OngoingCallActivity : BaseActivity() {
 
     private fun toggleKeyboard() {
         if (v.keyboardWrapper.isVisible) {
-            v.keyboardWrapper.visibility = View.GONE
             switchToCallingUI()
         } else {
-            v.keyboardWrapper.visibility = View.VISIBLE
             switchToKeyboard()
         }
     }
@@ -360,17 +368,23 @@ class OngoingCallActivity : BaseActivity() {
     private fun updateCallState(callState: Int) {
         Timber.d("updateCallState → %s", getCallStateText(callState))
         when (callState) {
-            Call.STATE_RINGING -> switchToRingingUI()
+            Call.STATE_RINGING,
+            Call.STATE_NEW,
+            Call.STATE_DIALING ->
+                switchToRingingUI()
+
+            Call.STATE_CONNECTING,
+            Call.STATE_HOLDING ->
+                switchToCallingUI()
+
             Call.STATE_ACTIVE -> {
-                onCallStarted()
+                initTimer()
                 switchToCallingUI()
             }
-            Call.STATE_DISCONNECTED -> onCallEnded()
-            Call.STATE_CONNECTING, Call.STATE_DIALING -> switchToCallingUI()
-        }
 
-        if (callState == Call.STATE_DISCONNECTED || callState == Call.STATE_DISCONNECTING) {
-            callTimer.cancel()
+            Call.STATE_DISCONNECTING,
+            Call.STATE_DISCONNECTED ->
+                onCallEnded()
         }
 
         v.ongoingCallLayout.textStatus.text = getCallStateText(callState)

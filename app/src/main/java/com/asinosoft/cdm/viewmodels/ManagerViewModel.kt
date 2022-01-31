@@ -8,7 +8,7 @@ import android.provider.ContactsContract
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.asinosoft.cdm.api.*
+import com.asinosoft.cdm.api.* // ktlint-disable no-wildcard-imports
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.Settings
@@ -17,7 +17,7 @@ import com.asinosoft.cdm.helpers.hasPermissions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
+import java.util.* // ktlint-disable no-wildcard-imports
 
 class ManagerViewModel(application: Application) : AndroidViewModel(application) {
     val isBlocked: MutableLiveData<Boolean> = MutableLiveData()

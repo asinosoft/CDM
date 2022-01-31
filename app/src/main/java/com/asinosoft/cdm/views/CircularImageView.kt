@@ -1,7 +1,7 @@
 package com.asinosoft.cdm.views
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.* // ktlint-disable no-wildcard-imports
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.VectorDrawable
@@ -9,7 +9,7 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewOutlineProvider
-import android.widget.ImageView.ScaleType.*
+import android.widget.ImageView.ScaleType.* // ktlint-disable no-wildcard-imports
 import androidx.appcompat.widget.AppCompatImageView
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action

@@ -15,7 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.activities.OngoingCallActivity
 import com.asinosoft.cdm.api.ContactRepositoryImpl
-import com.asinosoft.cdm.helpers.*
+import com.asinosoft.cdm.helpers.* // ktlint-disable no-wildcard-imports
 import timber.log.Timber
 
 /**
@@ -72,7 +72,7 @@ class NotificationManager(private val context: Context) {
         Timber.d("update # %d → %s", call.id, call.phone)
         val phone = call.details.handle.schemeSpecificPart
         val contact = ContactRepositoryImpl(context).getContactByPhone(phone)
-        val callState = call.getCallState()
+        val callState = call.callState
 
         val photo =
             if (null == contact) context.loadResourceAsBitmap(R.drawable.ic_default_photo)

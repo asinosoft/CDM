@@ -5,6 +5,7 @@ import android.telecom.Call
 import android.telecom.InCallService
 import com.asinosoft.cdm.App
 import com.asinosoft.cdm.activities.OngoingCallActivity
+import com.asinosoft.cdm.helpers.callState
 import com.asinosoft.cdm.helpers.phone
 import timber.log.Timber
 
@@ -52,4 +53,7 @@ class CallService : InCallService() {
 
     fun getCall(phone: Uri?): Call? =
         calls.find { call -> call.details.handle == phone }
+
+    fun getNextCall(): Call? =
+        calls.find { call -> Call.STATE_HOLDING == call.callState }
 }

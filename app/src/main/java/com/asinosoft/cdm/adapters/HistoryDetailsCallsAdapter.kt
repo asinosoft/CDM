@@ -20,7 +20,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import com.zerobranch.layout.SwipeLayout
-import java.util.*
+import java.util.* // ktlint-disable no-wildcard-imports
 
 /**
  * Адаптер списка звонков, который показывается в активности "Просмотр контакта"

@@ -10,7 +10,7 @@ import android.view.MotionEvent
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.*
+import com.asinosoft.cdm.* // ktlint-disable no-wildcard-imports
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
