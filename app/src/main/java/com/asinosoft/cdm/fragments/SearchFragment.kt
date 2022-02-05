@@ -12,13 +12,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.adapters.ContactsAdapter
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ActivitySearchBinding
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.Metoths.Companion.toggle
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 
 class SearchFragment : Fragment() {
     private val model: ManagerViewModel by activityViewModels()
@@ -30,7 +29,7 @@ class SearchFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Firebase.analytics.logEvent("activity_search", Bundle.EMPTY)
+        Analytics.logActivitySearch()
         val v = ActivitySearchBinding.inflate(layoutInflater)
         initActivity(v)
         return v.root
@@ -60,7 +59,7 @@ class SearchFragment : Fragment() {
         }
 
         keyboard.onCallButtonClick { phoneNumber ->
-            Firebase.analytics.logEvent("call_from_search", Bundle.EMPTY)
+            Analytics.logCallFromSearch()
             findNavController().popBackStack()
             Intent(Intent.ACTION_CALL, Uri.fromParts("tel", phoneNumber, null))
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -72,6 +71,7 @@ class SearchFragment : Fragment() {
         }
 
         keyboard.onCloseButtonClick {
+            Analytics.logSearchKeyboardClose()
             v.layoutKeyboard.toggle()
             v.fabKeyboard.show()
         }

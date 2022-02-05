@@ -5,6 +5,7 @@ import android.telecom.Call
 import android.telecom.InCallService
 import com.asinosoft.cdm.App
 import com.asinosoft.cdm.activities.OngoingCallActivity
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.helpers.callState
 import com.asinosoft.cdm.helpers.phone
 import timber.log.Timber
@@ -43,6 +44,9 @@ class CallService : InCallService() {
         call.registerCallback(callback)
         (application as App).notification.show(calls)
         startActivity(OngoingCallActivity.intent(this, call))
+        if (calls.size >= 2) {
+            Analytics.logDoubleCall()
+        }
     }
 
     override fun onCallRemoved(call: Call) {

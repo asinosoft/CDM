@@ -1,12 +1,9 @@
 package com.asinosoft.cdm.api
 
 import android.content.Context
-import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.asinosoft.cdm.data.FavoriteContact
 import com.asinosoft.cdm.helpers.Keys
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 import java.util.Collections.swap
 
 /**
@@ -26,31 +23,25 @@ class FavoriteContactRepositoryImpl(
     }
 
     override fun addContact(contact: FavoriteContact) {
-        Firebase.analytics.logEvent("favorite_plus", Bundle.EMPTY)
+        Analytics.logFavoritePlus()
         favoriteContacts.add(contact)
         saveContacts()
     }
 
     override fun removeContact(position: Int) {
-        Firebase.analytics.logEvent(
-            "favorite_remove",
-            Bundle().apply { putInt("position", position) }
-        )
+        Analytics.logFavoriteRemove(position)
         favoriteContacts.removeAt(position)
         saveContacts()
     }
 
     override fun replaceContact(position: Int, contact: FavoriteContact) {
-        Firebase.analytics.logEvent(
-            "favorite_add",
-            Bundle().apply { putInt("position", position) }
-        )
+        Analytics.logFavoriteAdd(position)
         favoriteContacts[position] = contact
         saveContacts()
     }
 
     override fun swapContacts(i: Int, j: Int) {
-        Firebase.analytics.logEvent("favorite_swap", Bundle.EMPTY)
+        Analytics.logFavoriteSwap()
         swap(favoriteContacts, i, j)
         saveContacts()
     }

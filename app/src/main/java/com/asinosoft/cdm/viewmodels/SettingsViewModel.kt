@@ -3,16 +3,14 @@ package com.asinosoft.cdm.viewmodels
 import android.app.Application
 import android.content.Context
 import android.net.Uri
-import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.helpers.Metoths
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 import java.io.File
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
@@ -31,13 +29,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
         save()
 
-        Firebase.analytics.logEvent(
-            "global_set_action",
-            Bundle().apply {
-                putString("direction", direction.name)
-                putString("action", action.name)
-            }
-        )
+        Analytics.logGlobalSetAction(direction.name, action.name)
     }
 
     fun loadBackgroundImages() {
@@ -70,6 +62,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             // Переключаемся в специальную тёмную тему
             settings.theme = 3
         }
+        Analytics.logBackground()
     }
 
     fun save() {

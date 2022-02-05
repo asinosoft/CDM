@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.databinding.FragmentFavoritesSettingsBinding
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
@@ -86,6 +87,8 @@ class FavoritesSettingsFragment : Fragment() {
             v!!.btnFavoritesFirst.setBackgroundColor(colorNotSelected)
             v!!.btnFavoritesLast.setBackgroundColor(colorSelected)
         }
+
+        Analytics.logFavoritesPosition(if (layout) "bottom" else "top")
     }
 
     private fun updateFavoritesSizeRange(columnsCount: Int) {
@@ -127,6 +130,7 @@ class FavoritesSettingsFragment : Fragment() {
             ) {
                 model.settings.sizeCirs = progress
                 v!!.imgFavorite.setSize(progress)
+                Analytics.logFavoritesSize(progress)
             }
 
             override fun getProgressOnActionUp(
@@ -153,6 +157,7 @@ class FavoritesSettingsFragment : Fragment() {
             ) {
                 model.settings.columnsCirs = progress
                 updateFavoritesSizeRange(progress)
+                Analytics.logFavoritesCount(progress)
             }
 
             override fun getProgressOnActionUp(
@@ -179,6 +184,7 @@ class FavoritesSettingsFragment : Fragment() {
             ) {
                 model.settings.borderWidthCirs = progress
                 v!!.imgFavorite.borderWidth = progress
+                Analytics.logFavoritesBorderWidth(progress)
             }
 
             override fun getProgressOnActionUp(
@@ -206,6 +212,7 @@ class FavoritesSettingsFragment : Fragment() {
 
         v!!.themes.setOnClickListener {
             ThemeSelectionDialog { theme ->
+                Analytics.logTheme(theme)
                 model.settings.theme = theme
                 activity?.recreate()
             }.show(parentFragmentManager, "Select theme")

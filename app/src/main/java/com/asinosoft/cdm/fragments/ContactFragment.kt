@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.viewpager.widget.ViewPager
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.databinding.ActivityDetailHistoryBinding
 import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems
 
@@ -39,7 +39,7 @@ class ContactFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Firebase.analytics.logEvent("activity_contact", Bundle.EMPTY)
+        Analytics.logActivityContact()
 
         v.pages.adapter = FragmentPagerItemAdapter(
             childFragmentManager,
@@ -58,6 +58,26 @@ class ContactFragment : Fragment() {
                 )
                 .create()
         )
+
+        v.pages.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                when (position) {
+                    0 -> Analytics.logContactDetailsTab()
+                    1 -> Analytics.logContactHistoryTab()
+                    2 -> Analytics.logContactSettingsTab()
+                }
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+        })
 
         v.tabs.setViewPager(v.pages)
 

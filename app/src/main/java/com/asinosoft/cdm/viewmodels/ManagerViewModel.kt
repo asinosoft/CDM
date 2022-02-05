@@ -110,6 +110,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
             calls.postValue(latestCalls)
         } else {
             Timber.d("Проверка новых звонков")
+            Analytics.logLoadCallHistory()
             val newCalls = CallHistoryRepositoryImpl(contactRepository).getNewestHistory(
                 getApplication(),
                 callHistory.firstOrNull()?.timestamp ?: Date()

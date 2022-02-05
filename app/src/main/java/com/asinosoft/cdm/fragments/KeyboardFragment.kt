@@ -7,10 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.databinding.KeyboardBinding
 import com.asinosoft.cdm.helpers.runOnUiThread
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 
 /**
  * Класс кастомной клавиатуры.
@@ -153,9 +152,11 @@ class KeyboardFragment : Fragment() {
             takeValue("0")
         }
         v!!.imageBackspace.setOnClickListener {
+            Analytics.logSearchKeyboardDel()
             v!!.inputText.text = v!!.inputText.text.dropLast(1)
         }
         v!!.imageBackspace.setOnLongClickListener {
+            Analytics.logSearchKeyboardClear()
             v!!.inputText.text = ""
             true
         }
@@ -185,7 +186,7 @@ class KeyboardFragment : Fragment() {
     }
 
     private fun takeValue(num: String) {
-        Firebase.analytics.logEvent("keyboard_button", Bundle.EMPTY)
+        Analytics.logKeyboardButton()
         v!!.inputText.text = v!!.inputText.text.toString().plus(num)
     }
 }

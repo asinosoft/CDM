@@ -1,7 +1,6 @@
 package com.asinosoft.cdm.adapters
 
 import android.content.Context
-import android.os.Bundle
 import android.provider.CallLog
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,14 +8,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ItemCallBinding
 import com.asinosoft.cdm.helpers.Metoths
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 import com.zerobranch.layout.SwipeLayout
 import java.security.InvalidParameterException
 
@@ -130,11 +128,11 @@ class CallsAdapter(
             override fun onOpen(direction: Int, isContinuous: Boolean) {
                 when (direction) {
                     SwipeLayout.RIGHT -> {
-                        Firebase.analytics.logEvent("history_swipe_right", Bundle.EMPTY)
+                        Analytics.logHistorySwipeRight()
                         performSwipeAction(directActions.right, call)
                     }
                     SwipeLayout.LEFT -> {
-                        Firebase.analytics.logEvent("history_swipe_left", Bundle.EMPTY)
+                        Analytics.logHistorySwipeLeft()
                         performSwipeAction(directActions.left, call)
                     }
                 }
@@ -148,6 +146,7 @@ class CallsAdapter(
         })
 
         v.dragLayout.setOnClickListener {
+            Analytics.logCallHistoryClick()
             if (0L == call.contact.id) {
                 handler.onClickPhone(call.phone)
             } else {

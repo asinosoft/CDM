@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.* // ktlint-disable no-wildcard-imports
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.api.FavoriteContactRepository
 import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Contact
@@ -119,9 +120,16 @@ class FavoritesAdapter(
                         View.DragShadowBuilder(this), 0,
                         if (Build.VERSION.SDK_INT >= 24) View.DRAG_FLAG_GLOBAL else 0
                     )
+                    // long click
                 }
-                openContact = this@FavoritesAdapter.openContact
-                pickContact = { pickContact(absoluteAdapterPosition) }
+                openContact = {
+                    Analytics.logFavoriteClick()
+                    this@FavoritesAdapter.openContact(it)
+                }
+                pickContact = {
+                    Analytics.logFavoriteClick()
+                    pickContact(absoluteAdapterPosition)
+                }
                 touchDownForIndex = {
                     touchDown(absoluteAdapterPosition)
                     onTouch(absoluteAdapterPosition)
@@ -131,6 +139,7 @@ class FavoritesAdapter(
                     when (event.action) {
                         DragEvent.ACTION_DRAG_ENTERED -> {
                             vibrator.vibrateSafety(Keys.VIBRO)
+                            Analytics.logFavoriteLongClick()
                         }
                         DragEvent.ACTION_DRAG_EXITED -> {
                         }
