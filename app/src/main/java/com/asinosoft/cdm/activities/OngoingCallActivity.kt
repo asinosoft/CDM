@@ -282,17 +282,23 @@ class OngoingCallActivity : BaseActivity() {
         }
     }
 
+    /**
+     * Интерфейс в режиме ожидания соединения
+     */
     private fun switchToCallingUI() {
         v.keyboardWrapper.visibility = View.GONE
         v.ongoingCallLayout.answerBtn.visibility = View.INVISIBLE
         v.ongoingCallLayout.rejectBtn.visibility = View.INVISIBLE
         v.ongoingCallLayout.disconnect.visibility = View.VISIBLE
-        v.ongoingCallLayout.buttonHold.visibility = View.VISIBLE
-        v.ongoingCallLayout.buttonMute.visibility = View.VISIBLE
-        v.ongoingCallLayout.buttonKeypad.visibility = View.VISIBLE
-        v.ongoingCallLayout.buttonSpeaker.visibility = View.VISIBLE
+        v.ongoingCallLayout.buttonHold.visibility = View.INVISIBLE
+        v.ongoingCallLayout.buttonMute.visibility = View.INVISIBLE
+        v.ongoingCallLayout.buttonKeypad.visibility = View.INVISIBLE
+        v.ongoingCallLayout.buttonSpeaker.visibility = View.INVISIBLE
     }
 
+    /**
+     * Интерфейс в режиме входящего звонка
+     */
     private fun switchToRingingUI() {
         v.keyboardWrapper.visibility = View.GONE
         v.ongoingCallLayout.answerBtn.visibility = View.VISIBLE
@@ -304,6 +310,23 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoingCallLayout.buttonSpeaker.visibility = View.INVISIBLE
     }
 
+    /**
+     * Интерфейс в режиме активного/удерживаемого звонка
+     */
+    private fun switchToActiveUI() {
+        v.keyboardWrapper.visibility = View.GONE
+        v.ongoingCallLayout.answerBtn.visibility = View.INVISIBLE
+        v.ongoingCallLayout.rejectBtn.visibility = View.INVISIBLE
+        v.ongoingCallLayout.disconnect.visibility = View.VISIBLE
+        v.ongoingCallLayout.buttonHold.visibility = View.VISIBLE
+        v.ongoingCallLayout.buttonMute.visibility = View.VISIBLE
+        v.ongoingCallLayout.buttonKeypad.visibility = View.VISIBLE
+        v.ongoingCallLayout.buttonSpeaker.visibility = View.VISIBLE
+    }
+
+    /**
+     * Интерфейс в режиме клавиатуры
+     */
     private fun switchToKeyboard() {
         v.keyboardWrapper.visibility = View.VISIBLE
         v.ongoingCallLayout.answerBtn.visibility = View.INVISIBLE
@@ -319,7 +342,7 @@ class OngoingCallActivity : BaseActivity() {
 
     private fun toggleKeyboard() {
         if (v.keyboardWrapper.isVisible) {
-            switchToCallingUI()
+            switchToActiveUI()
         } else {
             switchToKeyboard()
         }
@@ -368,18 +391,18 @@ class OngoingCallActivity : BaseActivity() {
     private fun updateCallState(callState: Int) {
         Timber.d("updateCallState → %s", getCallStateText(callState))
         when (callState) {
-            Call.STATE_RINGING,
             Call.STATE_NEW,
-            Call.STATE_DIALING ->
+            Call.STATE_DIALING,
+            Call.STATE_CONNECTING ->
+                switchToCallingUI()
+
+            Call.STATE_RINGING ->
                 switchToRingingUI()
 
-            Call.STATE_CONNECTING,
-            Call.STATE_HOLDING ->
-                switchToCallingUI()
-
+            Call.STATE_HOLDING,
             Call.STATE_ACTIVE -> {
                 initTimer()
-                switchToCallingUI()
+                switchToActiveUI()
             }
 
             Call.STATE_DISCONNECTING,

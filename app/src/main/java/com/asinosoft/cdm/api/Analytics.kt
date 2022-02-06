@@ -201,8 +201,6 @@ class Analytics {
         fun logSettingsAboutTab() =
             Firebase.analytics.logEvent("settings_about_tab", Bundle.EMPTY)
 
-
-
         fun logTheme(theme: Int) =
             Firebase.analytics.logEvent("theme", Bundle().apply { putInt("theme", theme) })
     }

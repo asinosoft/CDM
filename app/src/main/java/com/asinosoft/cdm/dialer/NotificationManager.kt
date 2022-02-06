@@ -110,6 +110,7 @@ class NotificationManager(private val context: Context) {
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.call)
+            .setLargeIcon(photo)
             .setContentIntent(openAppIntent(call))
             .setPriority(if (isAppActive) NotificationCompat.PRIORITY_LOW else NotificationCompat.PRIORITY_HIGH)
             .setCategory(Notification.CATEGORY_CALL)
@@ -121,8 +122,6 @@ class NotificationManager(private val context: Context) {
             .setWhen(call.details.connectTimeMillis)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setFullScreenIntent(openAppIntent(call), true)
-
-        builder.setLargeIcon(photo)
 
         context.notificationManager.notify(call.id, builder.build())
     }
