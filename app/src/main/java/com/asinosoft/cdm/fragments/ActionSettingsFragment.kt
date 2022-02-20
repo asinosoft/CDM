@@ -43,25 +43,25 @@ class ActionSettingsFragment : Fragment() {
         initActionButton(
             v!!.cirTop,
             Metoths.Companion.Direction.TOP,
-            model.settings.topButton
+            model.config.swipeUpAction
         )
 
         initActionButton(
             v!!.cirBottom,
             Metoths.Companion.Direction.DOWN,
-            model.settings.bottomButton
+            model.config.swipeDownAction
         )
 
         initActionButton(
             v!!.cirLeft,
             Metoths.Companion.Direction.LEFT,
-            model.settings.leftButton
+            model.config.swipeLeftAction
         )
 
         initActionButton(
             v!!.cirRight,
             Metoths.Companion.Direction.RIGHT,
-            model.settings.rightButton
+            model.config.swipeRightAction
         )
 
         initActionList()

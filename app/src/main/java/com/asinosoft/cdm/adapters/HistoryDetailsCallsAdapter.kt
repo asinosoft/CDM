@@ -10,7 +10,7 @@ import androidx.viewbinding.ViewBinding
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.api.CallHistoryItem
-import com.asinosoft.cdm.api.Loader
+import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.databinding.AdvertiserBinding
 import com.asinosoft.cdm.databinding.ContactCallItemBinding
@@ -24,6 +24,7 @@ import java.util.* // ktlint-disable no-wildcard-imports
  * Адаптер списка звонков, который показывается в активности "Просмотр контакта"
  */
 class HistoryDetailsCallsAdapter(
+    private val config: Config,
     private val context: Context,
     private val calls: List<CallHistoryItem>
 ) :
@@ -89,7 +90,7 @@ class HistoryDetailsCallsAdapter(
         v.time.text = call.time
         v.date.text = formatDate(call.timestamp)
 
-        val directActions = Loader.loadContactSettings(context, call.contact)
+        val directActions = config.getContactSettings(call.contact)
         v.imageLeftAction.setImageResource(Action.resourceByType(directActions.left.type))
         v.imageRightAction.setImageResource(Action.resourceByType(directActions.right.type))
 

@@ -11,10 +11,10 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.* // ktlint-disable no-wildcard-imports
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
+import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.api.FavoriteContactRepository
-import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.FavoriteContact
 import com.asinosoft.cdm.databinding.ItemFavoriteBinding
@@ -26,6 +26,7 @@ import com.asinosoft.cdm.views.CircularImageView
 import com.asinosoft.cdm.views.LockableLayoutManager
 
 class FavoritesAdapter(
+    val config: Config,
     val favorites: FavoriteContactRepository,
     val callsLayoutManager: LockableLayoutManager,
     val deleteButton: CircularImageView,
@@ -38,7 +39,6 @@ class FavoritesAdapter(
 ) : RecyclerView.Adapter<FavoritesAdapter.Holder>() {
 
     private val touchHelper = ItemTouchHelper(ItemTouchCallbackCir())
-    private val settings = Loader.loadSettings(context)
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -78,7 +78,7 @@ class FavoritesAdapter(
     inner class Holder(val v: ItemFavoriteBinding) : RecyclerView.ViewHolder(v.root) {
 
         fun bind(n: Int, favorite: FavoriteContact) {
-            v.actionView.setSize(settings.sizeCirs)
+            v.actionView.setSize(config.favoritesSize)
             v.circleImage.apply {
                 contact = favorite.contact
 
@@ -91,22 +91,20 @@ class FavoritesAdapter(
                 lockableNestedScrollView = callsLayoutManager
                 deleteCir = deleteButton
                 editCir = editButton
-                size = settings.sizeCirs
+                size = config.favoritesSize
                 id = Keys.idCir
                 tag = n
-                borderWidth = settings.borderWidthCirs.toFloat()
-                borderColor = settings.colorBorder
+                borderWidth = config.favoritesBorderWidth.toFloat()
+                borderColor = config.favoritesBorderColor
                 replaceListener = {
                     touchHelper.startDrag(it)
                 }
 
-                directActions = favorite.contact?.let { Loader.loadContactSettings(context, it) }
+                directActions = favorite.contact?.let { config.getContactSettings(it) }
                 deleteListener = {
                     favorites.removeContact(absoluteAdapterPosition)
                     notifyItemRemoved(absoluteAdapterPosition)
                 }
-                borderWidth = settings.borderWidthCirs.toFloat()
-                borderColor = settings.colorBorder
                 replaceListenerForHolder = {
                     replaceListener(this@Holder)
                 }

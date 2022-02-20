@@ -10,7 +10,7 @@ import androidx.viewbinding.ViewBinding
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.api.CallHistoryItem
-import com.asinosoft.cdm.api.Loader
+import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ItemCallBinding
@@ -22,6 +22,7 @@ import java.security.InvalidParameterException
  * Адаптер списка последних звонков, который показывается в активности "Просмотр контакта"
  */
 class CallsAdapter(
+    private val config: Config,
     private val context: Context,
     private val favorites: ViewBinding,
     private val handler: Handler
@@ -98,7 +99,7 @@ class CallsAdapter(
         v.timeContact.text = call.time
         v.dateContact.text = call.date
 
-        val directActions = Loader.loadContactSettings(context, call.contact)
+        val directActions = config.getContactSettings(call.contact)
         v.imageLeftAction.setImageResource(Action.resourceByType(directActions.left.type))
         v.imageRightAction.setImageResource(Action.resourceByType(directActions.right.type))
 

@@ -56,18 +56,18 @@ class FavoritesSettingsFragment : Fragment() {
 
         initEventHandlers()
 
-        v!!.sbFavoriteSize.setProgress(model.settings.sizeCirs.toFloat())
+        v!!.sbFavoriteSize.setProgress(model.config.favoritesSize.toFloat())
 
-        v!!.sbColumnCount.setProgress(model.settings.columnsCirs.toFloat())
-        updateFavoritesSizeRange(model.settings.columnsCirs)
+        v!!.sbColumnCount.setProgress(model.config.favoritesColumnCount.toFloat())
+        updateFavoritesSizeRange(model.config.favoritesColumnCount)
 
-        v!!.sbBorderWidth.setProgress(model.settings.borderWidthCirs.toFloat())
+        v!!.sbBorderWidth.setProgress(model.config.favoritesBorderWidth.toFloat())
 
-        v!!.imgFavorite.setSize(model.settings.sizeCirs)
-        v!!.imgFavorite.borderWidth = model.settings.borderWidthCirs
-        v!!.imgFavorite.borderColor = model.settings.colorBorder
+        v!!.imgFavorite.setSize(model.config.favoritesSize)
+        v!!.imgFavorite.borderWidth = model.config.favoritesBorderWidth
+        v!!.imgFavorite.borderColor = model.config.favoritesBorderColor
 
-        setFavoritesLayout(model.settings.historyButtom)
+        setFavoritesLayout(model.config.favoritesFirst)
 
         model.buttonColor.observe(viewLifecycleOwner) { color ->
             v!!.imgFavorite.borderColor = color
@@ -75,11 +75,11 @@ class FavoritesSettingsFragment : Fragment() {
         }
 
         val themeNames = resources.getStringArray(R.array.themeNames)
-        v!!.themes.text = themeNames.elementAtOrElse(model.settings.theme) { themeNames[0] }
+        v!!.themes.text = themeNames.elementAtOrElse(model.config.theme) { themeNames[0] }
     }
 
     private fun setFavoritesLayout(layout: Boolean) {
-        model.settings.historyButtom = layout
+        model.config.favoritesFirst = layout
         if (layout) {
             v!!.btnFavoritesFirst.setBackgroundColor(colorSelected)
             v!!.btnFavoritesLast.setBackgroundColor(colorNotSelected)
@@ -99,7 +99,7 @@ class FavoritesSettingsFragment : Fragment() {
 
         if (v!!.sbFavoriteSize.min.toInt() != minSize || v!!.sbFavoriteSize.max.toInt() != maxSize) {
             // Подгоняем нынешний размер кнопок под изменившийся диапазон
-            val btnSize = model.settings.sizeCirs.coerceAtLeast(minSize).coerceAtMost(maxSize)
+            val btnSize = model.config.favoritesSize.coerceAtLeast(minSize).coerceAtMost(maxSize)
 
             v!!.sbFavoriteSize.configBuilder.apply {
                 min(minSize.toFloat())
@@ -128,7 +128,7 @@ class FavoritesSettingsFragment : Fragment() {
                 progress: Int,
                 progressFloat: Float
             ) {
-                model.settings.sizeCirs = progress
+                model.config.favoritesSize = progress
                 v!!.imgFavorite.setSize(progress)
                 Analytics.logFavoritesSize(progress)
             }
@@ -155,7 +155,7 @@ class FavoritesSettingsFragment : Fragment() {
                 progress: Int,
                 progressFloat: Float
             ) {
-                model.settings.columnsCirs = progress
+                model.config.favoritesColumnCount = progress
                 updateFavoritesSizeRange(progress)
                 Analytics.logFavoritesCount(progress)
             }
@@ -182,7 +182,7 @@ class FavoritesSettingsFragment : Fragment() {
                 progress: Int,
                 progressFloat: Float
             ) {
-                model.settings.borderWidthCirs = progress
+                model.config.favoritesBorderWidth = progress
                 v!!.imgFavorite.borderWidth = progress
                 Analytics.logFavoritesBorderWidth(progress)
             }
@@ -203,7 +203,9 @@ class FavoritesSettingsFragment : Fragment() {
         }
 
         v!!.pickBorderColor.setOnClickListener {
-            ColorPickerDialog.newBuilder().setColor(model.settings.colorBorder).show(activity)
+            ColorPickerDialog.newBuilder()
+                .setColor(model.config.favoritesBorderColor)
+                .show(activity)
         }
 
         v!!.btnFavoritesFirst.setOnClickListener { setFavoritesLayout(true) }
@@ -213,7 +215,7 @@ class FavoritesSettingsFragment : Fragment() {
         v!!.themes.setOnClickListener {
             ThemeSelectionDialog { theme ->
                 Analytics.logTheme(theme)
-                model.settings.theme = theme
+                model.config.theme = theme
                 activity?.recreate()
             }.show(parentFragmentManager, "Select theme")
         }

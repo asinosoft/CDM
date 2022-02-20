@@ -14,13 +14,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.adapters.CallsAdapter
 import com.asinosoft.cdm.adapters.FavoritesAdapter
 import com.asinosoft.cdm.adapters.PermissionRationaleAdapter
+import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.api.FavoriteContactRepositoryImpl
-import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.FavoriteContact
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
@@ -40,11 +41,7 @@ import timber.log.Timber
 class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
     private var v: ActivityManagerBinding? = null
     private val model: ManagerViewModel by activityViewModels()
-
-    /**
-     * Отслеживает случаи, когда onResume срабатывает дважды
-     */
-    private var isModelRefreshed: Boolean = false
+    private val config: Config = App.instance!!.config
 
     /**
      * Блок избранных контактов
@@ -104,20 +101,6 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
         return v!!.root
     }
 
-    override fun onPause() {
-        super.onPause()
-        isModelRefreshed = false
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        if (!isModelRefreshed) {
-            isModelRefreshed = true
-            model.refresh()
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         v = null
@@ -140,7 +123,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        favoritesFirst = !Loader.loadSettings(requireContext()).historyButtom
+        favoritesFirst = config.favoritesFirst
         val callsLayoutManager = LockableLayoutManager(requireContext(), favoritesFirst)
 
         initFavorites(callsLayoutManager)
@@ -183,7 +166,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
             false
         ).apply {
             rvFavorites.layoutManager =
-                CirLayoutManager(columns = Loader.loadSettings(context).columnsCirs)
+                CirLayoutManager(columns = config.favoritesColumnCount)
             rvFavorites.setChildDrawingOrderCallback { childCount, iteration ->
                 // Изменяем порядок отрисовки избранных контактов, чтобы контакт
                 // на котором находится палец пользователя, отрисовывался в последнюю очередь,
@@ -200,6 +183,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
             }
 
             favoritesAdapter = FavoritesAdapter(
+                config,
                 FavoriteContactRepositoryImpl(context, ContactRepositoryImpl(context)),
                 callsLayoutManager,
                 btnDelete,
@@ -242,7 +226,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
     }
 
     private fun initCallHistory(callsLayoutManager: LockableLayoutManager) {
-        callsAdapter = CallsAdapter(requireContext(), favoritesView, this)
+        callsAdapter = CallsAdapter(config, requireContext(), favoritesView, this)
         v!!.rvCalls.layoutManager = callsLayoutManager
         v!!.rvCalls.isNestedScrollingEnabled = true
 

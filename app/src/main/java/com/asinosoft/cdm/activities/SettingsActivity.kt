@@ -20,13 +20,8 @@ class SettingsActivity : BaseActivity(), ColorPickerDialogListener {
         setContentView(R.layout.activity_settings)
     }
 
-    override fun onPause() {
-        model.save()
-        super.onPause()
-    }
-
     override fun onColorSelected(dialogId: Int, color: Int) {
-        model.settings.colorBorder = color
+        model.config.favoritesBorderColor = color
         model.buttonColor.postValue(color)
         Analytics.logFavoritesBorderColor()
     }

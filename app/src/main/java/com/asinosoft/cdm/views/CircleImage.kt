@@ -11,7 +11,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
-import com.asinosoft.cdm.api.Loader
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.helpers.Keys
@@ -193,7 +192,6 @@ class CircleImage @JvmOverloads constructor(
     }
 
     private fun onTouchDown(event: MotionEvent) {
-        this.directActions = this.contact?.let { Loader.loadContactSettings(context, it) }
         touchDownForIndex()
         touchStart = event.toPointF()
         cirStart = this.toPointF()

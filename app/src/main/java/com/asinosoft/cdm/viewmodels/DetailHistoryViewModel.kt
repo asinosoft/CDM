@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.api.* // ktlint-disable no-wildcard-imports
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
@@ -33,7 +34,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
 
             contactRepository.getContactById(contactId)?.let {
                 _contact = it
-                _actions = Loader.loadContactSettings(context, it)
+                _actions = App.instance!!.config.getContactSettings(it)
 
                 contact.postValue(_contact)
                 directActions.postValue(_actions)
@@ -84,7 +85,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
     fun saveContactSettings(context: Context) {
         Timber.d("Сохранение настроек контакта %s", _contact)
         if (haveUnsavedChanges) {
-            Loader.saveContactSettings(context, _contact, _actions)
+            App.instance!!.config.setContactSettings(_contact, _actions)
             haveUnsavedChanges = false
         }
     }

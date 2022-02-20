@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.adapters.HistoryDetailsCallsAdapter
 import com.asinosoft.cdm.databinding.StrayPhoneFragmentBinding
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
@@ -25,7 +26,11 @@ class StrayPhoneFragment : Fragment() {
             arguments?.getString("phone")?.let { phone ->
                 v.phone.text = phone
                 model.getPhoneCalls(phone).let { calls ->
-                    v.calls.adapter = HistoryDetailsCallsAdapter(requireContext(), calls)
+                    v.calls.adapter = HistoryDetailsCallsAdapter(
+                        (requireActivity() as App).config,
+                        requireContext(),
+                        calls
+                    )
                 }
             }
         }.root

@@ -8,10 +8,7 @@ import com.asinosoft.cdm.R
  */
 data class Settings(
     var sizeCirs: Int = 200,
-    var countCirs: Int = 10,
     var theme: Int = R.style.AppTheme_Light,
-    var listHistoryReverse: Boolean = true,
-    var photoFilePath: String = "",
     var leftButton: Action.Type = Action.Type.WhatsAppChat,
     var rightButton: Action.Type = Action.Type.PhoneCall,
     var topButton: Action.Type = Action.Type.Email,
@@ -25,7 +22,6 @@ data class Settings(
      */
     var historyButtom: Boolean = true,
 
-    var cirMenu: Boolean = false,
     var columnsCirs: Int = 3,
     var colorBorder: Int = Color.CYAN,
     var borderWidthCirs: Int = 5

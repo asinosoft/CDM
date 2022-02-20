@@ -39,12 +39,12 @@ class DialerSettingsFragment : PreferenceFragmentCompat() {
         super.onViewCreated(view, savedInstanceState)
 
         findPreference<SwitchPreference>("default_dialer")?.apply {
-            isChecked = model.settings.checkDefaultDialer
+            isChecked = model.config.checkDefaultDialer
 
             setOnPreferenceChangeListener { preference, newValue ->
-                model.settings.checkDefaultDialer = (newValue as Boolean)
-                Timber.d("%s -> %s, %s", preference, newValue, model.settings.checkDefaultDialer)
-                if (model.settings.checkDefaultDialer) {
+                model.config.checkDefaultDialer = (newValue as Boolean)
+                Timber.d("%s -> %s, %s", preference, newValue, model.config.checkDefaultDialer)
+                if (model.config.checkDefaultDialer) {
                     context?.setDefaultDialer(launcher)
                 }
                 Analytics.logCheckDefaultDialer(newValue)

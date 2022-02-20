@@ -20,7 +20,7 @@ class ThemeSelectionDialog(
         return activity?.let {
             AlertDialog.Builder(it)
                 .setTitle(R.string.themes)
-                .setSingleChoiceItems(R.array.themeNames, model.settings.theme) { dialog, choice ->
+                .setSingleChoiceItems(R.array.themeNames, model.config.theme) { dialog, choice ->
                     dialog.dismiss()
                     onSelect(choice)
                 }

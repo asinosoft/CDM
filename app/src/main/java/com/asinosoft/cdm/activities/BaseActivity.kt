@@ -10,34 +10,20 @@ import android.os.Bundle
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.res.use
-import com.asinosoft.cdm.R
-import com.asinosoft.cdm.api.Loader
-import com.asinosoft.cdm.data.Settings
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.helpers.Metoths
+import com.asinosoft.cdm.helpers.getThemeResourceId
 import com.asinosoft.cdm.helpers.hasPermissions
-import java.io.File
 
 /**
  * Базовый клас с поддержкой тем
  */
 open class BaseActivity : AppCompatActivity() {
-    protected lateinit var settings: Settings
-    private var appTheme: Int = R.style.AppTheme_Light
     private var actionWithPermission: (Boolean) -> Unit = {}
 
     @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        settings = Loader.loadSettings(this, true)
-        try {
-            resources.obtainTypedArray(R.array.themes).use { themes ->
-                appTheme = themes.getResourceId(settings.theme, R.style.AppTheme_Light)
-            }
-        } catch (e: Exception) {
-            appTheme = R.style.AppTheme_Light
-        }
     }
 
     override fun onResume() {
@@ -47,7 +33,7 @@ open class BaseActivity : AppCompatActivity() {
 
     override fun getTheme(): Resources.Theme {
         return super.getTheme().apply {
-            applyStyle(appTheme, true)
+            applyStyle(getThemeResourceId(App.instance!!.config.theme), true)
         }
     }
 
@@ -83,8 +69,10 @@ open class BaseActivity : AppCompatActivity() {
 
     private fun getBackgroundImage(): Drawable? {
         return try {
-            File(filesDir, "background").inputStream().use {
-                scaleToScreen(BitmapFactory.decodeStream(it))
+            App.instance!!.config.background?.let { uri ->
+                contentResolver.openInputStream(uri).use {
+                    scaleToScreen(BitmapFactory.decodeStream(it))
+                }
             }
         } catch (ex: Exception) {
             null
