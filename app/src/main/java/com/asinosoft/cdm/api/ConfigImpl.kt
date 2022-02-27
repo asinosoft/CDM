@@ -79,12 +79,12 @@ class ConfigImpl(private val context: Context) : Config {
         }
 
     override var checkDefaultDialer: Boolean
-        get() = settings.getBoolean(Keys.CHECK_DEFAULT_DIALER.name, false)
+        get() = settings.getBoolean(Keys.CHECK_DEFAULT_DIALER.name, true)
         set(value) = settings.edit().putBoolean(Keys.CHECK_DEFAULT_DIALER.name, value).apply()
             .also { _changed = true }
 
     override var favoritesFirst: Boolean
-        get() = settings.getBoolean(Keys.FAVORITES_LAYOUT.name, false)
+        get() = settings.getBoolean(Keys.FAVORITES_LAYOUT.name, true)
         set(value) = settings.edit().putBoolean(Keys.FAVORITES_LAYOUT.name, value).apply()
             .also { _changed = true }
 

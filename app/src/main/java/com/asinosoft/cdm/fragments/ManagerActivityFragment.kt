@@ -124,7 +124,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         favoritesFirst = config.favoritesFirst
-        val callsLayoutManager = LockableLayoutManager(requireContext(), favoritesFirst)
+        val callsLayoutManager = LockableLayoutManager(requireContext(), !favoritesFirst)
 
         initFavorites(callsLayoutManager)
         initCallHistory(callsLayoutManager)
@@ -235,7 +235,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                if (!recyclerView.canScrollVertically(if (favoritesFirst) -1 else 1)) {
+                if (!recyclerView.canScrollVertically(if (favoritesFirst) 1 else -1)) {
                     model.getMoreCalls()
                 }
             }
