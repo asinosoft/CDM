@@ -43,11 +43,11 @@ class ConfigImpl(private val context: Context) : Config {
         get() = settings.getBoolean(Keys.FIRST_RUN.name, true)
 
     override fun applyRemoteConfig() {
-        val defaultTheme = Firebase.remoteConfig.getString("default_theme")
+        val defaultTheme = Firebase.remoteConfig.getLong("default_theme").toInt() - 1
         val defaultBackground = Firebase.remoteConfig.getLong("default_background").toInt()
         Timber.d("first run theme = %s, background = %d", defaultTheme, defaultBackground)
 
-        theme = getThemeResourceId(defaultTheme)
+        theme = defaultTheme
         context.getBackgroundUrl(defaultBackground - 1)?.let { uri ->
             background = uri
         }

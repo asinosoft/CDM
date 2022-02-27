@@ -1,6 +1,5 @@
 package com.asinosoft.cdm.activities
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
@@ -8,7 +7,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.asinosoft.cdm.App
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
-import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.isDefaultDialer
 import com.asinosoft.cdm.helpers.setDefaultDialer
 import com.asinosoft.cdm.viewmodels.ManagerViewModel

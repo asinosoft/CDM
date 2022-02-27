@@ -16,15 +16,6 @@ fun Context.getBackgroundUrl(index: Int): Uri? {
     }
 }
 
-fun getThemeResourceId(name: String): Int =
-    when (name) {
-        "light" -> R.style.AppTheme_Light
-        "gray" -> R.style.AppTheme_Gray
-        "dark" -> R.style.AppTheme_Dark
-        "dark2" -> R.style.AppTheme_Dark2
-        else -> R.style.AppTheme_Light
-    }
-
 fun getThemeResourceId(index: Int): Int =
     when (index) {
         0 -> R.style.AppTheme_Light
