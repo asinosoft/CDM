@@ -9,6 +9,7 @@ data class Contact(
 ) {
     var birthday: String? = null
     var age: Int = 0
+    var starred = false
 
     var actions = mutableSetOf<Action>()
     val phones: List<Action> by lazy {

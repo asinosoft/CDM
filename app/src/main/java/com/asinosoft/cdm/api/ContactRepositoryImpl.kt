@@ -34,6 +34,8 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
             ContactCursorAdapter(it).getAll()
         }
 
+        Analytics.logContacts(contacts.values)
+
         val index = HashMap<String, Contact>()
         contacts.values.forEach { contact ->
             contact.phones.forEach {
@@ -60,14 +62,13 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         }
 
         val projections = arrayOf(ContactsContract.Contacts._ID)
-        val cursor = context.contentResolver.query(uri, projections, null, null, null)
-        if (cursor != null && cursor.moveToFirst()) {
-            val columnId = cursor.getColumnIndex(projections[0])
-            val id = cursor.getLong(columnId)
-            cursor.close()
-            return getContactById(id)
+        return context.contentResolver.query(uri, projections, null, null, null)?.use { cursor ->
+            return if (cursor.moveToFirst()) {
+                val columnId = cursor.getColumnIndex(projections[0])
+                val id = cursor.getLong(columnId)
+                getContactById(id)
+            } else null
         }
-        return null
     }
 
     override fun getContactByPhone(phone: String): Contact? {
@@ -123,6 +124,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         ContactsContract.Data.PHOTO_URI,
         ContactsContract.Data.DISPLAY_NAME,
         ContactsContract.Data.MIMETYPE,
+        ContactsContract.Data.STARRED,
         ContactsContract.Data.DATA1,
         ContactsContract.Data.DATA2,
         ContactsContract.Data.DATA3,
@@ -135,6 +137,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         private val photoUri = cursor.getColumnIndex(ContactsContract.Data.PHOTO_URI)
         private val displayName = cursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME)
         private val mimeType = cursor.getColumnIndex(ContactsContract.Data.MIMETYPE)
+        private val starred = cursor.getColumnIndex(ContactsContract.Data.STARRED)
         private val data1 = cursor.getColumnIndex(ContactsContract.Data.DATA1)
         private val data2 = cursor.getColumnIndex(ContactsContract.Data.DATA2)
         private val data3 = cursor.getColumnIndex(ContactsContract.Data.DATA3)
@@ -159,6 +162,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
                         )
                     }
                 ).let { contact ->
+                    contact.starred = 1 == cursor.getInt(starred)
                     when (cursor.getString(mimeType).dropWhile { c -> c != '/' }) {
                         "/contact_event" -> parseBirthday(contact)
                         "/phone_v2" -> parsePhone(contact)
@@ -202,7 +206,6 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
                     }
                 }
             }
-            cursor.close()
             return result
         }
 

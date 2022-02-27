@@ -1,6 +1,7 @@
 package com.asinosoft.cdm.api
 
 import android.os.Bundle
+import com.asinosoft.cdm.data.Contact
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 
@@ -71,6 +72,24 @@ class Analytics {
 
         fun logContactHistoryTab() =
             Firebase.analytics.logEvent("contact_history_tab", Bundle.EMPTY)
+
+        fun logContacts(contacts: Collection<Contact>) {
+            var contactsWithAvatar = 0
+            var starredCount = 0
+            var starredWithAvatar = 0
+            contacts.forEach { contact ->
+                if (contact.starred) ++starredCount
+                if ("android.resource" !== contact.photoUri.scheme) {
+                    ++contactsWithAvatar
+                    if (contact.starred) ++starredWithAvatar
+                }
+            }
+
+            Firebase.analytics.setUserProperty("contacts_count", contacts.count().toString())
+            Firebase.analytics.setUserProperty("contacts_with_avatar", contactsWithAvatar.toString())
+            Firebase.analytics.setUserProperty("favorites_count", starredCount.toString())
+            Firebase.analytics.setUserProperty("favorites_with_avatar", starredWithAvatar.toString())
+        }
 
         fun logContactSettingsTab() =
             Firebase.analytics.logEvent("contact_settings_tab", Bundle.EMPTY)
