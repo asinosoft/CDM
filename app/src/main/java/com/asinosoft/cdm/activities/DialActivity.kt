@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.appcompat.app.AppCompatActivity
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.adapters.StringsWithIconsAdapter
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.helpers.isDefaultDialer
 import com.asinosoft.cdm.helpers.setDefaultDialer
 import com.asinosoft.cdm.helpers.telecomManager
@@ -26,6 +27,7 @@ class DialActivity : AppCompatActivity() {
     private val launcher =
         registerForActivityResult(StartActivityForResult()) {
             if (isDefaultDialer()) {
+                Analytics.logDefaultDialer()
                 placeCall(contact)
             } else {
                 startActivity(Intent(Intent.ACTION_DIAL, contact))

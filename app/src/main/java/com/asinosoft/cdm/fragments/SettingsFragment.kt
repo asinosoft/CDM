@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.viewpager.widget.ViewPager
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.databinding.FragmentSettingsBinding
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems
@@ -40,6 +42,27 @@ class SettingsFragment : Fragment() {
                 )
                 .create()
         )
+
+        v.pages.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                when (position) {
+                    0 -> Analytics.logSettingsOutfitTab()
+                    1 -> Analytics.logSettingsActionTab()
+                    2 -> Analytics.logSettingsDialerTab()
+                    3 -> Analytics.logSettingsAboutTab()
+                }
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+        })
 
         v.tabs.setViewPager(v.pages)
 

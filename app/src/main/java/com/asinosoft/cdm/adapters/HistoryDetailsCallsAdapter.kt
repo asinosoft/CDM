@@ -2,30 +2,29 @@ package com.asinosoft.cdm.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Bundle
 import android.provider.CallLog
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.api.CallHistoryItem
-import com.asinosoft.cdm.api.Loader
+import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.databinding.AdvertiserBinding
 import com.asinosoft.cdm.databinding.ContactCallItemBinding
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.StHelper
 import com.google.android.gms.ads.AdRequest
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 import com.zerobranch.layout.SwipeLayout
-import java.util.*
+import java.util.* // ktlint-disable no-wildcard-imports
 
 /**
  * Адаптер списка звонков, который показывается в активности "Просмотр контакта"
  */
 class HistoryDetailsCallsAdapter(
+    private val config: Config,
     private val context: Context,
     private val calls: List<CallHistoryItem>
 ) :
@@ -91,7 +90,7 @@ class HistoryDetailsCallsAdapter(
         v.time.text = call.time
         v.date.text = formatDate(call.timestamp)
 
-        val directActions = Loader.loadContactSettings(context, call.contact)
+        val directActions = config.getContactSettings(call.contact)
         v.imageLeftAction.setImageResource(Action.resourceByType(directActions.left.type))
         v.imageRightAction.setImageResource(Action.resourceByType(directActions.right.type))
 
@@ -108,11 +107,11 @@ class HistoryDetailsCallsAdapter(
             override fun onOpen(direction: Int, isContinuous: Boolean) {
                 when (direction) {
                     SwipeLayout.RIGHT -> {
-                        Firebase.analytics.logEvent("contact_history_swipe_right", Bundle.EMPTY)
+                        Analytics.logContactHistorySwipeRight()
                         directActions.right.perform(context)
                     }
                     SwipeLayout.LEFT -> {
-                        Firebase.analytics.logEvent("contact_history_swipe_left", Bundle.EMPTY)
+                        Analytics.logContactHistorySwipeLeft()
                         directActions.left.perform(context)
                     }
                 }

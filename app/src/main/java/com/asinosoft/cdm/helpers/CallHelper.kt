@@ -10,8 +10,8 @@ val Call.id: Int
 val Call.phone: String
     get() = details.handle.schemeSpecificPart
 
-fun Call.getCallState(): Int =
-    if (Build.VERSION.SDK_INT >= 31) {
+val Call.callState: Int
+    get() = if (Build.VERSION.SDK_INT >= 31) {
         details.state
     } else {
         state
@@ -20,7 +20,7 @@ fun Call.getCallState(): Int =
 fun Call.accept() = answer(VideoProfile.STATE_AUDIO_ONLY)
 
 fun Call.reject() =
-    if (getCallState() == Call.STATE_RINGING) {
+    if (Call.STATE_RINGING == callState) {
         reject(false, null)
     } else {
         disconnect()

@@ -13,7 +13,7 @@
     <!-- Статус звонка -->
     <string name="status_call_active">Текущий звонок</string>
     <string name="status_call_connecting">Соединение…</string>
-    <string name="status_call_dialing">Соеденение…</string>
+    <string name="status_call_dialing">Соединение…</string>
     <string name="status_call_disconnected">Звонок завершен</string>
     <string name="status_call_disconnecting">Разъединение</string>
     <string name="status_call_holding">Вызов на удержании</string>

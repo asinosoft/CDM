@@ -11,7 +11,9 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.helpers.getAvailableSimSlots
+import com.asinosoft.cdm.helpers.isDefaultDialer
 import com.asinosoft.cdm.helpers.setDefaultDialer
 import com.asinosoft.cdm.viewmodels.SettingsViewModel
 import timber.log.Timber
@@ -23,7 +25,11 @@ import timber.log.Timber
  */
 class DialerSettingsFragment : PreferenceFragmentCompat() {
     private val model: SettingsViewModel by activityViewModels()
-    private val launcher = registerForActivityResult(StartActivityForResult()) {}
+    private val launcher = registerForActivityResult(StartActivityForResult()) {
+        if (true == context?.isDefaultDialer()) {
+            Analytics.logDefaultDialer()
+        }
+    }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
@@ -33,14 +39,15 @@ class DialerSettingsFragment : PreferenceFragmentCompat() {
         super.onViewCreated(view, savedInstanceState)
 
         findPreference<SwitchPreference>("default_dialer")?.apply {
-            isChecked = model.settings.checkDefaultDialer
+            isChecked = model.config.checkDefaultDialer
 
             setOnPreferenceChangeListener { preference, newValue ->
-                model.settings.checkDefaultDialer = (newValue as Boolean)
-                Timber.d("%s -> %s, %s", preference, newValue, model.settings.checkDefaultDialer)
-                if (model.settings.checkDefaultDialer) {
+                model.config.checkDefaultDialer = (newValue as Boolean)
+                Timber.d("%s -> %s, %s", preference, newValue, model.config.checkDefaultDialer)
+                if (model.config.checkDefaultDialer) {
                     context?.setDefaultDialer(launcher)
                 }
+                Analytics.logCheckDefaultDialer(newValue)
                 true
             }
         }

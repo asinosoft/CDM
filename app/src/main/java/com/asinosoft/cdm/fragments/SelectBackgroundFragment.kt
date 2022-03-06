@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.NavHostFragment.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.asinosoft.cdm.adapters.BackgroundsAdapter
 import com.asinosoft.cdm.databinding.FragmentSelectBackgroundBinding
@@ -25,7 +25,7 @@ class SelectBackgroundFragment : Fragment(), BackgroundsAdapter.Handler {
         registerForActivityResult(StartActivityForResult()) { result ->
             result.data?.data?.let { uri ->
                 model.setBackgroundImage(uri)
-                findNavController(this).popBackStack()
+                findNavController().popBackStack()
                 activity?.recreate()
             }
         }
@@ -50,7 +50,7 @@ class SelectBackgroundFragment : Fragment(), BackgroundsAdapter.Handler {
 
     override fun onSelectBackground(uri: Uri?) {
         model.setBackgroundImage(uri)
-        findNavController(this).popBackStack()
+        findNavController().popBackStack()
         activity?.recreate()
     }
 

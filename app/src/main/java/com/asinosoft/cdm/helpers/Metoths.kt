@@ -25,7 +25,7 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
-import com.asinosoft.cdm.helpers.Metoths.Companion.Direction.*
+import com.asinosoft.cdm.helpers.Metoths.Companion.Direction.* // ktlint-disable no-wildcard-imports
 import timber.log.Timber
 import kotlin.math.absoluteValue
 import kotlin.math.sign

@@ -2,20 +2,15 @@ package com.asinosoft.cdm.viewmodels
 
 import android.app.Application
 import android.content.Context
-import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.asinosoft.cdm.api.CallHistoryItem
-import com.asinosoft.cdm.api.CallHistoryRepositoryImpl
-import com.asinosoft.cdm.api.ContactRepositoryImpl
-import com.asinosoft.cdm.api.Loader
+import com.asinosoft.cdm.App
+import com.asinosoft.cdm.api.* // ktlint-disable no-wildcard-imports
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.helpers.Metoths.Companion.Direction
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -39,7 +34,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
 
             contactRepository.getContactById(contactId)?.let {
                 _contact = it
-                _actions = Loader.loadContactSettings(context, it)
+                _actions = App.instance!!.config.getContactSettings(it)
 
                 contact.postValue(_contact)
                 directActions.postValue(_actions)
@@ -65,13 +60,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
 
     fun setContactAction(direction: Direction, action: Action) {
         Timber.d("set: %s → %s", direction, action.type)
-        Firebase.analytics.logEvent(
-            "contact_set_action",
-            Bundle().apply {
-                putString("direction", direction.name)
-                putString("action", action.type.name)
-            }
-        )
+        Analytics.logContactSetAction(direction.name, action.type.name)
         when (direction) {
             Direction.LEFT -> _actions.left = action
             Direction.RIGHT -> _actions.right = action
@@ -96,7 +85,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
     fun saveContactSettings(context: Context) {
         Timber.d("Сохранение настроек контакта %s", _contact)
         if (haveUnsavedChanges) {
-            Loader.saveContactSettings(context, _contact, _actions)
+            App.instance!!.config.setContactSettings(_contact, _actions)
             haveUnsavedChanges = false
         }
     }

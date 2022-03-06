@@ -4,14 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PointF
 import android.net.Uri
-import android.os.Bundle
 import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.*
-import com.asinosoft.cdm.api.Loader
+import com.asinosoft.cdm.R
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.helpers.Keys
@@ -30,8 +29,6 @@ import com.asinosoft.cdm.helpers.Metoths.Companion.translateDiff
 import com.asinosoft.cdm.helpers.Metoths.Companion.translateTo
 import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.helpers.vibrator
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 
 class CircleImage @JvmOverloads constructor(
     context: Context,
@@ -167,7 +164,7 @@ class CircleImage @JvmOverloads constructor(
             cirStart = null
             directActions?.action(diff.diffAction(animationRadius))?.let { action ->
                 if (actionImage?.isVisible == true) try {
-                    Firebase.analytics.logEvent("favorite_action_${direction.name}", Bundle.EMPTY)
+                    Analytics.logFavoriteAction(direction.name)
                     action.perform(context)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -195,7 +192,6 @@ class CircleImage @JvmOverloads constructor(
     }
 
     private fun onTouchDown(event: MotionEvent) {
-        this.directActions = this.contact?.let { Loader.loadContactSettings(context, it) }
         touchDownForIndex()
         touchStart = event.toPointF()
         cirStart = this.toPointF()

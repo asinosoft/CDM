@@ -8,22 +8,23 @@ import android.provider.ContactsContract
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.asinosoft.cdm.api.*
+import com.asinosoft.cdm.App
+import com.asinosoft.cdm.api.* // ktlint-disable no-wildcard-imports
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
-import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.helpers.Keys.Companion.CALL_HISTORY_LIMIT
 import com.asinosoft.cdm.helpers.hasPermissions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
+import java.util.* // ktlint-disable no-wildcard-imports
 
 class ManagerViewModel(application: Application) : AndroidViewModel(application) {
+    private val config = App.instance!!.config
+    var initialized = false
     val isBlocked: MutableLiveData<Boolean> = MutableLiveData()
     val calls: MutableLiveData<List<CallHistoryItem>> = MutableLiveData()
     val contacts: MutableLiveData<Collection<Contact>> = MutableLiveData()
-    var settings: Settings = Loader.loadSettings(application)
 
     private val contactRepository = ContactRepositoryImpl(getApplication())
 
@@ -31,7 +32,12 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
         val hasAccess = hasAccessToCallLog()
         isBlocked.postValue(!hasAccess)
         if (hasAccess) {
-            viewModelScope.launch(Dispatchers.IO) { retrieveCallsAndContacts() }
+            viewModelScope.launch(Dispatchers.IO) {
+                retrieveCallsAndContacts()
+                initialized = true
+            }
+        } else {
+            initialized = true
         }
     }
 
@@ -70,17 +76,15 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
      * Изменение настроек действий контакта в соответствии с выбранным телефоном
      */
     fun setContactPhone(contact: Contact, phone: Action) {
-        val settings = Loader.loadContactSettings(getApplication(), contact)
-        if (settings.top.type == phone.type) {
-            settings.top = phone
-        } else if (settings.down.type == phone.type) {
-            settings.down = phone
-        } else if (settings.left.type == phone.type) {
-            settings.left = phone
-        } else if (settings.right.type == phone.type) {
-            settings.right = phone
+        val settings = config.getContactSettings(contact)
+        when (phone.type) {
+            settings.top.type -> settings.top = phone
+            settings.down.type -> settings.down = phone
+            settings.left.type -> settings.top = phone
+            settings.right.type -> settings.down = phone
+            else -> {}
         }
-        Loader.saveContactSettings(getApplication(), contact, settings)
+        config.setContactSettings(contact, settings)
     }
 
     private fun hasAccessToCallLog(): Boolean =
@@ -92,7 +96,6 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
         )
 
     private fun retrieveCallsAndContacts() {
-        settings = Loader.loadSettings(getApplication())
         contactRepository.initialize()
 
         contacts.postValue(contactRepository.getContacts())
@@ -110,6 +113,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
             calls.postValue(latestCalls)
         } else {
             Timber.d("Проверка новых звонков")
+            Analytics.logLoadCallHistory()
             val newCalls = CallHistoryRepositoryImpl(contactRepository).getNewestHistory(
                 getApplication(),
                 callHistory.firstOrNull()?.timestamp ?: Date()

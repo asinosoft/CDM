@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.adapters.HistoryDetailsCallsAdapter
 import com.asinosoft.cdm.databinding.HistoryDetailFragmentBinding
 import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
@@ -34,7 +35,11 @@ class HistoryDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         model.callHistory.observe(viewLifecycleOwner) { calls ->
             calls?.let {
-                v!!.rvContactCalls.adapter = HistoryDetailsCallsAdapter(requireContext(), it)
+                v!!.rvContactCalls.adapter = HistoryDetailsCallsAdapter(
+                    App.instance!!.config,
+                    requireContext(),
+                    it
+                )
             }
         }
     }
