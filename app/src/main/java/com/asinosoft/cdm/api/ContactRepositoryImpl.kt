@@ -72,7 +72,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     override fun getContactByPhone(phone: String): Contact? {
-        return contactPhones[phone] ?: findContactByPhone(phone)?.also { cache(it) }
+        return contactPhones[phone]
     }
 
     private fun cache(contact: Contact) {
@@ -94,27 +94,6 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         )?.use { cursor ->
             ContactCursorAdapter(cursor).getAll()[id]
         }
-    }
-
-    private fun findContactByPhone(phone: String): Contact? {
-        Timber.d("Поиск контакта по телефону $phone")
-        if (PackageManager.PERMISSION_DENIED == context.checkSelfPermission(Manifest.permission.READ_CONTACTS)) {
-            return null
-        }
-
-        context.contentResolver.query(
-            ContactsContract.Data.CONTENT_URI, arrayOf(ContactsContract.Data.CONTACT_ID),
-            "${ContactsContract.Data.MIMETYPE} = ? AND ${ContactsContract.Data.DATA4} = ?",
-            arrayOf("vnd.android.cursor.item/phone_v2", phone),
-            null
-        )?.use { cursor ->
-            if (cursor.moveToNext()) {
-                val column = cursor.getColumnIndex(ContactsContract.Data.CONTACT_ID)
-                val contactId = cursor.getLong(column)
-                return getContactById(contactId)
-            }
-        }
-        return null
     }
 
     // Список колонок, получаемых из базы контактов

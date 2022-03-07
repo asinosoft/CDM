@@ -100,6 +100,8 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
         private val colDuration = cursor.getColumnIndex(CallLog.Calls.DURATION)
         private val colCountry = cursor.getColumnIndex(CallLog.Calls.COUNTRY_ISO)
 
+        private val defaultPhoto = Uri.parse("android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}")
+
         fun getAll(): List<CallHistoryItem> {
             val result = java.util.ArrayList<CallHistoryItem>()
             while (cursor.moveToNext()) {
@@ -126,10 +128,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
         private fun getOne(): CallHistoryItem {
             val phoneNumber = cursor.getString(colNumber)
             val date = cursor.getLong(colDate)
-            val photo = Uri.parse("android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}")
             val country = cursor.getString(colCountry)
-
-            Timber.d("Found: %s - %s", country, phoneNumber)
 
             return CallHistoryItem(
                 phone = phoneNumber,
@@ -140,7 +139,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
                 typeCall = cursor.getInt(colType),
                 duration = cursor.getLong(colDuration),
                 contact = contactRepository.getContactByPhone(phoneNumber)
-                    ?: Contact(0, phoneNumber, photo).apply {
+                    ?: Contact(0, phoneNumber, defaultPhoto).apply {
                         actions.add(Action(0, Action.Type.PhoneCall, phoneNumber, ""))
                     }
             )
