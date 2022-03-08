@@ -9,8 +9,8 @@
     </style>
 
     <style name="BaseTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
-        <item name="android:listViewStyle">@style/TransparentListView</item>
+        <item name="materialAlertDialogTheme">@style/AlertDialogTheme</item>
+<!--        <item name="android:listViewStyle">@style/TransparentListView</item>-->
         <item name="android:expandableListViewStyle">@style/TransparentExpandableListView</item>
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:windowTranslucentStatus">false</item>
@@ -39,6 +39,11 @@
         <item name="android:navigationBarColor">@color/system_navbar_color_light</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="popupColor">@color/popup_color_light</item>
+
+        <!-- Цвет текста в диалоге выбора SIM -->
+        <item name="colorSurface">@color/background_light</item>
+        <!-- Цвет текста в диалоге выбора SIM -->
+        <item name="android:textColorAlertDialogListItem">@color/text_color_light</item>
     </style>
 
     <style name="AppTheme.Gray" parent="BaseTheme">
@@ -56,6 +61,11 @@
         <item name="android:navigationBarColor">@color/system_navbar_color_gray</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_gray</item>
+
+        <!-- Цвет текста в диалоге выбора SIM -->
+        <item name="colorSurface">@color/background_gray</item>
+        <!-- Цвет текста в диалоге выбора SIM -->
+        <item name="android:textColorAlertDialogListItem">@color/text_color_gray</item>
     </style>
 
     <style name="AppTheme.Dark" parent="BaseTheme">
@@ -73,6 +83,11 @@
         <item name="android:navigationBarColor">@color/system_navbar_color_dark</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_dark</item>
+
+        <!-- Цвет текста в диалоге выбора SIM -->
+        <item name="colorSurface">@color/background_dark</item>
+        <!-- Цвет текста в диалоге выбора SIM -->
+        <item name="android:textColorAlertDialogListItem">@color/text_color_dark</item>
     </style>
 
     <!-- Специальная тема с белым текстом, которая включается при фоновых картинках -->
@@ -91,12 +106,18 @@
         <item name="android:navigationBarColor">@color/system_navbar_color_dark</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_dark</item>
+
+        <!-- Цвет текста в диалоге выбора SIM -->
+        <item name="colorSurface">@color/background_dark</item>
+        <!-- Цвет текста в диалоге выбора SIM -->
+        <item name="android:textColorAlertDialogListItem">@color/text_color_dark</item>
     </style>
 
     <!-- Переопределяем цвета текста и кнопок в диалоге, чтобы он выглядел нормально в тёмных темах -->
-    <style name="AlertDialogTheme" parent="Theme.MaterialComponents.Light.Dialog.Alert">
-        <item name="colorPrimary">@color/text_color_light</item>
-        <item name="android:textColor">@color/active_tab_text_light</item>
+    <style name="AlertDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="alertDialogStyle">@style/AlertDialog</item>
+        <!-- Цвет заголовка -->
+        <item name="colorOnSurface">?android:attr/textColor</item>
     </style>
 
     <!-- Специальная прозрачная тема для промежуточной активоности DialActivity -->

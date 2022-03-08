@@ -1,5 +1,12 @@
 <resources>
 
+    <style name="AlertDialog" parent="MaterialAlertDialog.MaterialComponents">
+        <item name="shapeAppearance">@style/RoundCorners</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/Caption</item>
+        <!--        <item name="android:windowTitleStyle">@style/Caption</item>-->
+        <item name="android:windowTitleStyle">@style/TextAppearance.AppCompat.Title</item>
+    </style>
+
     <style name="Caption" parent="Widget.AppCompat.TextView">
         <item name="android:gravity">center</item>
         <item name="android:height">64dp</item>
@@ -41,6 +48,11 @@
 
     <style name="TabLayoutText" parent="TextAppearance.MaterialComponents.Button">
         <item name="android:textSize">@dimen/tabTextSize</item>
+    </style>
+
+    <style name="RoundCorners" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
     </style>
 
     <style name="RoundImage">

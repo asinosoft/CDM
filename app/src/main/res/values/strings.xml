@@ -25,8 +25,8 @@
 
     <!-- Notification -->
     <string name="active_call_notification_text">Call…</string>
-    <string name="channel_name">notifications</string>
-    <string name="channel_description">On Going Call</string>
+    <string name="incoming_notification_channel">Incoming Calls</string>
+    <string name="ongoing_notification_channel">Ongoing Calls</string>
     <string name="action_answer">Answer</string>
     <string name="action_hangup">Hangup</string>
     <string name="action_mute">Mute</string>
@@ -99,7 +99,7 @@
     <string name="dialer_settings">Dialer</string>
     <string name="default_dialer">Set default</string>
     <string name="sim_usage_settings">SIM usage</string>
-    <string name="sim_selection_title">Select SIM</string>
+    <string name="sim_selection_title">Select SIM for call</string>
     <string name="sim_used">SIM used</string>
     <string name="sim_operator">Operator</string>
     <string name="photo">Photo</string>

@@ -1,8 +1,13 @@
 package com.asinosoft.cdm.fragments
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.telecom.PhoneAccountHandle
 import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -16,9 +21,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.App
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.activities.BaseActivity
 import com.asinosoft.cdm.adapters.CallsAdapter
 import com.asinosoft.cdm.adapters.FavoritesAdapter
 import com.asinosoft.cdm.adapters.PermissionRationaleAdapter
+import com.asinosoft.cdm.adapters.StringsWithIconsAdapter
 import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.api.FavoriteContactRepositoryImpl
@@ -26,14 +33,14 @@ import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.FavoriteContact
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.databinding.FavoritesFragmentBinding
-import com.asinosoft.cdm.helpers.Keys
+import com.asinosoft.cdm.helpers.*
 import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
-import com.asinosoft.cdm.helpers.SelectPhoneDialog
-import com.asinosoft.cdm.helpers.vibrator
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import com.asinosoft.cdm.views.CirLayoutManager
 import com.asinosoft.cdm.views.LockableLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import timber.log.Timber
+import java.security.Permission
 
 /**
  * Интерфейс главного окна (избранные + последние звонки)
@@ -149,6 +156,45 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
         }
     }
 
+    private fun launchDialog() {
+        (activity as BaseActivity).withPermission(arrayOf(Manifest.permission.READ_PHONE_STATE)) {
+            selectPhoneAccount { sim -> Timber.d("Selected %s", sim.toString()) }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun selectPhoneAccount(onSelect: (PhoneAccountHandle) -> Unit) {
+        Timber.d("Выбрать SIM для исходящего звонка")
+        val accounts = requireContext().telecomManager.callCapablePhoneAccounts
+        if (1 == accounts.size || Build.VERSION.SDK_INT < 26) {
+            Timber.d("Без вариантов SIM -> ${accounts[0]}")
+            onSelect(accounts[0])
+        } else {
+            val slots: Array<String> =
+                accounts.mapNotNull {
+                    requireContext().telephonyManager.createForPhoneAccountHandle(
+                        it
+                    )?.simOperatorName
+                }
+                    .toTypedArray()
+            val icons: Array<Int> =
+                arrayOf(R.drawable.sim1, R.drawable.sim2, R.drawable.sim3)
+            val adapter = StringsWithIconsAdapter(requireContext(), slots, icons)
+
+//            AlertDialog.Builder(context)
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.sim_selection_title)
+                .setAdapter(adapter) { dialog, index ->
+                    Timber.d("Выбран SIM -> ${accounts[index]}")
+                    onSelect(accounts[index])
+                    dialog.dismiss()
+                }
+                .setOnDismissListener {}
+                .create()
+                .show()
+        }
+    }
+
     private fun requestPermissions() {
         Timber.d("requestPermissions")
         ActivityCompat.requestPermissions(
@@ -189,7 +235,9 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
                 btnDelete,
                 btnEdit,
                 { contact -> onClickContact(contact) },
-                { position -> pickedPosition = position; pickContact.launch(null) },
+                { position ->
+                    pickedPosition = position; launchDialog() /* pickContact.launch(null) */
+                },
                 { indexOfFrontChild = it },
                 context,
                 context.vibrator

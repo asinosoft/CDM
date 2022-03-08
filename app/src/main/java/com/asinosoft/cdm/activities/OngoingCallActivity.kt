@@ -72,8 +72,6 @@ class OngoingCallActivity : BaseActivity() {
     override fun onResume() {
         Timber.d("onResume # %s", intent.data)
 
-        (application as App).notification.setAppActive(true)
-
         CallService.instance?.getCall(intent?.data)?.let {
             setCurrentCall(it)
         }
@@ -99,7 +97,6 @@ class OngoingCallActivity : BaseActivity() {
 
     override fun onPause() {
         super.onPause()
-        (application as App).notification.setAppActive(false)
         call?.unregisterCallback(callCallback)
     }
 
