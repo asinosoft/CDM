@@ -19,6 +19,9 @@ import timber.log.Timber
  * Доступ к контактам
  */
 class ContactRepositoryImpl(private val context: Context) : ContactRepository {
+    // Режим работы с контактами: true = через кэш | false = разовые запросы
+    private var initialized = false
+
     // Полный список контактов
     private var contacts: MutableMap<Long, Contact> = mutableMapOf()
 
@@ -45,6 +48,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
         contactPhones = index
         Timber.d("Найдено %d контактов", contacts.size)
+        initialized = true
     }
 
     override fun getContacts(): Collection<Contact> {
@@ -52,14 +56,11 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     override fun getContactById(id: Long): Contact? {
-        return contacts[id] ?: findContactById(id)?.also { cache(it) }
+        return if (initialized) contacts[id] else findContactById(id)?.also { cache(it) }
     }
 
     override fun getContactByPhone(phone: String): Contact? {
-        return if (contactPhones.isNotEmpty())
-            contactPhones[phone]
-        else
-            findContactByPhone(phone)?.also { cache(it) }
+        return if (initialized) contactPhones[phone] else findContactByPhone(phone)?.also { cache(it) }
     }
 
     override fun getContactByUri(uri: Uri): Contact? {
