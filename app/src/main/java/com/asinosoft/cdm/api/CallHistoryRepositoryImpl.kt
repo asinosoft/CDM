@@ -8,9 +8,7 @@ import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
-import timber.log.Timber
-import java.util.* // ktlint-disable no-wildcard-imports
-import kotlin.collections.ArrayList
+import java.util.*
 
 /**
  * Доступ к истории звонков

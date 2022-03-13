@@ -3,7 +3,7 @@ package com.asinosoft.cdm.activities
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.graphics.* // ktlint-disable no-wildcard-imports
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle

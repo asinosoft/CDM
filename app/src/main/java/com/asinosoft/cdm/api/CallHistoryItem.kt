@@ -1,7 +1,7 @@
 package com.asinosoft.cdm.api
 
 import com.asinosoft.cdm.data.Contact
-import java.util.* // ktlint-disable no-wildcard-imports
+import java.util.*
 
 /**
  * Информационный класс элементов истории.

@@ -3,7 +3,7 @@ package com.asinosoft.cdm.helpers
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.text.SimpleDateFormat
-import java.util.* // ktlint-disable no-wildcard-imports
+import java.util.*
 
 class StHelperTest {
     @Test

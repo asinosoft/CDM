@@ -18,7 +18,7 @@ import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.StHelper
 import com.google.android.gms.ads.AdRequest
 import com.zerobranch.layout.SwipeLayout
-import java.util.* // ktlint-disable no-wildcard-imports
+import java.util.*
 
 /**
  * Адаптер списка звонков, который показывается в активности "Просмотр контакта"

@@ -9,7 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.asinosoft.cdm.App
-import com.asinosoft.cdm.api.* // ktlint-disable no-wildcard-imports
+import com.asinosoft.cdm.api.*
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.Keys.Companion.CALL_HISTORY_LIMIT
@@ -17,7 +17,7 @@ import com.asinosoft.cdm.helpers.hasPermissions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.* // ktlint-disable no-wildcard-imports
+import java.util.*
 
 class ManagerViewModel(application: Application) : AndroidViewModel(application) {
     private val config = App.instance!!.config

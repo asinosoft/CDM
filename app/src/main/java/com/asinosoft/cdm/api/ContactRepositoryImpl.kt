@@ -10,7 +10,7 @@ import android.provider.ContactsContract.CommonDataKinds.Email
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import androidx.core.database.getStringOrNull
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.data.* // ktlint-disable no-wildcard-imports
+import com.asinosoft.cdm.data.*
 import com.asinosoft.cdm.helpers.StHelper
 import timber.log.Timber
 
