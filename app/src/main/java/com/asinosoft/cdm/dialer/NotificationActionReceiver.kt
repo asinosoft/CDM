@@ -18,12 +18,13 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
         when (intent.action) {
             ACCEPT_CALL -> {
-                val call = CallService.instance?.getCall(intent.data)
-                call?.accept()
+                CallService.instance?.getCall(intent.data)?.let { call ->
+                    call.accept()
+                    context.startActivity(OngoingCallActivity.intent(context, call))
+                }
             }
             DECLINE_CALL -> {
-                val call = CallService.instance?.getCall(intent.data)
-                call?.reject()
+                CallService.instance?.getCall(intent.data)?.reject()
             }
             MUTE_CALL -> {
                 isMicrophoneOn = !isMicrophoneOn

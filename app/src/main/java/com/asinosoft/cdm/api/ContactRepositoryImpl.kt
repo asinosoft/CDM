@@ -10,7 +10,8 @@ import android.provider.ContactsContract.CommonDataKinds.Email
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import androidx.core.database.getStringOrNull
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.data.*
+import com.asinosoft.cdm.data.Action
+import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
 import timber.log.Timber
 
@@ -26,7 +27,6 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
     fun initialize() {
         Timber.d("Чтение списка контактов")
-        contactPhones = mutableMapOf()
         contacts = context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             null, null, null
@@ -55,6 +55,13 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         return contacts[id] ?: findContactById(id)?.also { cache(it) }
     }
 
+    override fun getContactByPhone(phone: String): Contact? {
+        return if (contactPhones.isNotEmpty())
+            contactPhones[phone]
+        else
+            findContactByPhone(phone)?.also { cache(it) }
+    }
+
     override fun getContactByUri(uri: Uri): Contact? {
         Timber.d("Поиск контакта по URI $uri")
         if (PackageManager.PERMISSION_DENIED == context.checkSelfPermission(Manifest.permission.READ_CONTACTS)) {
@@ -69,10 +76,6 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
                 getContactById(id)
             } else null
         }
-    }
-
-    override fun getContactByPhone(phone: String): Contact? {
-        return contactPhones[phone]
     }
 
     private fun cache(contact: Contact) {
@@ -94,6 +97,27 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         )?.use { cursor ->
             ContactCursorAdapter(cursor).getAll()[id]
         }
+    }
+
+    private fun findContactByPhone(phone: String): Contact? {
+        Timber.d("Поиск контакта по телефону $phone")
+        if (PackageManager.PERMISSION_DENIED == context.checkSelfPermission(Manifest.permission.READ_CONTACTS)) {
+            return null
+        }
+
+        context.contentResolver.query(
+            ContactsContract.Data.CONTENT_URI, arrayOf(ContactsContract.Data.CONTACT_ID),
+            "${ContactsContract.Data.MIMETYPE} = ? AND ${ContactsContract.Data.DATA4} = ?",
+            arrayOf("vnd.android.cursor.item/phone_v2", phone),
+            null
+        )?.use { cursor ->
+            if (cursor.moveToNext()) {
+                val column = cursor.getColumnIndex(ContactsContract.Data.CONTACT_ID)
+                val contactId = cursor.getLong(column)
+                return getContactById(contactId)
+            }
+        }
+        return null
     }
 
     // Список колонок, получаемых из базы контактов
@@ -126,21 +150,13 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
             val result = HashMap<Long, Contact>()
 
             while (cursor.moveToNext()) {
-                val id: Long = cursor.getLong(contactId)
-                val photo: Uri = Uri.parse(
+                val id = cursor.getLong(contactId)
+                val name = cursor.getStringOrNull(this@ContactCursorAdapter.displayName) ?: ""
+                val photo = Uri.parse(
                     cursor.getStringOrNull(this@ContactCursorAdapter.photoUri)
                         ?: "android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}"
                 )
-                result.getOrPut(
-                    id,
-                    {
-                        Contact(
-                            id,
-                            cursor.getStringOrNull(this@ContactCursorAdapter.displayName) ?: "",
-                            photo
-                        )
-                    }
-                ).let { contact ->
+                result.getOrPut(id) { Contact(id, name, photo) }.let { contact ->
                     contact.starred = 1 == cursor.getInt(starred)
                     when (cursor.getString(mimeType).dropWhile { c -> c != '/' }) {
                         "/contact_event" -> parseBirthday(contact)
