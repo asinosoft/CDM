@@ -183,8 +183,6 @@ class OngoingCallActivity : BaseActivity() {
         v.keyboard.btnCall.setOnClickListener { endCall() }
 
         v.keyboard.ripple0.setOnLongClickListener { dialpadPressed('+'); true }
-
-        v.keyboardWrapper.setBackgroundColor(R.color.white)
     }
 
     private fun initLockScreenFlags() {
