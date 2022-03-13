@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.asinosoft.cdm.App
-import com.asinosoft.cdm.api.* // ktlint-disable no-wildcard-imports
+import com.asinosoft.cdm.api.*
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions

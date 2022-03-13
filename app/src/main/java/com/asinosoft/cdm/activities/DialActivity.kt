@@ -55,7 +55,7 @@ class DialActivity : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     private fun placeCall(contact: Uri?) {
         Timber.d("Запустить звонок → $contact")
-        withDefaultPhoneAccount { phoneAccount ->
+        selectPhoneAccount { phoneAccount ->
             Bundle().apply {
                 putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, phoneAccount)
                 putBoolean(TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE, false)

@@ -244,4 +244,6 @@ class Action(
         result = 31 * result + value.hashCode()
         return result
     }
+
+    override fun toString() = value
 }

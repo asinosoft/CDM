@@ -26,8 +26,8 @@
 
     <!-- Уведомления -->
     <string name="active_call_notification_text">Звонок…</string>
-    <string name="channel_name">уведомления</string>
-    <string name="channel_description">Звонок</string>
+    <string name="incoming_notification_channel">Входящие звонки</string>
+    <string name="ongoing_notification_channel">Текущие звонки</string>
     <string name="action_answer">Ответить</string>
     <string name="action_hangup">Отклонить</string>
     <string name="action_mute">Отключить микрофон</string>
@@ -85,7 +85,7 @@
     <string name="dialer_settings">Дозвонщик</string>
     <string name="default_dialer">Установить по-умолчанию</string>
     <string name="sim_usage_settings">Исходящие звонки</string>
-    <string name="sim_selection_title">Выберите SIM</string>
+    <string name="sim_selection_title">Выберите SIM для звонка</string>
     <string name="sim_used">Звонок через SIM</string>
     <string name="sim_operator">Оператор</string>
     <string name="photo">Фото</string>

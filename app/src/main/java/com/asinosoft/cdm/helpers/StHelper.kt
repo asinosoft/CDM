@@ -6,7 +6,7 @@ import com.google.i18n.phonenumbers.Phonenumber
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.Period
-import java.util.* // ktlint-disable no-wildcard-imports
+import java.util.*
 
 object StHelper {
     private val clearNonNumbers =

@@ -39,7 +39,7 @@ import timber.log.Timber
  * Интерфейс главного окна (избранные + последние звонки)
  */
 class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
-    private var v: ActivityManagerBinding? = null
+    private lateinit var v: ActivityManagerBinding
     private val model: ManagerViewModel by activityViewModels()
     private val config: Config = App.instance!!.config
 
@@ -98,12 +98,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
     ): View {
         v = ActivityManagerBinding.inflate(layoutInflater)
         pickedPosition = savedInstanceState?.getInt("pickedPosition") ?: 0
-        return v!!.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        v = null
+        return v.root
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -129,18 +124,18 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
         initFavorites(callsLayoutManager)
         initCallHistory(callsLayoutManager)
 
-        v!!.fabKeyboard.supportImageTintList = null
-        v!!.fabKeyboard.setOnClickListener {
+        v.fabKeyboard.supportImageTintList = null
+        v.fabKeyboard.setOnClickListener {
             findNavController().navigate(R.id.action_open_search)
         }
 
         model.isBlocked.observe(viewLifecycleOwner) { isBlocked ->
-            if (isBlocked && v!!.rvCalls.adapter !is PermissionRationaleAdapter) {
-                v!!.rvCalls.adapter = PermissionRationaleAdapter(favoritesView.root) {
+            if (isBlocked && v.rvCalls.adapter !is PermissionRationaleAdapter) {
+                v.rvCalls.adapter = PermissionRationaleAdapter(favoritesView.root) {
                     requestPermissions()
                 }
-            } else if (!isBlocked && v!!.rvCalls.adapter !is CallsAdapter) {
-                v!!.rvCalls.adapter = callsAdapter
+            } else if (!isBlocked && v.rvCalls.adapter !is CallsAdapter) {
+                v.rvCalls.adapter = callsAdapter
             }
         }
 
@@ -162,7 +157,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
         val context: Context = requireContext()
         favoritesView = FavoritesFragmentBinding.inflate(
             layoutInflater,
-            v!!.root,
+            v.root,
             false
         ).apply {
             rvFavorites.layoutManager =
@@ -189,7 +184,10 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
                 btnDelete,
                 btnEdit,
                 { contact -> onClickContact(contact) },
-                { position -> pickedPosition = position; pickContact.launch(null) },
+                { position ->
+                    pickedPosition = position
+                    pickContact.launch(null)
+                },
                 { indexOfFrontChild = it },
                 context,
                 context.vibrator
@@ -227,11 +225,11 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
 
     private fun initCallHistory(callsLayoutManager: LockableLayoutManager) {
         callsAdapter = CallsAdapter(config, requireContext(), favoritesView, this)
-        v!!.rvCalls.layoutManager = callsLayoutManager
-        v!!.rvCalls.isNestedScrollingEnabled = true
+        v.rvCalls.layoutManager = callsLayoutManager
+        v.rvCalls.isNestedScrollingEnabled = true
 
         // Подгрузка истории звонков, когда список докрутился до последнего элемента
-        v!!.rvCalls.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        v.rvCalls.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 

@@ -15,7 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.activities.OngoingCallActivity
 import com.asinosoft.cdm.api.ContactRepositoryImpl
-import com.asinosoft.cdm.helpers.* // ktlint-disable no-wildcard-imports
+import com.asinosoft.cdm.helpers.*
 import timber.log.Timber
 
 /**
@@ -23,21 +23,31 @@ import timber.log.Timber
  */
 class NotificationManager(private val context: Context) {
     companion object {
-        private const val CHANNEL_ID = "Calls"
+        private const val INCOMING_CHANNEL = "Incoming"
+        private const val ONGOING_CHANNEL = "Ongoing"
     }
 
-    private var isAppActive = false
     private val notifications = mutableMapOf<Int, Call>()
 
     init {
         if (Build.VERSION.SDK_INT >= 26) {
-            Timber.d("Register notification channel: %s", CHANNEL_ID)
+            Timber.d("Register notification channels")
             with(NotificationManagerCompat.from(context)) {
                 createNotificationChannel(
                     NotificationChannel(
-                        CHANNEL_ID,
-                        context.getString(R.string.app_name),
+                        INCOMING_CHANNEL,
+                        context.getString(R.string.incoming_notification_channel),
                         NotificationManager.IMPORTANCE_HIGH
+                    ).apply {
+                        setSound(null, null)
+                    }
+                )
+
+                createNotificationChannel(
+                    NotificationChannel(
+                        ONGOING_CHANNEL,
+                        context.getString(R.string.ongoing_notification_channel),
+                        NotificationManager.IMPORTANCE_DEFAULT
                     ).apply {
                         setSound(null, null)
                     }
@@ -61,11 +71,6 @@ class NotificationManager(private val context: Context) {
             notifications[call.id] = call
             update(call)
         }
-    }
-
-    fun setAppActive(active: Boolean) {
-        isAppActive = active
-        CallService.instance?.calls?.forEach { call -> update(call) }
     }
 
     fun update(call: Call) {
@@ -108,11 +113,11 @@ class NotificationManager(private val context: Context) {
             setImageViewResource(R.id.sim, simIcon)
         }
 
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+        val channel = if (Call.STATE_RINGING == callState) INCOMING_CHANNEL else ONGOING_CHANNEL
+        val builder = NotificationCompat.Builder(context, channel)
             .setSmallIcon(R.drawable.call)
             .setLargeIcon(photo)
             .setContentIntent(openAppIntent(call))
-            .setPriority(if (isAppActive) NotificationCompat.PRIORITY_LOW else NotificationCompat.PRIORITY_HIGH)
             .setCategory(Notification.CATEGORY_CALL)
             .setCustomContentView(view)
             .setOngoing(true)

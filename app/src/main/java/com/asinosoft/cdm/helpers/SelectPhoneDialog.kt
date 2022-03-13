@@ -1,11 +1,10 @@
 package com.asinosoft.cdm.helpers
 
 import android.content.Context
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import android.widget.ArrayAdapter
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.adapters.SelectorAdapter
 import com.asinosoft.cdm.data.Action
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class SelectPhoneDialog(
     val context: Context,
@@ -15,20 +14,16 @@ class SelectPhoneDialog(
 ) {
 
     fun show() {
-        val dialog =
-            AlertDialogUtils.dialogListWithoutConfirm(
-                context,
-                context.getString(R.string.select_number)
-            )
-        val adapter = SelectorAdapter(actions) { action ->
-            onSelect(action)
-            dialog.dismiss()
-        }
-        dialog.setOnCancelListener { onCancel() }
+        val adapter = ArrayAdapter(context, android.R.layout.select_dialog_item, actions)
 
-        val recyclerView = dialog.findViewById<RecyclerView>(R.id.recycler_popup)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.adapter = adapter
-        dialog.show()
+        MaterialAlertDialogBuilder(context)
+            .setTitle(R.string.select_number)
+            .setAdapter(adapter) { dialog, index ->
+                onSelect(actions[index])
+                dialog.dismiss()
+            }
+            .setOnDismissListener { onCancel() }
+            .create()
+            .show()
     }
 }

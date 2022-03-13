@@ -4,21 +4,26 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
-import android.os.* // ktlint-disable no-wildcard-imports
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.PowerManager
 import android.telecom.Call
 import android.telecom.CallAudioState
 import android.telecom.PhoneAccountHandle
 import android.view.View
 import android.view.WindowManager
 import androidx.core.view.isVisible
-import com.asinosoft.cdm.App
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.databinding.ActivityOngoingCallBinding
-import com.asinosoft.cdm.dialer.* // ktlint-disable no-wildcard-imports
-import com.asinosoft.cdm.helpers.* // ktlint-disable no-wildcard-imports
+import com.asinosoft.cdm.dialer.CallService
+import com.asinosoft.cdm.dialer.addCharacter
+import com.asinosoft.cdm.dialer.getCallStateText
+import com.asinosoft.cdm.dialer.getFormattedDuration
+import com.asinosoft.cdm.helpers.*
 import timber.log.Timber
-import java.util.* // ktlint-disable no-wildcard-imports
+import java.util.*
 
 /**
  * Активность текущего звонка
@@ -72,8 +77,6 @@ class OngoingCallActivity : BaseActivity() {
     override fun onResume() {
         Timber.d("onResume # %s", intent.data)
 
-        (application as App).notification.setAppActive(true)
-
         CallService.instance?.getCall(intent?.data)?.let {
             setCurrentCall(it)
         }
@@ -99,7 +102,6 @@ class OngoingCallActivity : BaseActivity() {
 
     override fun onPause() {
         super.onPause()
-        (application as App).notification.setAppActive(false)
         call?.unregisterCallback(callCallback)
     }
 

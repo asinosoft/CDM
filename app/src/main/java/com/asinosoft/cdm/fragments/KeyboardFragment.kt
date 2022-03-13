@@ -15,7 +15,7 @@ import com.asinosoft.cdm.helpers.runOnUiThread
  * Класс кастомной клавиатуры.
  */
 class KeyboardFragment : Fragment() {
-    private var v: KeyboardBinding? = null
+    private lateinit var v: KeyboardBinding
     private var settingsButtonClickCallback: () -> Unit = {}
     private var callButtonClickCallback: (phoneNumber: String) -> Unit = {}
     private var closeButtonClickCallback: () -> Unit = {}
@@ -24,7 +24,7 @@ class KeyboardFragment : Fragment() {
      * Реакция на изменение текста в строке поиска
      */
     fun doOnTextChanged(callback: (String) -> Unit) {
-        v!!.inputText.doOnTextChanged { s, _, _, _ -> callback(s.toString()) }
+        v.inputText.doOnTextChanged { s, _, _, _ -> callback(s.toString()) }
     }
 
     /**
@@ -54,139 +54,134 @@ class KeyboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         v = KeyboardBinding.inflate(inflater, container, false)
-        v!!.oneBtn.setOnClickListener {
-            v!!.ripple1.startRippleAnimation()
+        v.oneBtn.setOnClickListener {
+            v.ripple1.startRippleAnimation()
             Handler().postDelayed(
                 {
-                    context?.runOnUiThread { v!!.ripple1.stopRippleAnimation() }
+                    context?.runOnUiThread { v.ripple1.stopRippleAnimation() }
                 },
                 167
             )
             takeValue("1")
         }
-        v!!.twoBtn.setOnClickListener {
-            v!!.ripple2.startRippleAnimation()
+        v.twoBtn.setOnClickListener {
+            v.ripple2.startRippleAnimation()
             Handler().postDelayed(
-                { context?.runOnUiThread { v!!.ripple2.stopRippleAnimation() } },
+                { context?.runOnUiThread { v.ripple2.stopRippleAnimation() } },
                 167
             )
             takeValue("2")
         }
-        v!!.threeBtn.setOnClickListener {
-            v!!.ripple3.startRippleAnimation()
+        v.threeBtn.setOnClickListener {
+            v.ripple3.startRippleAnimation()
             Handler().postDelayed(
-                { context?.runOnUiThread { v!!.ripple3.stopRippleAnimation() } },
+                { context?.runOnUiThread { v.ripple3.stopRippleAnimation() } },
                 167
             )
             takeValue("3")
         }
-        v!!.fourBtn.setOnClickListener {
-            v!!.ripple4.startRippleAnimation()
+        v.fourBtn.setOnClickListener {
+            v.ripple4.startRippleAnimation()
             Handler().postDelayed(
-                { context?.runOnUiThread { v!!.ripple4.stopRippleAnimation() } },
+                { context?.runOnUiThread { v.ripple4.stopRippleAnimation() } },
                 167
             )
             takeValue("4")
         }
-        v!!.fiveBtn.setOnClickListener {
-            v!!.ripple5.startRippleAnimation()
+        v.fiveBtn.setOnClickListener {
+            v.ripple5.startRippleAnimation()
             Handler().postDelayed(
-                { context?.runOnUiThread { v!!.ripple5.stopRippleAnimation() } },
+                { context?.runOnUiThread { v.ripple5.stopRippleAnimation() } },
                 167
             )
             takeValue("5")
         }
-        v!!.sixBtn.setOnClickListener {
-            v!!.ripple6.startRippleAnimation()
+        v.sixBtn.setOnClickListener {
+            v.ripple6.startRippleAnimation()
             Handler().postDelayed(
-                { context?.runOnUiThread { v!!.ripple6.stopRippleAnimation() } },
+                { context?.runOnUiThread { v.ripple6.stopRippleAnimation() } },
                 167
             )
             takeValue("6")
         }
-        v!!.sevenBtn.setOnClickListener {
-            v!!.ripple7.startRippleAnimation()
+        v.sevenBtn.setOnClickListener {
+            v.ripple7.startRippleAnimation()
             Handler().postDelayed(
-                { context?.runOnUiThread { v!!.ripple7.stopRippleAnimation() } },
+                { context?.runOnUiThread { v.ripple7.stopRippleAnimation() } },
                 167
             )
             takeValue("7")
         }
-        v!!.eightBtn.setOnClickListener {
-            v!!.ripple8.startRippleAnimation()
+        v.eightBtn.setOnClickListener {
+            v.ripple8.startRippleAnimation()
             Handler().postDelayed(
-                { context?.runOnUiThread { v!!.ripple8.stopRippleAnimation() } },
+                { context?.runOnUiThread { v.ripple8.stopRippleAnimation() } },
                 167
             )
             takeValue("8")
         }
-        v!!.nineBtn.setOnClickListener {
-            v!!.ripple9.startRippleAnimation()
+        v.nineBtn.setOnClickListener {
+            v.ripple9.startRippleAnimation()
             Handler().postDelayed(
-                { context?.runOnUiThread { v!!.ripple9.stopRippleAnimation() } },
+                { context?.runOnUiThread { v.ripple9.stopRippleAnimation() } },
                 167
             )
             takeValue("9")
         }
-        v!!.zeroBtn.setOnLongClickListener {
+        v.zeroBtn.setOnLongClickListener {
             takeValue("+")
             true
         }
-        v!!.star.setOnClickListener {
+        v.star.setOnClickListener {
             takeValue("*")
         }
-        v!!.star.setOnLongClickListener {
+        v.star.setOnLongClickListener {
             takeValue("#")
             true
         }
-        v!!.zeroBtn.setOnClickListener {
-            v!!.ripple0.startRippleAnimation()
+        v.zeroBtn.setOnClickListener {
+            v.ripple0.startRippleAnimation()
             Handler().postDelayed(
                 {
                     context?.runOnUiThread {
-                        v!!.ripple0.stopRippleAnimation()
+                        v.ripple0.stopRippleAnimation()
                     }
                 },
                 167
             )
             takeValue("0")
         }
-        v!!.imageBackspace.setOnClickListener {
+        v.imageBackspace.setOnClickListener {
             Analytics.logSearchKeyboardDel()
-            v!!.inputText.text = v!!.inputText.text.dropLast(1)
+            v.inputText.text = v.inputText.text.dropLast(1)
         }
-        v!!.imageBackspace.setOnLongClickListener {
+        v.imageBackspace.setOnLongClickListener {
             Analytics.logSearchKeyboardClear()
-            v!!.inputText.text = ""
+            v.inputText.text = ""
             true
         }
-        v!!.imageClear.setOnClickListener {
-            if (v!!.inputText.text.isNotEmpty()) {
-                v!!.inputText.text = ""
+        v.imageClear.setOnClickListener {
+            if (v.inputText.text.isNotEmpty()) {
+                v.inputText.text = ""
             } else {
                 closeButtonClickCallback()
             }
         }
-        v!!.btnCall.setOnClickListener {
-            if (v!!.inputText.text.isNotEmpty()) {
-                callButtonClickCallback(v!!.inputText.text.toString())
+        v.btnCall.setOnClickListener {
+            if (v.inputText.text.isNotEmpty()) {
+                callButtonClickCallback(v.inputText.text.toString())
             }
         }
 
-        v!!.settingsButton.setOnClickListener {
+        v.settingsButton.setOnClickListener {
             settingsButtonClickCallback()
         }
 
-        return v!!.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        v = null
+        return v.root
     }
 
     private fun takeValue(num: String) {
         Analytics.logKeyboardButton()
-        v!!.inputText.text = v!!.inputText.text.toString().plus(num)
+        v.inputText.text = v.inputText.text.toString().plus(num)
     }
 }

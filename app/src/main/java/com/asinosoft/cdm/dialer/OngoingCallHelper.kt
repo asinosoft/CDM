@@ -3,7 +3,7 @@ package com.asinosoft.cdm.dialer
 import android.content.Context
 import android.telecom.Call
 import com.asinosoft.cdm.R
-import java.util.* // ktlint-disable no-wildcard-imports
+import java.util.*
 
 private const val PATH = "com.asinosoft.cdm.dialer.action."
 const val ACCEPT_CALL = PATH + "accept_call"

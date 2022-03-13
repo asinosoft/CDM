@@ -10,7 +10,8 @@ import android.provider.ContactsContract.CommonDataKinds.Email
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import androidx.core.database.getStringOrNull
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.data.* // ktlint-disable no-wildcard-imports
+import com.asinosoft.cdm.data.Action
+import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
 import timber.log.Timber
 
@@ -18,6 +19,9 @@ import timber.log.Timber
  * Доступ к контактам
  */
 class ContactRepositoryImpl(private val context: Context) : ContactRepository {
+    // Режим работы с контактами: true = через кэш | false = разовые запросы
+    private var initialized = false
+
     // Полный список контактов
     private var contacts: MutableMap<Long, Contact> = mutableMapOf()
 
@@ -26,7 +30,6 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
     fun initialize() {
         Timber.d("Чтение списка контактов")
-        contactPhones = mutableMapOf()
         contacts = context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             null, null, null
@@ -45,6 +48,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
         contactPhones = index
         Timber.d("Найдено %d контактов", contacts.size)
+        initialized = true
     }
 
     override fun getContacts(): Collection<Contact> {
@@ -52,7 +56,11 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     override fun getContactById(id: Long): Contact? {
-        return contacts[id] ?: findContactById(id)?.also { cache(it) }
+        return if (initialized) contacts[id] else findContactById(id)?.also { cache(it) }
+    }
+
+    override fun getContactByPhone(phone: String): Contact? {
+        return if (initialized) contactPhones[phone] else findContactByPhone(phone)?.also { cache(it) }
     }
 
     override fun getContactByUri(uri: Uri): Contact? {
@@ -69,10 +77,6 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
                 getContactById(id)
             } else null
         }
-    }
-
-    override fun getContactByPhone(phone: String): Contact? {
-        return contactPhones[phone] ?: findContactByPhone(phone)?.also { cache(it) }
     }
 
     private fun cache(contact: Contact) {
@@ -147,21 +151,13 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
             val result = HashMap<Long, Contact>()
 
             while (cursor.moveToNext()) {
-                val id: Long = cursor.getLong(contactId)
-                val photo: Uri = Uri.parse(
+                val id = cursor.getLong(contactId)
+                val name = cursor.getStringOrNull(this@ContactCursorAdapter.displayName) ?: ""
+                val photo = Uri.parse(
                     cursor.getStringOrNull(this@ContactCursorAdapter.photoUri)
                         ?: "android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}"
                 )
-                result.getOrPut(
-                    id,
-                    {
-                        Contact(
-                            id,
-                            cursor.getStringOrNull(this@ContactCursorAdapter.displayName) ?: "",
-                            photo
-                        )
-                    }
-                ).let { contact ->
+                result.getOrPut(id) { Contact(id, name, photo) }.let { contact ->
                     contact.starred = 1 == cursor.getInt(starred)
                     when (cursor.getString(mimeType).dropWhile { c -> c != '/' }) {
                         "/contact_event" -> parseBirthday(contact)

@@ -2,7 +2,7 @@ package com.asinosoft.cdm.api
 
 import android.content.Context
 import com.asinosoft.cdm.data.Contact
-import java.util.* // ktlint-disable no-wildcard-imports
+import java.util.*
 
 /**
  * Доступ к истории звонков
