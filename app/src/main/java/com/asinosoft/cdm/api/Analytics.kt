@@ -1,6 +1,7 @@
 package com.asinosoft.cdm.api
 
 import android.os.Bundle
+import androidx.core.os.bundleOf
 import com.asinosoft.cdm.data.Contact
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
@@ -86,9 +87,15 @@ class Analytics {
             }
 
             Firebase.analytics.setUserProperty("contacts_count", contacts.count().toString())
-            Firebase.analytics.setUserProperty("contacts_with_avatar", contactsWithAvatar.toString())
+            Firebase.analytics.setUserProperty(
+                "contacts_with_avatar",
+                contactsWithAvatar.toString()
+            )
             Firebase.analytics.setUserProperty("favorites_count", starredCount.toString())
-            Firebase.analytics.setUserProperty("favorites_with_avatar", starredWithAvatar.toString())
+            Firebase.analytics.setUserProperty(
+                "favorites_with_avatar",
+                starredWithAvatar.toString()
+            )
         }
 
         fun logContactSettingsTab() =
@@ -96,11 +103,7 @@ class Analytics {
 
         fun logContactSetAction(direction: String, action: String) =
             Firebase.analytics.logEvent(
-                "contact_set_action",
-                Bundle().apply {
-                    putString("direction", direction)
-                    putString("action", action)
-                }
+                "contact_set_action", bundleOf("direction" to direction, "action" to action)
             )
 
         fun logDefaultDialer() =
@@ -108,8 +111,7 @@ class Analytics {
 
         fun logCheckDefaultDialer(default: Boolean) =
             Firebase.analytics.logEvent(
-                "check_default_dialer",
-                Bundle().apply { putBoolean("default", default) }
+                "check_default_dialer", bundleOf("default" to default)
             )
 
         fun logDoubleCall() =
@@ -119,10 +121,7 @@ class Analytics {
             Firebase.analytics.logEvent("favorite_action_$direction", Bundle.EMPTY)
 
         fun logFavoriteAdd(position: Int) =
-            Firebase.analytics.logEvent(
-                "favorite_add",
-                Bundle().apply { putInt("position", position) }
-            )
+            Firebase.analytics.logEvent("favorite_add", bundleOf("position" to position))
 
         fun logFavoriteClick() =
             Firebase.analytics.logEvent("favorite_click", Bundle.EMPTY)
@@ -134,10 +133,7 @@ class Analytics {
             Firebase.analytics.logEvent("favorite_plus", Bundle.EMPTY)
 
         fun logFavoriteRemove(position: Int) =
-            Firebase.analytics.logEvent(
-                "favorite_remove",
-                Bundle().apply { putInt("position", position) }
-            )
+            Firebase.analytics.logEvent("favorite_remove", bundleOf("position" to position))
 
         fun logFavoriteSwap() =
             Firebase.analytics.logEvent("favorite_swap", Bundle.EMPTY)
@@ -146,33 +142,21 @@ class Analytics {
             Firebase.analytics.logEvent("favorites_border_color", Bundle.EMPTY)
 
         fun logFavoritesBorderWidth(width: Int) =
-            Firebase.analytics.logEvent(
-                "favorites_border_width",
-                Bundle().apply { putInt("width", width) }
-            )
+            Firebase.analytics.logEvent("favorites_border_width", bundleOf("width" to width))
 
         fun logFavoritesCount(count: Int) =
-            Firebase.analytics.logEvent(
-                "favorites_count",
-                Bundle().apply { putInt("count", count) }
-            )
+            Firebase.analytics.logEvent("favorites_count", bundleOf("count" to count))
 
         fun logFavoritesPosition(position: String) =
-            Firebase.analytics.logEvent(
-                "favorites_position",
-                Bundle().apply { putString("position", position) }
-            )
+            Firebase.analytics.logEvent("favorites_position", bundleOf("position" to position))
 
         fun logFavoritesSize(size: Int) =
-            Firebase.analytics.logEvent("favorites_size", Bundle().apply { putInt("size", size) })
+            Firebase.analytics.logEvent("favorites_size", bundleOf("size" to size))
 
         fun logGlobalSetAction(direction: String, action: String) =
             Firebase.analytics.logEvent(
                 "global_set_action",
-                Bundle().apply {
-                    putString("direction", direction)
-                    putString("action", action)
-                }
+                bundleOf("direction" to direction, "action" to action)
             )
 
         fun logHistorySwipeLeft() =
@@ -221,6 +205,6 @@ class Analytics {
             Firebase.analytics.logEvent("settings_about_tab", Bundle.EMPTY)
 
         fun logTheme(theme: Int) =
-            Firebase.analytics.logEvent("theme", Bundle().apply { putInt("theme", theme) })
+            Firebase.analytics.logEvent("theme", bundleOf("theme" to theme))
     }
 }

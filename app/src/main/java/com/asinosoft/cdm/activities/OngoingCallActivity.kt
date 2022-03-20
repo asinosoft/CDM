@@ -13,6 +13,7 @@ import android.telecom.CallAudioState
 import android.telecom.PhoneAccountHandle
 import android.view.View
 import android.view.WindowManager
+import android.widget.ImageView
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.ContactRepositoryImpl
@@ -192,9 +193,9 @@ class OngoingCallActivity : BaseActivity() {
         } else {
             window.addFlags(
                 WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                        or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                        or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
-                        or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                    or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                    or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                    or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
             )
         }
 
@@ -290,10 +291,10 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoingCallLayout.answerBtn.visibility = View.INVISIBLE
         v.ongoingCallLayout.rejectBtn.visibility = View.INVISIBLE
         v.ongoingCallLayout.disconnect.visibility = View.VISIBLE
-        v.ongoingCallLayout.buttonHold.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonMute.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonKeypad.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonSpeaker.visibility = View.INVISIBLE
+        v.ongoingCallLayout.buttonHold.off()
+        v.ongoingCallLayout.buttonMute.on()
+        v.ongoingCallLayout.buttonKeypad.off()
+        v.ongoingCallLayout.buttonSpeaker.on()
     }
 
     /**
@@ -304,10 +305,10 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoingCallLayout.answerBtn.visibility = View.VISIBLE
         v.ongoingCallLayout.rejectBtn.visibility = View.VISIBLE
         v.ongoingCallLayout.disconnect.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonHold.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonMute.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonKeypad.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonSpeaker.visibility = View.INVISIBLE
+        v.ongoingCallLayout.buttonHold.off()
+        v.ongoingCallLayout.buttonMute.on()
+        v.ongoingCallLayout.buttonKeypad.off()
+        v.ongoingCallLayout.buttonSpeaker.on()
     }
 
     /**
@@ -318,10 +319,10 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoingCallLayout.answerBtn.visibility = View.INVISIBLE
         v.ongoingCallLayout.rejectBtn.visibility = View.INVISIBLE
         v.ongoingCallLayout.disconnect.visibility = View.VISIBLE
-        v.ongoingCallLayout.buttonHold.visibility = View.VISIBLE
-        v.ongoingCallLayout.buttonMute.visibility = View.VISIBLE
-        v.ongoingCallLayout.buttonKeypad.visibility = View.VISIBLE
-        v.ongoingCallLayout.buttonSpeaker.visibility = View.VISIBLE
+        v.ongoingCallLayout.buttonHold.on()
+        v.ongoingCallLayout.buttonMute.on()
+        v.ongoingCallLayout.buttonKeypad.on()
+        v.ongoingCallLayout.buttonSpeaker.on()
     }
 
     /**
@@ -427,5 +428,17 @@ class OngoingCallActivity : BaseActivity() {
             0,
             0
         )
+    }
+
+    private fun ImageView.off() {
+        visibility = View.VISIBLE
+        isClickable = false
+        imageAlpha = 64
+    }
+
+    private fun ImageView.on() {
+        visibility = View.VISIBLE
+        isClickable = true
+        imageAlpha = 255
     }
 }
