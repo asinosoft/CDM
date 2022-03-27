@@ -114,11 +114,14 @@ class NotificationManager(private val context: Context) {
         }
 
         val channel = if (Call.STATE_RINGING == callState) INCOMING_CHANNEL else ONGOING_CHANNEL
+        val priority =
+            if (Call.STATE_RINGING == callState) NotificationCompat.PRIORITY_HIGH else NotificationCompat.PRIORITY_DEFAULT
         val builder = NotificationCompat.Builder(context, channel)
             .setSmallIcon(R.drawable.call)
             .setLargeIcon(photo)
             .setContentIntent(openAppIntent(call))
             .setCategory(Notification.CATEGORY_CALL)
+            .setPriority(priority)
             .setCustomContentView(view)
             .setOngoing(true)
             .setSound(null)
@@ -126,7 +129,7 @@ class NotificationManager(private val context: Context) {
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setWhen(call.details.connectTimeMillis)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            .setFullScreenIntent(openAppIntent(call), true)
+            .setFullScreenIntent(openAppIntent(call), Call.STATE_RINGING == callState)
 
         context.notificationManager.notify(call.id, builder.build())
     }
