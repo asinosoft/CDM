@@ -10,7 +10,6 @@
 
     <style name="BaseTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="materialAlertDialogTheme">@style/AlertDialogTheme</item>
-<!--        <item name="android:listViewStyle">@style/TransparentListView</item>-->
         <item name="android:expandableListViewStyle">@style/TransparentExpandableListView</item>
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:windowTranslucentStatus">false</item>
@@ -128,6 +127,12 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:backgroundDimEnabled">false</item>
+
+        <!-- Диалог выбора SIM -->
+        <item name="materialAlertDialogTheme">@style/AlertDialogTheme</item>
+        <item name="colorSurface">@color/background_light</item>
+        <item name="android:textColor">@color/text_color_light</item>
+        <item name="android:textColorAlertDialogListItem">@color/text_color_light</item>
     </style>
 
 </resources>

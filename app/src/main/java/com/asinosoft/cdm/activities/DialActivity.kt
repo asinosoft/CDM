@@ -82,9 +82,11 @@ class DialActivity : AppCompatActivity() {
 
         if (null != default) {
             onSelect(default)
+            finish()
         } else if (1 == accounts.size || Build.VERSION.SDK_INT < 26) {
             Timber.d("Без вариантов SIM -> ${accounts[0]}")
             onSelect(accounts[0])
+            finish()
         } else {
             val slots: Array<String> =
                 accounts.mapNotNull { telephonyManager.createForPhoneAccountHandle(it)?.simOperatorName }

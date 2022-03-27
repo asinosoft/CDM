@@ -2,8 +2,12 @@
 
     <style name="AlertDialog" parent="MaterialAlertDialog.MaterialComponents">
         <item name="shapeAppearance">@style/RoundCorners</item>
-        <item name="materialAlertDialogBodyTextStyle">@style/Caption</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/Caption</item>
         <item name="android:windowTitleStyle">@style/TextAppearance.AppCompat.Title</item>
+    </style>
+
+    <style name="DialogTitle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">?android:attr/textColor</item>
     </style>
 
     <style name="Caption" parent="Widget.AppCompat.TextView">
