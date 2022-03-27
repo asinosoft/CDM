@@ -17,7 +17,6 @@ import java.io.File
 
 class ConfigImpl(private val context: Context) : Config {
     private val settings = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
-    private var _changed = false
 
     private enum class Keys {
         FIRST_RUN,
@@ -53,12 +52,9 @@ class ConfigImpl(private val context: Context) : Config {
         settings.edit().putBoolean(Keys.FIRST_RUN.name, false).apply()
     }
 
-    override var isChanged: Boolean = _changed
-
     override var theme: Int
         get() = settings.getInt(Keys.THEME.name, R.style.AppTheme_Light)
         set(theme) = settings.edit().putInt(Keys.THEME.name, theme).apply()
-            .also { _changed = true }
 
     override var background: Uri?
         get() = File(context.filesDir, "background").let {
@@ -73,7 +69,7 @@ class ConfigImpl(private val context: Context) : Config {
                 )
 
                 // Переключаемся в специальную тёмную тему
-                theme = R.style.AppTheme_Dark2
+                theme = 3
             }
             Analytics.logBackground()
         }
@@ -81,72 +77,59 @@ class ConfigImpl(private val context: Context) : Config {
     override var checkDefaultDialer: Boolean
         get() = settings.getBoolean(Keys.CHECK_DEFAULT_DIALER.name, true)
         set(value) = settings.edit().putBoolean(Keys.CHECK_DEFAULT_DIALER.name, value).apply()
-            .also { _changed = true }
 
     override var favoritesFirst: Boolean
         get() = settings.getBoolean(Keys.FAVORITES_LAYOUT.name, true)
         set(value) = settings.edit().putBoolean(Keys.FAVORITES_LAYOUT.name, value).apply()
-            .also { _changed = true }
 
     override var favoritesColumnCount: Int
         get() = settings.getInt(Keys.FAVORITES_COLUMNS_COUNT.name, 3)
         set(count) = settings.edit().putInt(Keys.FAVORITES_COLUMNS_COUNT.name, count).apply()
-            .also { _changed = true }
 
     override var favoritesSize: Int
         get() = settings.getInt(Keys.FAVORITES_SIZE.name, 200)
         set(size) = settings.edit().putInt(Keys.FAVORITES_SIZE.name, size).apply()
-            .also { _changed = true }
 
-    override var favoritesBorderColor: Int
+    override var favoritesBorderColor: Int?
         get() = settings.getInt(Keys.FAVORITES_BORDER_COLOR.name, Color.CYAN)
-        set(color) = settings.edit().putInt(Keys.FAVORITES_BORDER_COLOR.name, color).apply()
-            .also { _changed = true }
+        set(color) = settings.edit().apply {
+            if (null == color)
+                remove(Keys.FAVORITES_BORDER_COLOR.name)
+            else
+                putInt(Keys.FAVORITES_BORDER_COLOR.name, color)
+        }.apply()
 
     override var favoritesBorderWidth: Int
         get() = settings.getInt(Keys.FAVORITES_BORDER_WIDTH.name, 5)
         set(size) = settings.edit().putInt(Keys.FAVORITES_BORDER_WIDTH.name, size).apply()
-            .also { _changed = true }
 
     override var swipeLeftAction: Action.Type
         get() = settings.getString(Keys.SWIPE_LEFT_ACTION.name, Action.Type.WhatsAppChat.name)
             ?.let { Action.Type.valueOf(it) }
             ?: Action.Type.WhatsAppChat
         set(action) = settings.edit().putString(Keys.SWIPE_LEFT_ACTION.name, action.name).apply()
-            .also {
-                _changed = true
-                Analytics.logGlobalSetAction("LEFT", action.name)
-            }
+            .also { Analytics.logGlobalSetAction("LEFT", action.name) }
 
     override var swipeRightAction: Action.Type
         get() = settings.getString(Keys.SWIPE_RIGHT_ACTION.name, Action.Type.PhoneCall.name)
             ?.let { Action.Type.valueOf(it) }
             ?: Action.Type.PhoneCall
         set(action) = settings.edit().putString(Keys.SWIPE_RIGHT_ACTION.name, action.name).apply()
-            .also {
-                _changed = true
-                Analytics.logGlobalSetAction("RIGHT", action.name)
-            }
+            .also { Analytics.logGlobalSetAction("RIGHT", action.name) }
 
     override var swipeUpAction: Action.Type
         get() = settings.getString(Keys.SWIPE_UP_ACTION.name, Action.Type.Email.name)
             ?.let { Action.Type.valueOf(it) }
             ?: Action.Type.Email
         set(action) = settings.edit().putString(Keys.SWIPE_UP_ACTION.name, action.name).apply()
-            .also {
-                _changed = true
-                Analytics.logGlobalSetAction("UP", action.name)
-            }
+            .also { Analytics.logGlobalSetAction("UP", action.name) }
 
     override var swipeDownAction: Action.Type
         get() = settings.getString(Keys.SWIPE_DOWN_ACTION.name, Action.Type.Sms.name)
             ?.let { Action.Type.valueOf(it) }
             ?: Action.Type.Sms
         set(action) = settings.edit().putString(Keys.SWIPE_DOWN_ACTION.name, action.name).apply()
-            .also {
-                _changed = true
-                Analytics.logGlobalSetAction("DOWN", action.name)
-            }
+            .also { Analytics.logGlobalSetAction("DOWN", action.name) }
 
     override fun getContactSettings(contact: Contact): DirectActions {
         val preferences = context.getSharedPreferences("contacts", Context.MODE_PRIVATE)

@@ -19,6 +19,7 @@ import timber.log.Timber
  * Основной класс приложения, отвечает за работу главного экрана (нового) приложения
  */
 class ManagerActivity : BaseActivity() {
+    private val config = App.instance!!.config
     private val model: ManagerViewModel by viewModels()
 
     /**
@@ -35,7 +36,7 @@ class ManagerActivity : BaseActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (App.instance!!.config.isFirstRun) {
+        if (config.isFirstRun) {
             Timber.d("Wait for RemoteConfig")
             installSplashScreen().setKeepOnScreenCondition { !remoteConfigInitialized }
         } else {
@@ -52,8 +53,8 @@ class ManagerActivity : BaseActivity() {
         Firebase.remoteConfig.fetchAndActivate().addOnCompleteListener(this) {
             Timber.d("RemoteConfig initialized")
             remoteConfigInitialized = true
-            if (App.instance!!.config.isFirstRun) {
-                App.instance!!.config.applyRemoteConfig()
+            if (config.isFirstRun) {
+                config.applyRemoteConfig()
                 recreate()
             }
         }
@@ -76,9 +77,7 @@ class ManagerActivity : BaseActivity() {
         Timber.d("onResume")
         super.onResume()
 
-        if (App.instance!!.config.isChanged) {
-            recreate()
-        } else if (!isModelRefreshed) {
+        if (!isModelRefreshed) {
             isModelRefreshed = true
             model.refresh()
         }

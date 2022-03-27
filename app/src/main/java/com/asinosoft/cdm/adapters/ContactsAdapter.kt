@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ContactItemBinding
@@ -32,7 +33,13 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.Holder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         context = parent.context
-        return Holder(ContactItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        return Holder(
+            ContactItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun getItemCount() = contacts.size
@@ -46,6 +53,8 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.Holder>() {
 
         fun bind(contact: Contact) {
             v.imageContact.setImageURI(contact.photoUri)
+            App.instance?.config?.favoritesBorderColor?.let { v.imageContact.borderColor = it }
+
             v.name.text = contact.name
             var tNum = ""
             contact.phones.forEach {

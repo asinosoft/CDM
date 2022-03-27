@@ -95,7 +95,7 @@ class FavoritesAdapter(
                 id = Keys.idCir
                 tag = n
                 borderWidth = config.favoritesBorderWidth.toFloat()
-                borderColor = config.favoritesBorderColor
+                config.favoritesBorderColor?.let { borderColor = it }
                 replaceListener = {
                     touchHelper.startDrag(it)
                 }

@@ -1,11 +1,11 @@
 package com.asinosoft.cdm.activities
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.telecom.PhoneAccount
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -17,6 +17,7 @@ import com.asinosoft.cdm.helpers.isDefaultDialer
 import com.asinosoft.cdm.helpers.setDefaultDialer
 import com.asinosoft.cdm.helpers.telecomManager
 import com.asinosoft.cdm.helpers.telephonyManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import timber.log.Timber
 
 /**
@@ -67,7 +68,7 @@ class DialActivity : AppCompatActivity() {
 
     @SuppressLint("MissingPermission")
     private fun withDefaultPhoneAccount(onSelect: (PhoneAccountHandle) -> Unit) {
-        val account = telecomManager.getDefaultOutgoingPhoneAccount("tel")
+        val account = telecomManager.getDefaultOutgoingPhoneAccount(PhoneAccount.SCHEME_TEL)
         account?.let(onSelect)
         finish()
     }
@@ -75,8 +76,13 @@ class DialActivity : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     private fun selectPhoneAccount(onSelect: (PhoneAccountHandle) -> Unit) {
         Timber.d("Выбрать SIM для исходящего звонка")
+
+        val default = telecomManager.getDefaultOutgoingPhoneAccount(PhoneAccount.SCHEME_TEL)
         val accounts = telecomManager.callCapablePhoneAccounts
-        if (1 == accounts.size || Build.VERSION.SDK_INT < 26) {
+
+        if (null != default) {
+            onSelect(default)
+        } else if (1 == accounts.size || Build.VERSION.SDK_INT < 26) {
             Timber.d("Без вариантов SIM -> ${accounts[0]}")
             onSelect(accounts[0])
         } else {
@@ -87,7 +93,7 @@ class DialActivity : AppCompatActivity() {
                 arrayOf(R.drawable.sim1, R.drawable.sim2, R.drawable.sim3)
             val adapter = StringsWithIconsAdapter(this, slots, icons)
 
-            AlertDialog.Builder(this)
+            MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.sim_selection_title)
                 .setAdapter(adapter) { dialog, index ->
                     Timber.d("Выбран SIM -> ${accounts[index]}")

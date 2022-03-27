@@ -60,7 +60,7 @@ class FavoritesSettingsFragment : Fragment() {
 
         v.imgFavorite.setSize(model.config.favoritesSize)
         v.imgFavorite.borderWidth = model.config.favoritesBorderWidth
-        v.imgFavorite.borderColor = model.config.favoritesBorderColor
+        model.config.favoritesBorderColor?.let { v.imgFavorite.borderColor = it }
 
         setFavoritesLayout(model.config.favoritesFirst)
 
@@ -199,7 +199,7 @@ class FavoritesSettingsFragment : Fragment() {
 
         v.pickBorderColor.setOnClickListener {
             ColorPickerDialog.newBuilder()
-                .setColor(model.config.favoritesBorderColor)
+                .apply { model.config.favoritesBorderColor?.let { setColor(it) } }
                 .show(activity)
         }
 
@@ -211,6 +211,8 @@ class FavoritesSettingsFragment : Fragment() {
             ThemeSelectionDialog { theme ->
                 Analytics.logTheme(theme)
                 model.config.theme = theme
+                // При изменении темы сбрасываем цвет обводки на дефолтный
+                model.config.favoritesBorderColor = null
                 activity?.recreate()
             }.show(parentFragmentManager, "Select theme")
         }

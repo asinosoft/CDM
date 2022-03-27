@@ -65,14 +65,14 @@ class CallsAdapter(
 
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 return /* избранные контакты */ (0 == oldItemPosition && 0 == newItemPosition) ||
-                        /* звонки */ oldItemPosition > 0 && newItemPosition > 0 &&
-                        oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
+                    /* звонки */ oldItemPosition > 0 && newItemPosition > 0 &&
+                    oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
             }
 
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 return /* избранные контакты */ (0 == oldItemPosition && 0 == newItemPosition) ||
-                        /* звонки */ oldItemPosition > 0 && newItemPosition > 0 &&
-                        oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
+                    /* звонки */ oldItemPosition > 0 && newItemPosition > 0 &&
+                    oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
             }
         }).dispatchUpdatesTo(this)
     }
@@ -94,6 +94,7 @@ class CallsAdapter(
 
     private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem) {
         v.imageContact.setImageURI(call.contact.photoUri)
+        config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
         v.name.text = call.contact.name
         v.number.text = "${call.prettyPhone}, ${Metoths.getFormattedTime(call.duration)}"
         v.timeContact.text = call.time

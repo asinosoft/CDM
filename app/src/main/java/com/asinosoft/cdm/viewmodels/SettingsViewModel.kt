@@ -39,6 +39,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 R.drawable.background_8,
                 R.drawable.background_9,
                 R.drawable.background_10,
+                R.drawable.background_11,
             )
         )
     }

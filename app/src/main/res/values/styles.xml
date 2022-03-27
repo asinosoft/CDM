@@ -3,7 +3,6 @@
     <style name="AlertDialog" parent="MaterialAlertDialog.MaterialComponents">
         <item name="shapeAppearance">@style/RoundCorners</item>
         <item name="materialAlertDialogBodyTextStyle">@style/Caption</item>
-        <!--        <item name="android:windowTitleStyle">@style/Caption</item>-->
         <item name="android:windowTitleStyle">@style/TextAppearance.AppCompat.Title</item>
     </style>
 

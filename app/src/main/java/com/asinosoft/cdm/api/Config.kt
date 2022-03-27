@@ -10,8 +10,6 @@ interface Config {
 
     fun applyRemoteConfig()
 
-    var isChanged: Boolean
-
     // Выбранная тема
     var theme: Int
 
@@ -25,7 +23,7 @@ interface Config {
     var favoritesFirst: Boolean
     var favoritesColumnCount: Int
     var favoritesSize: Int
-    var favoritesBorderColor: Int
+    var favoritesBorderColor: Int?
     var favoritesBorderWidth: Int
 
     // Общие настройки swipe-действий

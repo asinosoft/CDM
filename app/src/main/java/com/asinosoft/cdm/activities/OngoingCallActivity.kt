@@ -305,10 +305,10 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoingCallLayout.answerBtn.visibility = View.VISIBLE
         v.ongoingCallLayout.rejectBtn.visibility = View.VISIBLE
         v.ongoingCallLayout.disconnect.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonHold.off()
-        v.ongoingCallLayout.buttonMute.on()
-        v.ongoingCallLayout.buttonKeypad.off()
-        v.ongoingCallLayout.buttonSpeaker.on()
+        v.ongoingCallLayout.buttonHold.visibility = View.INVISIBLE
+        v.ongoingCallLayout.buttonMute.visibility = View.INVISIBLE
+        v.ongoingCallLayout.buttonKeypad.visibility = View.INVISIBLE
+        v.ongoingCallLayout.buttonSpeaker.visibility = View.INVISIBLE
     }
 
     /**

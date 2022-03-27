@@ -1,12 +1,10 @@
 package com.asinosoft.cdm.activities
 
-import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.os.Bundle
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -21,14 +19,9 @@ import com.asinosoft.cdm.helpers.hasPermissions
 open class BaseActivity : AppCompatActivity() {
     private var actionWithPermission: (Boolean) -> Unit = {}
 
-    @SuppressLint("ResourceType")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onResume() {
-        super.onResume()
         applyBackgroundImage()
+        super.onResume()
     }
 
     override fun getTheme(): Resources.Theme {
