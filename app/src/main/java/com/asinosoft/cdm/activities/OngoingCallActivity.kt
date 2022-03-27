@@ -80,7 +80,7 @@ class OngoingCallActivity : BaseActivity() {
 
         CallService.instance?.getCall(intent?.data)?.let {
             setCurrentCall(it)
-        }
+        } ?: finish()
 
         super.onResume()
     }
