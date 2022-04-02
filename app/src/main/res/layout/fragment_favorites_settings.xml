@@ -191,6 +191,21 @@
             app:bsb_progress="1"
             app:bsb_second_track_color="@color/blue"
             app:bsb_touch_to_seek="true" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="48dp">
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/list_divider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:switchPadding="24dp"
+                android:text="@string/list_divider"
+                android:textColor="?android:attr/textColor" />
+        </RelativeLayout>
     </LinearLayout>
 
 </LinearLayout>

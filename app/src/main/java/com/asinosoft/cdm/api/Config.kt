@@ -5,6 +5,9 @@ import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
 
+/**
+ * Настройки интерфейса и поведения приложения
+ */
 interface Config {
     val isFirstRun: Boolean
 
@@ -31,6 +34,9 @@ interface Config {
     var swipeRightAction: Action.Type
     var swipeUpAction: Action.Type
     var swipeDownAction: Action.Type
+
+    // Горизонтальная черта, разделяющая записи в истории звонков
+    var listDivider: Boolean
 
     // Настройки swipe-действия для конкретного контакта
     fun getContactSettings(contact: Contact): DirectActions

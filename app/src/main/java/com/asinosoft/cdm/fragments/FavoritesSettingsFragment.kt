@@ -71,6 +71,8 @@ class FavoritesSettingsFragment : Fragment() {
 
         val themeNames = resources.getStringArray(R.array.themeNames)
         v.themes.text = themeNames.elementAtOrElse(model.config.theme) { themeNames[0] }
+
+        v.listDivider.isChecked = model.config.listDivider
     }
 
     private fun setFavoritesLayout(layout: Boolean) {
@@ -219,6 +221,10 @@ class FavoritesSettingsFragment : Fragment() {
 
         v.backgrounds.setOnClickListener {
             findNavController().navigate(R.id.action_select_background)
+        }
+
+        v.listDivider.setOnCheckedChangeListener { _, value ->
+            model.config.listDivider = value
         }
     }
 }

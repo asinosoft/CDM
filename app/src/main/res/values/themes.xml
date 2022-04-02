@@ -38,6 +38,7 @@
         <item name="android:navigationBarColor">@color/system_navbar_color_light</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="popupColor">@color/popup_color_light</item>
+        <item name="android:listDivider">@color/divider_color_light</item>
 
         <!-- Цвет текста в диалоге выбора SIM -->
         <item name="colorSurface">@color/background_light</item>
@@ -60,6 +61,7 @@
         <item name="android:navigationBarColor">@color/system_navbar_color_gray</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_gray</item>
+        <item name="android:listDivider">@color/divider_color_gray</item>
 
         <!-- Цвет текста в диалоге выбора SIM -->
         <item name="colorSurface">@color/background_gray</item>
@@ -82,6 +84,7 @@
         <item name="android:navigationBarColor">@color/system_navbar_color_dark</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_dark</item>
+        <item name="android:listDivider">@color/divider_color_dark</item>
 
         <!-- Цвет текста в диалоге выбора SIM -->
         <item name="colorSurface">@color/background_dark</item>
@@ -105,6 +108,7 @@
         <item name="android:navigationBarColor">@color/system_navbar_color_dark</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_dark</item>
+        <item name="android:listDivider">@color/divider_color_dark</item>
 
         <!-- Цвет текста в диалоге выбора SIM -->
         <item name="colorSurface">@color/background_dark</item>

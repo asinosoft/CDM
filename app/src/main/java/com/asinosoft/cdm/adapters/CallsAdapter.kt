@@ -4,6 +4,7 @@ import android.content.Context
 import android.provider.CallLog
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
@@ -93,6 +94,8 @@ class CallsAdapter(
     }
 
     private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem) {
+        v.topDivider.isVisible = config.listDivider && config.favoritesFirst
+        v.bottomDivider.isVisible = config.listDivider && !config.favoritesFirst
         v.imageContact.setImageURI(call.contact.photoUri)
         config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
         v.name.text = call.contact.name

@@ -35,6 +35,8 @@ class ConfigImpl(private val context: Context) : Config {
         SWIPE_RIGHT_ACTION,
         SWIPE_UP_ACTION,
         SWIPE_DOWN_ACTION,
+
+        LIST_DIVIDER,
     }
 
     override val isFirstRun: Boolean
@@ -130,6 +132,10 @@ class ConfigImpl(private val context: Context) : Config {
             ?: Action.Type.Sms
         set(action) = settings.edit().putString(Keys.SWIPE_DOWN_ACTION.name, action.name).apply()
             .also { Analytics.logGlobalSetAction("DOWN", action.name) }
+
+    override var listDivider: Boolean
+        get() = settings.getBoolean(Keys.LIST_DIVIDER.name, false)
+        set(value) = settings.edit().putBoolean(Keys.LIST_DIVIDER.name, value).apply()
 
     override fun getContactSettings(contact: Contact): DirectActions {
         val preferences = context.getSharedPreferences("contacts", Context.MODE_PRIVATE)

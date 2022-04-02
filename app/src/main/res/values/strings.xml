@@ -80,6 +80,7 @@
     <string name="favorites_border_width">Border width:</string>
     <string name="favorites_sample">Sample</string>
     <string name="available_actions">Available actions</string>
+    <string name="list_divider">Разделитель в истории звонков</string>
 
     <string name="themes">Theme</string>
     <string name="theme_light">light</string>
