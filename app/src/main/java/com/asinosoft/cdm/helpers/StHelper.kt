@@ -30,7 +30,7 @@ object StHelper {
     fun parseDateToddMMyyyy(time: String): String {
         try {
             return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(time)?.let { date ->
-                return SimpleDateFormat("dd MMMM yyyy г.", Locale.getDefault()).format(date)
+                return SimpleDateFormat("d MMMM yyyy г.", Locale.getDefault()).format(date)
             } ?: ""
         } catch (e: Exception) {
             return ""

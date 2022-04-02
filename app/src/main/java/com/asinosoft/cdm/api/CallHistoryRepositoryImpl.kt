@@ -89,7 +89,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
     inner class HistoryItemCursorAdapter(
         private val cursor: Cursor
     ) {
-        private val dateFormat = java.text.SimpleDateFormat("dd.MM", Locale.getDefault())
+        private val dateFormat = java.text.SimpleDateFormat("d MMMM", Locale.getDefault())
         private val timeFormat = java.text.SimpleDateFormat("HH:mm", Locale.getDefault())
 
         private val colNumber = cursor.getColumnIndex(CallLog.Calls.NUMBER)

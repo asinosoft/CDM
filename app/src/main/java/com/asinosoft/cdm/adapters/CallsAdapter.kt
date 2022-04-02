@@ -3,6 +3,7 @@ package com.asinosoft.cdm.adapters
 import android.content.Context
 import android.provider.CallLog
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
@@ -16,8 +17,10 @@ import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ItemCallBinding
 import com.asinosoft.cdm.helpers.Metoths
+import com.asinosoft.cdm.helpers.StHelper
 import com.zerobranch.layout.SwipeLayout
 import java.security.InvalidParameterException
+import java.util.*
 
 /**
  * Адаптер списка последних звонков, который показывается в активности "Просмотр контакта"
@@ -99,9 +102,13 @@ class CallsAdapter(
         v.imageContact.setImageURI(call.contact.photoUri)
         config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
         v.name.text = call.contact.name
-        v.number.text = "${call.prettyPhone}, ${Metoths.getFormattedTime(call.duration)}"
-        v.timeContact.text = call.time
+        v.number.text = call.prettyPhone
+        v.duration.text = Metoths.getFormattedTime(call.duration)
         v.dateContact.text = call.date
+        if (call.timestamp.after(StHelper.today()))
+            v.timeContact.text = call.time
+        else
+            v.timeContact.visibility = View.INVISIBLE
 
         val directActions = config.getContactSettings(call.contact)
         v.imageLeftAction.setImageResource(Action.resourceByType(directActions.left.type))

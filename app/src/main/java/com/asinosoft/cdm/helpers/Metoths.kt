@@ -26,7 +26,6 @@ import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.helpers.Metoths.Companion.Direction.*
-import timber.log.Timber
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
@@ -208,15 +207,8 @@ class Metoths {
             }
         }
 
-        fun getFormattedTime(duration: Long): String {
-            var str = "0:00"
-            try {
-                str = "${duration / 60}:${duration % 60}"
-            } catch (e: Exception) {
-                Timber.e(e)
-            }
-            return str
-        }
+        fun getFormattedTime(duration: Long): String =
+            String.format("%d:%02d", duration / 60, duration % 60)
 
         fun getThemeColor(context: Context, attribute: Int): Int {
             val typedValue = TypedValue()

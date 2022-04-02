@@ -36,7 +36,7 @@ class HistoryDetailsCallsAdapter(
         const val TYPE_ADVERTISER = 1
     }
 
-    private val prettyDateFormat = java.text.SimpleDateFormat("dd MMMM", Locale.getDefault())
+    private val prettyDateFormat = java.text.SimpleDateFormat("d MMMM", Locale.getDefault())
     private val today: Date = StHelper.today()
     private val yesterday: Date = Date(today.time - 86400)
 
@@ -84,11 +84,8 @@ class HistoryDetailsCallsAdapter(
 
     private fun bindCallHistoryItem(v: ContactCallItemBinding, call: CallHistoryItem) {
         v.divider.isVisible = config.listDivider
-        v.number.text = context.resources.getString(
-            R.string.call_contact_number,
-            call.prettyPhone,
-            Metoths.getFormattedTime(call.duration)
-        )
+        v.number.text = call.prettyPhone
+        v.duration.text = Metoths.getFormattedTime(call.duration)
         v.time.text = call.time
         v.date.text = formatDate(call.timestamp)
 

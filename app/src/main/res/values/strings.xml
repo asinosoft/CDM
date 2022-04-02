@@ -108,7 +108,6 @@
     <string name="background_custom">Custom</string>
     <string name="digit_star" translatable="false">*</string>
     <string name="digit_jail" translatable="false">#</string>
-    <string name="call_contact_number" translatable="false">%s, %s</string>
 
     <string name="sim_state_absent">empty</string>
     <string name="sim_state_locked">locked</string>

@@ -19,7 +19,7 @@
     <com.zerobranch.layout.SwipeLayout
         android:id="@+id/swipe_layout"
         android:layout_width="match_parent"
-        android:layout_height="65dp"
+        android:layout_height="70dp"
         app:draggedItem="@id/drag_layout"
         app:isTogether="true"
         app:leftItem="@id/imageRightAction"
@@ -28,21 +28,21 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageLeftAction"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_gravity="end"
-            android:layout_marginEnd="-64dp"
-            android:padding="8dp"
+            android:layout_marginEnd="-70dp"
+            android:padding="4dp"
             android:src="@drawable/ic_phone_call"
             android:visibility="visible"
             app:civ_border_width="0dp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageRightAction"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_marginStart="-64dp"
-            android:padding="8dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="-70dp"
+            android:padding="4dp"
             android:src="@drawable/ic_whatsapp_chat"
             android:visibility="visible"
             app:civ_border_width="0dp" />
@@ -56,12 +56,12 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imageContact"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="4dp"
                 android:src="@drawable/ic_default_photo"
                 app:civ_border_color="?android:attr/colorPrimary"
                 app:civ_border_width="1dp" />
@@ -97,8 +97,20 @@
                 android:layout_marginTop="2dp"
                 android:layout_toEndOf="@id/typeCall"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="16sp"
-                tools:text="number" />
+                android:textSize="14sp"
+                tools:text="+78889994422" />
+
+            <TextView
+                android:id="@+id/duration"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:layout_below="@id/name"
+                android:layout_marginTop="2dp"
+                android:layout_toEndOf="@id/number"
+                android:layout_marginStart="16dp"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="14sp"
+                tools:text="4:56" />
 
             <TextView
                 android:id="@+id/timeContact"
@@ -109,7 +121,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="13dp"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 tools:text="time" />
 
             <TextView
