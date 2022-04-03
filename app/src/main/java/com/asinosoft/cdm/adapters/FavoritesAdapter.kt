@@ -8,6 +8,7 @@ import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -83,11 +84,13 @@ class FavoritesAdapter(
                 contact = favorite.contact
 
                 setActionImage(v.actionView)
-                if (null == contact) {
-                    setImageResource(R.drawable.plus)
-                } else {
-                    setImageURI(contact?.photoUri)
-                }
+                setImageDrawable(
+                    contact?.getAvatar(context) ?: ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.ic_default_photo,
+                        null
+                    )
+                )
                 lockableNestedScrollView = callsLayoutManager
                 deleteCir = deleteButton
                 editCir = editButton

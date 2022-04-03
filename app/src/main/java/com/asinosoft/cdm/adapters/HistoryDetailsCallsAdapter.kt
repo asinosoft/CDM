@@ -36,7 +36,7 @@ class HistoryDetailsCallsAdapter(
         const val TYPE_ADVERTISER = 1
     }
 
-    private val prettyDateFormat = java.text.SimpleDateFormat("d MMMM", Locale.getDefault())
+    private val prettyDateFormat = java.text.SimpleDateFormat("d MMM", Locale.getDefault())
     private val today: Date = StHelper.today()
     private val yesterday: Date = Date(today.time - 86400)
 

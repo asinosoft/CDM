@@ -9,7 +9,6 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Email
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import androidx.core.database.getStringOrNull
-import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
@@ -149,11 +148,11 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(contactId)
                 val name = cursor.getStringOrNull(this@ContactCursorAdapter.displayName) ?: ""
-                val photo = Uri.parse(
-                    cursor.getStringOrNull(this@ContactCursorAdapter.photoUri)
-                        ?: "android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}"
-                )
-                result.getOrPut(id) { Contact(id, name, photo) }.let { contact ->
+                val photo = cursor.getStringOrNull(this@ContactCursorAdapter.photoUri)
+                    ?.let { Uri.parse(it) }
+
+                result.getOrPut(id) { Contact(id, name) }.let { contact ->
+                    contact.photoUri = photo
                     contact.starred = 1 == cursor.getInt(starred)
                     when (cursor.getString(mimeType).dropWhile { c -> c != '/' }) {
                         "/contact_event" -> parseBirthday(contact)

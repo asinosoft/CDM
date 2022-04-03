@@ -99,7 +99,7 @@ class CallsAdapter(
     private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem) {
         v.topDivider.isVisible = config.listDivider && config.favoritesFirst
         v.bottomDivider.isVisible = config.listDivider && !config.favoritesFirst
-        v.imageContact.setImageURI(call.contact.photoUri)
+        v.imageContact.setImageDrawable(call.contact.getAvatar(context))
         config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
         v.name.text = call.contact.name
         v.number.text = call.prettyPhone

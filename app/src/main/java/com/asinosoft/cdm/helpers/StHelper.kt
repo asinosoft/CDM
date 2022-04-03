@@ -73,6 +73,7 @@ object StHelper {
 
     fun today(): Date {
         val now = Calendar.getInstance()
+        now.set(Calendar.AM_PM, Calendar.AM)
         now.set(Calendar.HOUR, 0)
         now.set(Calendar.MINUTE, 0)
         now.set(Calendar.SECOND, 0)

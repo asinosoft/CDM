@@ -52,7 +52,7 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.Holder>() {
         RecyclerView.ViewHolder(v.root) {
 
         fun bind(contact: Contact) {
-            v.imageContact.setImageURI(contact.photoUri)
+            v.imageContact.setImageDrawable(contact.getAvatar(context))
             App.instance?.config?.favoritesBorderColor?.let { v.imageContact.borderColor = it }
 
             v.name.text = contact.name
