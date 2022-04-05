@@ -109,7 +109,7 @@
         <item name="android:navigationBarColor">@color/system_navbar_color_dark</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_dark</item>
-        <item name="android:listDivider">@color/divider_color_dark</item>
+        <item name="android:listDivider">@color/divider_color_dark2</item>
 
         <!-- Цвет текста в диалоге выбора SIM -->
         <item name="colorSurface">@color/background_dark</item>

@@ -5,7 +5,6 @@ import android.content.Context
 import android.provider.CallLog
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.asinosoft.cdm.R
@@ -83,7 +82,6 @@ class HistoryDetailsCallsAdapter(
     }
 
     private fun bindCallHistoryItem(v: ContactCallItemBinding, call: CallHistoryItem) {
-        v.divider.isVisible = config.listDivider
         v.number.text = call.prettyPhone
         v.duration.text = Metoths.getFormattedTime(call.duration)
         v.time.text = call.time

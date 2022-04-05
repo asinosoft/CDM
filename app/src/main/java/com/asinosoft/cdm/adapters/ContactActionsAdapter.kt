@@ -6,9 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.asinosoft.cdm.App
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
@@ -97,9 +95,6 @@ class ContactActionsAdapter(private val contact: Contact) :
             Action.Group.Viber -> holder.bindViber(key, actions)
             Action.Group.WhatsApp -> holder.bindWhatsApp(key, actions)
         }
-
-        holder.view.findViewById<View>(R.id.divider).isVisible =
-            App.instance?.config?.listDivider ?: false
     }
 
     private fun bindAdvertiser(holder: ViewContactInfo) {
