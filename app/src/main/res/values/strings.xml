@@ -80,6 +80,7 @@
     <string name="favorites_border_width">Border width:</string>
     <string name="favorites_sample">Sample</string>
     <string name="available_actions">Available actions</string>
+    <string name="list_divider">Разделитель в истории звонков</string>
 
     <string name="themes">Theme</string>
     <string name="theme_light">light</string>
@@ -107,7 +108,6 @@
     <string name="background_custom">Custom</string>
     <string name="digit_star" translatable="false">*</string>
     <string name="digit_jail" translatable="false">#</string>
-    <string name="call_contact_number" translatable="false">%s, %s</string>
 
     <string name="sim_state_absent">empty</string>
     <string name="sim_state_locked">locked</string>

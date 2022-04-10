@@ -35,5 +35,6 @@
         <item>@drawable/background_8</item>
         <item>@drawable/background_9</item>
         <item>@drawable/background_10</item>
+        <item>@drawable/background_11</item>
     </array>
 </resources>

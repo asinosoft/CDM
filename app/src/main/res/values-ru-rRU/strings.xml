@@ -67,6 +67,8 @@
     <string name="favorites_border_width">Ширина обводки кнопок:</string>
     <string name="favorites_sample">Пример кнопки избранного контакта</string>
     <string name="available_actions">Доступные действия</string>
+    <string name="list_divider">Разделитель в истории звонков</string>
+
     <string name="themes">Тема</string>
     <string name="theme_light">светлая</string>
     <string name="theme_gray">серая</string>

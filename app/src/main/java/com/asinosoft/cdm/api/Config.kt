@@ -5,11 +5,10 @@ import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
 
+/**
+ * Настройки интерфейса и поведения приложения
+ */
 interface Config {
-    val isFirstRun: Boolean
-
-    fun applyRemoteConfig()
-
     var isChanged: Boolean
 
     // Выбранная тема
@@ -25,7 +24,7 @@ interface Config {
     var favoritesFirst: Boolean
     var favoritesColumnCount: Int
     var favoritesSize: Int
-    var favoritesBorderColor: Int
+    var favoritesBorderColor: Int?
     var favoritesBorderWidth: Int
 
     // Общие настройки swipe-действий
@@ -33,6 +32,9 @@ interface Config {
     var swipeRightAction: Action.Type
     var swipeUpAction: Action.Type
     var swipeDownAction: Action.Type
+
+    // Горизонтальная черта, разделяющая записи в истории звонков
+    var listDivider: Boolean
 
     // Настройки swipe-действия для конкретного контакта
     fun getContactSettings(contact: Contact): DirectActions

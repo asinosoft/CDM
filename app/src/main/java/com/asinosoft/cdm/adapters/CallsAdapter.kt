@@ -3,7 +3,9 @@ package com.asinosoft.cdm.adapters
 import android.content.Context
 import android.provider.CallLog
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
@@ -15,8 +17,10 @@ import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ItemCallBinding
 import com.asinosoft.cdm.helpers.Metoths
+import com.asinosoft.cdm.helpers.StHelper
 import com.zerobranch.layout.SwipeLayout
 import java.security.InvalidParameterException
+import java.util.*
 
 /**
  * Адаптер списка последних звонков, который показывается в активности "Просмотр контакта"
@@ -65,14 +69,14 @@ class CallsAdapter(
 
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 return /* избранные контакты */ (0 == oldItemPosition && 0 == newItemPosition) ||
-                        /* звонки */ oldItemPosition > 0 && newItemPosition > 0 &&
-                        oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
+                    /* звонки */ oldItemPosition > 0 && newItemPosition > 0 &&
+                    oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
             }
 
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 return /* избранные контакты */ (0 == oldItemPosition && 0 == newItemPosition) ||
-                        /* звонки */ oldItemPosition > 0 && newItemPosition > 0 &&
-                        oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
+                    /* звонки */ oldItemPosition > 0 && newItemPosition > 0 &&
+                    oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
             }
         }).dispatchUpdatesTo(this)
     }
@@ -93,11 +97,18 @@ class CallsAdapter(
     }
 
     private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem) {
-        v.imageContact.setImageURI(call.contact.photoUri)
+        v.topDivider.isVisible = config.listDivider && config.favoritesFirst
+        v.bottomDivider.isVisible = config.listDivider && !config.favoritesFirst
+        v.imageContact.setImageDrawable(call.contact.getAvatar(context))
+        config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
         v.name.text = call.contact.name
-        v.number.text = "${call.prettyPhone}, ${Metoths.getFormattedTime(call.duration)}"
-        v.timeContact.text = call.time
+        v.number.text = call.prettyPhone
+        v.duration.text = Metoths.getFormattedTime(call.duration)
         v.dateContact.text = call.date
+        if (call.timestamp.after(StHelper.today()))
+            v.timeContact.text = call.time
+        else
+            v.timeContact.visibility = View.INVISIBLE
 
         val directActions = config.getContactSettings(call.contact)
         v.imageLeftAction.setImageResource(Action.resourceByType(directActions.left.type))

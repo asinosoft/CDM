@@ -80,7 +80,7 @@ class Analytics {
             var starredWithAvatar = 0
             contacts.forEach { contact ->
                 if (contact.starred) ++starredCount
-                if ("android.resource" !== contact.photoUri.scheme) {
+                if ("android.resource" !== contact.photoUri?.scheme) {
                     ++contactsWithAvatar
                     if (contact.starred) ++starredWithAvatar
                 }

@@ -79,9 +79,8 @@ class NotificationManager(private val context: Context) {
         val contact = ContactRepositoryImpl(context).getContactByPhone(phone)
         val callState = call.callState
 
-        val photo =
-            if (null == contact) context.loadResourceAsBitmap(R.drawable.ic_default_photo)
-            else context.loadUriAsBitmap(contact.photoUri)
+        val photo = contact?.photoUri?.let { context.loadUriAsBitmap(it) }
+            ?: context.loadResourceAsBitmap(R.drawable.ic_default_photo)
 
         val view = RemoteViews(context.packageName, R.layout.call_notification).apply {
             setTextViewText(R.id.notification_caller_name, contact?.name)

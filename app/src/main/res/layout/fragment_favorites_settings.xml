@@ -114,10 +114,11 @@
             android:id="@+id/pick_border_color"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="24dp"
+            android:layout_toEndOf="@id/img_favorite"
             android:background="@drawable/palette"
+            android:backgroundTint="?android:attr/colorPrimary"
             android:contentDescription="@string/favorites_border_color" />
 
     </RelativeLayout>
@@ -191,6 +192,21 @@
             app:bsb_progress="1"
             app:bsb_second_track_color="@color/blue"
             app:bsb_touch_to_seek="true" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="48dp">
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/list_divider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:switchPadding="24dp"
+                android:text="@string/list_divider"
+                android:textColor="?android:attr/textColor" />
+        </RelativeLayout>
     </LinearLayout>
 
 </LinearLayout>

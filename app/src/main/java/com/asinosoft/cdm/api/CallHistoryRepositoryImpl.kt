@@ -2,9 +2,7 @@ package com.asinosoft.cdm.api
 
 import android.content.Context
 import android.database.Cursor
-import android.net.Uri
 import android.provider.CallLog
-import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
@@ -89,7 +87,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
     inner class HistoryItemCursorAdapter(
         private val cursor: Cursor
     ) {
-        private val dateFormat = java.text.SimpleDateFormat("dd.MM", Locale.getDefault())
+        private val dateFormat = java.text.SimpleDateFormat("d MMM", Locale.getDefault())
         private val timeFormat = java.text.SimpleDateFormat("HH:mm", Locale.getDefault())
 
         private val colNumber = cursor.getColumnIndex(CallLog.Calls.NUMBER)
@@ -97,8 +95,6 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
         private val colDate = cursor.getColumnIndex(CallLog.Calls.DATE)
         private val colDuration = cursor.getColumnIndex(CallLog.Calls.DURATION)
         private val colCountry = cursor.getColumnIndex(CallLog.Calls.COUNTRY_ISO)
-
-        private val defaultPhoto = Uri.parse("android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}")
 
         fun getAll(): List<CallHistoryItem> {
             val result = java.util.ArrayList<CallHistoryItem>()
@@ -137,7 +133,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
                 typeCall = cursor.getInt(colType),
                 duration = cursor.getLong(colDuration),
                 contact = contactRepository.getContactByPhone(phoneNumber)
-                    ?: Contact(0, phoneNumber, defaultPhoto).apply {
+                    ?: Contact(0, phoneNumber).apply {
                         actions.add(Action(0, Action.Type.PhoneCall, phoneNumber, ""))
                     }
             )

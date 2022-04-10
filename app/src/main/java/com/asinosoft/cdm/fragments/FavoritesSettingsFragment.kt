@@ -60,17 +60,21 @@ class FavoritesSettingsFragment : Fragment() {
 
         v.imgFavorite.setSize(model.config.favoritesSize)
         v.imgFavorite.borderWidth = model.config.favoritesBorderWidth
-        v.imgFavorite.borderColor = model.config.favoritesBorderColor
+        model.config.favoritesBorderColor?.let { v.imgFavorite.borderColor = it }
 
         setFavoritesLayout(model.config.favoritesFirst)
 
-        model.buttonColor.observe(viewLifecycleOwner) { color ->
-            v.imgFavorite.borderColor = color
-            v.pickBorderColor.setHintTextColor(color)
+        model.buttonColor.observe(viewLifecycleOwner) {
+            (it ?: Metoths.getThemeColor(requireContext(), R.attr.civ_border_color)).let { color ->
+                v.imgFavorite.borderColor = color
+                v.pickBorderColor.setHintTextColor(color)
+            }
         }
 
         val themeNames = resources.getStringArray(R.array.themeNames)
         v.themes.text = themeNames.elementAtOrElse(model.config.theme) { themeNames[0] }
+
+        v.listDivider.isChecked = model.config.listDivider
     }
 
     private fun setFavoritesLayout(layout: Boolean) {
@@ -199,7 +203,10 @@ class FavoritesSettingsFragment : Fragment() {
 
         v.pickBorderColor.setOnClickListener {
             ColorPickerDialog.newBuilder()
-                .setColor(model.config.favoritesBorderColor)
+                .setColor(
+                    model.config.favoritesBorderColor
+                        ?: Metoths.getThemeColor(requireContext(), R.attr.civ_border_color)
+                )
                 .show(activity)
         }
 
@@ -209,14 +216,17 @@ class FavoritesSettingsFragment : Fragment() {
 
         v.themes.setOnClickListener {
             ThemeSelectionDialog { theme ->
-                Analytics.logTheme(theme)
-                model.config.theme = theme
+                model.setTheme(theme)
                 activity?.recreate()
             }.show(parentFragmentManager, "Select theme")
         }
 
         v.backgrounds.setOnClickListener {
             findNavController().navigate(R.id.action_select_background)
+        }
+
+        v.listDivider.setOnCheckedChangeListener { _, value ->
+            model.config.listDivider = value
         }
     }
 }

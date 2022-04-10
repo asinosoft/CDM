@@ -10,9 +10,6 @@ import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.helpers.isDefaultDialer
 import com.asinosoft.cdm.helpers.setDefaultDialer
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
-import com.google.firebase.remoteconfig.ktx.remoteConfig
 import timber.log.Timber
 
 /**
@@ -26,8 +23,6 @@ class ManagerActivity : BaseActivity() {
      */
     private var isModelRefreshed: Boolean = false
 
-    private var remoteConfigInitialized = false
-
     private val launcher = registerForActivityResult(StartActivityForResult()) {
         if (isDefaultDialer()) {
             Analytics.logDefaultDialer()
@@ -35,32 +30,12 @@ class ManagerActivity : BaseActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (App.instance!!.config.isFirstRun) {
-            Timber.d("Wait for RemoteConfig")
-            installSplashScreen().setKeepOnScreenCondition { !remoteConfigInitialized }
-        } else {
-            Timber.d("Wait for Model")
-            installSplashScreen().setKeepOnScreenCondition { !model.initialized }
-        }
-
-        Firebase.remoteConfig.setConfigSettingsAsync(
-            FirebaseRemoteConfigSettings.Builder()
-                .setFetchTimeoutInSeconds(3)
-                .setMinimumFetchIntervalInSeconds(1)
-                .build()
-        )
-        Firebase.remoteConfig.fetchAndActivate().addOnCompleteListener(this) {
-            Timber.d("RemoteConfig initialized")
-            remoteConfigInitialized = true
-            if (App.instance!!.config.isFirstRun) {
-                App.instance!!.config.applyRemoteConfig()
-                recreate()
-            }
-        }
-
         Timber.d("onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        Timber.d("Wait for Model")
+        installSplashScreen().setKeepOnScreenCondition { !model.initialized }
 
         if ((application as App).config.checkDefaultDialer) {
             setDefaultDialer(launcher)
@@ -77,8 +52,11 @@ class ManagerActivity : BaseActivity() {
         super.onResume()
 
         if (App.instance!!.config.isChanged) {
-            recreate()
-        } else if (!isModelRefreshed) {
+            App.instance!!.config.isChanged = false
+            return recreate()
+        }
+
+        if (!isModelRefreshed) {
             isModelRefreshed = true
             model.refresh()
         }

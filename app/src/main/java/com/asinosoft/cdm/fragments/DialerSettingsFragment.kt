@@ -45,7 +45,7 @@ class DialerSettingsFragment : PreferenceFragmentCompat() {
                 model.config.checkDefaultDialer = (newValue as Boolean)
                 Timber.d("%s -> %s, %s", preference, newValue, model.config.checkDefaultDialer)
                 if (model.config.checkDefaultDialer) {
-                    context?.setDefaultDialer(launcher)
+                    context.setDefaultDialer(launcher)
                 }
                 Analytics.logCheckDefaultDialer(newValue)
                 true

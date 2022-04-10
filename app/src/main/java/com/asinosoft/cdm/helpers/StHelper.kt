@@ -30,7 +30,7 @@ object StHelper {
     fun parseDateToddMMyyyy(time: String): String {
         try {
             return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(time)?.let { date ->
-                return SimpleDateFormat("dd MMMM yyyy г.", Locale.getDefault()).format(date)
+                return SimpleDateFormat("d MMMM yyyy г.", Locale.getDefault()).format(date)
             } ?: ""
         } catch (e: Exception) {
             return ""
@@ -73,6 +73,7 @@ object StHelper {
 
     fun today(): Date {
         val now = Calendar.getInstance()
+        now.set(Calendar.AM_PM, Calendar.AM)
         now.set(Calendar.HOUR, 0)
         now.set(Calendar.MINUTE, 0)
         now.set(Calendar.SECOND, 0)

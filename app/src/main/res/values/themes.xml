@@ -5,12 +5,11 @@
         <item name="windowSplashScreenBackground">@color/white</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_application</item>
         <item name="windowSplashScreenAnimationDuration">200</item>
-        <item name="postSplashScreenTheme">@style/AppTheme.Light</item>
     </style>
 
     <style name="BaseTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="alertDialogTheme">@style/PaletteDialogTheme</item>
         <item name="materialAlertDialogTheme">@style/AlertDialogTheme</item>
-<!--        <item name="android:listViewStyle">@style/TransparentListView</item>-->
         <item name="android:expandableListViewStyle">@style/TransparentExpandableListView</item>
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:windowTranslucentStatus">false</item>
@@ -37,8 +36,10 @@
         <item name="android:textColorSecondary">@color/subtext_color_light</item>
         <item name="android:statusBarColor">@color/system_navbar_color_light</item>
         <item name="android:navigationBarColor">@color/system_navbar_color_light</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_light</item>
+        <item name="android:listDivider">@color/divider_color_light</item>
+        <item name="civ_border_color">@color/fav_border_light</item>
 
         <!-- Цвет текста в диалоге выбора SIM -->
         <item name="colorSurface">@color/background_light</item>
@@ -61,6 +62,8 @@
         <item name="android:navigationBarColor">@color/system_navbar_color_gray</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_gray</item>
+        <item name="android:listDivider">@color/divider_color_gray</item>
+        <item name="civ_border_color">@color/fav_border_gray</item>
 
         <!-- Цвет текста в диалоге выбора SIM -->
         <item name="colorSurface">@color/background_gray</item>
@@ -83,6 +86,8 @@
         <item name="android:navigationBarColor">@color/system_navbar_color_dark</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_dark</item>
+        <item name="android:listDivider">@color/divider_color_dark2</item>
+        <item name="civ_border_color">@color/fav_border_dark</item>
 
         <!-- Цвет текста в диалоге выбора SIM -->
         <item name="colorSurface">@color/background_dark</item>
@@ -106,6 +111,8 @@
         <item name="android:navigationBarColor">@color/system_navbar_color_dark</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_dark</item>
+        <item name="android:listDivider">@color/divider_color_dark2</item>
+        <item name="civ_border_color">@color/fav_border_dark2</item>
 
         <!-- Цвет текста в диалоге выбора SIM -->
         <item name="colorSurface">@color/background_dark</item>
@@ -120,6 +127,12 @@
         <item name="colorOnSurface">?android:attr/textColor</item>
     </style>
 
+    <!-- Диалог выбора цвета -->
+    <style name="PaletteDialogTheme" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="colorPrimary">@color/text_color_light</item>
+        <item name="android:textColor">@color/active_tab_text_light</item>
+    </style>
+
     <!-- Специальная прозрачная тема для промежуточной активоности DialActivity -->
     <style name="Theme.Transparent" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
@@ -128,6 +141,12 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:backgroundDimEnabled">false</item>
+
+        <!-- Диалог выбора SIM -->
+<!-- alef: отключил из-за проблем с размером шрифта заголовка <item name="materialAlertDialogTheme">@style/AlertDialogTheme</item>-->
+        <item name="colorSurface">@color/background_light</item>
+        <item name="android:textColor">@color/text_color_light</item>
+        <item name="android:textColorAlertDialogListItem">@color/text_color_light</item>
     </style>
 
 </resources>

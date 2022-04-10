@@ -1,59 +1,29 @@
 package com.asinosoft.cdm.activities
 
-import android.annotation.SuppressLint
-import android.content.pm.PackageManager
-import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import com.asinosoft.cdm.App
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.getThemeResourceId
-import com.asinosoft.cdm.helpers.hasPermissions
+import timber.log.Timber
 
 /**
  * Базовый клас с поддержкой тем
  */
 open class BaseActivity : AppCompatActivity() {
-    private var actionWithPermission: (Boolean) -> Unit = {}
-
-    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Timber.d("THEME = %d", App.instance!!.config.theme)
+        setTheme(getThemeResourceId(App.instance!!.config.theme))
     }
 
     override fun onResume() {
         super.onResume()
         applyBackgroundImage()
-    }
-
-    override fun getTheme(): Resources.Theme {
-        return super.getTheme().apply {
-            applyStyle(getThemeResourceId(App.instance!!.config.theme), true)
-        }
-    }
-
-    fun withPermission(permissions: Array<String>, callback: (Boolean) -> Unit) {
-        actionWithPermission = {}
-        if (hasPermissions(permissions)) {
-            callback(true)
-        } else {
-            actionWithPermission = callback
-            ActivityCompat.requestPermissions(this, permissions, 1234)
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        actionWithPermission.invoke(grantResults.all { PackageManager.PERMISSION_GRANTED == it })
     }
 
     private fun applyBackgroundImage() {

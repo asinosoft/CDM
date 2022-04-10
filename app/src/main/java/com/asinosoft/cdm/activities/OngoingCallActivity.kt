@@ -3,6 +3,7 @@ package com.asinosoft.cdm.activities
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
@@ -14,6 +15,7 @@ import android.telecom.PhoneAccountHandle
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.ContactRepositoryImpl
@@ -56,17 +58,15 @@ class OngoingCallActivity : BaseActivity() {
         }
     }
 
-    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         Timber.d("onCreate # %s", intent.data)
+        super.onCreate(savedInstanceState)
 
         v = ActivityOngoingCallBinding.inflate(layoutInflater)
         setContentView(v.root)
 
         initEventListeners()
         initLockScreenFlags()
-        initProximitySensor()
 
         audioManager.mode = AudioManager.MODE_IN_CALL
         // Detect a nav bar and adapt layout accordingly
@@ -77,12 +77,12 @@ class OngoingCallActivity : BaseActivity() {
 
     override fun onResume() {
         Timber.d("onResume # %s", intent.data)
+        super.onResume()
+        acquireProximitySensor()
 
         CallService.instance?.getCall(intent?.data)?.let {
             setCurrentCall(it)
-        }
-
-        super.onResume()
+        } ?: finish()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -103,16 +103,13 @@ class OngoingCallActivity : BaseActivity() {
 
     override fun onPause() {
         super.onPause()
+        releaseProximitySensor()
         call?.unregisterCallback(callCallback)
     }
 
     override fun onDestroy() {
         Timber.d("onDestroy")
         callTimer?.cancel()
-        if (true == proximityWakeLock?.isHeld()) {
-            proximityWakeLock?.release()
-        }
-
         super.onDestroy()
     }
 
@@ -131,13 +128,16 @@ class OngoingCallActivity : BaseActivity() {
     private fun setCallerInfo(phone: String) {
         val contact = ContactRepositoryImpl(this).getContactByPhone(phone)
 
-        val photo =
-            if (null == contact) loadResourceAsBitmap(R.drawable.ic_default_photo)
-            else loadUriAsBitmap(contact.photoUri)
+        val photo: Drawable? =
+            contact?.getAvatar(this) ?: ResourcesCompat.getDrawable(
+                resources,
+                R.drawable.ic_default_photo,
+                null
+            )
 
         v.ongoingCallLayout.textCaller.text = contact?.name ?: phone
         v.ongoingCallLayout.textCallerNumber.text = phone
-        v.ongoingCallLayout.imagePlaceholder.setImageBitmap(photo)
+        v.ongoingCallLayout.imagePlaceholder.setImageDrawable(photo)
     }
 
     @SuppressLint("ResourceAsColor")
@@ -206,13 +206,19 @@ class OngoingCallActivity : BaseActivity() {
         }
     }
 
-    private fun initProximitySensor() {
+    private fun acquireProximitySensor() {
         if (powerManager.isWakeLockLevelSupported(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK)) {
             proximityWakeLock = powerManager.newWakeLock(
                 PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK or PowerManager.ON_AFTER_RELEASE,
                 "com.asinosoft.cdm:wake_lock"
             )
             proximityWakeLock?.acquire(600 * 1000L) //
+        }
+    }
+
+    private fun releaseProximitySensor() {
+        if (true == proximityWakeLock?.isHeld) {
+            proximityWakeLock?.release()
         }
     }
 
@@ -305,10 +311,10 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoingCallLayout.answerBtn.visibility = View.VISIBLE
         v.ongoingCallLayout.rejectBtn.visibility = View.VISIBLE
         v.ongoingCallLayout.disconnect.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonHold.off()
-        v.ongoingCallLayout.buttonMute.on()
-        v.ongoingCallLayout.buttonKeypad.off()
-        v.ongoingCallLayout.buttonSpeaker.on()
+        v.ongoingCallLayout.buttonHold.visibility = View.INVISIBLE
+        v.ongoingCallLayout.buttonMute.visibility = View.INVISIBLE
+        v.ongoingCallLayout.buttonKeypad.visibility = View.INVISIBLE
+        v.ongoingCallLayout.buttonSpeaker.visibility = View.INVISIBLE
     }
 
     /**

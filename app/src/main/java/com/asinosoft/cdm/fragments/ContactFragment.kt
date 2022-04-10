@@ -83,7 +83,7 @@ class ContactFragment : Fragment() {
 
         model.contact.observe(viewLifecycleOwner) { contact ->
             contact?.let {
-                v.image.setImageURI(it.photoUri)
+                v.image.setImageDrawable(it.getAvatar(requireContext()))
                 v.name.text = it.name
             }
         }
