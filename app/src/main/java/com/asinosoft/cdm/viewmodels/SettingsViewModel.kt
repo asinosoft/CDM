@@ -12,7 +12,7 @@ import com.asinosoft.cdm.helpers.Metoths
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
     val config: Config = App.instance!!.config
-    val buttonColor: MutableLiveData<Int> = MutableLiveData(config.favoritesBorderColor)
+    val buttonColor: MutableLiveData<Int?> = MutableLiveData(config.favoritesBorderColor)
     val backgroundImages: MutableLiveData<List<Int>> = MutableLiveData()
 
     fun setAction(direction: Metoths.Companion.Direction, action: Action.Type) {
@@ -24,6 +24,11 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             Metoths.Companion.Direction.UNKNOWN -> {
             }
         }
+    }
+
+    fun setTheme(theme: Int) {
+        config.theme = theme
+        buttonColor.postValue(config.favoritesBorderColor)
     }
 
     fun loadBackgroundImages() {

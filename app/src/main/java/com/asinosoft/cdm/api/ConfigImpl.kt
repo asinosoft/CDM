@@ -39,6 +39,8 @@ class ConfigImpl(private val context: Context) : Config {
         LIST_DIVIDER,
     }
 
+    override var isChanged = false
+
     override val isFirstRun: Boolean
         get() = settings.getBoolean(Keys.FIRST_RUN.name, true)
 
@@ -51,12 +53,17 @@ class ConfigImpl(private val context: Context) : Config {
         context.getBackgroundUrl(defaultBackground - 1)?.let { uri ->
             background = uri
         }
-        settings.edit().putBoolean(Keys.FIRST_RUN.name, false).apply()
+        settings.edit().putBoolean(Keys.FIRST_RUN.name, false).apply().also { isChanged = true }
     }
 
     override var theme: Int
         get() = settings.getInt(Keys.THEME.name, R.style.AppTheme_Light)
-        set(theme) = settings.edit().putInt(Keys.THEME.name, theme).apply()
+        set(theme) = settings.edit().apply {
+            Analytics.logTheme(theme)
+            putInt(Keys.THEME.name, theme)
+            // При смене темы сбрасываем цвет рамки аватара на дефолтный
+            remove(Keys.FAVORITES_BORDER_COLOR.name)
+        }.apply()
 
     override var background: Uri?
         get() = File(context.filesDir, "background").let {
@@ -74,36 +81,45 @@ class ConfigImpl(private val context: Context) : Config {
                 theme = 3
             }
             Analytics.logBackground()
+            isChanged = true
         }
 
     override var checkDefaultDialer: Boolean
         get() = settings.getBoolean(Keys.CHECK_DEFAULT_DIALER.name, true)
         set(value) = settings.edit().putBoolean(Keys.CHECK_DEFAULT_DIALER.name, value).apply()
+            .also { isChanged = true }
 
     override var favoritesFirst: Boolean
         get() = settings.getBoolean(Keys.FAVORITES_LAYOUT.name, true)
         set(value) = settings.edit().putBoolean(Keys.FAVORITES_LAYOUT.name, value).apply()
+            .also { isChanged = true }
 
     override var favoritesColumnCount: Int
         get() = settings.getInt(Keys.FAVORITES_COLUMNS_COUNT.name, 3)
         set(count) = settings.edit().putInt(Keys.FAVORITES_COLUMNS_COUNT.name, count).apply()
+            .also { isChanged = true }
 
     override var favoritesSize: Int
         get() = settings.getInt(Keys.FAVORITES_SIZE.name, 200)
         set(size) = settings.edit().putInt(Keys.FAVORITES_SIZE.name, size).apply()
+            .also { isChanged = true }
 
     override var favoritesBorderColor: Int?
-        get() = settings.getInt(Keys.FAVORITES_BORDER_COLOR.name, Color.CYAN)
+        get() = if (settings.contains(Keys.FAVORITES_BORDER_COLOR.name))
+            settings.getInt(Keys.FAVORITES_BORDER_COLOR.name, Color.BLACK)
+        else null
         set(color) = settings.edit().apply {
             if (null == color)
                 remove(Keys.FAVORITES_BORDER_COLOR.name)
             else
                 putInt(Keys.FAVORITES_BORDER_COLOR.name, color)
         }.apply()
+            .also { isChanged = true }
 
     override var favoritesBorderWidth: Int
         get() = settings.getInt(Keys.FAVORITES_BORDER_WIDTH.name, 5)
         set(size) = settings.edit().putInt(Keys.FAVORITES_BORDER_WIDTH.name, size).apply()
+            .also { isChanged = true }
 
     override var swipeLeftAction: Action.Type
         get() = settings.getString(Keys.SWIPE_LEFT_ACTION.name, Action.Type.WhatsAppChat.name)
@@ -111,6 +127,7 @@ class ConfigImpl(private val context: Context) : Config {
             ?: Action.Type.WhatsAppChat
         set(action) = settings.edit().putString(Keys.SWIPE_LEFT_ACTION.name, action.name).apply()
             .also { Analytics.logGlobalSetAction("LEFT", action.name) }
+            .also { isChanged = true }
 
     override var swipeRightAction: Action.Type
         get() = settings.getString(Keys.SWIPE_RIGHT_ACTION.name, Action.Type.PhoneCall.name)
@@ -118,6 +135,7 @@ class ConfigImpl(private val context: Context) : Config {
             ?: Action.Type.PhoneCall
         set(action) = settings.edit().putString(Keys.SWIPE_RIGHT_ACTION.name, action.name).apply()
             .also { Analytics.logGlobalSetAction("RIGHT", action.name) }
+            .also { isChanged = true }
 
     override var swipeUpAction: Action.Type
         get() = settings.getString(Keys.SWIPE_UP_ACTION.name, Action.Type.Email.name)
@@ -125,6 +143,7 @@ class ConfigImpl(private val context: Context) : Config {
             ?: Action.Type.Email
         set(action) = settings.edit().putString(Keys.SWIPE_UP_ACTION.name, action.name).apply()
             .also { Analytics.logGlobalSetAction("UP", action.name) }
+            .also { isChanged = true }
 
     override var swipeDownAction: Action.Type
         get() = settings.getString(Keys.SWIPE_DOWN_ACTION.name, Action.Type.Sms.name)
@@ -132,10 +151,12 @@ class ConfigImpl(private val context: Context) : Config {
             ?: Action.Type.Sms
         set(action) = settings.edit().putString(Keys.SWIPE_DOWN_ACTION.name, action.name).apply()
             .also { Analytics.logGlobalSetAction("DOWN", action.name) }
+            .also { isChanged = true }
 
     override var listDivider: Boolean
         get() = settings.getBoolean(Keys.LIST_DIVIDER.name, false)
         set(value) = settings.edit().putBoolean(Keys.LIST_DIVIDER.name, value).apply()
+            .also { isChanged = true }
 
     override fun getContactSettings(contact: Contact): DirectActions {
         val preferences = context.getSharedPreferences("contacts", Context.MODE_PRIVATE)

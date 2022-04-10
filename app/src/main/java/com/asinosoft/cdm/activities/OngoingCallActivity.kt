@@ -58,17 +58,15 @@ class OngoingCallActivity : BaseActivity() {
         }
     }
 
-    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         Timber.d("onCreate # %s", intent.data)
+        super.onCreate(savedInstanceState)
 
         v = ActivityOngoingCallBinding.inflate(layoutInflater)
         setContentView(v.root)
 
         initEventListeners()
         initLockScreenFlags()
-        initProximitySensor()
 
         audioManager.mode = AudioManager.MODE_IN_CALL
         // Detect a nav bar and adapt layout accordingly
@@ -79,12 +77,12 @@ class OngoingCallActivity : BaseActivity() {
 
     override fun onResume() {
         Timber.d("onResume # %s", intent.data)
+        super.onResume()
+        acquireProximitySensor()
 
         CallService.instance?.getCall(intent?.data)?.let {
             setCurrentCall(it)
         } ?: finish()
-
-        super.onResume()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -105,16 +103,13 @@ class OngoingCallActivity : BaseActivity() {
 
     override fun onPause() {
         super.onPause()
+        releaseProximitySensor()
         call?.unregisterCallback(callCallback)
     }
 
     override fun onDestroy() {
         Timber.d("onDestroy")
         callTimer?.cancel()
-        if (true == proximityWakeLock?.isHeld()) {
-            proximityWakeLock?.release()
-        }
-
         super.onDestroy()
     }
 
@@ -134,7 +129,11 @@ class OngoingCallActivity : BaseActivity() {
         val contact = ContactRepositoryImpl(this).getContactByPhone(phone)
 
         val photo: Drawable? =
-            contact?.getAvatar(this) ?: ResourcesCompat.getDrawable(resources, R.drawable.ic_default_photo, null)
+            contact?.getAvatar(this) ?: ResourcesCompat.getDrawable(
+                resources,
+                R.drawable.ic_default_photo,
+                null
+            )
 
         v.ongoingCallLayout.textCaller.text = contact?.name ?: phone
         v.ongoingCallLayout.textCallerNumber.text = phone
@@ -207,13 +206,19 @@ class OngoingCallActivity : BaseActivity() {
         }
     }
 
-    private fun initProximitySensor() {
+    private fun acquireProximitySensor() {
         if (powerManager.isWakeLockLevelSupported(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK)) {
             proximityWakeLock = powerManager.newWakeLock(
                 PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK or PowerManager.ON_AFTER_RELEASE,
                 "com.asinosoft.cdm:wake_lock"
             )
             proximityWakeLock?.acquire(600 * 1000L) //
+        }
+    }
+
+    private fun releaseProximitySensor() {
+        if (true == proximityWakeLock?.isHeld) {
+            proximityWakeLock?.release()
         }
     }
 

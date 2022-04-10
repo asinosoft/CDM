@@ -87,7 +87,7 @@ class FavoritesAdapter(
                 setImageDrawable(
                     contact?.getAvatar(context) ?: ResourcesCompat.getDrawable(
                         resources,
-                        R.drawable.ic_default_photo,
+                        R.drawable.ic_add_contact,
                         null
                     )
                 )

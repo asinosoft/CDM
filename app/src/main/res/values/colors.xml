@@ -50,6 +50,10 @@
     <color name="divider_color_dark">#323232</color>
     <color name="divider_color_dark2">#969696</color>
 
+    <color name="fav_border_light">#A2A59E</color>
+    <color name="fav_border_gray">#3E3E3E</color>
+    <color name="fav_border_dark">#323232</color>
+
     <!-- splash screen -->
     <color name="splash">#CAF2DE</color>
 

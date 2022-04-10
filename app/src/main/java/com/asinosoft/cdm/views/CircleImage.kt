@@ -72,7 +72,7 @@ class CircleImage @JvmOverloads constructor(
         initClick()
         initTouch()
         initLongClickWithDrag()
-        if (contact == null) setImageResource(R.drawable.plus)
+        if (contact == null) setImageResource(R.drawable.ic_add_contact)
     }
 
     fun setOptionalCirsVisible(b: Boolean) {

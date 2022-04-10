@@ -64,9 +64,11 @@ class FavoritesSettingsFragment : Fragment() {
 
         setFavoritesLayout(model.config.favoritesFirst)
 
-        model.buttonColor.observe(viewLifecycleOwner) { color ->
-            v.imgFavorite.borderColor = color
-            v.pickBorderColor.setHintTextColor(color)
+        model.buttonColor.observe(viewLifecycleOwner) {
+            (it ?: Metoths.getThemeColor(requireContext(), R.attr.civ_border_color)).let { color ->
+                v.imgFavorite.borderColor = color
+                v.pickBorderColor.setHintTextColor(color)
+            }
         }
 
         val themeNames = resources.getStringArray(R.array.themeNames)
@@ -201,7 +203,10 @@ class FavoritesSettingsFragment : Fragment() {
 
         v.pickBorderColor.setOnClickListener {
             ColorPickerDialog.newBuilder()
-                .apply { model.config.favoritesBorderColor?.let { setColor(it) } }
+                .setColor(
+                    model.config.favoritesBorderColor
+                        ?: Metoths.getThemeColor(requireContext(), R.attr.civ_border_color)
+                )
                 .show(activity)
         }
 
@@ -211,10 +216,7 @@ class FavoritesSettingsFragment : Fragment() {
 
         v.themes.setOnClickListener {
             ThemeSelectionDialog { theme ->
-                Analytics.logTheme(theme)
-                model.config.theme = theme
-                // При изменении темы сбрасываем цвет обводки на дефолтный
-                model.config.favoritesBorderColor = null
+                model.setTheme(theme)
                 activity?.recreate()
             }.show(parentFragmentManager, "Select theme")
         }

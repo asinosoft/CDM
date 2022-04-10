@@ -5,7 +5,6 @@
         <item name="windowSplashScreenBackground">@color/white</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_application</item>
         <item name="windowSplashScreenAnimationDuration">200</item>
-        <item name="postSplashScreenTheme">@style/AppTheme.Light</item>
     </style>
 
     <style name="BaseTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
@@ -40,6 +39,7 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="popupColor">@color/popup_color_light</item>
         <item name="android:listDivider">@color/divider_color_light</item>
+        <item name="civ_border_color">@color/fav_border_light</item>
 
         <!-- Цвет текста в диалоге выбора SIM -->
         <item name="colorSurface">@color/background_light</item>
@@ -63,6 +63,7 @@
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_gray</item>
         <item name="android:listDivider">@color/divider_color_gray</item>
+        <item name="civ_border_color">@color/fav_border_gray</item>
 
         <!-- Цвет текста в диалоге выбора SIM -->
         <item name="colorSurface">@color/background_gray</item>
@@ -86,6 +87,7 @@
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_dark</item>
         <item name="android:listDivider">@color/divider_color_dark</item>
+        <item name="civ_border_color">@color/fav_border_dark</item>
 
         <!-- Цвет текста в диалоге выбора SIM -->
         <item name="colorSurface">@color/background_dark</item>
@@ -110,6 +112,7 @@
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_dark</item>
         <item name="android:listDivider">@color/divider_color_dark2</item>
+        <item name="civ_border_color">@color/fav_border_dark</item>
 
         <!-- Цвет текста в диалоге выбора SIM -->
         <item name="colorSurface">@color/background_dark</item>

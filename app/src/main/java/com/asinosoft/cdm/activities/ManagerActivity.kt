@@ -36,6 +36,10 @@ class ManagerActivity : BaseActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Timber.d("onCreate")
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
         if (config.isFirstRun) {
             Timber.d("Wait for RemoteConfig")
             installSplashScreen().setKeepOnScreenCondition { !remoteConfigInitialized }
@@ -59,10 +63,6 @@ class ManagerActivity : BaseActivity() {
             }
         }
 
-        Timber.d("onCreate")
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
         if ((application as App).config.checkDefaultDialer) {
             setDefaultDialer(launcher)
         }
@@ -76,6 +76,11 @@ class ManagerActivity : BaseActivity() {
     override fun onResume() {
         Timber.d("onResume")
         super.onResume()
+
+        if (App.instance!!.config.isChanged) {
+            App.instance!!.config.isChanged = false
+            return recreate()
+        }
 
         if (!isModelRefreshed) {
             isModelRefreshed = true

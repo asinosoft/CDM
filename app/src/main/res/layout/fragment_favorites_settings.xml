@@ -114,10 +114,11 @@
             android:id="@+id/pick_border_color"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="24dp"
+            android:layout_toEndOf="@id/img_favorite"
             android:background="@drawable/palette"
+            android:backgroundTint="?android:attr/colorPrimary"
             android:contentDescription="@string/favorites_border_color" />
 
     </RelativeLayout>

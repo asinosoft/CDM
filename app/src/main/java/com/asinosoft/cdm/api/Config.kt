@@ -9,6 +9,7 @@ import com.asinosoft.cdm.data.DirectActions
  * Настройки интерфейса и поведения приложения
  */
 interface Config {
+    var isChanged: Boolean
     val isFirstRun: Boolean
 
     fun applyRemoteConfig()
