@@ -8,19 +8,13 @@ import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
-import com.asinosoft.cdm.helpers.getBackgroundUrl
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.gson.Gson
-import timber.log.Timber
 import java.io.File
 
 class ConfigImpl(private val context: Context) : Config {
     private val settings = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
     private enum class Keys {
-        FIRST_RUN,
-
         THEME,
 
         CHECK_DEFAULT_DIALER,
@@ -40,21 +34,6 @@ class ConfigImpl(private val context: Context) : Config {
     }
 
     override var isChanged = false
-
-    override val isFirstRun: Boolean
-        get() = settings.getBoolean(Keys.FIRST_RUN.name, true)
-
-    override fun applyRemoteConfig() {
-        val defaultTheme = Firebase.remoteConfig.getLong("default_theme").toInt() - 1
-        val defaultBackground = Firebase.remoteConfig.getLong("default_background").toInt()
-        Timber.d("first run theme = %s, background = %d", defaultTheme, defaultBackground)
-
-        theme = defaultTheme
-        context.getBackgroundUrl(defaultBackground - 1)?.let { uri ->
-            background = uri
-        }
-        settings.edit().putBoolean(Keys.FIRST_RUN.name, false).apply().also { isChanged = true }
-    }
 
     override var theme: Int
         get() = settings.getInt(Keys.THEME.name, R.style.AppTheme_Light)

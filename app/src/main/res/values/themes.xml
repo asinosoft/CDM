@@ -36,7 +36,7 @@
         <item name="android:textColorSecondary">@color/subtext_color_light</item>
         <item name="android:statusBarColor">@color/system_navbar_color_light</item>
         <item name="android:navigationBarColor">@color/system_navbar_color_light</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_light</item>
         <item name="android:listDivider">@color/divider_color_light</item>
         <item name="civ_border_color">@color/fav_border_light</item>
@@ -86,7 +86,7 @@
         <item name="android:navigationBarColor">@color/system_navbar_color_dark</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_dark</item>
-        <item name="android:listDivider">@color/divider_color_dark</item>
+        <item name="android:listDivider">@color/divider_color_dark2</item>
         <item name="civ_border_color">@color/fav_border_dark</item>
 
         <!-- Цвет текста в диалоге выбора SIM -->
@@ -112,7 +112,7 @@
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_dark</item>
         <item name="android:listDivider">@color/divider_color_dark2</item>
-        <item name="civ_border_color">@color/fav_border_dark</item>
+        <item name="civ_border_color">@color/fav_border_dark2</item>
 
         <!-- Цвет текста в диалоге выбора SIM -->
         <item name="colorSurface">@color/background_dark</item>

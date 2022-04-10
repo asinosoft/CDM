@@ -10,9 +10,6 @@ import com.asinosoft.cdm.data.DirectActions
  */
 interface Config {
     var isChanged: Boolean
-    val isFirstRun: Boolean
-
-    fun applyRemoteConfig()
 
     // Выбранная тема
     var theme: Int
