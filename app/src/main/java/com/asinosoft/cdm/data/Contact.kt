@@ -10,6 +10,13 @@ data class Contact(
     val id: Long,
     val name: String
 ) {
+    companion object {
+        fun fromPhone(phone: String): Contact =
+            Contact(0, phone).apply {
+                actions.add(Action(0, Action.Type.PhoneCall, phone, ""))
+            }
+    }
+
     var photoUri: Uri? = null
     var birthday: String? = null
     var age: Int = 0

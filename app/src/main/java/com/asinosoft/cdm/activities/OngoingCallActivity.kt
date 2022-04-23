@@ -3,7 +3,6 @@ package com.asinosoft.cdm.activities
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
@@ -15,7 +14,6 @@ import android.telecom.PhoneAccountHandle
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.ContactRepositoryImpl
@@ -128,16 +126,9 @@ class OngoingCallActivity : BaseActivity() {
     private fun setCallerInfo(phone: String) {
         val contact = ContactRepositoryImpl(this).getContactByPhone(phone)
 
-        val photo: Drawable? =
-            contact?.getAvatar(this) ?: ResourcesCompat.getDrawable(
-                resources,
-                R.drawable.ic_default_photo,
-                null
-            )
-
-        v.ongoingCallLayout.textCaller.text = contact?.name ?: phone
+        v.ongoingCallLayout.textCaller.text = contact.name
         v.ongoingCallLayout.textCallerNumber.text = phone
-        v.ongoingCallLayout.imagePlaceholder.setImageDrawable(photo)
+        v.ongoingCallLayout.imagePlaceholder.setImageDrawable(contact.getAvatar(this))
     }
 
     @SuppressLint("ResourceAsColor")

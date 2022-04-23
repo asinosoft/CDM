@@ -12,6 +12,7 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.activities.OngoingCallActivity
 import com.asinosoft.cdm.api.ContactRepositoryImpl
@@ -79,11 +80,8 @@ class NotificationManager(private val context: Context) {
         val contact = ContactRepositoryImpl(context).getContactByPhone(phone)
         val callState = call.callState
 
-        val photo = contact?.photoUri?.let { context.loadUriAsBitmap(it) }
-            ?: context.loadResourceAsBitmap(R.drawable.ic_default_photo)
-
         val view = RemoteViews(context.packageName, R.layout.call_notification).apply {
-            setTextViewText(R.id.notification_caller_name, contact?.name)
+            setTextViewText(R.id.notification_caller_name, contact.name)
             setTextViewText(R.id.notification_call_status, context.getCallStateText(callState))
             setViewVisibility(
                 R.id.notification_accept_call,
@@ -117,7 +115,7 @@ class NotificationManager(private val context: Context) {
             if (Call.STATE_RINGING == callState) NotificationCompat.PRIORITY_HIGH else NotificationCompat.PRIORITY_DEFAULT
         val builder = NotificationCompat.Builder(context, channel)
             .setSmallIcon(R.drawable.call)
-            .setLargeIcon(photo)
+            .setLargeIcon(contact.getAvatar(context).toBitmap())
             .setContentIntent(openAppIntent(call))
             .setCategory(Notification.CATEGORY_CALL)
             .setPriority(priority)

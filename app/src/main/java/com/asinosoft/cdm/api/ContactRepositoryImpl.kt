@@ -54,8 +54,9 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         return contacts[id] ?: findContactById(id)?.also { cache(it) }
     }
 
-    override fun getContactByPhone(phone: String): Contact? {
-        return contactPhones[phone] ?: findContactByPhone(phone)?.also { cache(it) }
+    override fun getContactByPhone(phone: String): Contact {
+        return contactPhones[phone] ?: (findContactByPhone(phone) ?: Contact.fromPhone(phone))
+            .also { cache(it) }
     }
 
     override fun getContactByUri(uri: Uri): Contact? {
@@ -147,8 +148,8 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(contactId)
-                val name = cursor.getStringOrNull(this@ContactCursorAdapter.displayName) ?: ""
-                val photo = cursor.getStringOrNull(this@ContactCursorAdapter.photoUri)
+                val name = cursor.getStringOrNull(displayName) ?: ""
+                val photo = cursor.getStringOrNull(photoUri)
                     ?.let { Uri.parse(it) }
 
                 result.getOrPut(id) { Contact(id, name) }.let { contact ->
