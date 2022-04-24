@@ -92,7 +92,7 @@ class DialActivity : AppCompatActivity() {
                 accounts.mapNotNull { telephonyManager.createForPhoneAccountHandle(it)?.simOperatorName }
                     .toTypedArray()
             val icons: Array<Int> =
-                arrayOf(R.drawable.sim1, R.drawable.sim2, R.drawable.sim3)
+                arrayOf(R.drawable.ic_sim1, R.drawable.ic_sim2, R.drawable.ic_sim3)
             val adapter = StringsWithIconsAdapter(this, slots, icons)
 
             MaterialAlertDialogBuilder(this)

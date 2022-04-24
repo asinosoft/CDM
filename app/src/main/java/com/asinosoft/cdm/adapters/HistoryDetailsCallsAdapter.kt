@@ -101,9 +101,9 @@ class HistoryDetailsCallsAdapter(
         }
 
         when (call.sim) {
-            1 -> v.sim.setImageResource(R.drawable.sim1)
-            2 -> v.sim.setImageResource(R.drawable.sim2)
-            3 -> v.sim.setImageResource(R.drawable.sim3)
+            1 -> v.sim.setImageResource(R.drawable.ic_sim1)
+            2 -> v.sim.setImageResource(R.drawable.ic_sim2)
+            3 -> v.sim.setImageResource(R.drawable.ic_sim3)
             else -> v.sim.visibility = View.GONE
         }
 

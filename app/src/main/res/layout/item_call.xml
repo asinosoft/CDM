@@ -100,7 +100,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:contentDescription="@string/sim_used"
-                    android:src="@drawable/sim1" />
+                    android:src="@drawable/ic_sim1" />
 
                 <TextView
                     android:id="@+id/number"

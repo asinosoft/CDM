@@ -414,9 +414,9 @@ class OngoingCallActivity : BaseActivity() {
     private fun updateSimSlotInfo(handle: PhoneAccountHandle) {
         val simSlot = getSimSlot(handle)
         val simIcon = when (simSlot?.id) {
-            1 -> R.drawable.sim1
-            2 -> R.drawable.sim2
-            else -> R.drawable.sim3
+            1 -> R.drawable.ic_sim1
+            2 -> R.drawable.ic_sim2
+            else -> R.drawable.ic_sim3
         }
 
         v.ongoingCallLayout.textStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(

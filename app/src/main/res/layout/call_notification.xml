@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/notification_caller_name"
         android:contentDescription="@string/sim"
-        tools:src="@drawable/sim1" />
+        tools:src="@drawable/ic_sim1" />
 
     <TextView
         android:id="@+id/notification_call_status"
