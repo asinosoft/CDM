@@ -1,5 +1,6 @@
 package com.asinosoft.cdm.api
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
 import android.provider.CallLog
@@ -7,6 +8,7 @@ import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.DateHelper
 import com.asinosoft.cdm.helpers.StHelper
+import com.asinosoft.cdm.helpers.telecomManager
 import java.util.*
 
 /**
@@ -21,6 +23,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
         CallLog.Calls.DATE,
         CallLog.Calls.DURATION,
         CallLog.Calls.COUNTRY_ISO,
+        CallLog.Calls.PHONE_ACCOUNT_ID,
     )
 
     override fun getLatestHistory(
@@ -37,7 +40,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             "${CallLog.Calls.DATE} DESC"
         )?.use {
             // По каждому контакту показываем только последний звонок (первый, с учетом сортировки DESC)
-            HistoryItemCursorAdapter(it).getFiltered(limit, filter)
+            HistoryItemCursorAdapter(context, it).getFiltered(limit, filter)
         } ?: ArrayList()
     }
 
@@ -50,7 +53,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             "${CallLog.Calls.DATE} DESC"
         )?.use {
             // По каждому контакту показываем только последний звонок (первый, с учетом сортировки DESC)
-            HistoryItemCursorAdapter(it).getFiltered(Int.MAX_VALUE, CallHistoryFilter())
+            HistoryItemCursorAdapter(context, it).getFiltered(Int.MAX_VALUE, CallHistoryFilter())
         } ?: ArrayList()
     }
 
@@ -69,7 +72,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             contact.phones.map { it.value }.toTypedArray(),
             "${CallLog.Calls.DATE} DESC"
         )?.use {
-            HistoryItemCursorAdapter(it).getAll()
+            HistoryItemCursorAdapter(context, it).getAll()
         } ?: listOf()
     }
 
@@ -81,11 +84,13 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             arrayOf(phone),
             "${CallLog.Calls.DATE} DESC"
         )?.use {
-            HistoryItemCursorAdapter(it).getAll()
+            HistoryItemCursorAdapter(context, it).getAll()
         } ?: ArrayList()
     }
 
+    @SuppressLint("MissingPermission")
     inner class HistoryItemCursorAdapter(
+        context: Context,
         private val cursor: Cursor
     ) {
         private val colNumber = cursor.getColumnIndex(CallLog.Calls.NUMBER)
@@ -93,6 +98,9 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
         private val colDate = cursor.getColumnIndex(CallLog.Calls.DATE)
         private val colDuration = cursor.getColumnIndex(CallLog.Calls.DURATION)
         private val colCountry = cursor.getColumnIndex(CallLog.Calls.COUNTRY_ISO)
+        private val colPhoneAccount = cursor.getColumnIndex(CallLog.Calls.PHONE_ACCOUNT_ID)
+
+        private val accounts = context.telecomManager.callCapablePhoneAccounts.map { it.id }
 
         fun getAll(): List<CallHistoryItem> {
             val result = ArrayList<CallHistoryItem>()
@@ -121,6 +129,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             val phoneNumber = cursor.getString(colNumber)
             val date = Date(cursor.getLong(colDate))
             val country = cursor.getString(colCountry)
+            val phoneAccount = cursor.getString(colPhoneAccount)
 
             return CallHistoryItem(
                 phone = phoneNumber,
@@ -133,7 +142,8 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
                 contact = contactRepository.getContactByPhone(phoneNumber)
                     ?: Contact(0, phoneNumber).apply {
                         actions.add(Action(0, Action.Type.PhoneCall, phoneNumber, ""))
-                    }
+                    },
+                sim = 1 + accounts.indexOf(phoneAccount)
             )
         }
     }

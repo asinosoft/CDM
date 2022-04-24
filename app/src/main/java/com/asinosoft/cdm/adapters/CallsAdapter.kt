@@ -20,7 +20,6 @@ import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.StHelper
 import com.zerobranch.layout.SwipeLayout
 import java.security.InvalidParameterException
-import java.util.*
 
 /**
  * Адаптер списка последних звонков, который показывается в активности "Просмотр контакта"
@@ -124,6 +123,13 @@ class CallsAdapter(
                 else -> R.drawable.ic_call_missed
             }
         )
+
+        when (call.sim) {
+            1 -> v.sim.setImageResource(R.drawable.sim1)
+            2 -> v.sim.setImageResource(R.drawable.sim2)
+            3 -> v.sim.setImageResource(R.drawable.sim3)
+            else -> v.sim.visibility = View.GONE
+        }
 
         v.typeCall.contentDescription = context.resources.getString(
             when (call.typeCall) {

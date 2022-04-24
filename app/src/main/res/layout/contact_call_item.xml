@@ -86,30 +86,39 @@
                 android:textStyle="normal"
                 tools:text="20:54" />
 
-            <TextView
-                android:id="@+id/number"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="22dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/date"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="2dp"
-                android:layout_toEndOf="@id/type"
-                android:gravity="top"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textSize="14sp"
-                tools:text="+78889994422" />
+                android:layout_toEndOf="@id/type">
 
-            <TextView
-                android:id="@+id/duration"
-                android:layout_width="wrap_content"
-                android:layout_height="22dp"
-                android:layout_below="@id/date"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="2dp"
-                android:layout_toEndOf="@id/number"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textSize="14sp"
-                tools:text="4:56" />
+                <ImageView
+                    android:id="@+id/sim"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@string/sim_used"
+                    android:src="@drawable/sim1" />
+
+                <TextView
+                    android:id="@+id/number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="22dp"
+                    android:layout_marginStart="4dp"
+                    android:gravity="top"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="14sp"
+                    tools:text="+78889994422" />
+
+                <TextView
+                    android:id="@+id/duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="22dp"
+                    android:layout_marginStart="16dp"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="14sp"
+                    tools:text="4:56" />
+
+            </LinearLayout>
 
         </RelativeLayout>
 

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.CallLog
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
@@ -97,6 +98,13 @@ class HistoryDetailsCallsAdapter(
             CallLog.Calls.MISSED_TYPE -> v.type.setImageResource(R.drawable.ic_call_missed)
             CallLog.Calls.BLOCKED_TYPE -> v.type.setImageResource(R.drawable.ic_call_blocked)
             CallLog.Calls.REJECTED_TYPE -> v.type.setImageResource(R.drawable.ic_call_rejected)
+        }
+
+        when (call.sim) {
+            1 -> v.sim.setImageResource(R.drawable.sim1)
+            2 -> v.sim.setImageResource(R.drawable.sim2)
+            3 -> v.sim.setImageResource(R.drawable.sim3)
+            else -> v.sim.visibility = View.GONE
         }
 
         v.swipeLayout.setOnActionsListener(object : SwipeLayout.SwipeActionsListener {

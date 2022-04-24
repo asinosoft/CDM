@@ -10,6 +10,7 @@ data class CallHistoryItem(
     val timestamp: Date, // Точное время звонка
     val phone: String, // Номер телефона
     val prettyPhone: String, // Отформатированный номер телефона
+    val sim: Int, // Номер симки
     val date: String, // Дата звонка
     val time: String, // Время звонка
     val typeCall: Int, // Тип звонка (входящий/исходящий и т.д. @see CallLog.Calls)
