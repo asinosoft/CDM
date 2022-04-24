@@ -17,8 +17,8 @@
 
     <ImageView
         android:id="@+id/sim"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_below="@id/notification_caller_name"
         android:contentDescription="@string/sim"
         tools:src="@drawable/ic_sim1" />
