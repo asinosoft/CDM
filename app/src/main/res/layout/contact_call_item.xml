@@ -94,8 +94,9 @@
 
                 <ImageView
                     android:id="@+id/sim"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_gravity="center"
                     android:contentDescription="@string/sim_used"
                     android:src="@drawable/ic_sim1" />
 

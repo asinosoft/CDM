@@ -92,13 +92,15 @@
                     android:id="@+id/typeCall"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+                    android:layout_gravity="center"
                     android:contentDescription="@string/call_type_other"
                     android:src="@drawable/ic_call_outgoing" />
 
                 <ImageView
                     android:id="@+id/sim"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:layout_gravity="center"
                     android:contentDescription="@string/sim_used"
                     android:src="@drawable/ic_sim1" />
 
