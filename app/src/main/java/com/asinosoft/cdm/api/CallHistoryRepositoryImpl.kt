@@ -5,6 +5,7 @@ import android.database.Cursor
 import android.provider.CallLog
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
+import com.asinosoft.cdm.helpers.DateHelper
 import com.asinosoft.cdm.helpers.StHelper
 import java.util.*
 
@@ -87,9 +88,6 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
     inner class HistoryItemCursorAdapter(
         private val cursor: Cursor
     ) {
-        private val dateFormat = java.text.SimpleDateFormat("d MMM", Locale.getDefault())
-        private val timeFormat = java.text.SimpleDateFormat("HH:mm", Locale.getDefault())
-
         private val colNumber = cursor.getColumnIndex(CallLog.Calls.NUMBER)
         private val colType = cursor.getColumnIndex(CallLog.Calls.TYPE)
         private val colDate = cursor.getColumnIndex(CallLog.Calls.DATE)
@@ -97,7 +95,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
         private val colCountry = cursor.getColumnIndex(CallLog.Calls.COUNTRY_ISO)
 
         fun getAll(): List<CallHistoryItem> {
-            val result = java.util.ArrayList<CallHistoryItem>()
+            val result = ArrayList<CallHistoryItem>()
             while (cursor.moveToNext()) {
                 result.add(getOne())
             }
@@ -105,7 +103,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
         }
 
         fun getFiltered(limit: Int, filter: CallHistoryFilter): List<CallHistoryItem> {
-            val result = java.util.ArrayList<CallHistoryItem>()
+            val result = ArrayList<CallHistoryItem>()
             while (cursor.moveToNext()) {
                 val item = getOne()
                 if (filter.filter(item)) {
@@ -121,15 +119,15 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
 
         private fun getOne(): CallHistoryItem {
             val phoneNumber = cursor.getString(colNumber)
-            val date = cursor.getLong(colDate)
+            val date = Date(cursor.getLong(colDate))
             val country = cursor.getString(colCountry)
 
             return CallHistoryItem(
                 phone = phoneNumber,
                 prettyPhone = StHelper.convertNumber(phoneNumber, country),
-                timestamp = Date(date),
-                date = dateFormat.format(date),
-                time = timeFormat.format(date),
+                timestamp = date,
+                date = DateHelper.shortDate(date),
+                time = DateHelper.time(date),
                 typeCall = cursor.getInt(colType),
                 duration = cursor.getLong(colDuration),
                 contact = contactRepository.getContactByPhone(phoneNumber)

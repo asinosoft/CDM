@@ -1,6 +1,5 @@
 package com.asinosoft.cdm.data
 
-import android.net.Uri
 import org.junit.Assert
 import org.junit.Test
 
@@ -11,7 +10,7 @@ class ActionTest {
 
         Assert.assertEquals(one, another)
 
-        val contact = Contact(1, "Test", Uri.EMPTY)
+        val contact = Contact(1, "Test")
         contact.actions.add(one)
         contact.actions.add(another)
 

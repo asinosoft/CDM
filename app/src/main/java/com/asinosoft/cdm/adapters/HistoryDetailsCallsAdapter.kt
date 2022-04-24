@@ -14,6 +14,7 @@ import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.databinding.AdvertiserBinding
 import com.asinosoft.cdm.databinding.ContactCallItemBinding
+import com.asinosoft.cdm.helpers.DateHelper
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.StHelper
 import com.google.android.gms.ads.AdRequest
@@ -35,7 +36,6 @@ class HistoryDetailsCallsAdapter(
         const val TYPE_ADVERTISER = 1
     }
 
-    private val prettyDateFormat = java.text.SimpleDateFormat("d MMM", Locale.getDefault())
     private val today: Date = StHelper.today()
     private val yesterday: Date = Date(today.time - 86400)
 
@@ -128,7 +128,7 @@ class HistoryDetailsCallsAdapter(
         } else if (date.after(yesterday)) {
             return context.getString(R.string.date_yesterday) + ','
         } else {
-            return prettyDateFormat.format(date) + ','
+            return DateHelper.shortDate(date) + ','
         }
     }
 
