@@ -57,8 +57,8 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Timber.d("onCreate # %s", intent.data)
         super.onCreate(savedInstanceState)
+        Timber.d("onCreate # %s", intent.data)
 
         v = ActivityOngoingCallBinding.inflate(layoutInflater)
         setContentView(v.root)

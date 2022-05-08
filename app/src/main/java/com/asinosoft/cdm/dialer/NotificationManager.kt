@@ -111,17 +111,16 @@ class NotificationManager(private val context: Context) {
         }
 
         val channel = if (Call.STATE_RINGING == callState) INCOMING_CHANNEL else ONGOING_CHANNEL
-        val priority =
-            if (Call.STATE_RINGING == callState) NotificationCompat.PRIORITY_HIGH else NotificationCompat.PRIORITY_DEFAULT
         val builder = NotificationCompat.Builder(context, channel)
             .setSmallIcon(R.drawable.call)
             .setLargeIcon(contact.getAvatar(context).toBitmap())
             .setContentIntent(openAppIntent(call))
             .setCategory(Notification.CATEGORY_CALL)
-            .setPriority(priority)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCustomContentView(view)
             .setOngoing(true)
             .setSound(null)
+            .setSilent(Call.STATE_RINGING == callState) // Для входящих звонков всплывающее уведомление не показываем
             .setUsesChronometer(Call.STATE_ACTIVE == callState)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setWhen(call.details.connectTimeMillis)

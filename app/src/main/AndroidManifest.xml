@@ -87,7 +87,6 @@
             android:name=".activities.OngoingCallActivity"
             android:exported="false"
             android:label="@string/call"
-            android:launchMode="singleInstance"
             android:parentActivityName=".activities.ManagerActivity"
             android:screenOrientation="portrait"
             android:showForAllUsers="true"
