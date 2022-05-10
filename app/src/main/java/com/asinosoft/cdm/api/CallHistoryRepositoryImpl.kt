@@ -1,7 +1,9 @@
 package com.asinosoft.cdm.api
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.provider.CallLog
 import com.asinosoft.cdm.data.Action
@@ -100,7 +102,13 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
         private val colCountry = cursor.getColumnIndex(CallLog.Calls.COUNTRY_ISO)
         private val colPhoneAccount = cursor.getColumnIndex(CallLog.Calls.PHONE_ACCOUNT_ID)
 
-        private val accounts = context.telecomManager.callCapablePhoneAccounts.map { it.id }
+        private val accounts: List<String> by lazy {
+            if (PackageManager.PERMISSION_GRANTED == context.checkSelfPermission(Manifest.permission.READ_PHONE_STATE)) {
+                context.telecomManager.callCapablePhoneAccounts.map { it.id }
+            } else {
+                emptyList()
+            }
+        }
 
         fun getAll(): List<CallHistoryItem> {
             val result = ArrayList<CallHistoryItem>()

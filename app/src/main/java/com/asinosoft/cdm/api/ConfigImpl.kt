@@ -1,6 +1,7 @@
 package com.asinosoft.cdm.api
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Color
 import android.net.Uri
 import androidx.core.net.toUri
@@ -10,6 +11,7 @@ import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
 import com.google.gson.Gson
 import java.io.File
+import kotlin.math.roundToInt
 
 class ConfigImpl(private val context: Context) : Config {
     private val settings = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
@@ -31,6 +33,14 @@ class ConfigImpl(private val context: Context) : Config {
         SWIPE_DOWN_ACTION,
 
         LIST_DIVIDER,
+    }
+
+    /**
+     * Дефолтный размер аватарки избранного контакта
+     */
+    private val defaultFavoritesSize: Int by lazy {
+        val screenWidth = Resources.getSystem().displayMetrics.widthPixels
+        (screenWidth / 5.0).roundToInt()
     }
 
     override var isChanged = false
@@ -69,7 +79,7 @@ class ConfigImpl(private val context: Context) : Config {
             .also { isChanged = true }
 
     override var favoritesFirst: Boolean
-        get() = settings.getBoolean(Keys.FAVORITES_LAYOUT.name, true)
+        get() = settings.getBoolean(Keys.FAVORITES_LAYOUT.name, false)
         set(value) = settings.edit().putBoolean(Keys.FAVORITES_LAYOUT.name, value).apply()
             .also { isChanged = true }
 
@@ -79,7 +89,7 @@ class ConfigImpl(private val context: Context) : Config {
             .also { isChanged = true }
 
     override var favoritesSize: Int
-        get() = settings.getInt(Keys.FAVORITES_SIZE.name, 200)
+        get() = settings.getInt(Keys.FAVORITES_SIZE.name, defaultFavoritesSize)
         set(size) = settings.edit().putInt(Keys.FAVORITES_SIZE.name, size).apply()
             .also { isChanged = true }
 
@@ -125,7 +135,7 @@ class ConfigImpl(private val context: Context) : Config {
             .also { isChanged = true }
 
     override var swipeDownAction: Action.Type
-        get() = settings.getString(Keys.SWIPE_DOWN_ACTION.name, Action.Type.Sms.name)
+        get() = settings.getString(Keys.SWIPE_DOWN_ACTION.name, Action.Type.TelegramChat.name)
             ?.let { Action.Type.valueOf(it) }
             ?: Action.Type.Sms
         set(action) = settings.edit().putString(Keys.SWIPE_DOWN_ACTION.name, action.name).apply()
@@ -133,7 +143,7 @@ class ConfigImpl(private val context: Context) : Config {
             .also { isChanged = true }
 
     override var listDivider: Boolean
-        get() = settings.getBoolean(Keys.LIST_DIVIDER.name, false)
+        get() = settings.getBoolean(Keys.LIST_DIVIDER.name, true)
         set(value) = settings.edit().putBoolean(Keys.LIST_DIVIDER.name, value).apply()
             .also { isChanged = true }
 
