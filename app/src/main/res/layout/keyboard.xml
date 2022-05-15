@@ -67,10 +67,7 @@
                     android:id="@+id/one_btn"
                     android:layout_width="@dimen/passcode_btn"
                     android:layout_height="@dimen/passcode_btn"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_margin="@dimen/passcode_btn_margin"
                     android:background="@drawable/numeric_button"
                     android:clickable="true"
                     android:focusable="true"
@@ -109,7 +106,10 @@
                     android:id="@+id/two_btn"
                     android:layout_width="@dimen/passcode_btn"
                     android:layout_height="@dimen/passcode_btn"
-                    android:layout_margin="@dimen/passcode_btn_margin"
+                    android:layout_marginStart="@dimen/passcode_btn_margin"
+                    android:layout_marginTop="@dimen/passcode_btn_margin"
+                    android:layout_marginEnd="@dimen/passcode_btn_margin"
+                    android:layout_marginBottom="@dimen/passcode_btn_margin"
                     android:background="@drawable/numeric_button"
                     android:clickable="true"
                     android:focusable="true"
@@ -419,7 +419,7 @@
             <com.skyfishjy.library.RippleBackground
                 android:id="@+id/ripple_"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 app:rb_color="#0099CC"
                 app:rb_duration="500"
                 app:rb_radius="16dp"
@@ -459,7 +459,7 @@
             <com.skyfishjy.library.RippleBackground
                 android:id="@+id/ripple0"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 app:rb_color="#0099CC"
                 app:rb_duration="500"
                 app:rb_radius="16dp"
@@ -495,16 +495,43 @@
                 </LinearLayout>
             </com.skyfishjy.library.RippleBackground>
 
-            <ImageView
-                android:id="@+id/btnCall"
-                android:layout_width="@dimen/passcode_btn"
-                android:layout_height="@dimen/passcode_btn"
-                android:layout_margin="@dimen/passcode_btn_margin"
-                android:contentDescription="@string/call"
-                android:hapticFeedbackEnabled="true"
-                android:padding="5dp"
-                android:src="?attr/callIcon"
-                android:visibility="visible" />
+            <RelativeLayout>
+
+                <ImageView
+                    android:id="@+id/btnCall"
+                    android:layout_width="@dimen/passcode_btn"
+                    android:layout_height="@dimen/passcode_btn"
+                    android:layout_marginStart="@dimen/passcode_btn_margin"
+                    android:layout_marginTop="@dimen/passcode_btn_margin"
+                    android:layout_marginEnd="@dimen/passcode_btn_margin"
+                    android:layout_marginBottom="@dimen/passcode_btn_margin"
+                    android:contentDescription="@string/call"
+                    android:hapticFeedbackEnabled="true"
+                    android:padding="5dp"
+                    android:src="?attr/callIcon"
+                    android:visibility="gone"
+                    tools:src="@drawable/ic_phone_24px" />
+
+                <ImageButton
+                    android:id="@+id/btnCallSim1"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:background="@drawable/ic_call_sim1"
+                    android:contentDescription="@string/call"
+                    android:hapticFeedbackEnabled="true"
+                    android:visibility="visible" />
+
+                <ImageButton
+                    android:id="@+id/btnCallSim2"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginStart="1dp"
+                    android:layout_toEndOf="@id/btnCallSim1"
+                    android:background="@drawable/ic_call_sim2"
+                    android:contentDescription="@string/call"
+                    android:hapticFeedbackEnabled="true"
+                    android:visibility="visible" />
+            </RelativeLayout>
         </TableRow>
 
     </TableLayout>

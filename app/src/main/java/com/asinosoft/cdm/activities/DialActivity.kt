@@ -24,14 +24,16 @@ import timber.log.Timber
  * Невидимая активность для выбора симки и запуска звонка
  */
 class DialActivity : AppCompatActivity() {
-    private lateinit var contact: Uri
+    private lateinit var phone: Uri
+    private var sim: Int = 0
+
     private val launcher =
         registerForActivityResult(StartActivityForResult()) {
             if (isDefaultDialer()) {
                 Analytics.logDefaultDialer()
-                placeCall(contact)
+                placeCall()
             } else {
-                startActivity(Intent(Intent.ACTION_DIAL, contact))
+                startActivity(Intent(Intent.ACTION_DIAL, phone))
                 finish()
             }
         }
@@ -42,9 +44,10 @@ class DialActivity : AppCompatActivity() {
 
         if (intent.data != null) {
             Timber.d("onCreate → ${intent.data}")
-            contact = intent.data!!
+            phone = intent.data!!
+            sim = intent.getIntExtra("sim", 0)
             if (isDefaultDialer()) {
-                placeCall(contact)
+                placeCall()
             } else {
                 setDefaultDialer(launcher)
             }
@@ -54,15 +57,14 @@ class DialActivity : AppCompatActivity() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun placeCall(contact: Uri?) {
-        Timber.d("Запустить звонок → $contact")
+    private fun placeCall() {
+        Timber.d("Запустить звонок → $phone")
         selectPhoneAccount { phoneAccount ->
             Bundle().apply {
                 putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, phoneAccount)
                 putBoolean(TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE, false)
                 putBoolean(TelecomManager.EXTRA_START_CALL_WITH_SPEAKERPHONE, false)
-                telecomManager.placeCall(contact, this)
-            }
+            }.let { telecomManager.placeCall(phone, it) }
         }
     }
 
@@ -80,12 +82,15 @@ class DialActivity : AppCompatActivity() {
         val default = telecomManager.getDefaultOutgoingPhoneAccount(PhoneAccount.SCHEME_TEL)
         val accounts = telecomManager.callCapablePhoneAccounts
 
-        if (null != default) {
-            onSelect(default)
-            finish()
-        } else if (1 == accounts.size || Build.VERSION.SDK_INT < 26) {
+        if (1 == accounts.size || Build.VERSION.SDK_INT < 26) {
             Timber.d("Без вариантов SIM -> ${accounts[0]}")
             onSelect(accounts[0])
+            finish()
+        } else if (sim > 0 && sim <= accounts.size) {
+            onSelect(accounts[sim - 1])
+            finish()
+        } else if (null != default) {
+            onSelect(default)
             finish()
         } else {
             val slots: Array<String> =

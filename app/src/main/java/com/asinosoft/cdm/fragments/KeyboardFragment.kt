@@ -1,5 +1,7 @@
 package com.asinosoft.cdm.fragments
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -9,7 +11,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.databinding.KeyboardBinding
-import com.asinosoft.cdm.helpers.runOnUiThread
+import com.asinosoft.cdm.helpers.*
 
 /**
  * Класс кастомной клавиатуры.
@@ -17,8 +19,21 @@ import com.asinosoft.cdm.helpers.runOnUiThread
 class KeyboardFragment : Fragment() {
     private lateinit var v: KeyboardBinding
     private var settingsButtonClickCallback: () -> Unit = {}
-    private var callButtonClickCallback: (phoneNumber: String) -> Unit = {}
+    private var callButtonClickCallback: (phoneNumber: String, sim: Int) -> Unit = { _, _ -> }
     private var closeButtonClickCallback: () -> Unit = {}
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Если в телефоне установлены две симки, то показываем двойную кнопку звонка взамен стандартной
+        if (PackageManager.PERMISSION_GRANTED == requireContext().checkSelfPermission((Manifest.permission.READ_PHONE_STATE))) {
+            (requireContext().telecomManager.callCapablePhoneAccounts.size >= 2).let { isDualSim ->
+                v.btnCall.visibility = if (isDualSim) View.GONE else View.VISIBLE
+                v.btnCallSim1.visibility = if (isDualSim) View.VISIBLE else View.GONE
+                v.btnCallSim2.visibility = if (isDualSim) View.VISIBLE else View.GONE
+            }
+        }
+    }
 
     /**
      * Реакция на изменение текста в строке поиска
@@ -30,7 +45,7 @@ class KeyboardFragment : Fragment() {
     /**
      * Реакия на кнопку "Вызов"
      */
-    fun onCallButtonClick(callback: (phoneNumber: String) -> Unit) {
+    fun onCallButtonClick(callback: (phoneNumber: String, sim: Int) -> Unit) {
         callButtonClickCallback = callback
     }
 
@@ -169,7 +184,17 @@ class KeyboardFragment : Fragment() {
         }
         v.btnCall.setOnClickListener {
             if (v.inputText.text.isNotEmpty()) {
-                callButtonClickCallback(v.inputText.text.toString())
+                callButtonClickCallback(v.inputText.text.toString(), 0)
+            }
+        }
+        v.btnCallSim1.setOnClickListener {
+            if (v.inputText.text.isNotEmpty()) {
+                callButtonClickCallback(v.inputText.text.toString(), 1)
+            }
+        }
+        v.btnCallSim2.setOnClickListener {
+            if (v.inputText.text.isNotEmpty()) {
+                callButtonClickCallback(v.inputText.text.toString(), 2)
             }
         }
 

@@ -58,10 +58,11 @@ class SearchFragment : Fragment() {
             contactsAdapter.setContactList(contacts.filtered(text, regex), text, regex)
         }
 
-        keyboard.onCallButtonClick { phoneNumber ->
+        keyboard.onCallButtonClick { phoneNumber, sim ->
             Analytics.logCallFromSearch()
             findNavController().popBackStack()
             Intent(Intent.ACTION_CALL, Uri.fromParts("tel", phoneNumber, null))
+                .putExtra("sim", sim)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .let { startActivity(it) }
         }
