@@ -81,6 +81,7 @@ android {
             includeAndroidResources = true
         }
     }
+    namespace 'com.asinosoft.cdm'
 }
 
 dependencies {
