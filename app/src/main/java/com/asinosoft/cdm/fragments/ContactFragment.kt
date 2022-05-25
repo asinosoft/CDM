@@ -6,13 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.databinding.ActivityDetailHistoryBinding
 import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
-import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter
-import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems
+import com.google.android.material.tabs.TabLayoutMediator
 
 /**
  * Окно контакта
@@ -27,6 +26,8 @@ class ContactFragment : Fragment() {
         arguments?.getLong("contactId")?.let { contactId ->
             model.initialize(requireContext(), contactId)
         }
+
+        Analytics.logActivityContact()
     }
 
     override fun onCreateView(
@@ -39,52 +40,38 @@ class ContactFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Analytics.logActivityContact()
-
-        v.pages.adapter = FragmentPagerItemAdapter(
-            childFragmentManager,
-            FragmentPagerItems.with(requireContext())
-                .add(
-                    resources.getString(R.string.contact_tab_actions),
-                    ContactDetailFragment::class.java
-                )
-                .add(
-                    resources.getString(R.string.contact_tab_history),
-                    HistoryDetailFragment::class.java
-                )
-                .add(
-                    resources.getString(R.string.contact_tab_settings),
-                    ContactSettingsFragment::class.java
-                )
-                .create()
-        )
-
-        v.pages.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrolled(
-                position: Int,
-                positionOffset: Float,
-                positionOffsetPixels: Int
-            ) {
+        v.pages.adapter = object : FragmentStateAdapter(this) {
+            override fun createFragment(position: Int): Fragment = when (position) {
+                0 -> ContactDetailFragment()
+                1 -> HistoryDetailFragment()
+                2 -> ContactSettingsFragment()
+                else -> throw Exception("wrong position")
             }
 
-            override fun onPageSelected(position: Int) {
-                when (position) {
-                    0 -> Analytics.logContactDetailsTab()
-                    1 -> Analytics.logContactHistoryTab()
-                    2 -> Analytics.logContactSettingsTab()
-                }
+            override fun getItemCount(): Int {
+                return 3
+            }
+        }
+
+        TabLayoutMediator(v.tabs, v.pages) { tab, position ->
+            tab.text = when (position) {
+                0 -> resources.getString(R.string.contact_tab_actions)
+                1 -> resources.getString(R.string.contact_tab_history)
+                2 -> resources.getString(R.string.contact_tab_settings)
+                else -> throw Exception("wrong position")
             }
 
-            override fun onPageScrollStateChanged(state: Int) {
+            when (position) {
+                0 -> Analytics.logContactDetailsTab()
+                1 -> Analytics.logContactHistoryTab()
+                2 -> Analytics.logContactSettingsTab()
             }
-        })
-
-        v.tabs.setViewPager(v.pages)
+        }.attach()
 
         model.contact.observe(viewLifecycleOwner) { contact ->
             contact?.let {
                 v.image.setImageDrawable(it.getAvatar(requireContext()))
-                v.name.text = it.name
+                v.toolbarLayout.title = it.name
             }
         }
     }
