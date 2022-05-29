@@ -40,6 +40,7 @@ class ContactFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        v.pages.offscreenPageLimit = 2
         v.pages.adapter = object : FragmentStateAdapter(this) {
             override fun createFragment(position: Int): Fragment = when (position) {
                 0 -> ContactDetailFragment()
