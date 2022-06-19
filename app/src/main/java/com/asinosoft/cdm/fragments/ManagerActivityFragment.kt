@@ -199,7 +199,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
                     try {
                         when (event.action) {
                             DragEvent.ACTION_DRAG_ENTERED -> {
-                                context.vibrator.vibrateSafety(Keys.VIBRO)
+                                context.vibrator.vibrateSafety(Keys.VIBRO,255)
                             }
                             DragEvent.ACTION_DROP -> {
                                 event.clipData.getItemAt(0)?.text.let {

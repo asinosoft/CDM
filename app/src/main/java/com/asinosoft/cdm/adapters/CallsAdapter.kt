@@ -101,13 +101,19 @@ class CallsAdapter(
         v.imageContact.setImageDrawable(call.contact.getAvatar(context))
         config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
         v.name.text = call.contact.name
-        v.number.text = call.prettyPhone
-        v.duration.text = Metoths.getFormattedTime(call.duration)
-        v.dateContact.text = call.date
+
+        if (0L == call.contact.id) {
+            v.number.setText(R.string.unsaved)
+        }
+        else{
+            v.number.text = call.prettyPhone
+        }
+
+        v.dateContact.visibility = View.INVISIBLE  //нужно убрать dateContact из layout
         if (call.timestamp.after(StHelper.today()))
             v.timeContact.text = call.time
         else
-            v.timeContact.visibility = View.INVISIBLE
+            v.timeContact.text = call.date
 
         val directActions = config.getContactSettings(call.contact)
         v.imageLeftAction.setImageResource(Action.resourceByType(directActions.left.type))

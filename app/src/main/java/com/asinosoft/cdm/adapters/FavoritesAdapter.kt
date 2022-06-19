@@ -139,7 +139,7 @@ class FavoritesAdapter(
                 setOnDragListener { _, event ->
                     when (event.action) {
                         DragEvent.ACTION_DRAG_ENTERED -> {
-                            vibrator.vibrateSafety(Keys.VIBRO)
+                            vibrator.vibrateSafety(Keys.VIBRO,255)
                             Analytics.logFavoriteLongClick()
                         }
                         DragEvent.ACTION_DRAG_EXITED -> {

@@ -1,6 +1,10 @@
 package com.asinosoft.cdm.activities
 
 import android.os.Bundle
+import android.view.ContextMenu
+import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -61,4 +65,34 @@ class ManagerActivity : BaseActivity() {
             model.refresh()
         }
     }
+/*
+    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_input_text, menu)
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        return when (item!!.itemId) {
+            R.id.past_menu ->{
+                Toast.makeText(applicationContext, "FirstFragment Setting", Toast.LENGTH_LONG).show()
+  //              R.id.inputText.setText("Замена текста").toString()
+                //              text(R.id.editText)
+                /*           editText.setText("Замена текста").toString()
+
+                           val clipboard = textView.context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
+                           val clip = ClipData.newPlainText("Order Number", textView.text.toString())
+                           clipboard?.setPrimaryClip(clip)
+                           true
+           */
+                return true
+            }
+            R.id.copy_menu ->{
+                Toast.makeText(applicationContext, "SecondFragment Setting", Toast.LENGTH_LONG).show()
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+*/
 }

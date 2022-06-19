@@ -1,22 +1,34 @@
 package com.asinosoft.cdm.fragments
 
 import android.Manifest
+import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.databinding.KeyboardBinding
-import com.asinosoft.cdm.helpers.*
+import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
+import com.asinosoft.cdm.helpers.runOnUiThread
+import com.asinosoft.cdm.helpers.telecomManager
+import com.asinosoft.cdm.helpers.vibrator
+
 
 /**
  * Класс кастомной клавиатуры.
  */
 class KeyboardFragment : Fragment() {
+    private val KEY_PHONE = "phone"
     private lateinit var v: KeyboardBinding
     private var settingsButtonClickCallback: () -> Unit = {}
     private var callButtonClickCallback: (phoneNumber: String, sim: Int) -> Unit = { _, _ -> }
@@ -57,7 +69,7 @@ class KeyboardFragment : Fragment() {
     }
 
     /**
-     * Реакция на кнопку "Закрыть" (клик по кнопке "Очистить", когда строка поиска уже пустая)
+     * Реакция на кнопку "Убрать клавиатуру"
      */
     fun onCloseButtonClick(callback: () -> Unit) {
         closeButtonClickCallback = callback
@@ -169,18 +181,18 @@ class KeyboardFragment : Fragment() {
         v.imageBackspace.setOnClickListener {
             Analytics.logSearchKeyboardDel()
             v.inputText.text = v.inputText.text.dropLast(1)
+            if (v.inputText.text.isEmpty())
+                v.settingsButton.setImageResource(R.drawable.ic_cog)
         }
         v.imageBackspace.setOnLongClickListener {
             Analytics.logSearchKeyboardClear()
             v.inputText.text = ""
+            context?.vibrator?.vibrateSafety(2, 255)
+            v.settingsButton.setImageResource(R.drawable.ic_cog)
             true
         }
         v.imageClear.setOnClickListener {
-            if (v.inputText.text.isNotEmpty()) {
-                v.inputText.text = ""
-            } else {
-                closeButtonClickCallback()
-            }
+            closeButtonClickCallback()
         }
         v.btnCall.setOnClickListener {
             if (v.inputText.text.isNotEmpty()) {
@@ -199,14 +211,63 @@ class KeyboardFragment : Fragment() {
         }
 
         v.settingsButton.setOnClickListener {
-            settingsButtonClickCallback()
+            if (v.inputText.text.isNotEmpty()) {
+                addNewContact()
+            } else {
+                settingsButtonClickCallback()
+            }
+        }
+
+        v.inputText.setOnLongClickListener { view ->
+            val myClipboard =
+                requireContext().getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager?
+
+            if (v.inputText.text.isEmpty()) {
+                val abc = myClipboard?.primaryClip
+                val item = abc?.getItemAt(0)
+                val text = item?.text.toString()
+                context?.vibrator?.vibrateSafety(2, 255)
+                item?.text?.let {
+                    v.inputText.text = it
+                }
+                Analytics.logKeyboardPaste()
+
+            } else {
+                val clip: ClipData = ClipData.newPlainText("simple text", v.inputText.text)
+                myClipboard?.setPrimaryClip(clip)
+                context?.vibrator?.vibrateSafety(2, 255)
+                Toast.makeText(requireContext(), R.string.copied, Toast.LENGTH_LONG)
+                    .show()
+                Analytics.logKeyboardCopy()
+            }
+            true
         }
 
         return v.root
     }
 
+    private fun addNewContact() {
+        Intent().apply {
+            action = Intent.ACTION_INSERT_OR_EDIT
+            type = "vnd.android.cursor.item/contact"
+            putExtra(KEY_PHONE, v.inputText.text)
+            launchActivityIntent(this)
+        }
+    }
+
+    private fun launchActivityIntent(intent: Intent) {
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(requireContext(), R.string.add_error, Toast.LENGTH_LONG)
+                .show()
+        }
+    }
+
     private fun takeValue(num: String) {
         Analytics.logKeyboardButton()
+        v.settingsButton.setImageResource(R.drawable.ic_add_contact_new)
         v.inputText.text = v.inputText.text.toString().plus(num)
     }
 }
+

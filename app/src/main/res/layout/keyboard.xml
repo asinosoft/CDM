@@ -28,6 +28,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
+            android:inputType="phone"
+            android:textCursorDrawable="@null"
             android:textSize="36sp" />
 
         <ImageView

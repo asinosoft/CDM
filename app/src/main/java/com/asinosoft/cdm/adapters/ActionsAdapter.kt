@@ -43,7 +43,7 @@ class ActionsAdapter : RecyclerView.Adapter<ActionsAdapter.Holder>() {
                     Action.resourceByType(actionType)
                 )
                 setOnLongClickListener {
-                    it.context.vibrator.vibrateSafety(500)
+                    it.context.vibrator.vibrateSafety(2, 255)
                     startDrag(
                         ClipData.newPlainText(
                             actionType.name,
