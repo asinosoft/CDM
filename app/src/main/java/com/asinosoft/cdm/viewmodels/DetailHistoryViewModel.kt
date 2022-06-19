@@ -42,8 +42,8 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
                 availableActions.postValue(getAvailableActions())
                 haveUnsavedChanges = false
 
-                val calls =
-                    CallHistoryRepositoryImpl(contactRepository).getHistoryByContact(context, it)
+                val calls = CallHistoryRepositoryImpl(SingleContactRepository(it))
+                    .getHistoryByContact(context, it)
                 callHistory.postValue(calls)
             }
         }
