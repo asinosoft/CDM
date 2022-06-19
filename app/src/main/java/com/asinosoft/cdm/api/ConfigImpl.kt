@@ -143,7 +143,7 @@ class ConfigImpl(private val context: Context) : Config {
             .also { isChanged = true }
 
     override var listDivider: Boolean
-        get() = settings.getBoolean(Keys.LIST_DIVIDER.name, true)
+        get() = settings.getBoolean(Keys.LIST_DIVIDER.name, false)
         set(value) = settings.edit().putBoolean(Keys.LIST_DIVIDER.name, value).apply()
             .also { isChanged = true }
 
