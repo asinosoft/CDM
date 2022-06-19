@@ -28,7 +28,8 @@ class CallsAdapter(
     private val config: Config,
     private val context: Context,
     private val favorites: ViewBinding,
-    private val handler: Handler
+    private val onClickContact: (contact: Contact) -> Unit,
+    private val onClickPhone: (phone: String) -> Unit
 ) : RecyclerView.Adapter<CallsAdapter.HolderHistory>() {
     companion object {
         const val TYPE_FAVORITES = 1
@@ -36,11 +37,6 @@ class CallsAdapter(
     }
 
     private var calls: List<CallHistoryItem> = listOf()
-
-    interface Handler {
-        fun onClickContact(contact: Contact)
-        fun onClickPhone(phone: String)
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
         val view = when (viewType) {
@@ -166,9 +162,9 @@ class CallsAdapter(
         v.dragLayout.setOnClickListener {
             Analytics.logCallHistoryClick()
             if (0L == call.contact.id) {
-                handler.onClickPhone(call.phone)
+                onClickPhone(call.phone)
             } else {
-                handler.onClickContact(call.contact)
+                onClickContact(call.contact)
             }
         }
     }

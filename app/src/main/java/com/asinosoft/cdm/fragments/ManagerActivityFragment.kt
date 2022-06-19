@@ -22,7 +22,6 @@ import com.asinosoft.cdm.adapters.PermissionRationaleAdapter
 import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.api.FavoriteContactRepositoryImpl
-import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.FavoriteContact
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.databinding.FavoritesFragmentBinding
@@ -38,7 +37,7 @@ import timber.log.Timber
 /**
  * Интерфейс главного окна (избранные + последние звонки)
  */
-class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
+class ManagerActivityFragment : Fragment() {
     private lateinit var v: ActivityManagerBinding
     private val model: ManagerViewModel by activityViewModels()
     private val config: Config = App.instance!!.config
@@ -104,17 +103,6 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putInt("pickedPosition", pickedPosition)
         super.onSaveInstanceState(outState)
-    }
-
-    override fun onClickContact(contact: Contact) {
-        findNavController().navigate(
-            R.id.action_open_contact_fragment,
-            bundleOf("contactId" to contact.id)
-        )
-    }
-
-    override fun onClickPhone(phone: String) {
-        findNavController().navigate(R.id.action_open_phone_history, bundleOf("phone" to phone))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -183,7 +171,12 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
                 callsLayoutManager,
                 btnDelete,
                 btnEdit,
-                { contact -> onClickContact(contact) },
+                { contact ->
+                    findNavController().navigate(
+                        R.id.action_open_contact_fragment,
+                        bundleOf("contactId" to contact.id)
+                    )
+                },
                 { position ->
                     pickedPosition = position
                     pickContact.launch(null)
@@ -224,7 +217,26 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
     }
 
     private fun initCallHistory(callsLayoutManager: LockableLayoutManager) {
-        callsAdapter = CallsAdapter(config, requireContext(), favoritesView, this)
+        callsAdapter = CallsAdapter(
+            config,
+            requireContext(),
+            favoritesView,
+            { contact ->
+                findNavController().navigate(
+                    R.id.action_open_contact_fragment,
+                    bundleOf(
+                        "contactId" to contact.id,
+                        "tab" to "history"
+                    )
+                )
+            },
+            { phone ->
+                findNavController().navigate(
+                    R.id.action_open_phone_history,
+                    bundleOf("phone" to phone)
+                )
+            }
+        )
         v.rvCalls.layoutManager = callsLayoutManager
         v.rvCalls.isNestedScrollingEnabled = true
 
