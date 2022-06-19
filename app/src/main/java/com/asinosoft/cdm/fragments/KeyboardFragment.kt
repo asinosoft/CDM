@@ -231,6 +231,7 @@ class KeyboardFragment : Fragment() {
                     v.inputText.text = it
                 }
                 Analytics.logKeyboardPaste()
+                v.settingsButton.setImageResource(R.drawable.ic_add_contact_new)
 
             } else {
                 val clip: ClipData = ClipData.newPlainText("simple text", v.inputText.text)
