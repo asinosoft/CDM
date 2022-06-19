@@ -69,6 +69,12 @@ class ContactFragment : Fragment() {
             }
         }.attach()
 
+        if ("history" == arguments?.getString("tab")) {
+            v.pages.post {
+                v.pages.setCurrentItem(1, false)
+            }
+        }
+
         model.contact.observe(viewLifecycleOwner) { contact ->
             contact?.let {
                 v.image.setImageDrawable(it.getAvatar(requireContext()))

@@ -29,6 +29,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
     val availableActions: MutableLiveData<List<Action.Type>> = MutableLiveData()
 
     fun initialize(context: Context, contactId: Long) {
+        contact.postValue(Contact(0, ""))
         viewModelScope.launch(Dispatchers.IO) {
             val contactRepository = ContactRepositoryImpl(context)
 
@@ -36,19 +37,19 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
                 _contact = it
                 _actions = App.instance!!.config.getContactSettings(it)
 
-                contact.postValue(_contact)
+                contact.postValue(it)
                 directActions.postValue(_actions)
                 availableActions.postValue(getAvailableActions())
                 haveUnsavedChanges = false
 
-                val calls =
-                    CallHistoryRepositoryImpl(contactRepository).getHistoryByContact(context, it)
+                val calls = CallHistoryRepositoryImpl(SingleContactRepository(it))
+                    .getHistoryByContact(context, it)
                 callHistory.postValue(calls)
             }
         }
     }
 
-    fun getContactAction(direction: Direction): Action {
+    private fun getContactAction(direction: Direction): Action {
         return when (direction) {
             Direction.LEFT -> _actions.left
             Direction.RIGHT -> _actions.right
