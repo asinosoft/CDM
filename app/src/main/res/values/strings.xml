@@ -35,6 +35,7 @@
     <string name="action_keyboard">Keyboard</string>
 
     <!-- Common words -->
+    <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="call">Call</string>
@@ -142,6 +143,7 @@
         We need access to call logs and contact book for name and photo
     </string>
     <string name="give_permission">Permit</string>
+    <string name="request_draw_overlays">Please allow displaying over other apps</string>
 
     <plurals name="age">
         <item quantity="zero">%d years</item>

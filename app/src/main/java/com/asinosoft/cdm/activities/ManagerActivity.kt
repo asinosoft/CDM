@@ -8,6 +8,7 @@ import com.asinosoft.cdm.App
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.helpers.isDefaultDialer
+import com.asinosoft.cdm.helpers.requestDrawOverlays
 import com.asinosoft.cdm.helpers.setDefaultDialer
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import timber.log.Timber
@@ -40,6 +41,8 @@ class ManagerActivity : BaseActivity() {
         if ((application as App).config.checkDefaultDialer) {
             setDefaultDialer(launcher)
         }
+
+        requestDrawOverlays(findViewById(R.id.nav_host))
     }
 
     override fun onPause() {
