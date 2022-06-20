@@ -36,7 +36,9 @@
     <color name="subtext_color_gray">#9B9B9B</color>
     <color name="subtext_color_dark">#999999</color>
 
-    <color name="system_navbar_color_light">#252525</color>
+    <color name="system_statbar_color_light">#252525</color>
+
+    <color name="system_navbar_color_light">#FFFFFF</color>
     <color name="system_navbar_color_gray">#252525</color>
     <color name="system_navbar_color_dark">#000000</color>
 

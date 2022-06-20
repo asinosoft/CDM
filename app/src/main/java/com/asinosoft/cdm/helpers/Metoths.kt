@@ -199,9 +199,9 @@ class Metoths {
             }
         }
 
-        fun Vibrator.vibrateSafety(ms: Long) {
+        fun Vibrator.vibrateSafety(ms: Long, amplitude: Int) {
             if (Build.VERSION.SDK_INT >= 29) {
-                vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.EFFECT_HEAVY_CLICK))
+                vibrate(VibrationEffect.createOneShot(ms, amplitude))
             } else {
                 vibrate(ms)
             }

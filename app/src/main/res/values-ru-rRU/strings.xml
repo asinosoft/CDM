@@ -41,6 +41,8 @@
     <string name="delete">Удалить</string>
     <string name="call">Вызов</string>
     <string name="voicemail">Голосовая почта</string>
+    <string name="unsaved">Не сохранено</string>
+    <string name="add_error">Ошибка</string>
 
     <string name="digit_one_text">&#8203;</string>
     <string name="digit_two_text">ABC\nАБВГ</string>
@@ -109,12 +111,20 @@
     <string name="date_yesterday">Вчера</string>
     <string name="select_number">Выберите номер</string>
 
+    <!-- ContextMenu InputText -->
+    <string name="menu_paste">Вставить</string>
+    <string name="menu_copy">Копировать</string>
+
+    <string name="copied" >Скопировано в буфер обмена</string>
+    <string name="privacy_policy">Политика конфиденциальности</string>
+
     <!-- About activity -->
     <string name="share_app">Поделиться</string>
     <string name="share_message">Попробуй это приложение:\n%s</string>
     <string name="share_via">Поделиться</string>
     <string name="rate_us">Оценить в Google Play</string>
     <string name="licenses">Лицензии третьих сторон</string>
+    <string name="version">Версия %s</string>
 
     <!-- Permission rationale fragment -->
     <string name="permission_rationale">

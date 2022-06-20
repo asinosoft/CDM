@@ -10,7 +10,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.asinosoft.cdm.R
-import java.text.SimpleDateFormat
 
 /**
  * Вкладка "Настройки / Информация"
@@ -27,7 +26,7 @@ class SettingsAboutFragment : Fragment() {
             val info = context.packageManager.getPackageInfo(context.packageName, 0)
             text = context.getString(R.string.version).format(
                 info.versionName,
-                SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT).format(info.lastUpdateTime)
+                //              SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT).format(info.lastUpdateTime)
             )
         }
 
@@ -41,6 +40,10 @@ class SettingsAboutFragment : Fragment() {
 
         view.findViewById<TextView>(R.id.showLicenses).setOnClickListener {
             showLicenses()
+        }
+
+        view.findViewById<TextView>(R.id.privacyPolicy).setOnClickListener {
+            privacyPolicy()
         }
 
         return view
@@ -66,5 +69,10 @@ class SettingsAboutFragment : Fragment() {
 
     private fun showLicenses() {
         findNavController().navigate(R.id.action_show_licenses)
+    }
+
+    private fun privacyPolicy() {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacyPolicy_url)))
+        startActivity(intent)
     }
 }

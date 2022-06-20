@@ -33,6 +33,12 @@
             android:text="@string/licenses"
             app:drawableLeftCompat="@drawable/ic_favorite" />
 
+        <TextView
+            android:id="@+id/privacyPolicy"
+            style="@style/About"
+            android:text="@string/privacy_policy"
+            app:drawableLeftCompat="@drawable/ic_favorite" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -46,12 +52,14 @@
         <TextView
             android:id="@+id/version"
             style="@style/Version"
+            android:layout_height="32dp"
             tools:text="v 1.2.3 от 23.11.2021" />
-
+<!--
         <TextView
             android:id="@+id/copyright"
             style="@style/Version"
             android:text="@string/copyright" />
+            -->
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -34,8 +34,13 @@
         <item name="android:colorPrimary">@color/photo_border_light</item>
         <item name="android:textColor">@color/text_color_light</item>
         <item name="android:textColorSecondary">@color/subtext_color_light</item>
-        <item name="android:statusBarColor">@color/system_navbar_color_light</item>
+        <item name="android:statusBarColor">@color/system_statbar_color_light</item>
         <item name="android:navigationBarColor">@color/system_navbar_color_light</item>
+        <!-- Прозрачный StatusBar -->
+        <item name="android:windowTranslucentStatus">false</item>
+        <!-- Прозрачный navigationBar -->
+        <item name="android:windowTranslucentNavigation">false</item>
+        <!-- Цвет текста в StatusBar -->
         <item name="android:windowLightStatusBar">false</item>
         <item name="popupColor">@color/popup_color_light</item>
         <item name="android:listDivider">@color/divider_color_light</item>

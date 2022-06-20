@@ -180,7 +180,7 @@ class CircleImage @JvmOverloads constructor(
             this.translateDiff(cirStart!!, diff, animationDuration)
             actionImage?.apply {
                 isVisible = diff.diffVisible(animationRadius).also { vis ->
-                    if (vis && !isVisible) context.vibrator.vibrateSafety(Keys.VIBRO)
+                    if (vis && !isVisible) context.vibrator.vibrateSafety(Keys.VIBRO, 255)
                 }
                 directActions?.action(diff.diffAction(animationRadius))?.let { action ->
                     this.setImageAction(action.type)

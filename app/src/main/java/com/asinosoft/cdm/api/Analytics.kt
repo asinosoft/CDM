@@ -206,5 +206,11 @@ class Analytics {
 
         fun logTheme(theme: Int) =
             Firebase.analytics.logEvent("theme", bundleOf("theme" to theme))
+
+        fun logKeyboardPaste() =
+            Firebase.analytics.logEvent("keyboard_paste", Bundle.EMPTY)
+
+        fun logKeyboardCopy() =
+            Firebase.analytics.logEvent("keyboard_copy", Bundle.EMPTY)
     }
 }
