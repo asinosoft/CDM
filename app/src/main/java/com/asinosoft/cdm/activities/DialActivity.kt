@@ -1,71 +1,109 @@
 package com.asinosoft.cdm.activities
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.telecom.PhoneAccount
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
-import android.util.Log
-import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.appcompat.app.AppCompatActivity
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.adapters.StringsWithIconsAdapter
+import com.asinosoft.cdm.api.Analytics
+import com.asinosoft.cdm.helpers.isDefaultDialer
+import com.asinosoft.cdm.helpers.setDefaultDialer
 import com.asinosoft.cdm.helpers.telecomManager
 import com.asinosoft.cdm.helpers.telephonyManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import timber.log.Timber
 
 /**
  * Невидимая активность для выбора симки и запуска звонка
  */
-class DialActivity : BaseActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("CDM|Dial", "onCreate")
-        super.onCreate(savedInstanceState)
+class DialActivity : AppCompatActivity() {
+    private lateinit var phone: Uri
+    private var sim: Int = 0
 
-        if (intent.action == Intent.ACTION_CALL && intent.data != null) {
-            Log.d("CDM|Dial", "onCreate → ${intent.data}")
-            withPermission(arrayOf(Manifest.permission.CALL_PHONE)) { permitted ->
-                if (permitted) placeCall(intent.data)
-                else Toast.makeText(this, "Не могу сделать вызов", Toast.LENGTH_LONG).show()
+    private val launcher =
+        registerForActivityResult(StartActivityForResult()) {
+            if (isDefaultDialer()) {
+                Analytics.logDefaultDialer()
+                placeCall()
+            } else {
+                startActivity(Intent(Intent.ACTION_DIAL, phone))
+                finish()
             }
         }
-        finish()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Timber.d("onCreate")
+        super.onCreate(savedInstanceState)
+
+        if (intent.data != null) {
+            Timber.d("onCreate → ${intent.data}")
+            phone = intent.data!!
+            sim = intent.getIntExtra("sim", 0)
+            if (isDefaultDialer()) {
+                placeCall()
+            } else {
+                setDefaultDialer(launcher)
+            }
+        } else {
+            finish()
+        }
     }
 
     @SuppressLint("MissingPermission")
-    private fun placeCall(contact: Uri?) {
-        Log.d("CDM|Dial", "placeCall → $contact")
+    private fun placeCall() {
+        Timber.d("Запустить звонок → $phone")
         selectPhoneAccount { phoneAccount ->
             Bundle().apply {
                 putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, phoneAccount)
                 putBoolean(TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE, false)
                 putBoolean(TelecomManager.EXTRA_START_CALL_WITH_SPEAKERPHONE, false)
-                telecomManager.placeCall(contact, this)
-            }
+            }.let { telecomManager.placeCall(phone, it) }
         }
     }
 
     @SuppressLint("MissingPermission")
+    private fun withDefaultPhoneAccount(onSelect: (PhoneAccountHandle) -> Unit) {
+        val account = telecomManager.getDefaultOutgoingPhoneAccount(PhoneAccount.SCHEME_TEL)
+        account?.let(onSelect)
+        finish()
+    }
+
+    @SuppressLint("MissingPermission")
     private fun selectPhoneAccount(onSelect: (PhoneAccountHandle) -> Unit) {
-        Log.d("CDM|Dial", "selectPhoneAccount")
+        Timber.d("Выбрать SIM для исходящего звонка")
+
+        val default = telecomManager.getDefaultOutgoingPhoneAccount(PhoneAccount.SCHEME_TEL)
         val accounts = telecomManager.callCapablePhoneAccounts
+
         if (1 == accounts.size || Build.VERSION.SDK_INT < 26) {
-            Log.d("CDM|Dial", "default -> ${accounts[0]}")
+            Timber.d("Без вариантов SIM -> ${accounts[0]}")
             onSelect(accounts[0])
+            finish()
+        } else if (sim > 0 && sim <= accounts.size) {
+            onSelect(accounts[sim - 1])
+            finish()
+        } else if (null != default) {
+            onSelect(default)
+            finish()
         } else {
             val slots: Array<String> =
                 accounts.mapNotNull { telephonyManager.createForPhoneAccountHandle(it)?.simOperatorName }
                     .toTypedArray()
             val icons: Array<Int> =
-                arrayOf(R.drawable.sim1, R.drawable.sim2, R.drawable.sim3)
+                arrayOf(R.drawable.ic_sim1, R.drawable.ic_sim2, R.drawable.ic_sim3)
             val adapter = StringsWithIconsAdapter(this, slots, icons)
 
-            AlertDialog.Builder(this)
+            MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.sim_selection_title)
                 .setAdapter(adapter) { dialog, index ->
-                    Log.d("CDM|Dial", "selected -> ${accounts[index]}")
+                    Timber.d("Выбран SIM -> ${accounts[index]}")
                     onSelect(accounts[index])
                     dialog.dismiss()
                 }

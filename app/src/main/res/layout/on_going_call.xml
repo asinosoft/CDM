@@ -58,7 +58,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-        app:drawableStartCompat="@drawable/sim1"
+        app:drawableStartCompat="@drawable/ic_sim1"
         app:layout_constraintBottom_toTopOf="@+id/guide_eye_level"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

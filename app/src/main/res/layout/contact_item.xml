@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/relativeL"
     android:layout_width="match_parent"
-    android:layout_height="65dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:focusable="true"
     android:focusableInTouchMode="true">
 
     <com.zerobranch.layout.SwipeLayout
         android:id="@+id/swipe_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="70dp"
         android:clickable="false"
         app:draggedItem="@id/drag_layout"
         app:isTogether="true"
@@ -21,21 +22,21 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageLeftAction"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_gravity="end"
-            android:layout_marginEnd="-64dp"
-            android:padding="8dp"
+            android:layout_marginEnd="-70dp"
+            android:padding="4dp"
             android:src="@drawable/ic_phone_call"
             android:visibility="visible"
             app:civ_border_width="0dp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageRightAction"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_marginStart="-64dp"
-            android:padding="8dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="-70dp"
+            android:padding="4dp"
             android:src="@drawable/ic_whatsapp_chat"
             android:visibility="visible"
             app:civ_border_width="0dp" />
@@ -49,18 +50,18 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imageContact"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:clickable="false"
-                android:padding="8dp"
+                android:padding="4dp"
                 android:src="@drawable/ic_default_photo"
-                app:civ_border_color="?android:attr/colorPrimary"
+                app:civ_border_color="?attr/civ_border_color"
                 app:civ_border_width="1dp" />
 
             <TextView
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
-                android:layout_height="32dp"
+                android:layout_height="36dp"
                 android:layout_marginStart="4dp"
                 android:layout_toEndOf="@id/imageContact"
                 android:clickable="false"
@@ -82,11 +83,19 @@
                 android:clickable="false"
                 android:gravity="top"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 tools:text="+7 890 123-45-67" />
 
         </RelativeLayout>
 
     </com.zerobranch.layout.SwipeLayout>
 
-</RelativeLayout>
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="70dp"
+        android:layout_marginEnd="15dp"
+        android:background="?android:attr/listDivider" />
+
+</LinearLayout>

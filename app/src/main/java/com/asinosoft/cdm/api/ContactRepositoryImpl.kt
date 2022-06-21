@@ -1,22 +1,23 @@
 package com.asinosoft.cdm.api
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Email
 import android.provider.ContactsContract.CommonDataKinds.Phone
-import android.util.Log
 import androidx.core.database.getStringOrNull
-import com.asinosoft.cdm.R
-import com.asinosoft.cdm.data.*
+import com.asinosoft.cdm.data.Action
+import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
+import timber.log.Timber
 
 /**
  * Доступ к контактам
  */
 class ContactRepositoryImpl(private val context: Context) : ContactRepository {
-
     // Полный список контактов
     private var contacts: MutableMap<Long, Contact> = mutableMapOf()
 
@@ -24,14 +25,15 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     private var contactPhones: MutableMap<String, Contact> = mutableMapOf()
 
     fun initialize() {
-        Log.d("CDM|Contacts", "Чтение списка контактов")
-        contactPhones = mutableMapOf()
+        Timber.d("Чтение списка контактов")
         contacts = context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             null, null, null
         )!!.use {
             ContactCursorAdapter(it).getAll()
         }
+
+        Analytics.logContacts(contacts.values)
 
         val index = HashMap<String, Contact>()
         contacts.values.forEach { contact ->
@@ -41,7 +43,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         }
 
         contactPhones = index
-        Log.d("CDM|Contacts", "Найдено ${contacts.size} контактов")
+        Timber.d("Найдено %d контактов", contacts.size)
     }
 
     override fun getContacts(): Collection<Contact> {
@@ -52,21 +54,25 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         return contacts[id] ?: findContactById(id)?.also { cache(it) }
     }
 
-    override fun getContactByUri(uri: Uri): Contact? {
-        Log.d("CDM|Contacts", "Поиск контакта по URI $uri")
-        val projections = arrayOf(ContactsContract.Contacts._ID)
-        val cursor = context.contentResolver.query(uri, projections, null, null, null)
-        if (cursor != null && cursor.moveToFirst()) {
-            val columnId = cursor.getColumnIndex(projections[0])
-            val id = cursor.getLong(columnId)
-            cursor.close()
-            return getContactById(id)
-        }
-        return null
+    override fun getContactByPhone(phone: String): Contact {
+        return contactPhones[phone] ?: (findContactByPhone(phone) ?: Contact.fromPhone(phone))
+            .also { cache(it) }
     }
 
-    override fun getContactByPhone(phone: String): Contact? {
-        return contactPhones[phone] ?: findContactByPhone(phone)?.also { cache(it) }
+    override fun getContactByUri(uri: Uri): Contact? {
+        Timber.d("Поиск контакта по URI $uri")
+        if (PackageManager.PERMISSION_DENIED == context.checkSelfPermission(Manifest.permission.READ_CONTACTS)) {
+            return null
+        }
+
+        val projections = arrayOf(ContactsContract.Contacts._ID)
+        return context.contentResolver.query(uri, projections, null, null, null)?.use { cursor ->
+            return if (cursor.moveToFirst()) {
+                val columnId = cursor.getColumnIndex(projections[0])
+                val id = cursor.getLong(columnId)
+                getContactById(id)
+            } else null
+        }
     }
 
     private fun cache(contact: Contact) {
@@ -77,7 +83,11 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     private fun findContactById(id: Long): Contact? {
-        Log.d("CDM|Contacts", "Поиск контакта по ID $id")
+        Timber.d("Поиск контакта по ID %d", id)
+        if (PackageManager.PERMISSION_DENIED == context.checkSelfPermission(Manifest.permission.READ_CONTACTS)) {
+            return null
+        }
+
         return context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             "${ContactsContract.Data.CONTACT_ID} = ?", arrayOf(id.toString()), null
@@ -87,7 +97,11 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     private fun findContactByPhone(phone: String): Contact? {
-        Log.d("CDM|Contacts", "Поиск контакта по телефону $phone")
+        Timber.d("Поиск контакта по телефону $phone")
+        if (PackageManager.PERMISSION_DENIED == context.checkSelfPermission(Manifest.permission.READ_CONTACTS)) {
+            return null
+        }
+
         context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, arrayOf(ContactsContract.Data.CONTACT_ID),
             "${ContactsContract.Data.MIMETYPE} = ? AND ${ContactsContract.Data.DATA4} = ?",
@@ -110,6 +124,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         ContactsContract.Data.PHOTO_URI,
         ContactsContract.Data.DISPLAY_NAME,
         ContactsContract.Data.MIMETYPE,
+        ContactsContract.Data.STARRED,
         ContactsContract.Data.DATA1,
         ContactsContract.Data.DATA2,
         ContactsContract.Data.DATA3,
@@ -122,6 +137,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         private val photoUri = cursor.getColumnIndex(ContactsContract.Data.PHOTO_URI)
         private val displayName = cursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME)
         private val mimeType = cursor.getColumnIndex(ContactsContract.Data.MIMETYPE)
+        private val starred = cursor.getColumnIndex(ContactsContract.Data.STARRED)
         private val data1 = cursor.getColumnIndex(ContactsContract.Data.DATA1)
         private val data2 = cursor.getColumnIndex(ContactsContract.Data.DATA2)
         private val data3 = cursor.getColumnIndex(ContactsContract.Data.DATA3)
@@ -131,18 +147,14 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
             val result = HashMap<Long, Contact>()
 
             while (cursor.moveToNext()) {
-                val id: Long = cursor.getLong(contactId)
-                val photo: Uri = Uri.parse(cursor.getStringOrNull(this@ContactCursorAdapter.photoUri) ?: "android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}")
-                result.getOrPut(
-                    id,
-                    {
-                        Contact(
-                            id,
-                            cursor.getStringOrNull(this@ContactCursorAdapter.displayName) ?: "",
-                            photo
-                        )
-                    }
-                ).let { contact ->
+                val id = cursor.getLong(contactId)
+                val name = cursor.getStringOrNull(displayName) ?: ""
+                val photo = cursor.getStringOrNull(photoUri)
+                    ?.let { Uri.parse(it) }
+
+                result.getOrPut(id) { Contact(id, name) }.let { contact ->
+                    contact.photoUri = photo
+                    contact.starred = 1 == cursor.getInt(starred)
                     when (cursor.getString(mimeType).dropWhile { c -> c != '/' }) {
                         "/contact_event" -> parseBirthday(contact)
                         "/phone_v2" -> parsePhone(contact)
@@ -186,14 +198,13 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
                     }
                 }
             }
-            cursor.close()
             return result
         }
 
         private fun parseBirthday(contact: Contact) {
             val date = cursor.getString(data1)
 
-            contact.age = StHelper.parseToYears(date)
+            contact.age = StHelper.getAge(date)
             contact.birthday = StHelper.parseDateToddMMyyyy(date)
         }
 

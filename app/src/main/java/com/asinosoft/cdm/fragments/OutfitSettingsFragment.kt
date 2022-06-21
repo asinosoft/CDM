@@ -5,15 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.viewmodels.SettingsViewModel
 
 /**
  * Окно настроек глобальных действий
  */
 class OutfitSettingsFragment : Fragment() {
-    private val model: SettingsViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

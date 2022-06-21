@@ -2,23 +2,18 @@ package com.asinosoft.cdm.viewmodels
 
 import android.app.Application
 import android.content.Context
-import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.asinosoft.cdm.api.CallHistoryItem
-import com.asinosoft.cdm.api.CallHistoryRepositoryImpl
-import com.asinosoft.cdm.api.ContactRepositoryImpl
-import com.asinosoft.cdm.api.Loader
+import com.asinosoft.cdm.App
+import com.asinosoft.cdm.api.*
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.helpers.Metoths.Companion.Direction
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * Данные для окна Просмотр контакта
@@ -34,26 +29,27 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
     val availableActions: MutableLiveData<List<Action.Type>> = MutableLiveData()
 
     fun initialize(context: Context, contactId: Long) {
+        contact.postValue(Contact(0, ""))
         viewModelScope.launch(Dispatchers.IO) {
             val contactRepository = ContactRepositoryImpl(context)
 
             contactRepository.getContactById(contactId)?.let {
                 _contact = it
-                _actions = Loader.loadContactSettings(context, it)
+                _actions = App.instance!!.config.getContactSettings(it)
 
-                contact.postValue(_contact)
+                contact.postValue(it)
                 directActions.postValue(_actions)
                 availableActions.postValue(getAvailableActions())
                 haveUnsavedChanges = false
 
-                val calls =
-                    CallHistoryRepositoryImpl(contactRepository).getHistoryByContact(context, it)
+                val calls = CallHistoryRepositoryImpl(SingleContactRepository(it))
+                    .getHistoryByContact(context, it)
                 callHistory.postValue(calls)
             }
         }
     }
 
-    fun getContactAction(direction: Direction): Action {
+    private fun getContactAction(direction: Direction): Action {
         return when (direction) {
             Direction.LEFT -> _actions.left
             Direction.RIGHT -> _actions.right
@@ -64,14 +60,8 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun setContactAction(direction: Direction, action: Action) {
-        Log.d("Contact", "set: $direction → ${action.type}")
-        Firebase.analytics.logEvent(
-            "contact_set_action",
-            Bundle().apply {
-                putString("direction", direction.name)
-                putString("action", action.type.name)
-            }
-        )
+        Timber.d("set: %s → %s", direction, action.type)
+        Analytics.logContactSetAction(direction.name, action.type.name)
         when (direction) {
             Direction.LEFT -> _actions.left = action
             Direction.RIGHT -> _actions.right = action
@@ -85,7 +75,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun swapContactAction(one: Direction, another: Direction) {
-        Log.d("Contact", "swap: $one ↔ $another")
+        Timber.d("swap: %s ↔ %s", one, another)
         getContactAction(one).apply {
             setContactAction(one, getContactAction(another)).also {
                 setContactAction(another, this)
@@ -94,9 +84,9 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun saveContactSettings(context: Context) {
-        Log.d("Contact", "save settings")
+        Timber.d("Сохранение настроек контакта %s", _contact)
         if (haveUnsavedChanges) {
-            Loader.saveContactSettings(context, _contact, _actions)
+            App.instance!!.config.setContactSettings(_contact, _actions)
             haveUnsavedChanges = false
         }
     }

@@ -1,16 +1,12 @@
 package com.asinosoft.cdm.data
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Bundle
-import android.util.Log
-import androidx.core.app.ActivityCompat
 import com.asinosoft.cdm.R
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
+import com.asinosoft.cdm.activities.DialActivity
+import com.asinosoft.cdm.api.Analytics
+import timber.log.Timber
 
 /**
  * Конкретное действие для конкретного контакта (звонок/смс/письмо/чат и т.д.)
@@ -97,52 +93,45 @@ class Action(
     }
 
     private fun phoneCall(context: Context) {
-        Log.i("CDM|Action", "phoneCall: $value")
-        if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.CALL_PHONE
-            )
-        ) {
-            return
-        }
-        Firebase.analytics.logEvent("action_phone_call", Bundle.EMPTY)
-
-        Intent(Intent.ACTION_CALL, Uri.fromParts("tel", value, null))
+        Timber.i("phoneCall: %s", value)
+        Analytics.logActionPhoneCall()
+        Intent(context, DialActivity::class.java)
+            .setData(Uri.fromParts("tel", value, null))
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             .let { context.startActivity(it) }
     }
 
     private fun sms(context: Context) {
-        Log.i("CDM|Action", "sms: $value")
-        Firebase.analytics.logEvent("action_phone_sms", Bundle.EMPTY)
+        Timber.i("sms: %s", value)
+        Analytics.logActionPhoneSms()
         Intent(Intent.ACTION_SENDTO, Uri.parse("sms:$value"))
             .let { context.startActivity(it) }
     }
 
     private fun email(context: Context) {
-        Log.i("CDM|Action", "email: $value")
-        Firebase.analytics.logEvent("action_email", Bundle.EMPTY)
+        Timber.i("email: %s", value)
+        Analytics.logActionEmail()
         Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$value"))
             .let { context.startActivity(it) }
     }
 
     private fun skypeChat(context: Context) {
-        Log.i("CDM|Action", "skypeChat: $value")
-        Firebase.analytics.logEvent("action_skype_chat", Bundle.EMPTY)
+        Timber.i("skypeChat: %s", value)
+        Analytics.logActionSkypeChat()
         Intent(Intent.ACTION_VIEW, Uri.parse("skype:$value?chat"))
             .let { context.startActivity(it) }
     }
 
     private fun skypeCall(context: Context) {
-        Log.i("CDM|Action", "skypeCall: $value")
-        Firebase.analytics.logEvent("action_skype_call", Bundle.EMPTY)
+        Timber.i("skypeCall: %s", value)
+        Analytics.logActionSkypeCall()
         Intent(Intent.ACTION_VIEW, Uri.parse("skype:$value"))
             .let { context.startActivity(it) }
     }
 
     private fun telegramChat(context: Context) {
-        Log.i("CDM|Action", "telegramChat: $id ($value)")
-        Firebase.analytics.logEvent("action_telegram_chat", Bundle.EMPTY)
+        Timber.i("telegramChat: %s (%s)", id, value)
+        Analytics.logActionTelegramChat()
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
                 Uri.parse("content://com.android.contacts/data/$id"),
@@ -153,8 +142,8 @@ class Action(
     }
 
     private fun telegramCall(context: Context) {
-        Log.i("CDM|Action", "telegramCall: $id ($value)")
-        Firebase.analytics.logEvent("action_telegram_call", Bundle.EMPTY)
+        Timber.i("telegramCall: %s (%s)", id, value)
+        Analytics.logActionTelegramCall()
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
                 Uri.parse("content://com.android.contacts/data/$id"),
@@ -165,8 +154,8 @@ class Action(
     }
 
     private fun telegramVideo(context: Context) {
-        Log.i("CDM|Action", "telegramVideo: $id ($value)")
-        Firebase.analytics.logEvent("action_telegram_video", Bundle.EMPTY)
+        Timber.i("telegramVideo: %s (%s)", id, value)
+        Analytics.logActionTelegramVideo()
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
                 Uri.parse("content://com.android.contacts/data/$id"),
@@ -177,8 +166,8 @@ class Action(
     }
 
     private fun viberChat(context: Context) {
-        Log.i("CDM|Action", "viberChat: $id ($value)")
-        Firebase.analytics.logEvent("action_viber_chat", Bundle.EMPTY)
+        Timber.i("viberChat: %s (%s)", id, value)
+        Analytics.logActionViberChat()
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
                 Uri.parse("content://com.android.contacts/data/$id"),
@@ -190,8 +179,8 @@ class Action(
     }
 
     private fun viberCall(context: Context) {
-        Log.i("CDM|Action", "viberCall: $id ($value)")
-        Firebase.analytics.logEvent("action_viber_call", Bundle.EMPTY)
+        Timber.i("viberCall: %s (%s)", id, value)
+        Analytics.logActionViberCall()
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
                 Uri.parse("content://com.android.contacts/data/$id"),
@@ -203,8 +192,8 @@ class Action(
     }
 
     private fun whatsappChat(context: Context) {
-        Log.i("CDM|Action", "whatsappChat: $id ($value)")
-        Firebase.analytics.logEvent("action_whatsapp_chat", Bundle.EMPTY)
+        Timber.i("whatsappChat: %s (%s)", id, value)
+        Analytics.logActionWhatsappChat()
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
                 Uri.parse("content://com.android.contacts/data/$id"),
@@ -215,8 +204,8 @@ class Action(
     }
 
     private fun whatsappCall(context: Context) {
-        Log.i("CDM|Action", "whatsappCall: $id ($value)")
-        Firebase.analytics.logEvent("action_whatsapp_call", Bundle.EMPTY)
+        Timber.i("whatsappCall: %s (%s)", id, value)
+        Analytics.logActionWhatsappCall()
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
                 Uri.parse("content://com.android.contacts/data/$id"),
@@ -227,8 +216,8 @@ class Action(
     }
 
     private fun whatsappVideo(context: Context) {
-        Log.i("CDM|Action", "whatsappVideo: $id ($value)")
-        Firebase.analytics.logEvent("action_whatsapp_video", Bundle.EMPTY)
+        Timber.i("whatsappVideo: %s (%s)", id, value)
+        Analytics.logActionWhatsappVideo()
         Intent(Intent.ACTION_VIEW)
             .setDataAndType(
                 Uri.parse("content://com.android.contacts/data/$id"),
@@ -255,4 +244,6 @@ class Action(
         result = 31 * result + value.hashCode()
         return result
     }
+
+    override fun toString() = value
 }

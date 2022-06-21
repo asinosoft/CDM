@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.SettingsAboutFragment">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:orientation="vertical"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/shareApp"
+            style="@style/About"
+            android:text="@string/share_app"
+            app:drawableLeftCompat="@drawable/ic_share" />
+
+        <TextView
+            android:id="@+id/rateUs"
+            style="@style/About"
+            android:text="@string/rate_us"
+            app:drawableLeftCompat="@drawable/ic_star" />
+
+        <TextView
+            android:id="@+id/showLicenses"
+            style="@style/About"
+            android:text="@string/licenses"
+            app:drawableLeftCompat="@drawable/ic_favorite" />
+
+        <TextView
+            android:id="@+id/privacyPolicy"
+            style="@style/About"
+            android:text="@string/privacy_policy"
+            app:drawableLeftCompat="@drawable/ic_favorite" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <TextView
+            android:id="@+id/version"
+            style="@style/Version"
+            android:layout_height="32dp"
+            tools:text="v 1.2.3 от 23.11.2021" />
+<!--
+        <TextView
+            android:id="@+id/copyright"
+            style="@style/Version"
+            android:text="@string/copyright" />
+            -->
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

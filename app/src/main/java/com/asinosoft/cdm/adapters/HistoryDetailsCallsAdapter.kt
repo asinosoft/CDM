@@ -2,20 +2,23 @@ package com.asinosoft.cdm.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Bundle
 import android.provider.CallLog
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.api.CallHistoryItem
-import com.asinosoft.cdm.api.Loader
+import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.data.Action
+import com.asinosoft.cdm.databinding.AdvertiserBinding
 import com.asinosoft.cdm.databinding.ContactCallItemBinding
+import com.asinosoft.cdm.helpers.DateHelper
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.StHelper
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
+import com.google.android.gms.ads.AdRequest
 import com.zerobranch.layout.SwipeLayout
 import java.util.*
 
@@ -23,41 +26,69 @@ import java.util.*
  * Адаптер списка звонков, который показывается в активности "Просмотр контакта"
  */
 class HistoryDetailsCallsAdapter(
+    private val config: Config,
     private val context: Context,
     private val calls: List<CallHistoryItem>
 ) :
     RecyclerView.Adapter<HistoryDetailsCallsAdapter.HolderHistory>() {
 
-    private val prettyDateFormat = java.text.SimpleDateFormat("dd MMMM", Locale.getDefault())
+    companion object {
+        const val TYPE_CALL = 0
+        const val TYPE_ADVERTISER = 1
+    }
+
     private val today: Date = StHelper.today()
     private val yesterday: Date = Date(today.time - 86400)
 
+    override fun getItemCount() = 1 + calls.size
+
+    override fun getItemViewType(position: Int): Int {
+        if (calls.size < 3) {
+            return if (position >= calls.size) TYPE_ADVERTISER else TYPE_CALL
+        } else {
+            return if (position == 3) TYPE_ADVERTISER else TYPE_CALL
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
-        return HolderHistory(
-            ContactCallItemBinding.inflate(
+        val binding = when (viewType) {
+            TYPE_CALL -> ContactCallItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
-        )
+            TYPE_ADVERTISER -> AdvertiserBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+            else -> throw Exception("Invalid view type: $viewType")
+        }
+        return HolderHistory(binding)
     }
 
-    override fun getItemCount() = calls.size
-
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
-        bindCallHistoryItem(holder.v, calls[position])
+        when (val binding = holder.v) {
+            is ContactCallItemBinding -> bindCallHistoryItem(
+                binding,
+                if (position < 3) calls[position] else calls[position - 1]
+            )
+            is AdvertiserBinding -> bindAdvertiser(binding)
+        }
+    }
+
+    private fun bindAdvertiser(v: AdvertiserBinding) {
+        val adRequest = AdRequest.Builder().build()
+        v.adView.loadAd(adRequest)
     }
 
     private fun bindCallHistoryItem(v: ContactCallItemBinding, call: CallHistoryItem) {
-        v.number.text = context.resources.getString(
-            R.string.call_contact_number,
-            call.prettyPhone,
-            Metoths.getFormattedTime(call.duration)
-        )
+        v.number.text = call.prettyPhone
+        v.duration.text = Metoths.getFormattedTime(call.duration)
         v.time.text = call.time
         v.date.text = formatDate(call.timestamp)
 
-        val directActions = Loader.loadContactSettings(context, call.contact)
+        val directActions = config.getContactSettings(call.contact)
         v.imageLeftAction.setImageResource(Action.resourceByType(directActions.left.type))
         v.imageRightAction.setImageResource(Action.resourceByType(directActions.right.type))
 
@@ -69,16 +100,23 @@ class HistoryDetailsCallsAdapter(
             CallLog.Calls.REJECTED_TYPE -> v.type.setImageResource(R.drawable.ic_call_rejected)
         }
 
+        when (call.sim) {
+            1 -> v.sim.setImageResource(R.drawable.ic_sim1)
+            2 -> v.sim.setImageResource(R.drawable.ic_sim2)
+            3 -> v.sim.setImageResource(R.drawable.ic_sim3)
+            else -> v.sim.visibility = View.GONE
+        }
+
         v.swipeLayout.setOnActionsListener(object : SwipeLayout.SwipeActionsListener {
             @SuppressLint("NotifyDataSetChanged")
             override fun onOpen(direction: Int, isContinuous: Boolean) {
                 when (direction) {
                     SwipeLayout.RIGHT -> {
-                        Firebase.analytics.logEvent("contact_history_swipe_right", Bundle.EMPTY)
+                        Analytics.logContactHistorySwipeRight()
                         directActions.right.perform(context)
                     }
                     SwipeLayout.LEFT -> {
-                        Firebase.analytics.logEvent("contact_history_swipe_left", Bundle.EMPTY)
+                        Analytics.logContactHistorySwipeLeft()
                         directActions.left.perform(context)
                     }
                 }
@@ -98,9 +136,9 @@ class HistoryDetailsCallsAdapter(
         } else if (date.after(yesterday)) {
             return context.getString(R.string.date_yesterday) + ','
         } else {
-            return prettyDateFormat.format(date) + ','
+            return DateHelper.shortDate(date) + ','
         }
     }
 
-    inner class HolderHistory(val v: ContactCallItemBinding) : RecyclerView.ViewHolder(v.root)
+    inner class HolderHistory(val v: ViewBinding) : RecyclerView.ViewHolder(v.root)
 }

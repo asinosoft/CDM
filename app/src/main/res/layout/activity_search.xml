@@ -10,6 +10,7 @@
         android:id="@+id/rv_filtered_contacts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        tools:listitem="@layout/contact_item"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     <LinearLayout
@@ -37,7 +38,7 @@
         android:clickable="true"
         android:contentDescription="@string/action_keyboard"
         android:focusable="true"
-        android:src="@drawable/twotone_keyboard_24"
+        android:src="@drawable/ic_keyboard"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

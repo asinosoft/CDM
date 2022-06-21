@@ -1,75 +1,51 @@
 package com.asinosoft.cdm.viewmodels
 
+import android.Manifest
 import android.app.Application
 import android.content.Context
 import android.net.Uri
 import android.provider.ContactsContract
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.api.*
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
-import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.helpers.Keys.Companion.CALL_HISTORY_LIMIT
+import com.asinosoft.cdm.helpers.hasPermissions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.*
 
 class ManagerViewModel(application: Application) : AndroidViewModel(application) {
+    private val config = App.instance!!.config
+    var initialized = false
+    val isBlocked: MutableLiveData<Boolean> = MutableLiveData()
     val calls: MutableLiveData<List<CallHistoryItem>> = MutableLiveData()
     val contacts: MutableLiveData<Collection<Contact>> = MutableLiveData()
-    var settings: Settings = Loader.loadSettings(application)
 
     private val contactRepository = ContactRepositoryImpl(getApplication())
 
     fun refresh() {
-        viewModelScope.launch(Dispatchers.IO) {
-            settings = Loader.loadSettings(getApplication())
-            contactRepository.initialize()
-
-            contacts.postValue(contactRepository.getContacts())
-
-            val callHistory = calls.value
-            if (null == callHistory) {
-                Log.d(null, "Первая загрузка истории звонков")
-                val latestCalls = CallHistoryRepositoryImpl(contactRepository).getLatestHistory(
-                    getApplication(),
-                    Date(),
-                    CALL_HISTORY_LIMIT,
-                    CallHistoryFilter()
-                )
-                Log.d(null, "Найдено ${latestCalls.size} звонков")
-                calls.postValue(latestCalls)
-            } else {
-                Log.d(null, "Проверка новых звонков")
-                val newCalls = CallHistoryRepositoryImpl(contactRepository).getNewestHistory(
-                    getApplication(),
-                    callHistory.firstOrNull()?.timestamp ?: Date()
-                )
-                Log.d(null, "Найдено ${newCalls.size} звонков")
-
-                // Объединяем новую историю и старую, исключая из неё контакты, которые отметились в новой
-                val newContacts = newCalls.map { it.contact }
-                val oldCalls = callHistory.filter { !newContacts.contains(it.contact) }
-                calls.postValue(newCalls + oldCalls)
+        val hasAccess = hasAccessToCallLog()
+        isBlocked.postValue(!hasAccess)
+        if (hasAccess) {
+            viewModelScope.launch(Dispatchers.IO) {
+                retrieveCallsAndContacts()
+                initialized = true
             }
+        } else {
+            initialized = true
         }
     }
 
     fun getMoreCalls() {
-        viewModelScope.launch(Dispatchers.IO) {
-            Log.d(null, "Подгрузка старой истории звонков")
-            val callHistory = calls.value ?: listOf()
-            val oldestCalls = CallHistoryRepositoryImpl(contactRepository).getLatestHistory(
-                getApplication(),
-                callHistory.lastOrNull()?.timestamp ?: Date(),
-                CALL_HISTORY_LIMIT,
-                CallHistoryFilter(callHistory.map { it.contact })
-            )
-            Log.d(null, "Найдено ${oldestCalls.size} звонков")
-            calls.postValue(callHistory + oldestCalls)
+        val hasAccess = hasAccessToCallLog()
+        isBlocked.postValue(!hasAccess)
+        if (hasAccess) {
+            viewModelScope.launch(Dispatchers.IO) { retrieveLatestCalls() }
         }
     }
 
@@ -81,7 +57,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun getContactByUri(context: Context, uri: Uri?): Contact? {
-        Log.d(null, "Поиск контакта: $uri")
+        Timber.d("Поиск контакта: %s", uri)
         return uri?.let {
             val projections = arrayOf(ContactsContract.Contacts._ID)
             val cursor = context.contentResolver.query(uri, projections, null, null, null)
@@ -100,16 +76,72 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
      * Изменение настроек действий контакта в соответствии с выбранным телефоном
      */
     fun setContactPhone(contact: Contact, phone: Action) {
-        val settings = Loader.loadContactSettings(getApplication(), contact)
-        if (settings.top.type == phone.type) {
+        val settings = config.getContactSettings(contact)
+        if (settings.top.type === phone.type) {
             settings.top = phone
-        } else if (settings.down.type == phone.type) {
+        }
+        if (settings.down.type === phone.type) {
             settings.down = phone
-        } else if (settings.left.type == phone.type) {
+        }
+        if (settings.left.type === phone.type) {
             settings.left = phone
-        } else if (settings.right.type == phone.type) {
+        }
+        if (settings.right.type === phone.type) {
             settings.right = phone
         }
-        Loader.saveContactSettings(getApplication(), contact, settings)
+        config.setContactSettings(contact, settings)
+    }
+
+    private fun hasAccessToCallLog(): Boolean =
+        getApplication<Application>().hasPermissions(
+            arrayOf(
+                Manifest.permission.READ_CONTACTS,
+                Manifest.permission.READ_CALL_LOG
+            )
+        )
+
+    private fun retrieveCallsAndContacts() {
+        contactRepository.initialize()
+
+        contacts.postValue(contactRepository.getContacts())
+
+        val callHistory = calls.value
+        if (null == callHistory) {
+            Timber.d("Первая загрузка истории звонков")
+            val latestCalls = CallHistoryRepositoryImpl(contactRepository).getLatestHistory(
+                getApplication(),
+                Date(),
+                CALL_HISTORY_LIMIT,
+                CallHistoryFilter()
+            )
+            Timber.d("Найдено %d звонков", latestCalls.size)
+            calls.postValue(latestCalls)
+        } else {
+            Timber.d("Проверка новых звонков")
+            Analytics.logLoadCallHistory()
+            val newCalls = CallHistoryRepositoryImpl(contactRepository).getNewestHistory(
+                getApplication(),
+                callHistory.firstOrNull()?.timestamp ?: Date()
+            )
+            Timber.d("Найдено %d звонков", newCalls.size)
+
+            // Объединяем новую историю и старую, исключая из неё контакты, которые отметились в новой
+            val newContacts = newCalls.map { it.contact }
+            val oldCalls = callHistory.filter { !newContacts.contains(it.contact) }
+            calls.postValue(newCalls + oldCalls)
+        }
+    }
+
+    private fun retrieveLatestCalls() {
+        Timber.d("Подгрузка старой истории звонков")
+        val callHistory = calls.value ?: listOf()
+        val oldestCalls = CallHistoryRepositoryImpl(contactRepository).getLatestHistory(
+            getApplication(),
+            callHistory.lastOrNull()?.timestamp ?: Date(),
+            CALL_HISTORY_LIMIT,
+            CallHistoryFilter(callHistory.map { it.contact })
+        )
+        Timber.d("Найдено %d звонков", oldestCalls.size)
+        calls.postValue(callHistory + oldestCalls)
     }
 }

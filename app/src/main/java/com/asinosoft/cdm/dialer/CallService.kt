@@ -1,46 +1,63 @@
 package com.asinosoft.cdm.dialer
 
-import android.content.Intent
+import android.net.Uri
 import android.telecom.Call
 import android.telecom.InCallService
-import android.util.Log
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.activities.OngoingCallActivity
+import com.asinosoft.cdm.api.Analytics
+import com.asinosoft.cdm.helpers.callState
+import com.asinosoft.cdm.helpers.phone
+import timber.log.Timber
 
 class CallService : InCallService() {
-    private val notification by lazy { NotificationManager(this) }
+    companion object {
+        var instance: CallService? = null
+    }
 
     private val callback = object : Call.Callback() {
         override fun onStateChanged(call: Call, state: Int) {
             super.onStateChanged(call, state)
-            if (state != Call.STATE_DISCONNECTED) {
-                notification.show(call, state)
-            }
+            Timber.d("Call # %s | state → %s", call.phone, getCallStateText(state))
+
+            (application as App).notification.update(call)
         }
     }
 
     override fun onCreate() {
         super.onCreate()
+        instance = this
         calls?.firstOrNull()?.let { call ->
             onCallAdded(call)
         }
     }
 
-    override fun onCallAdded(call: Call) {
-        Log.i("CDM|CallService", "add → ${call.details.handle}")
-        CallManager.setCall(call)
-        call.registerCallback(callback)
-        notification.show(call, call.state)
+    override fun onDestroy() {
+        super.onDestroy()
+        if (instance == this) {
+            instance = null
+        }
+    }
 
-        Intent(this, OngoingCallActivity::class.java).let { activity ->
-            activity.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
-            startActivity(activity)
+    override fun onCallAdded(call: Call) {
+        Timber.i("Новый звонок → %s", call.details.handle.schemeSpecificPart)
+        call.registerCallback(callback)
+        (application as App).notification.show(calls)
+        startActivity(OngoingCallActivity.intent(this, call))
+        if (calls.size >= 2) {
+            Analytics.logDoubleCall()
         }
     }
 
     override fun onCallRemoved(call: Call) {
-        Log.i("CDM|CallService", "remove → ${call.details.handle}")
-        CallManager.resetCall()
+        Timber.i("Звонок завершён → %s", call.details.handle.schemeSpecificPart)
         call.unregisterCallback(callback)
-        notification.hide()
+        (application as App).notification.show(calls)
     }
+
+    fun getCall(phone: Uri?): Call? =
+        calls.find { call -> call.details.handle == phone }
+
+    fun getNextCall(): Call? =
+        calls.find { call -> Call.STATE_HOLDING == call.callState }
 }

@@ -1,24 +1,22 @@
 package com.asinosoft.cdm.adapters
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.os.Bundle
 import android.provider.CallLog
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.api.CallHistoryItem
-import com.asinosoft.cdm.api.Loader
+import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ItemCallBinding
-import com.asinosoft.cdm.helpers.Metoths
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
+import com.asinosoft.cdm.helpers.StHelper
 import com.zerobranch.layout.SwipeLayout
 import java.security.InvalidParameterException
 
@@ -26,9 +24,11 @@ import java.security.InvalidParameterException
  * Адаптер списка последних звонков, который показывается в активности "Просмотр контакта"
  */
 class CallsAdapter(
+    private val config: Config,
     private val context: Context,
     private val favorites: ViewBinding,
-    private val handler: Handler
+    private val onClickContact: (contact: Contact) -> Unit,
+    private val onClickPhone: (phone: String) -> Unit
 ) : RecyclerView.Adapter<CallsAdapter.HolderHistory>() {
     companion object {
         const val TYPE_FAVORITES = 1
@@ -36,11 +36,6 @@ class CallsAdapter(
     }
 
     private var calls: List<CallHistoryItem> = listOf()
-
-    interface Handler {
-        fun onClickContact(contact: Contact)
-        fun onClickPhone(phone: String)
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
         val view = when (viewType) {
@@ -68,14 +63,14 @@ class CallsAdapter(
 
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 return /* избранные контакты */ (0 == oldItemPosition && 0 == newItemPosition) ||
-                        /* звонки */ oldItemPosition > 0 && newItemPosition > 0 &&
-                        oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
+                    /* звонки */ oldItemPosition > 0 && newItemPosition > 0 &&
+                    oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
             }
 
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 return /* избранные контакты */ (0 == oldItemPosition && 0 == newItemPosition) ||
-                        /* звонки */ oldItemPosition > 0 && newItemPosition > 0 &&
-                        oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
+                    /* звонки */ oldItemPosition > 0 && newItemPosition > 0 &&
+                    oldList[oldItemPosition - 1] == newList[newItemPosition - 1]
             }
         }).dispatchUpdatesTo(this)
     }
@@ -96,13 +91,25 @@ class CallsAdapter(
     }
 
     private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem) {
-        v.imageContact.setImageURI(call.contact.photoUri)
+        v.topDivider.isVisible = config.listDivider && config.favoritesFirst
+        v.bottomDivider.isVisible = config.listDivider && !config.favoritesFirst
+        v.imageContact.setImageDrawable(call.contact.getAvatar(context))
+        config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
         v.name.text = call.contact.name
-        v.number.text = "${call.prettyPhone}, ${Metoths.getFormattedTime(call.duration)}"
-        v.timeContact.text = call.time
-        v.dateContact.text = call.date
 
-        val directActions = Loader.loadContactSettings(context, call.contact)
+        if (0L == call.contact.id) {
+            v.number.setText(R.string.unsaved)
+        } else {
+            v.number.text = call.prettyPhone
+        }
+
+        v.dateContact.visibility = View.INVISIBLE // нужно убрать dateContact из layout
+        if (call.timestamp.after(StHelper.today()))
+            v.timeContact.text = call.time
+        else
+            v.timeContact.text = call.date
+
+        val directActions = config.getContactSettings(call.contact)
         v.imageLeftAction.setImageResource(Action.resourceByType(directActions.left.type))
         v.imageRightAction.setImageResource(Action.resourceByType(directActions.right.type))
 
@@ -116,6 +123,13 @@ class CallsAdapter(
                 else -> R.drawable.ic_call_missed
             }
         )
+
+        when (call.sim) {
+            1 -> v.sim.setImageResource(R.drawable.ic_sim1)
+            2 -> v.sim.setImageResource(R.drawable.ic_sim2)
+            3 -> v.sim.setImageResource(R.drawable.ic_sim3)
+            else -> v.sim.visibility = View.GONE
+        }
 
         v.typeCall.contentDescription = context.resources.getString(
             when (call.typeCall) {
@@ -132,11 +146,11 @@ class CallsAdapter(
             override fun onOpen(direction: Int, isContinuous: Boolean) {
                 when (direction) {
                     SwipeLayout.RIGHT -> {
-                        Firebase.analytics.logEvent("history_swipe_right", Bundle.EMPTY)
+                        Analytics.logHistorySwipeRight()
                         performSwipeAction(directActions.right, call)
                     }
                     SwipeLayout.LEFT -> {
-                        Firebase.analytics.logEvent("history_swipe_left", Bundle.EMPTY)
+                        Analytics.logHistorySwipeLeft()
                         performSwipeAction(directActions.left, call)
                     }
                 }
@@ -150,10 +164,11 @@ class CallsAdapter(
         })
 
         v.dragLayout.setOnClickListener {
+            Analytics.logCallHistoryClick()
             if (0L == call.contact.id) {
-                handler.onClickPhone(call.phone)
+                onClickPhone(call.phone)
             } else {
-                handler.onClickContact(call.contact)
+                onClickContact(call.contact)
             }
         }
     }
@@ -163,9 +178,7 @@ class CallsAdapter(
     private fun performSwipeAction(action: Action, item: CallHistoryItem) {
         if (action.type == Action.Type.PhoneCall) {
             // Звонок делаем по тому телефону, который в истории, а не который в настройках контакта!
-            Intent(Intent.ACTION_CALL, Uri.fromParts("tel", item.phone, null))
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                .let { context.startActivity(it) }
+            Action(0, Action.Type.PhoneCall, item.phone, "").perform(context)
         } else {
             action.perform(context)
         }

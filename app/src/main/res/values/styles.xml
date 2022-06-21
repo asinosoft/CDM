@@ -1,10 +1,40 @@
 <resources>
 
+    <style name="AlertDialog" parent="MaterialAlertDialog.MaterialComponents">
+        <item name="shapeAppearance">@style/RoundCorners</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/Caption</item>
+        <item name="android:windowTitleStyle">@style/TextAppearance.AppCompat.Title</item>
+    </style>
+
+    <style name="DialogTitle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">?android:attr/textColor</item>
+    </style>
+
     <style name="Caption" parent="Widget.AppCompat.TextView">
         <item name="android:gravity">center</item>
-        <item name="android:height">@dimen/captionHeight</item>
+        <item name="android:height">64dp</item>
         <item name="android:textStyle">normal|bold</item>
         <item name="android:textAppearance">@android:style/TextAppearance.Large</item>
+    </style>
+
+    <style name="About" parent="Widget.AppCompat.TextView">
+        <item name="android:height">32dp</item>
+        <item name="android:textColor">@color/blue</item>
+        <item name="android:padding">2dp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:drawablePadding">4dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">@android:style/TextAppearance.Medium</item>
+    </style>
+
+    <style name="Version" parent="Widget.AppCompat.TextView">
+        <item name="android:height">24dp</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
     <style name="TransparentListView" parent="@android:style/Widget.ListView">
@@ -23,8 +53,41 @@
         <item name="android:textSize">@dimen/tabTextSize</item>
     </style>
 
+    <style name="RoundCorners" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
     <style name="RoundImage">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Tabs">
+        <item name="stl_clickable">true</item>
+        <item name="stl_defaultTabBackground">?attr/selectableItemBackground</item>
+        <item name="stl_defaultTabTextAllCaps">true</item>
+        <item name="stl_defaultTabTextColor">?attr/colorOnPrimary</item>
+        <item name="stl_defaultTabTextHorizontalPadding">16dp</item>
+        <item name="stl_defaultTabTextMinWidth">0dp</item>
+        <item name="stl_defaultTabTextSize">12sp</item>
+        <item name="stl_distributeEvenly">false</item>
+        <item name="stl_dividerColor">#4D000000</item>
+        <item name="stl_dividerThickness">1dp</item>
+        <item name="stl_drawDecorationAfterTab">false</item>
+        <item name="stl_indicatorAlwaysInCenter">false</item>
+        <item name="stl_indicatorColor">#40C4FF</item>
+        <item name="stl_indicatorCornerRadius">2dp</item>
+        <item name="stl_indicatorGravity">bottom</item>
+        <item name="stl_indicatorInFront">false</item>
+        <item name="stl_indicatorInterpolation">smart</item>
+        <item name="stl_indicatorThickness">4dp</item>
+        <item name="stl_indicatorWidth">auto</item>
+        <item name="stl_indicatorWithoutPadding">false</item>
+        <item name="stl_overlineColor">#4D000000</item>
+        <item name="stl_overlineThickness">0dp</item>
+        <item name="stl_titleOffset">24dp</item>
+        <item name="stl_underlineColor">#4D000000</item>
+        <item name="stl_underlineThickness">1dp</item>
     </style>
 </resources>

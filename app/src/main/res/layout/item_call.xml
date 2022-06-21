@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/relativeL"
     android:layout_width="match_parent"
-    android:layout_height="65dp"
+    android:layout_height="wrap_content"
     android:clickable="false"
     android:focusable="auto"
-    android:focusableInTouchMode="false">
+    android:focusableInTouchMode="false"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/topDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="85dp"
+        android:layout_marginEnd="10dp"
+        android:background="?android:attr/listDivider" />
 
     <com.zerobranch.layout.SwipeLayout
         android:id="@+id/swipe_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="70dp"
         app:draggedItem="@id/drag_layout"
         app:isTogether="true"
         app:leftItem="@id/imageRightAction"
@@ -21,21 +30,21 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageLeftAction"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_gravity="end"
-            android:layout_marginEnd="-64dp"
-            android:padding="8dp"
+            android:layout_marginEnd="-70dp"
+            android:padding="4dp"
             android:src="@drawable/ic_phone_call"
             android:visibility="visible"
             app:civ_border_width="0dp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageRightAction"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_marginStart="-64dp"
-            android:padding="8dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="-70dp"
+            android:padding="4dp"
             android:src="@drawable/ic_whatsapp_chat"
             android:visibility="visible"
             app:civ_border_width="0dp" />
@@ -49,11 +58,14 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imageContact"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_margin="8dp"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="4dp"
                 android:src="@drawable/ic_default_photo"
-                app:civ_border_color="?android:attr/colorPrimary"
+                app:civ_border_color="?attr/civ_border_color"
                 app:civ_border_width="1dp" />
 
             <TextView
@@ -70,25 +82,47 @@
                 android:textStyle="normal|bold"
                 tools:text="name" />
 
-            <ImageView
-                android:id="@+id/typeCall"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_below="@id/name"
-                android:layout_toEndOf="@id/imageContact"
-                android:contentDescription="@string/call_type_other"
-                android:src="@drawable/ic_call_outgoing" />
-
-            <TextView
-                android:id="@+id/number"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="22dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/name"
-                android:layout_marginTop="2dp"
-                android:layout_toEndOf="@id/typeCall"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textSize="16sp"
-                tools:text="number" />
+                android:layout_toEndOf="@id/imageContact">
+
+                <ImageView
+                    android:id="@+id/typeCall"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/call_type_other"
+                    android:src="@drawable/ic_call_outgoing" />
+
+                <ImageView
+                    android:id="@+id/sim"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/sim_used"
+                    android:src="@drawable/ic_sim1" />
+
+                <TextView
+                    android:id="@+id/number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="22dp"
+                    android:layout_marginStart="4dp"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="14sp"
+                    tools:text="+78889994422" />
+<!--
+                <TextView
+                    android:id="@+id/duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="22dp"
+                    android:layout_marginStart="16dp"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="14sp"
+                    tools:text="4:56" />
+-->
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/timeContact"
@@ -97,9 +131,9 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
                 android:layout_marginEnd="16dp"
-                android:layout_marginBottom="13dp"
+                android:layout_marginBottom="17dp"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 tools:text="time" />
 
             <TextView
@@ -117,4 +151,12 @@
 
     </com.zerobranch.layout.SwipeLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <View
+        android:id="@+id/bottomDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="85dp"
+        android:layout_marginEnd="10dp"
+        android:background="?android:attr/listDivider" />
+
+</LinearLayout>

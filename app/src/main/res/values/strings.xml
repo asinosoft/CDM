@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Manager</string>
+    <string name="app_name">Phone</string>
 
     <!-- Call Type -->
     <string name="call_type_outgoing">Outgoing</string>
@@ -10,16 +10,23 @@
     <string name="call_type_other">Call type</string>
 
     <!--Call State-->
-    <string name="status_call_disconnected">Disconnected</string>
-    <string name="status_call_incoming">Incoming call</string>
     <string name="status_call_active">Current call</string>
+    <string name="status_call_connecting">Connecting…</string>
     <string name="status_call_dialing">Dialing…</string>
+    <string name="status_call_disconnected">Disconnected</string>
+    <string name="status_call_disconnecting">Disconnecting</string>
     <string name="status_call_holding">Call on hold</string>
+    <string name="status_call_incoming">Incoming call</string>
+    <string name="status_call_new">New</string>
+    <string name="status_call_pulling_call">Pulling call</string>
+    <string name="status_call_ringing">Ringing</string>
+    <string name="status_call_select_phone_account">Select SIM</string>
+    <string name="status_call_simulated_ringing">Simulated ringing</string>
 
     <!-- Notification -->
     <string name="active_call_notification_text">Call…</string>
-    <string name="channel_name">notifications</string>
-    <string name="channel_description">On Going Call</string>
+    <string name="incoming_notification_channel">Incoming Calls</string>
+    <string name="ongoing_notification_channel">Ongoing Calls</string>
     <string name="action_answer">Answer</string>
     <string name="action_hangup">Hangup</string>
     <string name="action_mute">Mute</string>
@@ -28,10 +35,13 @@
     <string name="action_keyboard">Keyboard</string>
 
     <!-- Common words -->
+    <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="call">Call</string>
     <string name="voicemail">Voice mail</string>
+    <string name="unsaved">Unsaved</string>
+    <string name="add_error">Error</string>
 
     <!-- Passcode lock -->
     <string name="digit_one" translatable="false">1</string>
@@ -73,6 +83,7 @@
     <string name="favorites_border_width">Border width:</string>
     <string name="favorites_sample">Sample</string>
     <string name="available_actions">Available actions</string>
+    <string name="list_divider">Разделитель в истории звонков</string>
 
     <string name="themes">Theme</string>
     <string name="theme_light">light</string>
@@ -87,11 +98,12 @@
     <string name="contact_tab_settings">Settings</string>
     <string name="settings_tab_appearance">Appearance</string>
     <string name="settings_tab_actions">Actions</string>
+    <string name="settings_tab_phone">Phone</string>
     <string name="settings_tab_about">About</string>
     <string name="dialer_settings">Dialer</string>
     <string name="default_dialer">Set default</string>
     <string name="sim_usage_settings">SIM usage</string>
-    <string name="sim_selection_title">Select SIM</string>
+    <string name="sim_selection_title">Select SIM for call</string>
     <string name="sim_used">SIM used</string>
     <string name="sim_operator">Operator</string>
     <string name="photo">Photo</string>
@@ -99,7 +111,6 @@
     <string name="background_custom">Custom</string>
     <string name="digit_star" translatable="false">*</string>
     <string name="digit_jail" translatable="false">#</string>
-    <string name="call_contact_number" translatable="false">%s, %s</string>
 
     <string name="sim_state_absent">empty</string>
     <string name="sim_state_locked">locked</string>
@@ -117,6 +128,33 @@
     <string name="date_today">Today</string>
     <string name="date_yesterday">Yesterday</string>
     <string name="select_number">Select number</string>
+
+    <!-- About activity -->
+    <string name="share_app">Share app</string>
+    <string name="share_message">Check this phone app:\n%s</string>
+    <string name="share_via">Share</string>
+    <string name="share_url" translatable="false">https://play.google.com/store/apps/details?id=com.asinosoft.cdm</string>
+    <string name="privacyPolicy_url" translatable="false">https://asinosoft.ru/cdm_privacy_policy.html</string>
+    <string name="rate_us">Rate us</string>
+    <string name="rate_url" translatable="false">market://details?id=com.asinosoft.cdm</string>
+    <string name="licenses">Licenses</string>
+    <string name="version">Version %s</string>
+
+    <string name="copyright" translatable="false">© AsinoSoft 2021</string>
+
+    <!-- InputText -->
+    <string name="menu_paste">Paste</string>
+    <string name="menu_copy">Copy</string>
+
+    <string name="copied">Copied to clipboard</string>
+    <string name="privacy_policy">Privacy policy</string>
+
+    <!-- Permission rationale fragment -->
+    <string name="permission_rationale">
+        We need access to call logs and contact book for name and photo
+    </string>
+    <string name="give_permission">Permit</string>
+    <string name="request_draw_overlays">Please allow displaying over other apps</string>
 
     <plurals name="age">
         <item quantity="zero">%d years</item>

@@ -22,7 +22,7 @@ import com.asinosoft.cdm.views.CircularImageView
 
 class ContactSettingsFragment : Fragment() {
     private val model: DetailHistoryViewModel by activityViewModels()
-    private var v: ContactSettingsBinding? = null
+    private lateinit var v: ContactSettingsBinding
     private var actions: Collection<Action> = listOf()
 
     override fun onCreateView(
@@ -31,30 +31,25 @@ class ContactSettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         v = ContactSettingsBinding.inflate(inflater, container, false)
-        return v!!.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        v = null
+        return v.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        v!!.cirLeft.direction = Metoths.Companion.Direction.LEFT
-        v!!.cirRight.direction = Metoths.Companion.Direction.RIGHT
-        v!!.cirTop.direction = Metoths.Companion.Direction.TOP
-        v!!.cirBottom.direction = Metoths.Companion.Direction.DOWN
+        v.cirLeft.direction = Metoths.Companion.Direction.LEFT
+        v.cirRight.direction = Metoths.Companion.Direction.RIGHT
+        v.cirTop.direction = Metoths.Companion.Direction.TOP
+        v.cirBottom.direction = Metoths.Companion.Direction.DOWN
 
-        v!!.cirBottom.let(this@ContactSettingsFragment::setDragListener)
-        v!!.cirTop.let(this@ContactSettingsFragment::setDragListener)
-        v!!.cirLeft.let(this@ContactSettingsFragment::setDragListener)
-        v!!.cirRight.let(this@ContactSettingsFragment::setDragListener)
+        v.cirBottom.let(this@ContactSettingsFragment::setDragListener)
+        v.cirTop.let(this@ContactSettingsFragment::setDragListener)
+        v.cirLeft.let(this@ContactSettingsFragment::setDragListener)
+        v.cirRight.let(this@ContactSettingsFragment::setDragListener)
 
-        v!!.rvActions.layoutManager = GridLayoutManager(requireContext(), 4)
-        v!!.rvActions.adapter = ActionsAdapter()
+        v.rvActions.layoutManager = GridLayoutManager(requireContext(), 4)
+        v.rvActions.adapter = ActionsAdapter()
 
         model.availableActions.observe(viewLifecycleOwner) { actions ->
-            actions?.let { (v!!.rvActions.adapter as ActionsAdapter).setActions(it) }
+            actions?.let { (v.rvActions.adapter as ActionsAdapter).setActions(it) }
         }
 
         model.directActions.observe(viewLifecycleOwner) { actions ->
@@ -96,7 +91,7 @@ class ContactSettingsFragment : Fragment() {
                     when (item) {
                         is CircularImageView -> {
                             cir.swapCir(item)
-                            v!!.invalidate()
+                            v.invalidate()
                             cir.invalidate()
                         }
                         is Action.Type -> {
@@ -110,7 +105,7 @@ class ContactSettingsFragment : Fragment() {
                     when (item) {
                         is CircularImageView -> {
                             cir.swapCir(item)
-                            v!!.invalidate()
+                            v.invalidate()
                         }
                         is Action.Type -> {
                             cir.setImageResource(Action.resourceByType(cir.action))
@@ -162,25 +157,25 @@ class ContactSettingsFragment : Fragment() {
                     requireContext(),
                     actions,
                     { selected -> model.setContactAction(direction, selected) },
-                    { model.setContactAction(direction, model.getContactAction(direction)) }
-                )
+                    {}
+                ).show()
             }
         }
     }
 
     private fun setData(directActions: DirectActions) {
-        v!!.cirRight.action = directActions.right.type
-        v!!.cirLeft.action = directActions.left.type
-        v!!.cirTop.action = directActions.top.type
-        v!!.cirBottom.action = directActions.down.type
-        v!!.cirRight.let(this::setCirData)
-        v!!.cirLeft.let(this::setCirData)
-        v!!.cirTop.let(this::setCirData)
-        v!!.cirBottom.let(this::setCirData)
+        v.cirRight.action = directActions.right.type
+        v.cirLeft.action = directActions.left.type
+        v.cirTop.action = directActions.top.type
+        v.cirBottom.action = directActions.down.type
+        v.cirRight.let(this::setCirData)
+        v.cirLeft.let(this::setCirData)
+        v.cirTop.let(this::setCirData)
+        v.cirBottom.let(this::setCirData)
 
-        v!!.textLeft.text = directActions.left.value
-        v!!.textRight.text = directActions.right.value
-        v!!.textTop.text = directActions.top.value
-        v!!.textBottom.text = directActions.down.value
+        v.textLeft.text = directActions.left.value
+        v.textRight.text = directActions.right.value
+        v.textTop.text = directActions.top.value
+        v.textBottom.text = directActions.down.value
     }
 }

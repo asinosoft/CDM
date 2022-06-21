@@ -3,9 +3,8 @@ package com.asinosoft.cdm.activities
 import android.os.Bundle
 import androidx.activity.viewModels
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.viewmodels.SettingsViewModel
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
 
 /**
@@ -17,18 +16,14 @@ class SettingsActivity : BaseActivity(), ColorPickerDialogListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Firebase.analytics.logEvent("activity_settings", Bundle.EMPTY)
+        Analytics.logActivitySettings()
         setContentView(R.layout.activity_settings)
     }
 
-    override fun onPause() {
-        model.save()
-        super.onPause()
-    }
-
     override fun onColorSelected(dialogId: Int, color: Int) {
-        model.settings.colorBorder = color
+        model.config.favoritesBorderColor = color
         model.buttonColor.postValue(color)
+        Analytics.logFavoritesBorderColor()
     }
 
     override fun onDialogDismissed(dialogId: Int) {

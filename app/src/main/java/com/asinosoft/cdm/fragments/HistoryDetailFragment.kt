@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.adapters.HistoryDetailsCallsAdapter
 import com.asinosoft.cdm.databinding.HistoryDetailFragmentBinding
 import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
@@ -15,7 +16,7 @@ import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
  */
 class HistoryDetailFragment : Fragment() {
     private val model: DetailHistoryViewModel by activityViewModels()
-    private var v: HistoryDetailFragmentBinding? = null
+    private lateinit var v: HistoryDetailFragmentBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,18 +24,17 @@ class HistoryDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         v = HistoryDetailFragmentBinding.inflate(inflater, container, false)
-        return v!!.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        v = null
+        return v.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         model.callHistory.observe(viewLifecycleOwner) { calls ->
             calls?.let {
-                v!!.rvContactCalls.adapter = HistoryDetailsCallsAdapter(requireContext(), it)
+                v.rvContactCalls.adapter = HistoryDetailsCallsAdapter(
+                    App.instance!!.config,
+                    requireContext(),
+                    it
+                )
             }
         }
     }

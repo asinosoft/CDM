@@ -1,24 +1,27 @@
 package com.asinosoft.cdm.fragments
 
+import android.Manifest
 import android.content.Context
 import android.os.Bundle
 import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.PickContact
+import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.adapters.CallsAdapter
 import com.asinosoft.cdm.adapters.FavoritesAdapter
+import com.asinosoft.cdm.adapters.PermissionRationaleAdapter
+import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.api.FavoriteContactRepositoryImpl
-import com.asinosoft.cdm.api.Loader
-import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.FavoriteContact
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.databinding.FavoritesFragmentBinding
@@ -29,13 +32,15 @@ import com.asinosoft.cdm.helpers.vibrator
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import com.asinosoft.cdm.views.CirLayoutManager
 import com.asinosoft.cdm.views.LockableLayoutManager
+import timber.log.Timber
 
 /**
  * Интерфейс главного окна (избранные + последние звонки)
  */
-class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
-    private var v: ActivityManagerBinding? = null
+class ManagerActivityFragment : Fragment() {
+    private lateinit var v: ActivityManagerBinding
     private val model: ManagerViewModel by activityViewModels()
+    private val config: Config = App.instance!!.config
 
     /**
      * Блок избранных контактов
@@ -54,6 +59,8 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
 
     private lateinit var favoritesAdapter: FavoritesAdapter
 
+    private lateinit var callsAdapter: CallsAdapter
+
     /**
      * Позиция в блоке избранных контактов, для которой был запущен диалог выбора контакта
      * TODO: найти способ пробросить номер позиции через Activity..PickContact
@@ -64,15 +71,15 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
      * Выбор контакта
      */
     private val pickContact =
-        registerForActivityResult(ActivityResultContracts.PickContact()) { uri ->
+        registerForActivityResult(PickContact()) { uri ->
             model.getContactByUri(requireContext(), uri)?.let { contact ->
                 if (contact.phones.count() > 1) {
                     SelectPhoneDialog(
                         requireContext(),
                         contact.phones,
-                        { action ->
+                        { phone ->
                             run {
-                                model.setContactPhone(contact, action)
+                                model.setContactPhone(contact, phone)
                                 favoritesAdapter.setItem(pickedPosition, FavoriteContact(contact))
                             }
                         }
@@ -90,12 +97,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
     ): View {
         v = ActivityManagerBinding.inflate(layoutInflater)
         pickedPosition = savedInstanceState?.getInt("pickedPosition") ?: 0
-        return v!!.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        v = null
+        return v.root
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -103,43 +105,51 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
         super.onSaveInstanceState(outState)
     }
 
-    override fun onClickContact(contact: Contact) {
-        findNavController().navigate(
-            R.id.action_open_contact_fragment,
-            bundleOf("contactId" to contact.id)
-        )
-    }
-
-    override fun onClickPhone(phone: String) {
-        findNavController().navigate(R.id.action_open_phone_history, bundleOf("phone" to phone))
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        favoritesFirst = !Loader.loadSettings(requireContext()).historyButtom
-        val callsLayoutManager = LockableLayoutManager(requireContext(), favoritesFirst)
+        favoritesFirst = config.favoritesFirst
+        val callsLayoutManager = LockableLayoutManager(requireContext(), !favoritesFirst)
 
         initFavorites(callsLayoutManager)
         initCallHistory(callsLayoutManager)
 
-        v!!.fabKeyboard.supportImageTintList = null
-        v!!.fabKeyboard.setOnClickListener {
+        v.fabKeyboard.supportImageTintList = null
+        v.fabKeyboard.setOnClickListener {
             findNavController().navigate(R.id.action_open_search)
         }
 
-        model.calls.observe(viewLifecycleOwner) { calls ->
-            (v!!.rvCalls.adapter as CallsAdapter).setList(calls)
+        model.isBlocked.observe(viewLifecycleOwner) { isBlocked ->
+            if (isBlocked && v.rvCalls.adapter !is PermissionRationaleAdapter) {
+                v.rvCalls.adapter = PermissionRationaleAdapter(favoritesView.root) {
+                    requestPermissions()
+                }
+            } else if (!isBlocked && v.rvCalls.adapter !is CallsAdapter) {
+                v.rvCalls.adapter = callsAdapter
+            }
         }
+
+        model.calls.observe(viewLifecycleOwner) { calls ->
+            callsAdapter.setList(calls)
+        }
+    }
+
+    private fun requestPermissions() {
+        Timber.d("requestPermissions")
+        ActivityCompat.requestPermissions(
+            requireActivity(),
+            arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG),
+            1235
+        )
     }
 
     private fun initFavorites(callsLayoutManager: LockableLayoutManager) {
         val context: Context = requireContext()
         favoritesView = FavoritesFragmentBinding.inflate(
             layoutInflater,
-            v!!.root,
+            v.root,
             false
         ).apply {
             rvFavorites.layoutManager =
-                CirLayoutManager(columns = Loader.loadSettings(context).columnsCirs)
+                CirLayoutManager(columns = config.favoritesColumnCount)
             rvFavorites.setChildDrawingOrderCallback { childCount, iteration ->
                 // Изменяем порядок отрисовки избранных контактов, чтобы контакт
                 // на котором находится палец пользователя, отрисовывался в последнюю очередь,
@@ -156,12 +166,21 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
             }
 
             favoritesAdapter = FavoritesAdapter(
+                config,
                 FavoriteContactRepositoryImpl(context, ContactRepositoryImpl(context)),
                 callsLayoutManager,
                 btnDelete,
                 btnEdit,
-                { contact -> onClickContact(contact) },
-                { position -> pickedPosition = position; pickContact.launch(null) },
+                { contact ->
+                    findNavController().navigate(
+                        R.id.action_open_contact_fragment,
+                        bundleOf("contactId" to contact.id)
+                    )
+                },
+                { position ->
+                    pickedPosition = position
+                    pickContact.launch(null)
+                },
                 { indexOfFrontChild = it },
                 context,
                 context.vibrator
@@ -173,7 +192,7 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
                     try {
                         when (event.action) {
                             DragEvent.ACTION_DRAG_ENTERED -> {
-                                context.vibrator.vibrateSafety(Keys.VIBRO)
+                                context.vibrator.vibrateSafety(Keys.VIBRO, 255)
                             }
                             DragEvent.ACTION_DROP -> {
                                 event.clipData.getItemAt(0)?.text.let {
@@ -198,16 +217,35 @@ class ManagerActivityFragment : Fragment(), CallsAdapter.Handler {
     }
 
     private fun initCallHistory(callsLayoutManager: LockableLayoutManager) {
-        v!!.rvCalls.adapter = CallsAdapter(requireContext(), favoritesView, this)
-        v!!.rvCalls.layoutManager = callsLayoutManager
-        v!!.rvCalls.isNestedScrollingEnabled = true
+        callsAdapter = CallsAdapter(
+            config,
+            requireContext(),
+            favoritesView,
+            { contact ->
+                findNavController().navigate(
+                    R.id.action_open_contact_fragment,
+                    bundleOf(
+                        "contactId" to contact.id,
+                        "tab" to "history"
+                    )
+                )
+            },
+            { phone ->
+                findNavController().navigate(
+                    R.id.action_open_phone_history,
+                    bundleOf("phone" to phone)
+                )
+            }
+        )
+        v.rvCalls.layoutManager = callsLayoutManager
+        v.rvCalls.isNestedScrollingEnabled = true
 
         // Подгрузка истории звонков, когда список докрутился до последнего элемента
-        v!!.rvCalls.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        v.rvCalls.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                if (!recyclerView.canScrollVertically(if (favoritesFirst) -1 else 1)) {
+                if (!recyclerView.canScrollVertically(if (favoritesFirst) 1 else -1)) {
                     model.getMoreCalls()
                 }
             }

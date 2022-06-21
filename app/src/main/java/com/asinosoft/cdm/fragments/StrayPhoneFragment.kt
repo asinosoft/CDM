@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.adapters.HistoryDetailsCallsAdapter
 import com.asinosoft.cdm.databinding.StrayPhoneFragmentBinding
+import com.asinosoft.cdm.helpers.AvatarHelper
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 
 /**
@@ -23,9 +25,16 @@ class StrayPhoneFragment : Fragment() {
     ): View {
         return StrayPhoneFragmentBinding.inflate(inflater).also { v ->
             arguments?.getString("phone")?.let { phone ->
+                App.instance?.config?.favoritesBorderColor?.let { v.image.borderColor = it }
+                App.instance?.config?.favoritesBorderWidth?.let { v.image.borderWidth = it }
+                v.image.setImageDrawable(AvatarHelper.generate(requireContext(), phone))
                 v.phone.text = phone
                 model.getPhoneCalls(phone).let { calls ->
-                    v.calls.adapter = HistoryDetailsCallsAdapter(requireContext(), calls)
+                    v.calls.adapter = HistoryDetailsCallsAdapter(
+                        App.instance!!.config,
+                        requireContext(),
+                        calls
+                    )
                 }
             }
         }.root

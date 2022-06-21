@@ -12,7 +12,7 @@ import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
 
 class ContactDetailFragment : Fragment() {
     private val model: DetailHistoryViewModel by activityViewModels()
-    private var v: HistoryContactFragmentBinding? = null
+    private lateinit var v: HistoryContactFragmentBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -20,17 +20,12 @@ class ContactDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         v = HistoryContactFragmentBinding.inflate(inflater, container, false)
-        return v!!.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        v = null
+        return v.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         model.contact.observe(viewLifecycleOwner) { contact ->
-            contact?.let { v!!.rvContactActions.adapter = ContactActionsAdapter(it) }
+            contact?.let { v.rvContactActions.adapter = ContactActionsAdapter(it) }
         }
     }
 }

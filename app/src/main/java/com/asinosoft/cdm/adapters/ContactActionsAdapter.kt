@@ -11,9 +11,17 @@ import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 
 class ContactActionsAdapter(private val contact: Contact) :
     RecyclerView.Adapter<ContactActionsAdapter.ViewContactInfo>() {
+
+    companion object {
+        const val TYPE_ADVERTISER = 0
+        const val TYPE_ACTION = 1
+        const val TYPE_BIRTHDAY = 2
+    }
 
     private lateinit var context: Context
     private val groups = contact.actions.groupBy { Item(it.type.group, it.value, it.description) }
@@ -39,33 +47,59 @@ class ContactActionsAdapter(private val contact: Contact) :
         }
     }
 
+    override fun getItemCount(): Int {
+        return 1 + keys.size + (if (contact.birthday != null) 1 else 0)
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (position == 1 + keys.size) {
+            TYPE_BIRTHDAY
+        } else if (keys.size < 3) {
+            if (position == keys.size) TYPE_ADVERTISER else TYPE_ACTION
+        } else {
+            if (position == 3) TYPE_ADVERTISER else TYPE_ACTION
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewContactInfo {
         context = parent.context
-        val view: View = LayoutInflater.from(parent.context)
-            .inflate(R.layout.contact_detail_element, parent, false)!!
+        val view: View = when (viewType) {
+            TYPE_ACTION, TYPE_BIRTHDAY ->
+                LayoutInflater.from(context)
+                    .inflate(R.layout.contact_detail_element, parent, false)
+            TYPE_ADVERTISER ->
+                LayoutInflater.from(context)
+                    .inflate(R.layout.advertiser, parent, false)
+            else -> throw Exception("Invalid view type: $viewType")
+        }
         return ViewContactInfo(view)
     }
 
-    override fun getItemCount(): Int {
-        return keys.size + (if (contact.birthday != null) 1 else 0)
+    override fun onBindViewHolder(holder: ViewContactInfo, position: Int) {
+        when (getItemViewType(position)) {
+            TYPE_ACTION -> bindAction(holder, position)
+            TYPE_BIRTHDAY -> holder.bindBirthday(contact.birthday, contact.age)
+            TYPE_ADVERTISER -> bindAdvertiser(holder)
+        }
     }
 
-    override fun onBindViewHolder(holder: ViewContactInfo, position: Int) {
-        if (position >= keys.size) {
-            holder.bindBirthday(contact.birthday, contact.age)
-        } else {
-
-            val key = keys[position]
-            val actions = groups[key]!!
-            when (key.group) {
-                Action.Group.Email -> holder.bindEmail(actions.first())
-                Action.Group.Phone -> holder.bindPhone(key, actions)
-                Action.Group.Skype -> holder.bindSkype(key, actions)
-                Action.Group.Telegram -> holder.bindTelegram(key, actions)
-                Action.Group.Viber -> holder.bindViber(key, actions)
-                Action.Group.WhatsApp -> holder.bindWhatsApp(key, actions)
-            }
+    private fun bindAction(holder: ViewContactInfo, position: Int) {
+        val index = if (position > 3) position - 1 else position
+        val key = keys[index]
+        val actions = groups[key]!!
+        when (key.group) {
+            Action.Group.Email -> holder.bindEmail(actions.first())
+            Action.Group.Phone -> holder.bindPhone(key, actions)
+            Action.Group.Skype -> holder.bindSkype(key, actions)
+            Action.Group.Telegram -> holder.bindTelegram(key, actions)
+            Action.Group.Viber -> holder.bindViber(key, actions)
+            Action.Group.WhatsApp -> holder.bindWhatsApp(key, actions)
         }
+    }
+
+    private fun bindAdvertiser(holder: ViewContactInfo) {
+        holder.itemView.findViewById<AdView>(R.id.adView)
+            .loadAd(AdRequest.Builder().build())
     }
 
     inner class ViewContactInfo(val view: View) : RecyclerView.ViewHolder(view) {

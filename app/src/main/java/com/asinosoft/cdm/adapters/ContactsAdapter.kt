@@ -1,15 +1,15 @@
 package com.asinosoft.cdm.adapters
 
 import android.content.Context
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.asinosoft.cdm.App
+import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ContactItemBinding
 import com.asinosoft.cdm.helpers.Metoths.Companion.setColoredText
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 import com.zerobranch.layout.SwipeLayout
 
 class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.Holder>() {
@@ -34,7 +34,13 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.Holder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         context = parent.context
-        return Holder(ContactItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        return Holder(
+            ContactItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun getItemCount() = contacts.size
@@ -47,7 +53,10 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.Holder>() {
         RecyclerView.ViewHolder(v.root) {
 
         fun bind(contact: Contact) {
-            v.imageContact.setImageURI(contact.photoUri)
+            v.imageContact.setImageDrawable(contact.getAvatar(context))
+            App.instance!!.config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
+            v.divider.isVisible = App.instance!!.config.listDivider
+
             v.name.text = contact.name
             var tNum = ""
             contact.phones.forEach {
@@ -61,11 +70,11 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.Holder>() {
                 override fun onOpen(direction: Int, isContinuous: Boolean) {
                     when (direction) {
                         SwipeLayout.RIGHT -> {
-                            Firebase.analytics.logEvent("search_swipe_right", Bundle.EMPTY)
+                            Analytics.logSearchSwipeRight()
                             contact.phones.firstOrNull()?.perform(context)
                         }
                         SwipeLayout.LEFT -> {
-                            Firebase.analytics.logEvent("search_swipe_left", Bundle.EMPTY)
+                            Analytics.logSearchSwipeLeft()
                             contact.chats.firstOrNull()?.perform(context)
                         }
                     }

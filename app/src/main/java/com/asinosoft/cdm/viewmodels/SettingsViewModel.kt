@@ -1,43 +1,34 @@
 package com.asinosoft.cdm.viewmodels
 
 import android.app.Application
-import android.content.Context
 import android.net.Uri
-import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.api.Loader
+import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.data.Action
-import com.asinosoft.cdm.data.Settings
 import com.asinosoft.cdm.helpers.Metoths
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
-import java.io.File
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
-    val settings: Settings = Loader.loadSettings(getApplication())
-    val buttonColor: MutableLiveData<Int> = MutableLiveData(settings.colorBorder)
+    val config: Config = App.instance!!.config
+    val buttonColor: MutableLiveData<Int?> = MutableLiveData(config.favoritesBorderColor)
     val backgroundImages: MutableLiveData<List<Int>> = MutableLiveData()
 
     fun setAction(direction: Metoths.Companion.Direction, action: Action.Type) {
         when (direction) {
-            Metoths.Companion.Direction.TOP -> settings.topButton = action
-            Metoths.Companion.Direction.DOWN -> settings.bottomButton = action
-            Metoths.Companion.Direction.LEFT -> settings.leftButton = action
-            Metoths.Companion.Direction.RIGHT -> settings.rightButton = action
+            Metoths.Companion.Direction.TOP -> config.swipeUpAction = action
+            Metoths.Companion.Direction.DOWN -> config.swipeDownAction = action
+            Metoths.Companion.Direction.LEFT -> config.swipeLeftAction = action
+            Metoths.Companion.Direction.RIGHT -> config.swipeRightAction = action
             Metoths.Companion.Direction.UNKNOWN -> {
             }
         }
-        save()
+    }
 
-        Firebase.analytics.logEvent(
-            "global_set_action",
-            Bundle().apply {
-                putString("direction", direction.name)
-                putString("action", action.name)
-            }
-        )
+    fun setTheme(theme: Int) {
+        config.theme = theme
+        buttonColor.postValue(config.favoritesBorderColor)
     }
 
     fun loadBackgroundImages() {
@@ -53,26 +44,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 R.drawable.background_8,
                 R.drawable.background_9,
                 R.drawable.background_10,
+                R.drawable.background_11,
             )
         )
     }
 
     fun setBackgroundImage(uri: Uri?) {
-        val context: Context = getApplication()
-
-        if (null == uri) {
-            context.deleteFile("background")
-        } else {
-            context.contentResolver.openInputStream(uri)?.copyTo(
-                File(context.filesDir, "background").outputStream()
-            )
-
-            // Переключаемся в специальную тёмную тему
-            settings.theme = 3
-        }
-    }
-
-    fun save() {
-        Loader.saveSettings(getApplication(), settings)
+        config.background = uri
     }
 }

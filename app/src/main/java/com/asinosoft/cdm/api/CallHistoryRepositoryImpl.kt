@@ -1,15 +1,17 @@
 package com.asinosoft.cdm.api
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.database.Cursor
-import android.net.Uri
 import android.provider.CallLog
-import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
+import com.asinosoft.cdm.helpers.DateHelper
 import com.asinosoft.cdm.helpers.StHelper
+import com.asinosoft.cdm.helpers.telecomManager
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * Доступ к истории звонков
@@ -21,7 +23,9 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
         CallLog.Calls.NUMBER,
         CallLog.Calls.TYPE,
         CallLog.Calls.DATE,
-        CallLog.Calls.DURATION
+        CallLog.Calls.DURATION,
+        CallLog.Calls.COUNTRY_ISO,
+        CallLog.Calls.PHONE_ACCOUNT_ID,
     )
 
     override fun getLatestHistory(
@@ -38,7 +42,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             "${CallLog.Calls.DATE} DESC"
         )?.use {
             // По каждому контакту показываем только последний звонок (первый, с учетом сортировки DESC)
-            HistoryItemCursorAdapter(it).getFiltered(limit, filter)
+            HistoryItemCursorAdapter(context, it).getFiltered(limit, filter)
         } ?: ArrayList()
     }
 
@@ -51,7 +55,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             "${CallLog.Calls.DATE} DESC"
         )?.use {
             // По каждому контакту показываем только последний звонок (первый, с учетом сортировки DESC)
-            HistoryItemCursorAdapter(it).getFiltered(Int.MAX_VALUE, CallHistoryFilter())
+            HistoryItemCursorAdapter(context, it).getFiltered(Int.MAX_VALUE, CallHistoryFilter())
         } ?: ArrayList()
     }
 
@@ -70,7 +74,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             contact.phones.map { it.value }.toTypedArray(),
             "${CallLog.Calls.DATE} DESC"
         )?.use {
-            HistoryItemCursorAdapter(it).getAll()
+            HistoryItemCursorAdapter(context, it).getAll()
         } ?: listOf()
     }
 
@@ -82,23 +86,32 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             arrayOf(phone),
             "${CallLog.Calls.DATE} DESC"
         )?.use {
-            HistoryItemCursorAdapter(it).getAll()
+            HistoryItemCursorAdapter(context, it).getAll()
         } ?: ArrayList()
     }
 
+    @SuppressLint("MissingPermission")
     inner class HistoryItemCursorAdapter(
+        context: Context,
         private val cursor: Cursor
     ) {
-        private val dateFormat = java.text.SimpleDateFormat("dd.MM", Locale.getDefault())
-        private val timeFormat = java.text.SimpleDateFormat("HH:mm", Locale.getDefault())
-
         private val colNumber = cursor.getColumnIndex(CallLog.Calls.NUMBER)
         private val colType = cursor.getColumnIndex(CallLog.Calls.TYPE)
         private val colDate = cursor.getColumnIndex(CallLog.Calls.DATE)
         private val colDuration = cursor.getColumnIndex(CallLog.Calls.DURATION)
+        private val colCountry = cursor.getColumnIndex(CallLog.Calls.COUNTRY_ISO)
+        private val colPhoneAccount = cursor.getColumnIndex(CallLog.Calls.PHONE_ACCOUNT_ID)
+
+        private val accounts: List<String> by lazy {
+            if (PackageManager.PERMISSION_GRANTED == context.checkSelfPermission(Manifest.permission.READ_PHONE_STATE)) {
+                context.telecomManager.callCapablePhoneAccounts.map { it.id }
+            } else {
+                emptyList()
+            }
+        }
 
         fun getAll(): List<CallHistoryItem> {
-            val result = java.util.ArrayList<CallHistoryItem>()
+            val result = ArrayList<CallHistoryItem>()
             while (cursor.moveToNext()) {
                 result.add(getOne())
             }
@@ -106,7 +119,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
         }
 
         fun getFiltered(limit: Int, filter: CallHistoryFilter): List<CallHistoryItem> {
-            val result = java.util.ArrayList<CallHistoryItem>()
+            val result = ArrayList<CallHistoryItem>()
             while (cursor.moveToNext()) {
                 val item = getOne()
                 if (filter.filter(item)) {
@@ -122,21 +135,23 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
 
         private fun getOne(): CallHistoryItem {
             val phoneNumber = cursor.getString(colNumber)
-            val date = cursor.getLong(colDate)
-            val photo = Uri.parse("android.resource://com.asinosoft.cdm/drawable/${R.drawable.ic_default_photo}")
+            val date = Date(cursor.getLong(colDate))
+            val country = cursor.getString(colCountry)
+            val phoneAccount = cursor.getString(colPhoneAccount)
 
             return CallHistoryItem(
                 phone = phoneNumber,
-                prettyPhone = StHelper.convertNumber(phoneNumber),
-                timestamp = Date(date),
-                date = dateFormat.format(date),
-                time = timeFormat.format(date),
+                prettyPhone = StHelper.convertNumber(phoneNumber, country),
+                timestamp = date,
+                date = DateHelper.shortDate(date),
+                time = DateHelper.time(date),
                 typeCall = cursor.getInt(colType),
                 duration = cursor.getLong(colDuration),
                 contact = contactRepository.getContactByPhone(phoneNumber)
-                    ?: Contact(0, phoneNumber, photo).apply {
+                    ?: Contact(0, phoneNumber).apply {
                         actions.add(Action(0, Action.Type.PhoneCall, phoneNumber, ""))
-                    }
+                    },
+                sim = 1 + accounts.indexOf(phoneAccount)
             )
         }
     }

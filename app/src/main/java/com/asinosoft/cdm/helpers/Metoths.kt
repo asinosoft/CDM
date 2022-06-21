@@ -11,7 +11,6 @@ import android.os.Vibrator
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
@@ -181,7 +180,10 @@ class Metoths {
 
         fun View.toggle(duration: Long = 500L, animation: Boolean = false) {
             if (animation) {
-                ValueAnimator.ofInt(this.measuredHeight, if (this.height == 1) ViewGroup.LayoutParams.WRAP_CONTENT else 1)
+                ValueAnimator.ofInt(
+                    this.measuredHeight,
+                    if (this.height == 1) ViewGroup.LayoutParams.WRAP_CONTENT else 1
+                )
                     .apply {
                         this.duration = duration
                         addUpdateListener {
@@ -197,23 +199,16 @@ class Metoths {
             }
         }
 
-        fun Vibrator.vibrateSafety(ms: Long) {
+        fun Vibrator.vibrateSafety(ms: Long, amplitude: Int) {
             if (Build.VERSION.SDK_INT >= 29) {
-                vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.EFFECT_HEAVY_CLICK))
+                vibrate(VibrationEffect.createOneShot(ms, amplitude))
             } else {
                 vibrate(ms)
             }
         }
 
-        fun getFormattedTime(duration: Long): String {
-            var str = "0:00"
-            try {
-                str = "${duration / 60}:${duration % 60}"
-            } catch (e: Exception) {
-                Log.e(null, "getFormattedTime", e)
-            }
-            return str
-        }
+        fun getFormattedTime(duration: Long): String =
+            String.format("%d:%02d", duration / 60, duration % 60)
 
         fun getThemeColor(context: Context, attribute: Int): Int {
             val typedValue = TypedValue()
