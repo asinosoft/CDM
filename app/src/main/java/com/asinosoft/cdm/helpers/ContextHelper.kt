@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
@@ -66,6 +67,9 @@ fun Context.requestDrawOverlays(view: View) {
     if (!Settings.canDrawOverlays(this)) {
         Snackbar
             .make(view, R.string.request_draw_overlays, Snackbar.LENGTH_INDEFINITE)
+            .setTextColor(Color.WHITE)
+            .setActionTextColor(Color.WHITE)
+            .setBackgroundTint(Color.MAGENTA)
             .setAction(R.string.ok) { startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)) }
             .show()
     }

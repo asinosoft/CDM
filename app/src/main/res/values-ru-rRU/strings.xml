@@ -36,7 +36,7 @@
     <string name="action_keyboard">Клавиатура</string>
 
     <!-- Общеупотребительное -->
-    <string name="ok">ОК</string>
+    <string name="ok">ВКЛ</string>
     <string name="cancel">Отмена</string>
     <string name="delete">Удалить</string>
     <string name="call">Вызов</string>
