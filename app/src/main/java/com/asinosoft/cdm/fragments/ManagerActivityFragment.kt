@@ -77,9 +77,9 @@ class ManagerActivityFragment : Fragment() {
                     SelectPhoneDialog(
                         requireContext(),
                         contact.phones,
-                        { action ->
+                        { phone ->
                             run {
-                                model.setContactPhone(contact, action)
+                                model.setContactPhone(contact, phone)
                                 favoritesAdapter.setItem(pickedPosition, FavoriteContact(contact))
                             }
                         }

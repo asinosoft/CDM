@@ -77,12 +77,17 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
      */
     fun setContactPhone(contact: Contact, phone: Action) {
         val settings = config.getContactSettings(contact)
-        when (phone.type) {
-            settings.top.type -> settings.top = phone
-            settings.down.type -> settings.down = phone
-            settings.left.type -> settings.top = phone
-            settings.right.type -> settings.down = phone
-            else -> {}
+        if (settings.top.type === phone.type) {
+            settings.top = phone
+        }
+        if (settings.down.type === phone.type) {
+            settings.down = phone
+        }
+        if (settings.left.type === phone.type) {
+            settings.left = phone
+        }
+        if (settings.right.type === phone.type) {
+            settings.right = phone
         }
         config.setContactSettings(contact, settings)
     }
