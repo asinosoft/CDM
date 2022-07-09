@@ -69,6 +69,7 @@
             android:name=".activities.DialActivity"
             android:exported="true"
             android:launchMode="singleInstance"
+            android:parentActivityName=".activities.ManagerActivity"
             android:theme="@style/Theme.Transparent">
 
             <intent-filter>
@@ -86,8 +87,10 @@
 
         <activity
             android:name=".activities.OngoingCallActivity"
+            android:excludeFromRecents="true"
             android:exported="false"
             android:label="@string/call"
+            android:launchMode="singleTask"
             android:parentActivityName=".activities.ManagerActivity"
             android:screenOrientation="portrait"
             android:showForAllUsers="true"
@@ -121,9 +124,15 @@
 
         <activity
             android:name=".activities.SettingsActivity"
-            android:exported="false"
+            android:exported="true"
             android:parentActivityName=".activities.ManagerActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+
+            <intent-filter>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".dialer.CallService"
