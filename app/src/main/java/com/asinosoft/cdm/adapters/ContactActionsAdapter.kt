@@ -1,6 +1,8 @@
 package com.asinosoft.cdm.adapters
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +13,7 @@ import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
+import com.asinosoft.cdm.helpers.telecomManager
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 
@@ -104,9 +107,9 @@ class ContactActionsAdapter(private val contact: Contact) :
 
     inner class ViewContactInfo(val view: View) : RecyclerView.ViewHolder(view) {
 
-        private val mCustomLeft = itemView.findViewById<ImageButton>(R.id.callBtnNumber)
-        private var mCustomMiddle = itemView.findViewById<ImageButton>(R.id.msgBtnNumber)
-        private var mCustomRight = itemView.findViewById<ImageButton>(R.id.videoBtnNumber)
+        private val mCustomLeft = itemView.findViewById<ImageButton>(R.id.btnAction_1)
+        private var mCustomMiddle = itemView.findViewById<ImageButton>(R.id.btnAction_2)
+        private var mCustomRight = itemView.findViewById<ImageButton>(R.id.btnAction_3)
         private var numberType = itemView.findViewById<TextView>(R.id.description_id)
         private var number = itemView.findViewById<TextView>(R.id.number_id)
         private var bText = itemView.findViewById<TextView>(R.id.bText)
@@ -145,6 +148,20 @@ class ContactActionsAdapter(private val contact: Contact) :
             mCustomRight.setBackgroundResource(R.drawable.ic_sms)
             mCustomRight.setOnClickListener { v ->
                 actions.find { it.type == Action.Type.Sms }?.perform(context)
+            }
+            // Если в телефоне установлены две симки, то показываем две иконки вызов взамен стандартной
+            if (PackageManager.PERMISSION_GRANTED == context.checkSelfPermission((Manifest.permission.READ_PHONE_STATE))) {
+                (context.telecomManager.callCapablePhoneAccounts.size >= 2).let { isDualSim ->
+                    mCustomLeft.visibility = View.VISIBLE
+                    mCustomLeft.setBackgroundResource(R.drawable.call_sim1)
+                    mCustomLeft.setOnClickListener { v ->
+                        actions.find { it.type == Action.Type.PhoneCall }?.perform(context, 1)
+                    }
+                    mCustomMiddle.setBackgroundResource(R.drawable.call_sim2)
+                    mCustomMiddle.setOnClickListener { v ->
+                        actions.find { it.type == Action.Type.PhoneCall }?.perform(context, 2)
+                    }
+                }
             }
         }
 

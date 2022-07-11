@@ -15,8 +15,11 @@ import com.asinosoft.cdm.adapters.ActionsAdapter
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.databinding.ContactSettingsBinding
+import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.Metoths
+import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.helpers.SelectPhoneDialog
+import com.asinosoft.cdm.helpers.vibrator
 import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
 import com.asinosoft.cdm.views.CircularImageView
 
@@ -45,7 +48,7 @@ class ContactSettingsFragment : Fragment() {
         v.cirLeft.let(this@ContactSettingsFragment::setDragListener)
         v.cirRight.let(this@ContactSettingsFragment::setDragListener)
 
-        v.rvActions.layoutManager = GridLayoutManager(requireContext(), 4)
+        v.rvActions.layoutManager = GridLayoutManager(requireContext(), 5)
         v.rvActions.adapter = ActionsAdapter()
 
         model.availableActions.observe(viewLifecycleOwner) { actions ->
@@ -90,6 +93,7 @@ class ContactSettingsFragment : Fragment() {
                     val item = event.localState
                     when (item) {
                         is CircularImageView -> {
+                            context?.vibrator?.vibrateSafety(Keys.VIBRO, 255)
                             cir.swapCir(item)
                             v.invalidate()
                             cir.invalidate()

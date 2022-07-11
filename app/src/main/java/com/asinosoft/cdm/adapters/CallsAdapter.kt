@@ -16,7 +16,10 @@ import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ItemCallBinding
+import com.asinosoft.cdm.helpers.Keys
+import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.helpers.StHelper
+import com.asinosoft.cdm.helpers.vibrator
 import com.zerobranch.layout.SwipeLayout
 import java.security.InvalidParameterException
 
@@ -147,10 +150,12 @@ class CallsAdapter(
                 when (direction) {
                     SwipeLayout.RIGHT -> {
                         Analytics.logHistorySwipeRight()
+                        context?.vibrator?.vibrateSafety(Keys.VIBRO, 255)
                         performSwipeAction(directActions.right, call)
                     }
                     SwipeLayout.LEFT -> {
                         Analytics.logHistorySwipeLeft()
+                        context?.vibrator?.vibrateSafety(Keys.VIBRO, 255)
                         performSwipeAction(directActions.left, call)
                     }
                 }
@@ -176,11 +181,10 @@ class CallsAdapter(
     inner class HolderHistory(val v: ViewBinding) : RecyclerView.ViewHolder(v.root)
 
     private fun performSwipeAction(action: Action, item: CallHistoryItem) {
-        if (action.type == Action.Type.PhoneCall) {
-            // Звонок делаем по тому телефону, который в истории, а не который в настройках контакта!
-            Action(0, Action.Type.PhoneCall, item.phone, "").perform(context)
-        } else {
-            action.perform(context)
+        when(action.type){
+            Action.Type.PhoneCall -> Action(0, Action.Type.PhoneCall, item.phone, "").perform(context) // Звонок делаем по тому телефону, который в истории, а не который в настройках контакта!
+            Action.Type.WhatsAppChat -> Action(0, Action.Type.WhatsAppChat, item.phone, "").perform(context)
+            else -> action.perform(context)
         }
     }
 }

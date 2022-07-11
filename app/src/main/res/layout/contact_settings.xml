@@ -28,8 +28,8 @@
 
             <com.asinosoft.cdm.views.CircularImageView
                 android:id="@+id/cirTop"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_above="@id/contact"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="10dp"
@@ -38,8 +38,8 @@
 
             <com.asinosoft.cdm.views.CircularImageView
                 android:id="@+id/cirBottom"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_below="@id/contact"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
@@ -48,8 +48,8 @@
 
             <com.asinosoft.cdm.views.CircularImageView
                 android:id="@+id/cirLeft"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="10dp"
                 android:layout_toStartOf="@id/contact"
@@ -58,8 +58,8 @@
 
             <com.asinosoft.cdm.views.CircularImageView
                 android:id="@+id/cirRight"
-                android:layout_width="86dp"
-                android:layout_height="86dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"
                 android:layout_toEndOf="@id/contact"

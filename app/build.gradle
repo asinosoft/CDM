@@ -131,6 +131,9 @@ dependencies {
     //dialer
     implementation 'com.google.android.material:material:1.6.0'
 
+    //Yandex Mobile Ads
+    implementation 'com.yandex.android:mobileads:5.1.1'
+
     // Runtime log-reader
 //    debugImplementation 'com.willowtreeapps.hyperion:hyperion-core:0.9.27'
 //    debugImplementation 'com.willowtreeapps.hyperion:hyperion-timber:0.9.27'

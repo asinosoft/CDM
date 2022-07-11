@@ -35,7 +35,7 @@
     </LinearLayout>
 
     <ImageButton
-        android:id="@+id/callBtnNumber"
+        android:id="@+id/btnAction_1"
         android:layout_width="40dip"
         android:layout_height="40dip"
         android:layout_gravity="center_vertical"
@@ -44,11 +44,11 @@
         android:contentDescription="@string/call"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/msgBtnNumber"
+        app:layout_constraintEnd_toStartOf="@+id/btnAction_2"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/msgBtnNumber"
+        android:id="@+id/btnAction_2"
         android:layout_width="40dip"
         android:layout_height="40dip"
         android:layout_gravity="center_vertical"
@@ -57,11 +57,11 @@
         android:contentDescription="@string/call"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/videoBtnNumber"
+        app:layout_constraintEnd_toStartOf="@+id/btnAction_3"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/videoBtnNumber"
+        android:id="@+id/btnAction_3"
         android:layout_width="40dip"
         android:layout_height="40dip"
         android:layout_gravity="center_vertical"
