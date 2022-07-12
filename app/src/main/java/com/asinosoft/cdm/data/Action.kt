@@ -196,11 +196,11 @@ class Action(
         Timber.i("whatsappChat: %s (%s)", id, value)
         Analytics.logActionWhatsappChat()
         if (id==0) {
-            val uri = Uri.parse("smsto:$value")
-            val sendIntent = Intent(Intent.ACTION_SENDTO, uri)
-            sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            sendIntent.setPackage("com.whatsapp")
-            context.startActivity(Intent.createChooser(sendIntent, "").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            value.substring(1, value.length -1)
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://api.whatsapp.com/send?phone=$value"))
+            with(context) {
+                startActivity(intent)
+            }
         }
         else {
             Intent(Intent.ACTION_VIEW)
