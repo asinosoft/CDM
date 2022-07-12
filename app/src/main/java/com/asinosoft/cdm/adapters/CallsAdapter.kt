@@ -183,7 +183,7 @@ class CallsAdapter(
     private fun performSwipeAction(action: Action, item: CallHistoryItem) {
         when(action.type){
             Action.Type.PhoneCall -> Action(0, Action.Type.PhoneCall, item.phone, "").perform(context) // Звонок делаем по тому телефону, который в истории, а не который в настройках контакта!
-            Action.Type.WhatsAppChat -> Action(0, Action.Type.WhatsAppChat, item.phone, "").perform(context)
+            Action.Type.WhatsAppChat -> Action(0, Action.Type.WhatsAppChat, item.phone, "").perform(context) //если контакт не записан, вызываем чат по номеру а не по id
             else -> action.perform(context)
         }
     }
