@@ -195,14 +195,14 @@ class Action(
     private fun whatsappChat(context: Context) {
         Timber.i("whatsappChat: %s (%s)", id, value)
         Analytics.logActionWhatsappChat()
-        if (id==0) {
-            value.substring(1, value.length -1)
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://api.whatsapp.com/send?phone=$value"))
+        if (id == 0) {
+            value.substring(1, value.length - 1)
+            val intent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://api.whatsapp.com/send?phone=$value"))
             with(context) {
                 startActivity(intent)
             }
-        }
-        else {
+        } else {
             Intent(Intent.ACTION_VIEW)
                 .setDataAndType(
                     Uri.parse("content://com.android.contacts/data/$id"),
