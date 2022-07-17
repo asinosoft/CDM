@@ -35,7 +35,7 @@ data class Contact(
     }
 
     fun getAvatar(context: Context, type: Int): Drawable =
-        fromUri(context, photoUri) ?: generateAvatar(context,type)
+        fromUri(context, photoUri) ?: generateAvatar(context, type)
 
     private fun fromUri(context: Context, uri: Uri?): Drawable? {
         if (null == uri) {
@@ -53,12 +53,12 @@ data class Contact(
         }
     }
 
-    private fun generateAvatar(context: Context,type: Int): Drawable {
+    private fun generateAvatar(context: Context, type: Int): Drawable {
         return if (null == name) {
             //ContextCompat.getDrawable(context,R.drawable.ic_add_contact_new) as Drawable
-            AvatarHelper.generate(context, phone as String,3)
+            AvatarHelper.generate(context, phone as String, 3)
         } else {
-            AvatarHelper.generate(context, name,type)
+            AvatarHelper.generate(context, name, type)
         }
     }
 }
