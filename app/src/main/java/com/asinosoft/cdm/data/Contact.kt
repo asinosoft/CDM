@@ -3,16 +3,19 @@ package com.asinosoft.cdm.data
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import androidx.core.content.ContextCompat
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.helpers.AvatarHelper
 import timber.log.Timber
 
 data class Contact(
     val id: Long,
-    val name: String
+    val name: String?,
+    val phone: String? = null
 ) {
     companion object {
         fun fromPhone(phone: String): Contact =
-            Contact(0, phone).apply {
+            Contact(0, null, phone).apply {
                 actions.add(Action(0, Action.Type.PhoneCall, phone, ""))
             }
     }
@@ -31,8 +34,8 @@ data class Contact(
         actions.filter { action -> action.type == Action.Type.WhatsAppChat }
     }
 
-    fun getAvatar(context: Context): Drawable =
-        fromUri(context, photoUri) ?: generateAvatar(context)
+    fun getAvatar(context: Context, type: Int): Drawable =
+        fromUri(context, photoUri) ?: generateAvatar(context,type)
 
     private fun fromUri(context: Context, uri: Uri?): Drawable? {
         if (null == uri) {
@@ -50,7 +53,12 @@ data class Contact(
         }
     }
 
-    private fun generateAvatar(context: Context): Drawable {
-        return AvatarHelper.generate(context, name)
+    private fun generateAvatar(context: Context,type: Int): Drawable {
+        return if (null == name) {
+            //ContextCompat.getDrawable(context,R.drawable.ic_add_contact_new) as Drawable
+            AvatarHelper.generate(context, phone as String,3)
+        } else {
+            AvatarHelper.generate(context, name,type)
+        }
     }
 }

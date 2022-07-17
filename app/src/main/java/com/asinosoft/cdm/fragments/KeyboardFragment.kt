@@ -211,7 +211,7 @@ class KeyboardFragment : Fragment() {
 
         v.settingsButton.setOnClickListener {
             if (v.inputText.text.isNotEmpty()) {
-                addNewContact()
+                addNewContact(v.inputText.text)
             } else {
                 settingsButtonClickCallback()
             }
@@ -245,11 +245,11 @@ class KeyboardFragment : Fragment() {
         return v.root
     }
 
-    private fun addNewContact() {
+    private fun addNewContact(number: CharSequence) {
         Intent().apply {
             action = Intent.ACTION_INSERT_OR_EDIT
             type = "vnd.android.cursor.item/contact"
-            putExtra(KEY_PHONE, v.inputText.text)
+            putExtra(KEY_PHONE, number)
             launchActivityIntent(this)
         }
     }

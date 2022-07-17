@@ -77,7 +77,7 @@ class ContactFragment : Fragment() {
 
         model.contact.observe(viewLifecycleOwner) { contact ->
             contact?.let {
-                v.image.setImageDrawable(it.getAvatar(requireContext()))
+                v.image.setImageDrawable(it.getAvatar(requireContext(),1))
                 v.toolbarLayout.title = it.name
             }
         }

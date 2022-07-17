@@ -113,7 +113,7 @@ class NotificationManager(private val context: Context) {
         val channel = if (Call.STATE_RINGING == callState) INCOMING_CHANNEL else ONGOING_CHANNEL
         val builder = NotificationCompat.Builder(context, channel)
             .setSmallIcon(R.drawable.call)
-            .setLargeIcon(contact.getAvatar(context).toBitmap())
+            .setLargeIcon(contact.getAvatar(context,1).toBitmap())
             .setContentIntent(openAppIntent(call))
             .setCategory(Notification.CATEGORY_CALL)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

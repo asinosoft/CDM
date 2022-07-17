@@ -85,7 +85,7 @@ class FavoritesAdapter(
 
                 setActionImage(v.actionView)
                 setImageDrawable(
-                    contact?.getAvatar(context) ?: ResourcesCompat.getDrawable(
+                    contact?.getAvatar(context,5) ?: ResourcesCompat.getDrawable(
                         resources,
                         R.drawable.ic_add_contact,
                         null
