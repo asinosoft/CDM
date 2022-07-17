@@ -49,7 +49,7 @@ class DialActivity : AppCompatActivity() {
             if (isDefaultDialer()) {
                 placeCall()
             } else {
-                setDefaultDialer(launcher)
+                launcher.launch(setDefaultDialer())
             }
         } else {
             finish()

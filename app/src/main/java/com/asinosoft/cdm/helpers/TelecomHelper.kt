@@ -12,40 +12,31 @@ import android.os.Build
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
 import android.telephony.TelephonyManager.SIM_STATE_READY
-import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.ContextCompat
 import com.asinosoft.cdm.data.SimSlot
 import timber.log.Timber
 import java.io.FileNotFoundException
 
-fun Context.isDefaultDialer(): Boolean {
-    return packageName == telecomManager.defaultDialerPackage
-}
+fun Context.isDefaultDialer(): Boolean =
+    if (Build.VERSION.SDK_INT >= 29) {
+        roleManager.isRoleHeld(RoleManager.ROLE_DIALER)
+    } else {
+        telecomManager.defaultDialerPackage == packageName
+    }
 
 /**
  * Предлагает пользователю установить приложение дозвонщиком по-умолчанию
  */
-fun Context.setDefaultDialer(launcher: ActivityResultLauncher<Intent>) {
+fun Context.setDefaultDialer(): Intent {
     Timber.d("setDefaultDialer → %s", packageName)
-    if (isDefaultDialer()) {
-        return
-    }
-
-    if (Build.VERSION.SDK_INT >= 29) {
-        val roleManager = getSystemService(RoleManager::class.java)
-        if (roleManager.isRoleAvailable(RoleManager.ROLE_DIALER) &&
-            !roleManager.isRoleHeld(RoleManager.ROLE_DIALER)
-        ) {
-            roleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER)
-                .let { launcher.launch(it) }
-        }
+    return if (Build.VERSION.SDK_INT >= 29) {
+        roleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER)
     } else {
         Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
             .putExtra(
                 TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME,
                 packageName
             )
-            .let { launcher.launch(it) }
     }
 }
 

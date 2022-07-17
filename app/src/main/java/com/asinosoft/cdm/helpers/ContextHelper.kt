@@ -2,6 +2,7 @@ package com.asinosoft.cdm.helpers
 
 import android.app.KeyguardManager
 import android.app.NotificationManager
+import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -29,6 +30,9 @@ inline val Context.notificationManager: NotificationManager
 
 inline val Context.powerManager: PowerManager
     get() = getSystemService(PowerManager::class.java)
+
+inline val Context.roleManager: RoleManager
+    get() = getSystemService(RoleManager::class.java)
 
 inline val Context.telecomManager: TelecomManager
     get() = getSystemService(TelecomManager::class.java)
