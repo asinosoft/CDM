@@ -11,12 +11,16 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.adapters.ActionsAdapter
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.databinding.ContactSettingsBinding
+import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.Metoths
+import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.helpers.SelectPhoneDialog
+import com.asinosoft.cdm.helpers.vibrator
 import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
 import com.asinosoft.cdm.views.CircularImageView
 
@@ -45,8 +49,16 @@ class ContactSettingsFragment : Fragment() {
         v.cirLeft.let(this@ContactSettingsFragment::setDragListener)
         v.cirRight.let(this@ContactSettingsFragment::setDragListener)
 
-        v.rvActions.layoutManager = GridLayoutManager(requireContext(), 4)
+        v.rvActions.layoutManager = GridLayoutManager(requireContext(), 5)
         v.rvActions.adapter = ActionsAdapter()
+
+        model.contact.observe(viewLifecycleOwner) { contact ->
+            contact?.let {
+                v.contact.setImageDrawable(it.getAvatar(requireContext(),1))
+            }
+        }
+        App.instance!!.config.favoritesBorderWidth.let { v.contact.borderWidth = it.toFloat() }
+        App.instance!!.config.favoritesBorderColor?.let { v.contact.borderColor = it }
 
         model.availableActions.observe(viewLifecycleOwner) { actions ->
             actions?.let { (v.rvActions.adapter as ActionsAdapter).setActions(it) }
@@ -90,6 +102,7 @@ class ContactSettingsFragment : Fragment() {
                     val item = event.localState
                     when (item) {
                         is CircularImageView -> {
+                            context?.vibrator?.vibrateSafety(Keys.VIBRO, 255)
                             cir.swapCir(item)
                             v.invalidate()
                             cir.invalidate()

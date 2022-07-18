@@ -74,10 +74,10 @@ class Action(
         }
     }
 
-    fun perform(context: Context) {
+    fun perform(context: Context, sim: Int = 0) {
         when (type) {
             Type.Email -> email(context)
-            Type.PhoneCall -> phoneCall(context)
+            Type.PhoneCall -> phoneCall(context, sim)
             Type.Sms -> sms(context)
             Type.SkypeCall -> skypeCall(context)
             Type.SkypeChat -> skypeChat(context)
@@ -92,11 +92,12 @@ class Action(
         }
     }
 
-    private fun phoneCall(context: Context) {
+    private fun phoneCall(context: Context, sim: Int = 0) {
         Timber.i("phoneCall: %s", value)
         Analytics.logActionPhoneCall()
         Intent(context, DialActivity::class.java)
             .setData(Uri.fromParts("tel", value, null))
+            .putExtra("sim", sim)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             .let { context.startActivity(it) }
     }
@@ -194,13 +195,22 @@ class Action(
     private fun whatsappChat(context: Context) {
         Timber.i("whatsappChat: %s (%s)", id, value)
         Analytics.logActionWhatsappChat()
-        Intent(Intent.ACTION_VIEW)
-            .setDataAndType(
-                Uri.parse("content://com.android.contacts/data/$id"),
-                "vnd.android.cursor.item/vnd.com.whatsapp.profile"
-            )
-            .setPackage("com.whatsapp")
-            .let { context.startActivity(it) }
+        if (id == 0) {
+            value.substring(1, value.length - 1)
+            val intent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://api.whatsapp.com/send?phone=$value"))
+            with(context) {
+                startActivity(intent)
+            }
+        } else {
+            Intent(Intent.ACTION_VIEW)
+                .setDataAndType(
+                    Uri.parse("content://com.android.contacts/data/$id"),
+                    "vnd.android.cursor.item/vnd.com.whatsapp.profile"
+                )
+                .setPackage("com.whatsapp")
+                .let { context.startActivity(it) }
+        }
     }
 
     private fun whatsappCall(context: Context) {

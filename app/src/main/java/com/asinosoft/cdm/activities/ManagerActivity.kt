@@ -39,7 +39,7 @@ class ManagerActivity : BaseActivity() {
         installSplashScreen().setKeepOnScreenCondition { !model.initialized }
 
         if ((application as App).config.checkDefaultDialer) {
-            setDefaultDialer(launcher)
+            launcher.launch(setDefaultDialer())
         }
 
         requestDrawOverlays(findViewById(R.id.nav_host))

@@ -27,7 +27,7 @@ class StrayPhoneFragment : Fragment() {
             arguments?.getString("phone")?.let { phone ->
                 App.instance?.config?.favoritesBorderColor?.let { v.image.borderColor = it }
                 App.instance?.config?.favoritesBorderWidth?.let { v.image.borderWidth = it }
-                v.image.setImageDrawable(AvatarHelper.generate(requireContext(), phone))
+                v.image.setImageDrawable(AvatarHelper.generate(requireContext(), phone, 3))
                 v.phone.text = phone
                 model.getPhoneCalls(phone).let { calls ->
                     v.calls.adapter = HistoryDetailsCallsAdapter(

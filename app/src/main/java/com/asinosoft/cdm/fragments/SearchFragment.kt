@@ -86,9 +86,11 @@ class SearchFragment : Fragment() {
     private fun List<Contact>.filtered(nums: String, regex: Regex?): List<Contact> {
         val r = ArrayList<Contact>()
         this@filtered.forEach { contact ->
-            regex?.find(contact.name)?.let {
-                r.add(contact)
-                return@forEach
+            contact.name?.let {
+                regex?.find(it)?.let {
+                    r.add(contact)
+                    return@forEach
+                }
             }
             contact.phones.forEach {
                 if (it.value.contains(nums, true)) {
@@ -99,7 +101,7 @@ class SearchFragment : Fragment() {
         }
         r.sortWith(
             compareBy {
-                val res = regex?.find(it.name)
+                val res = it.name?.let { it1 -> regex?.find(it1) }
                 if (res != null) {
                     it.name.indexOf(res.value)
                 } else {

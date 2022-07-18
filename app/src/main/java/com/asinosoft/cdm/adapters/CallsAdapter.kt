@@ -1,10 +1,15 @@
 package com.asinosoft.cdm.adapters
 
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
+import android.os.Bundle
 import android.provider.CallLog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +21,10 @@ import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ItemCallBinding
+import com.asinosoft.cdm.helpers.Keys
+import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.helpers.StHelper
+import com.asinosoft.cdm.helpers.vibrator
 import com.zerobranch.layout.SwipeLayout
 import java.security.InvalidParameterException
 
@@ -36,6 +44,7 @@ class CallsAdapter(
     }
 
     private var calls: List<CallHistoryItem> = listOf()
+    private val KEY_PHONE = "phone"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
         val view = when (viewType) {
@@ -93,9 +102,9 @@ class CallsAdapter(
     private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem) {
         v.topDivider.isVisible = config.listDivider && config.favoritesFirst
         v.bottomDivider.isVisible = config.listDivider && !config.favoritesFirst
-        v.imageContact.setImageDrawable(call.contact.getAvatar(context))
+        v.imageContact.setImageDrawable(call.contact.getAvatar(context,1))
         config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
-        v.name.text = call.contact.name
+        v.name.text = call.contact.name ?: call.contact.phone
 
         if (0L == call.contact.id) {
             v.number.setText(R.string.unsaved)
@@ -147,10 +156,12 @@ class CallsAdapter(
                 when (direction) {
                     SwipeLayout.RIGHT -> {
                         Analytics.logHistorySwipeRight()
+                        context?.vibrator?.vibrateSafety(Keys.VIBRO, 255)
                         performSwipeAction(directActions.right, call)
                     }
                     SwipeLayout.LEFT -> {
                         Analytics.logHistorySwipeLeft()
+                        context?.vibrator?.vibrateSafety(Keys.VIBRO, 255)
                         performSwipeAction(directActions.left, call)
                     }
                 }
@@ -163,6 +174,15 @@ class CallsAdapter(
             }
         })
 
+        v.imageContact.setOnClickListener {
+            if (0L == call.contact.id) {
+                addNewContact(call.prettyPhone)
+            } else {
+                Analytics.logCallHistoryClick()
+                onClickContact(call.contact)
+            }
+        }
+
         v.dragLayout.setOnClickListener {
             Analytics.logCallHistoryClick()
             if (0L == call.contact.id) {
@@ -173,14 +193,32 @@ class CallsAdapter(
         }
     }
 
+    private fun addNewContact(prettyPhone: CharSequence) {
+
+        Intent().apply {
+            action = Intent.ACTION_INSERT_OR_EDIT
+            type = "vnd.android.cursor.item/contact"
+            putExtra(KEY_PHONE, prettyPhone)
+            launchActivityIntent(this)
+        }
+    }
+
+    private fun launchActivityIntent(intent: Intent) {
+        try {
+            startActivity(context, intent, Bundle.EMPTY)
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(context, R.string.add_error, Toast.LENGTH_LONG)
+                .show()
+        }
+    }
+
     inner class HolderHistory(val v: ViewBinding) : RecyclerView.ViewHolder(v.root)
 
     private fun performSwipeAction(action: Action, item: CallHistoryItem) {
-        if (action.type == Action.Type.PhoneCall) {
-            // Звонок делаем по тому телефону, который в истории, а не который в настройках контакта!
-            Action(0, Action.Type.PhoneCall, item.phone, "").perform(context)
-        } else {
-            action.perform(context)
+        when(action.type){
+            Action.Type.PhoneCall -> Action(0, Action.Type.PhoneCall, item.phone, "").perform(context) // Звонок делаем по тому телефону, который в истории, а не который в настройках контакта!
+            Action.Type.WhatsAppChat -> Action(action.id, Action.Type.WhatsAppChat, item.phone, "").perform(context) //если контакт не записан, вызываем чат по номеру а не по id
+            else -> action.perform(context)
         }
     }
 }

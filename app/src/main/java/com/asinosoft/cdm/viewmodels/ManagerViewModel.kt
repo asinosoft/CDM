@@ -94,10 +94,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
 
     private fun hasAccessToCallLog(): Boolean =
         getApplication<Application>().hasPermissions(
-            arrayOf(
-                Manifest.permission.READ_CONTACTS,
-                Manifest.permission.READ_CALL_LOG
-            )
+            arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG)
         )
 
     private fun retrieveCallsAndContacts() {

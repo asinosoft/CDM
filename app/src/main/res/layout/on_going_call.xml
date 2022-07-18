@@ -18,7 +18,7 @@
         app:shapeAppearanceOverlay="@style/RoundImage"
         app:srcCompat="@drawable/ic_default_photo"
         app:strokeColor="?attr/colorPrimary"
-        app:strokeWidth="1dp" />
+        app:strokeWidth="0dp" />
 
     <TextView
         android:id="@+id/text_caller"

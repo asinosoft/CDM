@@ -39,7 +39,7 @@ class OngoingCallActivity : BaseActivity() {
         fun intent(context: Context, call: Call) =
             Intent(context, OngoingCallActivity::class.java)
                 .setData(call.details.handle)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
     }
 
     private var callStartTime: Long = 0L
@@ -80,7 +80,7 @@ class OngoingCallActivity : BaseActivity() {
 
         CallService.instance?.getCall(intent?.data)?.let {
             setCurrentCall(it)
-        } ?: finish()
+        } ?: finishAndRemoveTask()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -112,6 +112,7 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun setCurrentCall(call: Call) {
+        Timber.d("setCurrentCall %s", call.phone)
         this.call = call
         call.registerCallback(callCallback)
         setCallerInfo(call.details.handle.schemeSpecificPart)
@@ -128,7 +129,7 @@ class OngoingCallActivity : BaseActivity() {
 
         v.ongoingCallLayout.textCaller.text = contact.name
         v.ongoingCallLayout.textCallerNumber.text = phone
-        v.ongoingCallLayout.imagePlaceholder.setImageDrawable(contact.getAvatar(this))
+        v.ongoingCallLayout.imagePlaceholder.setImageDrawable(contact.getAvatar(this,3))
     }
 
     @SuppressLint("ResourceAsColor")
@@ -203,7 +204,7 @@ class OngoingCallActivity : BaseActivity() {
                 PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK or PowerManager.ON_AFTER_RELEASE,
                 "com.asinosoft.cdm:wake_lock"
             )
-            proximityWakeLock?.acquire(600 * 1000L) //
+            proximityWakeLock?.acquire(/* 1 hour */ 60 * 60 * 1000L)
         }
     }
 
@@ -259,13 +260,13 @@ class OngoingCallActivity : BaseActivity() {
                 v.ongoingCallLayout.textStatus.text =
                     (Date().time - callStartTime).getFormattedDuration()
                 Handler().postDelayed(
-                    { finish() },
+                    { finishAndRemoveTask() },
                     1000
                 )
             }
         } else {
             v.ongoingCallLayout.textStatus.text = getString(R.string.status_call_disconnected)
-            finish()
+            finishAndRemoveTask()
         }
     }
 
