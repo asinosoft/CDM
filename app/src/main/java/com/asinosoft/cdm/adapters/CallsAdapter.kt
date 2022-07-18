@@ -1,10 +1,15 @@
 package com.asinosoft.cdm.adapters
 
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
+import android.os.Bundle
 import android.provider.CallLog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -39,6 +44,7 @@ class CallsAdapter(
     }
 
     private var calls: List<CallHistoryItem> = listOf()
+    private val KEY_PHONE = "phone"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
         val view = when (viewType) {
@@ -98,7 +104,7 @@ class CallsAdapter(
         v.bottomDivider.isVisible = config.listDivider && !config.favoritesFirst
         v.imageContact.setImageDrawable(call.contact.getAvatar(context,1))
         config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
-        v.name.text = call.contact.name
+        v.name.text = call.contact.name ?: call.contact.phone
 
         if (0L == call.contact.id) {
             v.number.setText(R.string.unsaved)
@@ -168,6 +174,15 @@ class CallsAdapter(
             }
         })
 
+        v.imageContact.setOnClickListener {
+            if (0L == call.contact.id) {
+                addNewContact(call.prettyPhone)
+            } else {
+                Analytics.logCallHistoryClick()
+                onClickContact(call.contact)
+            }
+        }
+
         v.dragLayout.setOnClickListener {
             Analytics.logCallHistoryClick()
             if (0L == call.contact.id) {
@@ -175,6 +190,25 @@ class CallsAdapter(
             } else {
                 onClickContact(call.contact)
             }
+        }
+    }
+
+    private fun addNewContact(prettyPhone: CharSequence) {
+
+        Intent().apply {
+            action = Intent.ACTION_INSERT_OR_EDIT
+            type = "vnd.android.cursor.item/contact"
+            putExtra(KEY_PHONE, prettyPhone)
+            launchActivityIntent(this)
+        }
+    }
+
+    private fun launchActivityIntent(intent: Intent) {
+        try {
+            startActivity(context, intent, Bundle.EMPTY)
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(context, R.string.add_error, Toast.LENGTH_LONG)
+                .show()
         }
     }
 
