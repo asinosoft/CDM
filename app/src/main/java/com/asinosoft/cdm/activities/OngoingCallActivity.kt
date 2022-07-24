@@ -129,7 +129,7 @@ class OngoingCallActivity : BaseActivity() {
 
         v.ongoingCallLayout.textCaller.text = contact.name
         v.ongoingCallLayout.textCallerNumber.text = phone
-        v.ongoingCallLayout.imagePlaceholder.setImageDrawable(contact.getAvatar(this,3))
+        v.ongoingCallLayout.imagePlaceholder.setImageDrawable(contact.getAvatar(this, AvatarHelper.IMAGE))
     }
 
     @SuppressLint("ResourceAsColor")

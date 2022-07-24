@@ -10,6 +10,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.databinding.ActivityDetailHistoryBinding
+import com.asinosoft.cdm.helpers.AvatarHelper
 import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -77,7 +78,7 @@ class ContactFragment : Fragment() {
 
         model.contact.observe(viewLifecycleOwner) { contact ->
             contact?.let {
-                v.image.setImageDrawable(it.getAvatar(requireContext(),1))
+                v.image.setImageDrawable(it.getAvatar(requireContext(), AvatarHelper.SHORT))
                 v.toolbarLayout.title = it.name
             }
         }

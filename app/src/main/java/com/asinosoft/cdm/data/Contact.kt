@@ -3,8 +3,6 @@ package com.asinosoft.cdm.data
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import androidx.core.content.ContextCompat
-import com.asinosoft.cdm.R
 import com.asinosoft.cdm.helpers.AvatarHelper
 import timber.log.Timber
 
@@ -55,8 +53,7 @@ data class Contact(
 
     private fun generateAvatar(context: Context, type: Int): Drawable {
         return if (null == name) {
-            //ContextCompat.getDrawable(context,R.drawable.ic_add_contact_new) as Drawable
-            AvatarHelper.generate(context, phone as String, 3)
+            AvatarHelper.generate(context, phone as String, AvatarHelper.IMAGE)
         } else {
             AvatarHelper.generate(context, name, type)
         }

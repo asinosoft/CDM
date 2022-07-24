@@ -16,11 +16,8 @@ import com.asinosoft.cdm.adapters.ActionsAdapter
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.databinding.ContactSettingsBinding
-import com.asinosoft.cdm.helpers.Keys
-import com.asinosoft.cdm.helpers.Metoths
+import com.asinosoft.cdm.helpers.*
 import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
-import com.asinosoft.cdm.helpers.SelectPhoneDialog
-import com.asinosoft.cdm.helpers.vibrator
 import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
 import com.asinosoft.cdm.views.CircularImageView
 
@@ -54,7 +51,7 @@ class ContactSettingsFragment : Fragment() {
 
         model.contact.observe(viewLifecycleOwner) { contact ->
             contact?.let {
-                v.contact.setImageDrawable(it.getAvatar(requireContext(),1))
+                v.contact.setImageDrawable(it.getAvatar(requireContext(), AvatarHelper.SHORT))
             }
         }
         App.instance!!.config.favoritesBorderWidth.let { v.contact.borderWidth = it.toFloat() }

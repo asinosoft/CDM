@@ -21,6 +21,7 @@ import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ItemCallBinding
+import com.asinosoft.cdm.helpers.AvatarHelper
 import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.helpers.StHelper
@@ -44,7 +45,6 @@ class CallsAdapter(
     }
 
     private var calls: List<CallHistoryItem> = listOf()
-    private val KEY_PHONE = "phone"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
         val view = when (viewType) {
@@ -102,7 +102,7 @@ class CallsAdapter(
     private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem) {
         v.topDivider.isVisible = config.listDivider && config.favoritesFirst
         v.bottomDivider.isVisible = config.listDivider && !config.favoritesFirst
-        v.imageContact.setImageDrawable(call.contact.getAvatar(context,1))
+        v.imageContact.setImageDrawable(call.contact.getAvatar(context, AvatarHelper.SHORT))
         config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
         v.name.text = call.contact.name ?: call.contact.phone
 
@@ -156,12 +156,12 @@ class CallsAdapter(
                 when (direction) {
                     SwipeLayout.RIGHT -> {
                         Analytics.logHistorySwipeRight()
-                        context?.vibrator?.vibrateSafety(Keys.VIBRO, 255)
+                        context.vibrator.vibrateSafety(Keys.VIBRO, 255)
                         performSwipeAction(directActions.right, call)
                     }
                     SwipeLayout.LEFT -> {
                         Analytics.logHistorySwipeLeft()
-                        context?.vibrator?.vibrateSafety(Keys.VIBRO, 255)
+                        context.vibrator.vibrateSafety(Keys.VIBRO, 255)
                         performSwipeAction(directActions.left, call)
                     }
                 }
@@ -198,7 +198,7 @@ class CallsAdapter(
         Intent().apply {
             action = Intent.ACTION_INSERT_OR_EDIT
             type = "vnd.android.cursor.item/contact"
-            putExtra(KEY_PHONE, prettyPhone)
+            putExtra("phone", prettyPhone)
             launchActivityIntent(this)
         }
     }
@@ -215,9 +215,15 @@ class CallsAdapter(
     inner class HolderHistory(val v: ViewBinding) : RecyclerView.ViewHolder(v.root)
 
     private fun performSwipeAction(action: Action, item: CallHistoryItem) {
-        when(action.type){
-            Action.Type.PhoneCall -> Action(0, Action.Type.PhoneCall, item.phone, "").perform(context) // Звонок делаем по тому телефону, который в истории, а не который в настройках контакта!
-            Action.Type.WhatsAppChat -> Action(action.id, Action.Type.WhatsAppChat, item.phone, "").perform(context) //если контакт не записан, вызываем чат по номеру а не по id
+        when (action.type) {
+            // Звонок делаем по тому телефону, который в истории, а не который в настройках контакта!
+            Action.Type.PhoneCall ->
+                Action(0, Action.Type.PhoneCall, item.phone, "")
+                    .perform(context)
+            Action.Type.WhatsAppChat ->
+                // если контакт не записан, вызываем чат по номеру а не по id
+                Action(action.id, Action.Type.WhatsAppChat, item.phone, "")
+                    .perform(context)
             else -> action.perform(context)
         }
     }

@@ -3,7 +3,6 @@ package com.asinosoft.cdm.views
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PointF
-import android.net.Uri
 import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -13,6 +12,7 @@ import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.DirectActions
+import com.asinosoft.cdm.helpers.AvatarHelper
 import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.Metoths.Companion.action
 import com.asinosoft.cdm.helpers.Metoths.Companion.checkMoving
@@ -50,7 +50,7 @@ class CircleImage @JvmOverloads constructor(
     var contact: Contact? = null
         set(value) {
             field = value
-            setImageDrawable(value?.getAvatar(context,1))
+            setImageDrawable(value?.getAvatar(context, AvatarHelper.SHORT))
         }
 
     var size: Int = this.width
@@ -108,10 +108,6 @@ class CircleImage @JvmOverloads constructor(
                 true
             }
         }
-    }
-
-    private fun updatePhoto(uri: Uri) {
-        setImageURI(uri)
     }
 
     fun setActionImage(view: CircularImageView) {
