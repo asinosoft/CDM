@@ -142,7 +142,7 @@ class ContactSettingsFragment : Fragment() {
     }
 
     override fun onStop() {
-        model.saveContactSettings(requireContext())
+        model.saveContactSettings()
         super.onStop()
     }
 

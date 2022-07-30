@@ -12,7 +12,7 @@
     <com.zerobranch.layout.SwipeLayout
         android:id="@+id/swipe_layout"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         android:clickable="false"
         app:draggedItem="@id/drag_layout"
         app:isTogether="true"
@@ -22,21 +22,21 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageLeftAction"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="70sp"
+            android:layout_height="70sp"
             android:layout_gravity="end"
-            android:layout_marginEnd="-70dp"
-            android:padding="4dp"
+            android:layout_marginEnd="-70sp"
+            android:padding="4sp"
             android:src="@drawable/ic_phone_call"
             android:visibility="visible"
             app:civ_border_width="0dp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageRightAction"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginStart="-70dp"
-            android:padding="4dp"
+            android:layout_width="70sp"
+            android:layout_height="70sp"
+            android:layout_marginStart="-70sp"
+            android:padding="4sp"
             android:src="@drawable/ic_whatsapp_chat"
             android:visibility="visible"
             app:civ_border_width="0dp" />
@@ -44,16 +44,16 @@
         <RelativeLayout
             android:id="@+id/drag_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imageContact"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="55sp"
+                android:layout_height="55sp"
                 android:clickable="false"
-                android:padding="4dp"
+                android:layout_margin="8sp"
                 android:src="@drawable/ic_default_photo"
                 app:civ_border_color="?attr/civ_border_color"
                 app:civ_border_width="1dp" />
@@ -61,8 +61,8 @@
             <TextView
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginStart="4dp"
+                android:layout_height="36sp"
+                android:layout_marginStart="4sp"
                 android:layout_toEndOf="@id/imageContact"
                 android:clickable="false"
                 android:ellipsize="end"
@@ -78,7 +78,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/name"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="4sp"
                 android:layout_toEndOf="@id/imageContact"
                 android:clickable="false"
                 android:gravity="top"
@@ -94,8 +94,8 @@
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginStart="70dp"
-        android:layout_marginEnd="15dp"
+        android:layout_marginStart="70sp"
+        android:layout_marginEnd="15sp"
         android:background="?android:attr/listDivider" />
 
 </LinearLayout>

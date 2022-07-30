@@ -83,7 +83,7 @@ class DetailHistoryViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    fun saveContactSettings(context: Context) {
+    fun saveContactSettings() {
         Timber.d("Сохранение настроек контакта %s", _contact)
         if (haveUnsavedChanges) {
             App.instance!!.config.setContactSettings(_contact, _actions)
