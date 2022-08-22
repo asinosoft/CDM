@@ -14,14 +14,14 @@
         android:id="@+id/topDivider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginStart="85dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginStart="85sp"
+        android:layout_marginEnd="10sp"
         android:background="?android:attr/listDivider" />
 
     <com.zerobranch.layout.SwipeLayout
         android:id="@+id/swipe_layout"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         app:draggedItem="@id/drag_layout"
         app:isTogether="true"
         app:leftItem="@id/imageRightAction"
@@ -30,21 +30,21 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageLeftAction"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="70sp"
+            android:layout_height="70sp"
             android:layout_gravity="end"
-            android:layout_marginEnd="-70dp"
-            android:padding="10dp"
+            android:layout_marginEnd="-70sp"
+            android:padding="10sp"
             android:src="@drawable/ic_phone_call"
             android:visibility="visible"
             app:civ_border_width="0dp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageRightAction"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginStart="-70dp"
-            android:padding="10dp"
+            android:layout_width="70sp"
+            android:layout_height="70sp"
+            android:layout_marginStart="-70sp"
+            android:padding="10sp"
             android:src="@drawable/ic_whatsapp_chat"
             android:visibility="visible"
             app:civ_border_width="0dp" />
@@ -52,18 +52,15 @@
         <RelativeLayout
             android:id="@+id/drag_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imageContact"
-                android:layout_width="55dp"
-                android:layout_height="55dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="4dp"
+                android:layout_width="55sp"
+                android:layout_height="55sp"
+                android:layout_margin="8sp"
                 android:src="@drawable/ic_default_photo"
                 app:civ_border_color="?attr/civ_border_color"
                 app:civ_border_width="1dp" />
@@ -71,18 +68,19 @@
             <TextView
                 android:id="@+id/name"
                 android:layout_width="match_parent"
-                android:layout_height="32dp"
-                android:layout_marginEnd="15dp"
+                android:layout_height="32sp"
+                android:layout_marginEnd="15sp"
                 android:layout_toStartOf="@+id/dateContact"
                 android:layout_toEndOf="@id/imageContact"
                 android:ellipsize="end"
-                android:padding="4dp"
+                android:padding="4sp"
                 android:singleLine="true"
                 android:textSize="18sp"
                 android:textStyle="normal|bold"
                 tools:text="name" />
 
             <LinearLayout
+                android:id="@+id/call"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/name"
@@ -90,16 +88,16 @@
 
                 <ImageView
                     android:id="@+id/typeCall"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="20sp"
+                    android:layout_height="20sp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/call_type_other"
                     android:src="@drawable/ic_call_outgoing" />
 
                 <ImageView
                     android:id="@+id/sim"
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
+                    android:layout_width="14sp"
+                    android:layout_height="14sp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/sim_used"
                     android:src="@drawable/ic_sim1" />
@@ -107,8 +105,8 @@
                 <TextView
                     android:id="@+id/number"
                     android:layout_width="wrap_content"
-                    android:layout_height="22dp"
-                    android:layout_marginStart="4dp"
+                    android:layout_height="22sp"
+                    android:layout_marginStart="4sp"
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="14sp"
                     tools:text="+78889994422" />
@@ -127,11 +125,10 @@
             <TextView
                 android:id="@+id/timeContact"
                 android:layout_width="wrap_content"
-                android:layout_height="22dp"
+                android:layout_height="22sp"
+                android:layout_alignBottom="@id/call"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="17dp"
+                android:layout_marginEnd="16sp"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="14sp"
                 tools:text="time" />
@@ -139,10 +136,10 @@
             <TextView
                 android:id="@+id/dateContact"
                 android:layout_width="wrap_content"
-                android:layout_height="22dp"
+                android:layout_height="22sp"
                 android:layout_above="@id/timeContact"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="16sp"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="16sp"
                 tools:text="date" />
