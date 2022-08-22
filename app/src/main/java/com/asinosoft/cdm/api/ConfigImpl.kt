@@ -84,7 +84,7 @@ class ConfigImpl(private val context: Context) : Config {
             .also { isChanged = true }
 
     override var favoritesColumnCount: Int
-        get() = settings.getInt(Keys.FAVORITES_COLUMNS_COUNT.name, 3)
+        get() = settings.getInt(Keys.FAVORITES_COLUMNS_COUNT.name, 4)
         set(count) = settings.edit().putInt(Keys.FAVORITES_COLUMNS_COUNT.name, count).apply()
             .also { isChanged = true }
 

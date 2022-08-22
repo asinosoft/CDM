@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.PowerManager
 import android.telecom.Call
+import android.telecom.Call.*
 import android.telecom.CallAudioState
 import android.telecom.PhoneAccountHandle
 import android.view.View
@@ -23,6 +24,7 @@ import com.asinosoft.cdm.dialer.addCharacter
 import com.asinosoft.cdm.dialer.getCallStateText
 import com.asinosoft.cdm.dialer.getFormattedDuration
 import com.asinosoft.cdm.helpers.*
+import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import timber.log.Timber
 import java.util.*
 
@@ -51,6 +53,9 @@ class OngoingCallActivity : BaseActivity() {
             super.onStateChanged(call, state)
             Timber.d("Call # %s | state → %s", call.details.handle, getCallStateText(state))
 
+            when (state) {
+                STATE_DISCONNECTED, STATE_ACTIVE, STATE_HOLDING -> vibrator.vibrateSafety(Keys.VIBRO, 255)
+            }
             updateCallState(state)
             updateSimSlotInfo(call.details.accountHandle)
         }
