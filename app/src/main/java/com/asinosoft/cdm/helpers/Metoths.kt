@@ -11,7 +11,6 @@ import android.os.Vibrator
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.INVISIBLE
@@ -209,11 +208,5 @@ class Metoths {
 
         fun getFormattedTime(duration: Long): String =
             String.format("%d:%02d", duration / 60, duration % 60)
-
-        fun getThemeColor(context: Context, attribute: Int): Int {
-            val typedValue = TypedValue()
-            context.theme.resolveAttribute(attribute, typedValue, true)
-            return typedValue.data
-        }
     }
 }

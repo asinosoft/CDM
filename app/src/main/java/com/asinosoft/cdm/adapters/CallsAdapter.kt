@@ -5,9 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.CallLog
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
@@ -21,11 +23,8 @@ import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ItemCallBinding
-import com.asinosoft.cdm.helpers.AvatarHelper
-import com.asinosoft.cdm.helpers.Keys
+import com.asinosoft.cdm.helpers.*
 import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
-import com.asinosoft.cdm.helpers.StHelper
-import com.asinosoft.cdm.helpers.vibrator
 import com.zerobranch.layout.SwipeLayout
 import java.security.InvalidParameterException
 
@@ -37,7 +36,10 @@ class CallsAdapter(
     private val context: Context,
     private val favorites: ViewBinding,
     private val onClickContact: (contact: Contact) -> Unit,
-    private val onClickPhone: (phone: String) -> Unit
+    private val onClickPhone: (phone: String) -> Unit,
+    private val onDeleteCallRecord: (call: CallHistoryItem) -> Unit,
+    private val onPurgeContactHistory: (contact: Contact) -> Unit,
+    private val onPurgeCallHistory: () -> Unit,
 ) : RecyclerView.Adapter<CallsAdapter.HolderHistory>() {
     companion object {
         const val TYPE_FAVORITES = 1
@@ -45,6 +47,10 @@ class CallsAdapter(
     }
 
     private var calls: List<CallHistoryItem> = listOf()
+
+    private var popupPosition: Int? = null
+    private var popupColor: Int = context.getThemeColor(android.R.attr.listDivider)
+    private var backgroundColor: Int = context.getThemeColor(R.attr.backgroundColor)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
         val view = when (viewType) {
@@ -95,11 +101,11 @@ class CallsAdapter(
 
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
         when (holder.v) {
-            is ItemCallBinding -> bindCallHistoryItem(holder.v, calls[position - 1])
+            is ItemCallBinding -> bindCallHistoryItem(holder.v, calls[position - 1], position)
         }
     }
 
-    private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem) {
+    private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem, position: Int) {
         v.topDivider.isVisible = config.listDivider && config.favoritesFirst
         v.bottomDivider.isVisible = config.listDivider && !config.favoritesFirst
         v.imageContact.setImageDrawable(call.contact.getAvatar(context, AvatarHelper.SHORT))
@@ -191,6 +197,15 @@ class CallsAdapter(
                 onClickContact(call.contact)
             }
         }
+
+        v.dragLayout.setOnLongClickListener {
+            showPopup(it, call, position)
+            true
+        }
+
+        v.dragLayout.setBackgroundColor(
+            if (position == popupPosition) popupColor else backgroundColor
+        )
     }
 
     private fun addNewContact(prettyPhone: CharSequence) {
@@ -226,5 +241,28 @@ class CallsAdapter(
                     .perform(context)
             else -> action.perform(context)
         }
+    }
+
+    private fun showPopup(view: View, call: CallHistoryItem, position: Int) {
+        popupPosition = position
+        notifyItemChanged(position)
+
+        val popup = PopupMenu(view.context, view, Gravity.END)
+        popup.inflate(R.menu.call_history_context_menu)
+        popup.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.delete_call_item -> onDeleteCallRecord(call)
+                R.id.purge_contact_history -> onPurgeContactHistory(call.contact)
+                R.id.purge_call_history -> onPurgeCallHistory()
+            }
+            true
+        }
+        popup.setOnDismissListener {
+            popupPosition?.let {
+                notifyItemChanged(it)
+            }
+            popupPosition = null
+        }
+        popup.show()
     }
 }

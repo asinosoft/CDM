@@ -15,6 +15,7 @@ import android.os.Vibrator
 import android.provider.Settings
 import android.telecom.TelecomManager
 import android.telephony.TelephonyManager
+import android.util.TypedValue
 import android.view.View
 import com.asinosoft.cdm.R
 import com.google.android.material.snackbar.Snackbar
@@ -49,6 +50,12 @@ fun Context.runOnUiThread(f: Context.() -> Unit) {
 
 private object ContextHelper {
     val handler = Handler(Looper.getMainLooper())
+}
+
+fun Context.getThemeColor(attribute: Int): Int {
+    val typedValue = TypedValue()
+    this.theme.resolveAttribute(attribute, typedValue, true)
+    return typedValue.data
 }
 
 fun Context.hasNavBar(): Boolean {

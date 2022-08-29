@@ -37,4 +37,10 @@ interface CallHistoryRepository {
      * Возвращает список звонков, относящихся к данному номеру телефона
      */
     fun getHistoryByPhone(context: Context, phone: String): List<CallHistoryItem>
+
+    fun purgeCallHistory(context: Context)
+
+    fun purgeContactHistory(context: Context, contact: Contact)
+
+    fun deleteCallHistoryItem(context: Context, call: CallHistoryItem)
 }

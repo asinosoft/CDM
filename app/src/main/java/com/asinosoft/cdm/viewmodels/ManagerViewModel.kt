@@ -28,12 +28,15 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
 
     private val contactRepository = ContactRepositoryImpl(getApplication())
 
+    private val callsRepository = CallHistoryRepositoryImpl(contactRepository)
+
     fun refresh() {
         val hasAccess = hasAccessToCallLog()
         isBlocked.postValue(!hasAccess)
         if (hasAccess) {
             viewModelScope.launch(Dispatchers.IO) {
-                retrieveCallsAndContacts()
+                getContacts()
+                getCalls(calls.value)
                 initialized = true
             }
         } else {
@@ -50,7 +53,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun getPhoneCalls(phone: String): List<CallHistoryItem> {
-        return CallHistoryRepositoryImpl(contactRepository).getHistoryByPhone(
+        return callsRepository.getHistoryByPhone(
             getApplication(),
             phone
         )
@@ -92,20 +95,36 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
         config.setContactSettings(contact, settings)
     }
 
+    fun purgeCallHistory() {
+        callsRepository.purgeCallHistory(getApplication())
+        getCalls()
+    }
+
+    fun purgeContactHistory(contact: Contact) {
+        callsRepository.purgeContactHistory(getApplication(), contact)
+        getCalls()
+    }
+
+    fun deleteCallHistoryItem(call: CallHistoryItem) {
+        callsRepository.deleteCallHistoryItem(getApplication(), call)
+        getCalls()
+    }
+
     private fun hasAccessToCallLog(): Boolean =
         getApplication<Application>().hasPermissions(
             arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG)
         )
 
-    private fun retrieveCallsAndContacts() {
+    private fun getContacts() {
         contactRepository.initialize()
 
         contacts.postValue(contactRepository.getContacts())
+    }
 
-        val callHistory = calls.value
+    private fun getCalls(callHistory: List<CallHistoryItem>? = null) {
         if (null == callHistory) {
             Timber.d("Первая загрузка истории звонков")
-            val latestCalls = CallHistoryRepositoryImpl(contactRepository).getLatestHistory(
+            val latestCalls = callsRepository.getLatestHistory(
                 getApplication(),
                 Date(),
                 CALL_HISTORY_LIMIT,
@@ -116,7 +135,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
         } else {
             Timber.d("Проверка новых звонков")
             Analytics.logLoadCallHistory()
-            val newCalls = CallHistoryRepositoryImpl(contactRepository).getNewestHistory(
+            val newCalls = callsRepository.getNewestHistory(
                 getApplication(),
                 callHistory.firstOrNull()?.timestamp ?: Date()
             )
@@ -132,7 +151,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     private fun retrieveLatestCalls() {
         Timber.d("Подгрузка старой истории звонков")
         val callHistory = calls.value ?: listOf()
-        val oldestCalls = CallHistoryRepositoryImpl(contactRepository).getLatestHistory(
+        val oldestCalls = callsRepository.getLatestHistory(
             getApplication(),
             callHistory.lastOrNull()?.timestamp ?: Date(),
             CALL_HISTORY_LIMIT,
