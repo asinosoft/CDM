@@ -63,16 +63,14 @@ class ContactActionsAdapter(private val contact: Contact) :
         if (position == keys.size) {
             holder.bindBirthday(contact.birthday, contact.age)
         } else {
-            bindAction(holder, position)
+            bindAction(holder, keys[position])
             if (position == (keys.size - 1).coerceAtMost(2)) {
                 bindAdvertiser(holder)
             }
         }
     }
 
-    private fun bindAction(holder: ViewContactInfo, position: Int) {
-        val index = if (position > 3) position - 1 else position
-        val key = keys[index]
+    private fun bindAction(holder: ViewContactInfo, key: Item) {
         val actions = groups[key]!!
         when (key.group) {
             Action.Group.Email -> holder.bindEmail(actions.first())
