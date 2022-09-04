@@ -48,7 +48,7 @@ class CallsAdapter(
 
     private var calls: List<CallHistoryItem> = listOf()
 
-    private var popupPosition: Int? = null
+    private var popupCall: CallHistoryItem? = null
     private var popupColor: Int = context.getThemeColor(android.R.attr.listDivider)
     private var backgroundColor: Int = context.getThemeColor(R.attr.backgroundColor)
 
@@ -204,7 +204,7 @@ class CallsAdapter(
         }
 
         v.dragLayout.setBackgroundColor(
-            if (position == popupPosition) popupColor else backgroundColor
+            if (call == popupCall) popupColor else backgroundColor
         )
     }
 
@@ -244,8 +244,8 @@ class CallsAdapter(
     }
 
     private fun showPopup(view: View, call: CallHistoryItem, position: Int) {
-        popupPosition = position
-        notifyItemChanged(position)
+        popupCall = call
+        notifyItemChanged(1 + calls.indexOf(popupCall))
 
         val popup = PopupMenu(view.context, view, Gravity.END)
         popup.inflate(R.menu.call_history_context_menu)
@@ -258,10 +258,10 @@ class CallsAdapter(
             true
         }
         popup.setOnDismissListener {
-            popupPosition?.let {
-                notifyItemChanged(it)
+            popupCall?.let {
+                notifyItemChanged(1 + calls.indexOf(popupCall))
             }
-            popupPosition = null
+            popupCall = null
         }
         popup.show()
     }
