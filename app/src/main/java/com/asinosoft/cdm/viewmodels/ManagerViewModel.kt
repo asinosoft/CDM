@@ -12,7 +12,9 @@ import com.asinosoft.cdm.App
 import com.asinosoft.cdm.api.*
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
+import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.helpers.Keys.Companion.CALL_HISTORY_LIMIT
+import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.hasPermissions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,10 +23,20 @@ import java.util.*
 
 class ManagerViewModel(application: Application) : AndroidViewModel(application) {
     private val config = App.instance!!.config
+
+    private lateinit var _contact: Contact
+    private lateinit var _actions: DirectActions
+    private var haveUnsavedChanges: Boolean = false
+
     var initialized = false
     val isBlocked: MutableLiveData<Boolean> = MutableLiveData()
     val calls: MutableLiveData<List<CallHistoryItem>> = MutableLiveData()
     val contacts: MutableLiveData<Collection<Contact>> = MutableLiveData()
+
+    val contact: MutableLiveData<Contact> = MutableLiveData()
+    val contactHistory: MutableLiveData<List<CallHistoryItem>> = MutableLiveData()
+    val contactActions: MutableLiveData<DirectActions> = MutableLiveData()
+    val availableActions: MutableLiveData<List<Action.Type>> = MutableLiveData()
 
     private val contactRepository = ContactRepositoryImpl(getApplication())
 
@@ -95,6 +107,56 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
         config.setContactSettings(contact, settings)
     }
 
+    fun setContact(contactId: Long) {
+        contact.postValue(Contact(0, ""))
+        viewModelScope.launch(Dispatchers.IO) {
+            contactRepository.getContactById(contactId)?.let {
+                _contact = it
+                _actions = App.instance!!.config.getContactSettings(it)
+
+                contact.postValue(it)
+                contactActions.postValue(_actions)
+                availableActions.postValue(getAvailableActions())
+                haveUnsavedChanges = false
+
+                val calls = callsRepository.getHistoryByContact(getApplication(), it)
+                contactHistory.postValue(calls)
+            }
+        }
+    }
+
+    fun setContactAction(direction: Metoths.Companion.Direction, action: Action) {
+        Timber.d("set: %s → %s", direction, action.type)
+        Analytics.logContactSetAction(direction.name, action.type.name)
+        when (direction) {
+            Metoths.Companion.Direction.LEFT -> _actions.left = action
+            Metoths.Companion.Direction.RIGHT -> _actions.right = action
+            Metoths.Companion.Direction.TOP -> _actions.top = action
+            Metoths.Companion.Direction.DOWN -> _actions.down = action
+            else -> throw Exception("Unknown direction: $direction")
+        }
+        haveUnsavedChanges = true
+        contactActions.postValue(_actions)
+        availableActions.postValue(getAvailableActions())
+    }
+
+    fun swapContactAction(one: Metoths.Companion.Direction, another: Metoths.Companion.Direction) {
+        Timber.d("swap: %s ↔ %s", one, another)
+        getContactAction(one).apply {
+            setContactAction(one, getContactAction(another)).also {
+                setContactAction(another, this)
+            }
+        }
+    }
+
+    fun saveContactSettings() {
+        Timber.d("Сохранение настроек контакта %s", _contact)
+        if (haveUnsavedChanges) {
+            App.instance!!.config.setContactSettings(_contact, _actions)
+            haveUnsavedChanges = false
+        }
+    }
+
     fun purgeCallHistory() {
         callsRepository.purgeCallHistory(getApplication())
         getCalls()
@@ -159,5 +221,22 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
         )
         Timber.d("Найдено %d звонков", oldestCalls.size)
         calls.postValue(callHistory + oldestCalls)
+    }
+
+    private fun getAvailableActions(): List<Action.Type> =
+        _contact.actions
+            .filter {
+                it != _actions.left && it != _actions.right && it != _actions.top && it != _actions.down
+            }
+            .map { it.type }.distinct()
+
+    private fun getContactAction(direction: Metoths.Companion.Direction): Action {
+        return when (direction) {
+            Metoths.Companion.Direction.LEFT -> _actions.left
+            Metoths.Companion.Direction.RIGHT -> _actions.right
+            Metoths.Companion.Direction.TOP -> _actions.top
+            Metoths.Companion.Direction.DOWN -> _actions.down
+            else -> throw Exception("Unknown direction: $direction")
+        }
     }
 }

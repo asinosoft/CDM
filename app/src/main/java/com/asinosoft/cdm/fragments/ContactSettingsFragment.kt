@@ -18,11 +18,11 @@ import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.databinding.ContactSettingsBinding
 import com.asinosoft.cdm.helpers.*
 import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
-import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
+import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import com.asinosoft.cdm.views.CircularImageView
 
 class ContactSettingsFragment : Fragment() {
-    private val model: DetailHistoryViewModel by activityViewModels()
+    private val model: ManagerViewModel by activityViewModels()
     private lateinit var v: ContactSettingsBinding
     private var actions: Collection<Action> = listOf()
 
@@ -61,7 +61,7 @@ class ContactSettingsFragment : Fragment() {
             actions?.let { (v.rvActions.adapter as ActionsAdapter).setActions(it) }
         }
 
-        model.directActions.observe(viewLifecycleOwner) { actions ->
+        model.contactActions.observe(viewLifecycleOwner) { actions ->
             actions?.let { setData(it) }
         }
 

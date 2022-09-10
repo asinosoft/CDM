@@ -199,7 +199,7 @@ class CallsAdapter(
         }
 
         v.dragLayout.setOnLongClickListener {
-            showPopup(it, call, position)
+            showPopup(it, call)
             true
         }
 
@@ -243,7 +243,7 @@ class CallsAdapter(
         }
     }
 
-    private fun showPopup(view: View, call: CallHistoryItem, position: Int) {
+    private fun showPopup(view: View, call: CallHistoryItem) {
         popupCall = call
         notifyItemChanged(1 + calls.indexOf(popupCall))
 

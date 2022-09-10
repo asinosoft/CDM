@@ -3,19 +3,23 @@ package com.asinosoft.cdm.adapters
 import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.CallLog
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.data.Action
+import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ContactCallItemBinding
 import com.asinosoft.cdm.helpers.DateHelper
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.StHelper
+import com.asinosoft.cdm.helpers.getThemeColor
 import com.yandex.mobile.ads.banner.AdSize
 import com.zerobranch.layout.SwipeLayout
 import java.util.*
@@ -28,12 +32,18 @@ import com.yandex.mobile.ads.common.AdRequest as YandexAds
 class HistoryDetailsCallsAdapter(
     private val config: Config,
     private val context: Context,
-    private val calls: List<CallHistoryItem>
+    private val calls: List<CallHistoryItem>,
+    private val onDeleteCallRecord: (call: CallHistoryItem) -> Unit,
+    private val onPurgeContactHistory: (contact: Contact) -> Unit
 ) :
     RecyclerView.Adapter<HistoryDetailsCallsAdapter.HolderHistory>() {
 
     private val today: Date = StHelper.today()
     private val yesterday: Date = Date(today.time - 86400)
+
+    private var popupCall: CallHistoryItem? = null
+    private var popupColor: Int = context.getThemeColor(android.R.attr.listDivider)
+    private var backgroundColor: Int = context.getThemeColor(R.attr.backgroundColor)
 
     override fun getItemCount() = calls.size
 
@@ -53,7 +63,7 @@ class HistoryDetailsCallsAdapter(
     private fun bindAdvertiser(v: ContactCallItemBinding) {
         if ("ru" == Locale.getDefault().language) {
             v.yandexAds.apply {
-                setAdUnitId(context.getString(R.string.yandex_ads_unit_id));
+                setAdUnitId(context.getString(R.string.yandex_ads_unit_id))
                 setAdSize(AdSize.flexibleSize(320, 250))
                 loadAd(YandexAds.Builder().build())
                 visibility = View.VISIBLE
@@ -112,6 +122,37 @@ class HistoryDetailsCallsAdapter(
             override fun onClose() {
             }
         })
+
+        v.dragLayout.setOnLongClickListener {
+            showPopup(it, call)
+            true
+        }
+
+        v.dragLayout.setBackgroundColor(
+            if (call == popupCall) popupColor else backgroundColor
+        )
+    }
+
+    private fun showPopup(view: View, call: CallHistoryItem) {
+        popupCall = call
+        notifyItemChanged(1 + calls.indexOf(popupCall))
+
+        val popup = PopupMenu(view.context, view, Gravity.END)
+        popup.inflate(R.menu.contact_history_context_menu)
+        popup.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.delete_call_item -> onDeleteCallRecord(call)
+                R.id.purge_contact_history -> onPurgeContactHistory(call.contact)
+            }
+            true
+        }
+        popup.setOnDismissListener {
+            popupCall?.let {
+                notifyItemChanged(1 + calls.indexOf(popupCall))
+            }
+            popupCall = null
+        }
+        popup.show()
     }
 
     private fun formatDate(date: Date): String {
