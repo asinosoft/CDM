@@ -24,7 +24,7 @@ import java.util.*
 class ManagerViewModel(application: Application) : AndroidViewModel(application) {
     private val config = App.instance!!.config
 
-    private lateinit var _contact: Contact
+    private var _contact: Contact = Contact(0, null)
     private lateinit var _actions: DirectActions
     private var haveUnsavedChanges: Boolean = false
 
@@ -119,8 +119,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
                 availableActions.postValue(getAvailableActions())
                 haveUnsavedChanges = false
 
-                val calls = callsRepository.getHistoryByContact(getApplication(), it)
-                contactHistory.postValue(calls)
+                getContactCalls()
             }
         }
     }
@@ -158,18 +157,25 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun purgeCallHistory() {
-        callsRepository.purgeCallHistory(getApplication())
-        getCalls()
+        viewModelScope.launch(Dispatchers.IO) {
+            callsRepository.purgeCallHistory(getApplication())
+            getCalls()
+        }
     }
 
     fun purgeContactHistory(contact: Contact) {
-        callsRepository.purgeContactHistory(getApplication(), contact)
-        getCalls()
+        viewModelScope.launch(Dispatchers.IO) {
+            callsRepository.purgeContactHistory(getApplication(), contact)
+            getCalls()
+        }
     }
 
     fun deleteCallHistoryItem(call: CallHistoryItem) {
-        callsRepository.deleteCallHistoryItem(getApplication(), call)
-        getCalls()
+        viewModelScope.launch(Dispatchers.IO) {
+            callsRepository.deleteCallHistoryItem(getApplication(), call)
+            getContactCalls()
+            getCalls()
+        }
     }
 
     private fun hasAccessToCallLog(): Boolean =
@@ -238,5 +244,10 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
             Metoths.Companion.Direction.DOWN -> _actions.down
             else -> throw Exception("Unknown direction: $direction")
         }
+    }
+
+    private fun getContactCalls() {
+        val calls = callsRepository.getHistoryByContact(getApplication(), _contact)
+        contactHistory.postValue(calls)
     }
 }

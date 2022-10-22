@@ -50,21 +50,24 @@ class HistoryDetailsCallsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ContactCallItemBinding.inflate(inflater, parent, false)
+        binding.yandexAds.apply {
+            setAdUnitId(context.getString(R.string.yandex_ads_unit_id))
+            setAdSize(AdSize.flexibleSize(320, 250))
+        }
         return HolderHistory(binding)
     }
 
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
         bindCallHistoryItem(holder.v, calls[position])
-        if (position == (calls.size - 1).coerceAtMost(2)) {
-            bindAdvertiser(holder.v)
-        }
+        bindAdvertiser(holder.v, position == (calls.size - 1).coerceAtMost(2))
     }
 
-    private fun bindAdvertiser(v: ContactCallItemBinding) {
-        if ("ru" == Locale.getDefault().language) {
+    private fun bindAdvertiser(v: ContactCallItemBinding, visible: Boolean) {
+        if (!visible) {
+            v.yandexAds.visibility = View.GONE
+            v.googleAds.visibility = View.GONE
+        } else if ("ru" == Locale.getDefault().language) {
             v.yandexAds.apply {
-                setAdUnitId(context.getString(R.string.yandex_ads_unit_id))
-                setAdSize(AdSize.flexibleSize(320, 250))
                 loadAd(YandexAds.Builder().build())
                 visibility = View.VISIBLE
             }
@@ -135,7 +138,7 @@ class HistoryDetailsCallsAdapter(
 
     private fun showPopup(view: View, call: CallHistoryItem) {
         popupCall = call
-        notifyItemChanged(1 + calls.indexOf(popupCall))
+        notifyItemChanged(calls.indexOf(popupCall))
 
         val popup = PopupMenu(view.context, view, Gravity.END)
         popup.inflate(R.menu.contact_history_context_menu)
@@ -148,7 +151,7 @@ class HistoryDetailsCallsAdapter(
         }
         popup.setOnDismissListener {
             popupCall?.let {
-                notifyItemChanged(1 + calls.indexOf(popupCall))
+                notifyItemChanged(calls.indexOf(popupCall))
             }
             popupCall = null
         }

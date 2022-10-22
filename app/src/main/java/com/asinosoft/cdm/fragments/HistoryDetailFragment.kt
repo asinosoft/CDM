@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.asinosoft.cdm.App
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.activities.BaseActivity
 import com.asinosoft.cdm.adapters.HistoryDetailsCallsAdapter
 import com.asinosoft.cdm.api.CallHistoryItem
@@ -33,15 +35,13 @@ class HistoryDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         model.contactHistory.observe(viewLifecycleOwner) { calls ->
-            calls?.let { call ->
-                v.rvContactCalls.adapter = HistoryDetailsCallsAdapter(
-                    App.instance!!.config,
-                    requireContext(),
-                    call,
-                    { item -> deleteCallHistoryItem(item) },
-                    { contact -> purgeContactHistory(contact) }
-                )
-            }
+            v.rvContactCalls.adapter = HistoryDetailsCallsAdapter(
+                App.instance!!.config,
+                requireContext(),
+                calls,
+                { item -> deleteCallHistoryItem(item) },
+                { contact -> purgeContactHistory(contact) }
+            )
         }
     }
 
@@ -55,5 +55,6 @@ class HistoryDetailFragment : Fragment() {
         (requireActivity() as BaseActivity).withPermission(Manifest.permission.WRITE_CALL_LOG) {
             model.purgeContactHistory(contact)
         }
+        findNavController().navigate(R.id.managerFragment)
     }
 }

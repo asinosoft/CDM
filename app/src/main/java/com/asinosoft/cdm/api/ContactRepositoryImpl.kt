@@ -26,7 +26,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
     fun initialize() {
         Timber.d("Чтение списка контактов")
-        contacts = context.contentResolver.query(
+        val contacts = context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             null, null, null
         )!!.use {
@@ -42,6 +42,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
             }
         }
 
+        this.contacts = contacts
         contactPhones = index
         Timber.d("Найдено %d контактов", contacts.size)
     }

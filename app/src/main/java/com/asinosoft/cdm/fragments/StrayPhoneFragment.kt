@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.asinosoft.cdm.App
+import com.asinosoft.cdm.R
 import com.asinosoft.cdm.activities.BaseActivity
 import com.asinosoft.cdm.adapters.HistoryDetailsCallsAdapter
 import com.asinosoft.cdm.api.CallHistoryItem
@@ -62,5 +64,6 @@ class StrayPhoneFragment : Fragment() {
         (requireActivity() as BaseActivity).withPermission(Manifest.permission.WRITE_CALL_LOG) {
             model.purgeContactHistory(contact)
         }
+        findNavController().navigate(R.id.managerFragment)
     }
 }
