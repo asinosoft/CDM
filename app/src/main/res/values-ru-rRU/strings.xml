@@ -134,6 +134,7 @@
     <string name="request_draw_overlays">Приложению требуется полноэкранный режим для работы в режиме звонка</string>
 
     <!-- Call history context menu -->
+    <string name="copy_number">Копировать номер</string>
     <string name="delete_call_history_record">Удалить запись</string>
     <string name="purge_contact_history">Очистить контакт</string>
     <string name="purge_call_history">Очистить все</string>

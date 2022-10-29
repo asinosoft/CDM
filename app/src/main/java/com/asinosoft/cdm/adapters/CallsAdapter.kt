@@ -1,8 +1,6 @@
 package com.asinosoft.cdm.adapters
 
-import android.content.ActivityNotFoundException
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.os.Bundle
 import android.provider.CallLog
 import android.view.Gravity
@@ -11,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
@@ -251,6 +251,7 @@ class CallsAdapter(
         popup.inflate(R.menu.call_history_context_menu)
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
+                R.id.copy_number -> copyNumber(call)
                 R.id.delete_call_item -> onDeleteCallRecord(call)
                 R.id.purge_contact_history -> onPurgeContactHistory(call.contact)
                 R.id.purge_call_history -> onPurgeCallHistory()
@@ -264,5 +265,16 @@ class CallsAdapter(
             popupCall = null
         }
         popup.show()
+        context.vibrator.vibrateSafety(2, 255)
+    }
+
+    private fun copyNumber(call: CallHistoryItem){
+        val myClipboard =
+            context.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager?
+        val clip: ClipData = ClipData.newPlainText("simple text", call.phone)
+        myClipboard?.setPrimaryClip(clip)
+        Toast.makeText(context, R.string.copied, Toast.LENGTH_LONG)
+            .show()
+        Analytics.logKeyboardCopy()
     }
 }

@@ -52,7 +52,7 @@ class HistoryDetailsCallsAdapter(
         val binding = ContactCallItemBinding.inflate(inflater, parent, false)
         binding.yandexAds.apply {
             setAdUnitId(context.getString(R.string.yandex_ads_unit_id))
-            setAdSize(AdSize.flexibleSize(320, 250))
+            setAdSize(AdSize.flexibleSize(320, 50))
         }
         return HolderHistory(binding)
     }

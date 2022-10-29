@@ -45,7 +45,7 @@ class ConfigImpl(private val context: Context) : Config {
 
     override var isChanged = false
 
-    override var theme: Int
+    override var theme: Int //тема
         get() = settings.getInt(Keys.THEME.name, R.style.AppTheme_Light)
         set(theme) = settings.edit().apply {
             Analytics.logTheme(theme)
@@ -58,6 +58,9 @@ class ConfigImpl(private val context: Context) : Config {
         get() = File(context.filesDir, "background").let {
             if (it.isFile) it.toUri() else null
         }
+/*    get() = File(context.filesDir, "background").let {
+        if (it.isFile) it.toUri() else null
+    }*/
         set(uri) {
             if (null == uri) {
                 context.deleteFile("background")
@@ -78,12 +81,12 @@ class ConfigImpl(private val context: Context) : Config {
         set(value) = settings.edit().putBoolean(Keys.CHECK_DEFAULT_DIALER.name, value).apply()
             .also { isChanged = true }
 
-    override var favoritesFirst: Boolean
+    override var favoritesFirst: Boolean    //?
         get() = settings.getBoolean(Keys.FAVORITES_LAYOUT.name, false)
         set(value) = settings.edit().putBoolean(Keys.FAVORITES_LAYOUT.name, value).apply()
             .also { isChanged = true }
 
-    override var favoritesColumnCount: Int
+    override var favoritesColumnCount: Int  //кол столбцов
         get() = settings.getInt(Keys.FAVORITES_COLUMNS_COUNT.name, 4)
         set(count) = settings.edit().putInt(Keys.FAVORITES_COLUMNS_COUNT.name, count).apply()
             .also { isChanged = true }
