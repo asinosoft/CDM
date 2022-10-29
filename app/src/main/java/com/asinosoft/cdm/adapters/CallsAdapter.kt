@@ -110,7 +110,7 @@ class CallsAdapter(
         v.bottomDivider.isVisible = config.listDivider && !config.favoritesFirst
         v.imageContact.setImageDrawable(call.contact.getAvatar(context, AvatarHelper.SHORT))
         config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
-        v.name.text = call.contact.name ?: call.contact.phone
+        v.name.text = call.contact.title
 
         if (0L == call.contact.id) {
             v.number.setText(R.string.unsaved)

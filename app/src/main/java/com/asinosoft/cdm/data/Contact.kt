@@ -18,6 +18,8 @@ data class Contact(
             }
     }
 
+    val title get() = name ?: phone
+
     var photoUri: Uri? = null
     var birthday: String? = null
     var age: Int = 0

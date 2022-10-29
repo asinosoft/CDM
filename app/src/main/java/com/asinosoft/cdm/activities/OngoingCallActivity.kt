@@ -133,7 +133,7 @@ class OngoingCallActivity : BaseActivity() {
         val contact = ContactRepositoryImpl(this).getContactByPhone(phone)
 
         v.ongoingCallLayout.textCaller.text = contact.name
-        v.ongoingCallLayout.textCallerNumber.text = phone
+        v.ongoingCallLayout.textCallerNumber.text = contact.phone
         v.ongoingCallLayout.imagePlaceholder.setImageDrawable(contact.getAvatar(this, AvatarHelper.IMAGE))
     }
 
