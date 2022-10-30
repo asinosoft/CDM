@@ -81,9 +81,9 @@ class FavoriteContactRepositoryImpl(
     }
 
     /**
-     * По умолчанию список избранных контактов состоит из 9 пустых слотов
+     * По умолчанию список избранных контактов состоит из 8 пустых слотов
      */
     private fun defaultContacts(): MutableList<FavoriteContact> {
-        return generateSequence { FavoriteContact() }.take(9).toMutableList()
+        return generateSequence { FavoriteContact() }.take(8).toMutableList()
     }
 }

@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
@@ -268,7 +267,7 @@ class CallsAdapter(
         context.vibrator.vibrateSafety(2, 255)
     }
 
-    private fun copyNumber(call: CallHistoryItem){
+    private fun copyNumber(call: CallHistoryItem) {
         val myClipboard =
             context.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager?
         val clip: ClipData = ClipData.newPlainText("simple text", call.phone)
