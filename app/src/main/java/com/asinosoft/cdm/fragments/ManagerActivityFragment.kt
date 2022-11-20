@@ -2,6 +2,7 @@ package com.asinosoft.cdm.fragments
 
 import android.Manifest.permission.*
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.DragEvent
 import android.view.LayoutInflater
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.App
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.activities.BaseActivity
+import com.asinosoft.cdm.activities.OngoingCallActivity
 import com.asinosoft.cdm.adapters.CallsAdapter
 import com.asinosoft.cdm.adapters.FavoritesAdapter
 import com.asinosoft.cdm.adapters.PermissionRationaleAdapter
@@ -117,7 +119,8 @@ class ManagerActivityFragment : Fragment() {
 
         v.fabKeyboard.supportImageTintList = null
         v.fabKeyboard.setOnClickListener {
-            findNavController().navigate(R.id.action_open_search)
+            // findNavController().navigate(R.id.action_open_search)
+            startActivity(Intent(context, OngoingCallActivity::class.java))
         }
 
         model.isBlocked.observe(viewLifecycleOwner) { isBlocked ->

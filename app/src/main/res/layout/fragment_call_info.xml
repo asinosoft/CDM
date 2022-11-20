@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="293dp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/image_placeholder"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:contentDescription="@string/photo"
+        android:layout_marginTop="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/text_caller"
+        app:layout_constraintEnd_toEndOf="@+id/text_caller"
+        app:layout_constraintStart_toStartOf="@+id/text_caller"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/RoundImage"
+        app:srcCompat="@drawable/ic_default_photo"
+        app:strokeColor="?attr/colorPrimary"
+        app:strokeWidth="0dp" />
+
+    <TextView
+        android:id="@+id/text_caller"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+        android:textSize="25sp"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toTopOf="@+id/text_caller_number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Евгений" />
+
+    <TextView
+        android:id="@+id/text_caller_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+        android:textSize="15sp"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toTopOf="@+id/text_status"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="+79039051968" />
+
+    <TextView
+        android:id="@+id/text_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+        app:drawableStartCompat="@drawable/ic_sim1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="@string/status_call_active" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

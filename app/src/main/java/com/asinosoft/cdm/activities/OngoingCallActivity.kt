@@ -12,6 +12,7 @@ import android.telecom.Call
 import android.telecom.Call.*
 import android.telecom.CallAudioState
 import android.telecom.PhoneAccountHandle
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
@@ -27,6 +28,7 @@ import com.asinosoft.cdm.helpers.*
 import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import timber.log.Timber
 import java.util.*
+import kotlin.math.absoluteValue
 
 /**
  * Активность текущего звонка
@@ -34,6 +36,13 @@ import java.util.*
 class OngoingCallActivity : BaseActivity() {
     private lateinit var v: ActivityOngoingCallBinding
     private var call: Call? = null
+    private var showIncomingAnimation = false
+
+    // Интерфейс входящего звонка
+    private var touchPosition = 0f
+    private var maxHandleDistance = 0f
+    private var thresholdDistance = 0f
+    private var isHandleDragged = false
 
     companion object {
         private const val ONE_SECOND = 1000
@@ -54,7 +63,11 @@ class OngoingCallActivity : BaseActivity() {
             Timber.d("Call # %s | state → %s", call.details.handle, getCallStateText(state))
 
             when (state) {
-                STATE_DISCONNECTED, STATE_ACTIVE, STATE_HOLDING -> vibrator.vibrateSafety(Keys.VIBRO, 255)
+                STATE_DISCONNECTED, STATE_ACTIVE, STATE_HOLDING -> vibrator.vibrateSafety(
+                    Keys.VIBRO,
+                    255
+                )
+                else -> {}
             }
             updateCallState(state)
             updateSimSlotInfo(call.details.accountHandle)
@@ -76,6 +89,9 @@ class OngoingCallActivity : BaseActivity() {
         if (hasNavBar()) {
             v.frame.setPadding(0, 0, 0, navBarHeight())
         }
+
+        // TODO: УДАЛИТЬ!
+        updateCallState(STATE_RINGING)
     }
 
     override fun onResume() {
@@ -83,9 +99,10 @@ class OngoingCallActivity : BaseActivity() {
         super.onResume()
         acquireProximitySensor()
 
-        CallService.instance?.getCall(intent?.data)?.let {
-            setCurrentCall(it)
-        } ?: finishAndRemoveTask()
+//        CallService.instance?.getCall(intent?.data)?.let {
+//            setCurrentCall(it)
+//        } ?: finishAndRemoveTask()
+        updateCallState(STATE_RINGING)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -97,7 +114,7 @@ class OngoingCallActivity : BaseActivity() {
     override fun onBackPressed() {
         Timber.d("onBackPressed")
         // In case the dialpad is opened, pressing the back button will close it
-        if (v.keyboardWrapper.isVisible) {
+        if (v.keyboard.root.isVisible) {
             toggleKeyboard()
         } else {
             super.onBackPressed()
@@ -124,7 +141,7 @@ class OngoingCallActivity : BaseActivity() {
         updateCallState(call.callState)
         updateSimSlotInfo(call.details.accountHandle)
 
-        if (Call.STATE_HOLDING == call.callState) {
+        if (STATE_HOLDING == call.callState) {
             call.unhold()
         }
     }
@@ -132,37 +149,36 @@ class OngoingCallActivity : BaseActivity() {
     private fun setCallerInfo(phone: String) {
         val contact = ContactRepositoryImpl(this).getContactByPhone(phone)
 
-        v.ongoingCallLayout.textCaller.text = contact.name
-        v.ongoingCallLayout.textCallerNumber.text = contact.phone
-        v.ongoingCallLayout.imagePlaceholder.setImageDrawable(contact.getAvatar(this, AvatarHelper.IMAGE))
+        v.info.textCaller.text = contact.name
+        v.info.textCallerNumber.text = contact.phone
+        v.info.imagePlaceholder.setImageDrawable(
+            contact.getAvatar(
+                this,
+                AvatarHelper.IMAGE
+            )
+        )
     }
 
     @SuppressLint("ResourceAsColor")
     private fun initEventListeners() {
 
-        v.ongoingCallLayout.answerBtn.setOnClickListener {
-            activateCall()
-        }
-        v.ongoingCallLayout.disconnect.setOnClickListener {
-            endCall()
-        }
-        v.ongoingCallLayout.rejectBtn.setOnClickListener {
+        v.ongoing.disconnect.setOnClickListener {
             endCall()
         }
 
-        v.ongoingCallLayout.buttonSpeaker.setOnClickListener {
+        v.ongoing.buttonSpeaker.setOnClickListener {
             toggleSpeaker()
         }
 
-        v.ongoingCallLayout.buttonHold.setOnClickListener {
+        v.ongoing.buttonHold.setOnClickListener {
             toggleHold()
         }
 
-        v.ongoingCallLayout.buttonMute.setOnClickListener {
+        v.ongoing.buttonMute.setOnClickListener {
             toggleMicrophone()
         }
 
-        v.ongoingCallLayout.buttonKeypad.setOnClickListener {
+        v.ongoing.buttonKeypad.setOnClickListener {
             toggleKeyboard()
         }
 
@@ -181,6 +197,16 @@ class OngoingCallActivity : BaseActivity() {
         v.keyboard.btnCall.setOnClickListener { endCall() }
 
         v.keyboard.ripple0.setOnLongClickListener { dialpadPressed('+'); true }
+
+        v.incoming.root.setOnTouchListener { _, e ->
+            when (e.action) {
+                MotionEvent.ACTION_DOWN -> startDrag(e)
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> endDrag(e)
+                MotionEvent.ACTION_MOVE -> drag(e)
+                else -> false
+            }
+        }
+
     }
 
     private fun initLockScreenFlags() {
@@ -231,13 +257,17 @@ class OngoingCallActivity : BaseActivity() {
         }
     }
 
-    private fun activateCall() {
+    private fun acceptCall() {
         Timber.d("activateCall # %s", call?.phone)
+        v.incoming.root.visibility = View.GONE
+        showIncomingAnimation = false
         call?.accept()
     }
 
     private fun endCall() {
         Timber.d("endCall # %s", call?.phone)
+        v.incoming.root.visibility = View.GONE
+        showIncomingAnimation = false
         call?.reject()
     }
 
@@ -262,7 +292,7 @@ class OngoingCallActivity : BaseActivity() {
 
         if (Date().time - callStartTime > ONE_SECOND) {
             runOnUiThread {
-                v.ongoingCallLayout.textStatus.text =
+                v.info.textStatus.text =
                     (Date().time - callStartTime).getFormattedDuration()
                 Handler().postDelayed(
                     { finishAndRemoveTask() },
@@ -270,7 +300,7 @@ class OngoingCallActivity : BaseActivity() {
                 )
             }
         } else {
-            v.ongoingCallLayout.textStatus.text = getString(R.string.status_call_disconnected)
+            v.info.textStatus.text = getString(R.string.status_call_disconnected)
             finishAndRemoveTask()
         }
     }
@@ -278,8 +308,8 @@ class OngoingCallActivity : BaseActivity() {
     private fun getCallTimerUpdateTask() = object : TimerTask() {
         override fun run() {
             runOnUiThread {
-                if (Call.STATE_ACTIVE == call?.callState) {
-                    v.ongoingCallLayout.textStatus.text =
+                if (STATE_ACTIVE == call?.callState) {
+                    v.info.textStatus.text =
                         (Date().time - callStartTime).getFormattedDuration()
                 }
             }
@@ -290,62 +320,60 @@ class OngoingCallActivity : BaseActivity() {
      * Интерфейс в режиме ожидания соединения
      */
     private fun switchToCallingUI() {
-        v.keyboardWrapper.visibility = View.GONE
-        v.ongoingCallLayout.answerBtn.visibility = View.INVISIBLE
-        v.ongoingCallLayout.rejectBtn.visibility = View.INVISIBLE
-        v.ongoingCallLayout.disconnect.visibility = View.VISIBLE
-        v.ongoingCallLayout.buttonHold.off()
-        v.ongoingCallLayout.buttonMute.on()
-        v.ongoingCallLayout.buttonKeypad.off()
-        v.ongoingCallLayout.buttonSpeaker.on()
+        showIncomingAnimation = false
+        v.incoming.root.visibility = View.GONE
+        v.keyboard.root.visibility = View.GONE
+        v.ongoing.disconnect.visibility = View.VISIBLE
+        v.ongoing.buttonHold.off()
+        v.ongoing.buttonMute.on()
+        v.ongoing.buttonKeypad.off()
+        v.ongoing.buttonSpeaker.on()
     }
 
     /**
      * Интерфейс в режиме входящего звонка
      */
     private fun switchToRingingUI() {
-        v.keyboardWrapper.visibility = View.GONE
-        v.ongoingCallLayout.answerBtn.visibility = View.VISIBLE
-        v.ongoingCallLayout.rejectBtn.visibility = View.VISIBLE
-        v.ongoingCallLayout.disconnect.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonHold.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonMute.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonKeypad.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonSpeaker.visibility = View.INVISIBLE
+        showIncomingAnimation = true
+        v.incoming.root.visibility = View.VISIBLE
+        v.ongoing.root.visibility = View.GONE
+        v.keyboard.root.visibility = View.GONE
+        animateArrowUp()
+        animateArrowDown()
     }
 
     /**
      * Интерфейс в режиме активного/удерживаемого звонка
      */
     private fun switchToActiveUI() {
-        v.keyboardWrapper.visibility = View.GONE
-        v.ongoingCallLayout.answerBtn.visibility = View.INVISIBLE
-        v.ongoingCallLayout.rejectBtn.visibility = View.INVISIBLE
-        v.ongoingCallLayout.disconnect.visibility = View.VISIBLE
-        v.ongoingCallLayout.buttonHold.on()
-        v.ongoingCallLayout.buttonMute.on()
-        v.ongoingCallLayout.buttonKeypad.on()
-        v.ongoingCallLayout.buttonSpeaker.on()
+        showIncomingAnimation = false
+        v.incoming.root.visibility = View.GONE
+        v.keyboard.root.visibility = View.GONE
+        v.ongoing.disconnect.visibility = View.VISIBLE
+        v.ongoing.buttonHold.on()
+        v.ongoing.buttonMute.on()
+        v.ongoing.buttonKeypad.on()
+        v.ongoing.buttonSpeaker.on()
     }
 
     /**
      * Интерфейс в режиме клавиатуры
      */
     private fun switchToKeyboard() {
-        v.keyboardWrapper.visibility = View.VISIBLE
-        v.ongoingCallLayout.answerBtn.visibility = View.INVISIBLE
-        v.ongoingCallLayout.rejectBtn.visibility = View.INVISIBLE
-        v.ongoingCallLayout.disconnect.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonHold.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonMute.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonKeypad.visibility = View.INVISIBLE
-        v.ongoingCallLayout.buttonSpeaker.visibility = View.INVISIBLE
+        showIncomingAnimation = false
+        v.incoming.root.visibility = View.GONE
+        v.keyboard.root.visibility = View.VISIBLE
+        v.ongoing.disconnect.visibility = View.INVISIBLE
+        v.ongoing.buttonHold.visibility = View.INVISIBLE
+        v.ongoing.buttonMute.visibility = View.INVISIBLE
+        v.ongoing.buttonKeypad.visibility = View.INVISIBLE
+        v.ongoing.buttonSpeaker.visibility = View.INVISIBLE
         v.keyboard.settingsButton.visibility = View.INVISIBLE
         v.keyboard.btnCall.setImageResource(R.drawable.ic_phone_hangup)
     }
 
     private fun toggleKeyboard() {
-        if (v.keyboardWrapper.isVisible) {
+        if (v.keyboard.root.isVisible) {
             switchToActiveUI()
         } else {
             switchToKeyboard()
@@ -354,34 +382,34 @@ class OngoingCallActivity : BaseActivity() {
 
     private fun toggleMicrophone() {
         Timber.d("toggleMicrophone # %s", call?.phone)
-        v.ongoingCallLayout.buttonMute.isActivated = !v.ongoingCallLayout.buttonMute.isActivated
-        audioManager.isMicrophoneMute = v.ongoingCallLayout.buttonMute.isActivated
+        v.ongoing.buttonMute.isActivated = !v.ongoing.buttonMute.isActivated
+        audioManager.isMicrophoneMute = v.ongoing.buttonMute.isActivated
         val microphoneIcon =
-            if (v.ongoingCallLayout.buttonMute.isActivated) R.drawable.ic_mic_off_black_24dp else R.drawable.ic_mic_black_24dp
-        v.ongoingCallLayout.buttonMute.setImageResource(microphoneIcon)
-        CallService.instance?.setMuted(v.ongoingCallLayout.buttonMute.isActivated)
+            if (v.ongoing.buttonMute.isActivated) R.drawable.ic_mic_off_black_24dp else R.drawable.ic_mic_black_24dp
+        v.ongoing.buttonMute.setImageResource(microphoneIcon)
+        CallService.instance?.setMuted(v.ongoing.buttonMute.isActivated)
     }
 
     private fun toggleSpeaker() {
         Timber.d("toggleSpeaker # %s", call?.phone)
-        v.ongoingCallLayout.buttonSpeaker.isActivated =
-            !v.ongoingCallLayout.buttonSpeaker.isActivated
-        audioManager.isSpeakerphoneOn = v.ongoingCallLayout.buttonSpeaker.isActivated
+        v.ongoing.buttonSpeaker.isActivated =
+            !v.ongoing.buttonSpeaker.isActivated
+        audioManager.isSpeakerphoneOn = v.ongoing.buttonSpeaker.isActivated
         val speakerIcon =
-            if (v.ongoingCallLayout.buttonSpeaker.isActivated) R.drawable.ic_volume_off else R.drawable.ic_volume_on
-        v.ongoingCallLayout.buttonSpeaker.setImageResource(speakerIcon)
+            if (v.ongoing.buttonSpeaker.isActivated) R.drawable.ic_volume_off else R.drawable.ic_volume_on
+        v.ongoing.buttonSpeaker.setImageResource(speakerIcon)
         val newRoute =
-            if (v.ongoingCallLayout.buttonSpeaker.isActivated) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
+            if (v.ongoing.buttonSpeaker.isActivated) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_EARPIECE
         CallService.instance?.setAudioRoute(newRoute)
     }
 
     private fun toggleHold() {
         Timber.d("toggleHold # %s", call?.phone)
-        if (v.ongoingCallLayout.buttonHold.isActivated) {
-            v.ongoingCallLayout.buttonHold.isActivated = false
+        if (v.ongoing.buttonHold.isActivated) {
+            v.ongoing.buttonHold.isActivated = false
             call?.hold()
         } else {
-            v.ongoingCallLayout.buttonHold.isActivated = true
+            v.ongoing.buttonHold.isActivated = true
             call?.unhold()
         }
     }
@@ -395,26 +423,26 @@ class OngoingCallActivity : BaseActivity() {
     private fun updateCallState(callState: Int) {
         Timber.d("updateCallState → %s", getCallStateText(callState))
         when (callState) {
-            Call.STATE_NEW,
-            Call.STATE_DIALING,
-            Call.STATE_CONNECTING ->
+            STATE_NEW,
+            STATE_DIALING,
+            STATE_CONNECTING ->
                 switchToCallingUI()
 
-            Call.STATE_RINGING ->
+            STATE_RINGING ->
                 switchToRingingUI()
 
-            Call.STATE_HOLDING,
-            Call.STATE_ACTIVE -> {
+            STATE_HOLDING,
+            STATE_ACTIVE -> {
                 initTimer()
                 switchToActiveUI()
             }
 
-            Call.STATE_DISCONNECTING,
-            Call.STATE_DISCONNECTED ->
+            STATE_DISCONNECTING,
+            STATE_DISCONNECTED ->
                 onCallEnded()
         }
 
-        v.ongoingCallLayout.textStatus.text = getCallStateText(callState)
+        v.info.textStatus.text = getCallStateText(callState)
     }
 
     private fun updateSimSlotInfo(handle: PhoneAccountHandle) {
@@ -425,7 +453,7 @@ class OngoingCallActivity : BaseActivity() {
             else -> R.drawable.ic_sim3
         }
 
-        v.ongoingCallLayout.textStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
+        v.info.textStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
             simIcon,
             0,
             0,
@@ -444,4 +472,111 @@ class OngoingCallActivity : BaseActivity() {
         isClickable = true
         imageAlpha = 255
     }
+
+    //region Incoming call handle interface
+    private fun startDrag(e: MotionEvent): Boolean {
+        maxHandleDistance = (v.incoming.accept.top - v.incoming.handle.top).absoluteValue.toFloat()
+        thresholdDistance = maxHandleDistance * 0.8f;
+        touchPosition = e.rawY
+        isHandleDragged = true
+
+        return true
+    }
+
+    private fun endDrag(e: MotionEvent): Boolean {
+        if (!isHandleDragged) {
+            return false
+        }
+
+        val position = (e.rawY - touchPosition)
+
+        when {
+            (position > thresholdDistance) -> acceptCall()
+
+            (position < -thresholdDistance) -> endCall()
+
+            else -> animateToStart()
+        }
+
+        isHandleDragged = false
+        return true
+    }
+
+    private fun drag(e: MotionEvent): Boolean {
+        if (!isHandleDragged) {
+            return false
+        }
+
+        val position = (e.rawY - touchPosition)
+            .coerceAtLeast(-maxHandleDistance)
+            .coerceAtMost(maxHandleDistance)
+
+        when {
+            (position > thresholdDistance) -> acceptCall()
+
+            (position < -thresholdDistance) -> endCall()
+
+            else -> {
+                v.incoming.handle.translationY = position
+
+                ((maxHandleDistance - position) / maxHandleDistance).coerceAtLeast(1f).let {
+                    v.incoming.accept.scaleX = it
+                    v.incoming.accept.scaleY = it
+                }
+
+                ((maxHandleDistance + position) / maxHandleDistance).coerceAtLeast(1f).let {
+                    v.incoming.reject.scaleX = it
+                    v.incoming.reject.scaleY = it
+                }
+            }
+        }
+
+        return true
+    }
+
+    private fun animateArrowUp() {
+        if (!showIncomingAnimation) return
+
+        v.incoming.animatedArrowUp.translationY = 400f
+
+        v.incoming.animatedArrowUp.animate()
+            .translationY(0.0f)
+            .setDuration(999)
+            .withEndAction { animateArrowUp() }
+            .start()
+    }
+
+    private fun animateArrowDown() {
+        if (!showIncomingAnimation) return
+
+        v.incoming.animatedArrowDown.translationY = -400f
+
+        v.incoming.animatedArrowDown.animate()
+            .translationY(0.0f)
+            .setDuration(999)
+            .withEndAction { animateArrowDown() }
+            .start()
+    }
+
+    private fun animateToStart() {
+        v.incoming.handle.animate()
+            .translationY(0f)
+            .setDuration(300)
+            .start()
+
+        v.incoming.accept.animate()
+            .alpha(1f)
+            .scaleX(1f)
+            .scaleY(1f)
+            .setDuration(300)
+            .start()
+
+        v.incoming.reject.animate()
+            .alpha(1f)
+            .scaleX(1f)
+            .scaleY(1f)
+            .setDuration(300)
+            .start()
+    }
+    //endregion
 }

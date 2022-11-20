@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
@@ -81,7 +82,14 @@ fun Context.requestDrawOverlays(view: View) {
             .setTextColor(Color.WHITE)
             .setActionTextColor(Color.WHITE)
             .setBackgroundTint(Color.MAGENTA)
-            .setAction(R.string.ok) { startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)) }
+            .setAction(R.string.ok) {
+                startActivity(
+                    Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.fromParts("package", view.context.packageName, null)
+                    )
+                )
+            }
             .show()
     }
 }
