@@ -13,6 +13,7 @@ import android.telecom.Call.*
 import android.telecom.CallAudioState
 import android.telecom.PhoneAccountHandle
 import android.view.MotionEvent
+import android.view.VelocityTracker
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
@@ -30,6 +31,21 @@ import timber.log.Timber
 import java.util.*
 import kotlin.math.absoluteValue
 
+// Порог, докуда нужно дотянуть аватарку, чтобы принять/отклонить звонок
+private const val DRAG_THRESHOLD = 0.8f
+
+// Порог ускорения, с которым нужно бросить аватарку, чтобы принять/отклонить порог
+private const val VELOCITY_THRESHOLD = 500f
+
+// Продолжительность анимации "Звонок принят"
+private const val ACCEPT_ANIMATION_DURATION = 300L
+
+// Продолжительность анимации "Звонок отклонён"
+private const val REJECT_ANIMATION_DURATION = 300L
+
+// Продолжительность анимации возврата в исходное состояние
+private const val RESET_ANIMATION_DURATION = 300L
+
 /**
  * Активность текущего звонка
  */
@@ -43,6 +59,7 @@ class OngoingCallActivity : BaseActivity() {
     private var maxHandleDistance = 0f
     private var thresholdDistance = 0f
     private var isHandleDragged = false
+    private var velocityTracker: VelocityTracker? = null
 
     companion object {
         private const val ONE_SECOND = 1000
@@ -89,9 +106,6 @@ class OngoingCallActivity : BaseActivity() {
         if (hasNavBar()) {
             v.frame.setPadding(0, 0, 0, navBarHeight())
         }
-
-        // TODO: УДАЛИТЬ!
-        updateCallState(STATE_RINGING)
     }
 
     override fun onResume() {
@@ -99,9 +113,9 @@ class OngoingCallActivity : BaseActivity() {
         super.onResume()
         acquireProximitySensor()
 
-//        CallService.instance?.getCall(intent?.data)?.let {
-//            setCurrentCall(it)
-//        } ?: finishAndRemoveTask()
+        CallService.instance?.getCall(intent?.data)?.let {
+            setCurrentCall(it)
+        } ?: finishAndRemoveTask()
         updateCallState(STATE_RINGING)
     }
 
@@ -151,7 +165,7 @@ class OngoingCallActivity : BaseActivity() {
 
         v.info.textCaller.text = contact.name
         v.info.textCallerNumber.text = contact.phone
-        v.info.imagePlaceholder.setImageDrawable(
+        v.info.avatar.setImageDrawable(
             contact.getAvatar(
                 this,
                 AvatarHelper.IMAGE
@@ -206,7 +220,6 @@ class OngoingCallActivity : BaseActivity() {
                 else -> false
             }
         }
-
     }
 
     private fun initLockScreenFlags() {
@@ -261,6 +274,7 @@ class OngoingCallActivity : BaseActivity() {
         Timber.d("activateCall # %s", call?.phone)
         v.incoming.root.visibility = View.GONE
         showIncomingAnimation = false
+        switchToCallingUI()
         call?.accept()
     }
 
@@ -323,7 +337,9 @@ class OngoingCallActivity : BaseActivity() {
         showIncomingAnimation = false
         v.incoming.root.visibility = View.GONE
         v.keyboard.root.visibility = View.GONE
+        v.ongoing.root.visibility = View.VISIBLE
         v.ongoing.disconnect.visibility = View.VISIBLE
+        v.info.avatar.visibility = View.VISIBLE
         v.ongoing.buttonHold.off()
         v.ongoing.buttonMute.on()
         v.ongoing.buttonKeypad.off()
@@ -338,6 +354,7 @@ class OngoingCallActivity : BaseActivity() {
         v.incoming.root.visibility = View.VISIBLE
         v.ongoing.root.visibility = View.GONE
         v.keyboard.root.visibility = View.GONE
+        v.info.avatar.visibility = View.GONE
         animateArrowUp()
         animateArrowDown()
     }
@@ -349,7 +366,8 @@ class OngoingCallActivity : BaseActivity() {
         showIncomingAnimation = false
         v.incoming.root.visibility = View.GONE
         v.keyboard.root.visibility = View.GONE
-        v.ongoing.disconnect.visibility = View.VISIBLE
+        v.ongoing.root.visibility = View.VISIBLE
+        v.info.avatar.visibility = View.VISIBLE
         v.ongoing.buttonHold.on()
         v.ongoing.buttonMute.on()
         v.ongoing.buttonKeypad.on()
@@ -360,15 +378,8 @@ class OngoingCallActivity : BaseActivity() {
      * Интерфейс в режиме клавиатуры
      */
     private fun switchToKeyboard() {
-        showIncomingAnimation = false
-        v.incoming.root.visibility = View.GONE
+        v.ongoing.root.visibility = View.INVISIBLE
         v.keyboard.root.visibility = View.VISIBLE
-        v.ongoing.disconnect.visibility = View.INVISIBLE
-        v.ongoing.buttonHold.visibility = View.INVISIBLE
-        v.ongoing.buttonMute.visibility = View.INVISIBLE
-        v.ongoing.buttonKeypad.visibility = View.INVISIBLE
-        v.ongoing.buttonSpeaker.visibility = View.INVISIBLE
-        v.keyboard.settingsButton.visibility = View.INVISIBLE
         v.keyboard.btnCall.setImageResource(R.drawable.ic_phone_hangup)
     }
 
@@ -476,9 +487,11 @@ class OngoingCallActivity : BaseActivity() {
     //region Incoming call handle interface
     private fun startDrag(e: MotionEvent): Boolean {
         maxHandleDistance = (v.incoming.accept.top - v.incoming.handle.top).absoluteValue.toFloat()
-        thresholdDistance = maxHandleDistance * 0.8f;
+        thresholdDistance = maxHandleDistance * DRAG_THRESHOLD
         touchPosition = e.rawY
         isHandleDragged = true
+        velocityTracker = VelocityTracker.obtain()
+        velocityTracker?.addMovement(e)
 
         return true
     }
@@ -488,6 +501,10 @@ class OngoingCallActivity : BaseActivity() {
             return false
         }
 
+        velocityTracker?.apply {
+            addMovement(e)
+            computeCurrentVelocity(100)
+        }
         val position = (e.rawY - touchPosition)
 
         when {
@@ -495,9 +512,15 @@ class OngoingCallActivity : BaseActivity() {
 
             (position < -thresholdDistance) -> endCall()
 
+            VELOCITY_THRESHOLD < (velocityTracker?.yVelocity ?: 0f) -> endCall()
+
+            -VELOCITY_THRESHOLD > (velocityTracker?.yVelocity ?: 0f) -> acceptCall()
+
             else -> animateToStart()
         }
 
+        velocityTracker?.recycle()
+        velocityTracker = null
         isHandleDragged = false
         return true
     }
@@ -507,14 +530,15 @@ class OngoingCallActivity : BaseActivity() {
             return false
         }
 
+        velocityTracker?.addMovement(e)
         val position = (e.rawY - touchPosition)
             .coerceAtLeast(-maxHandleDistance)
             .coerceAtMost(maxHandleDistance)
 
         when {
-            (position > thresholdDistance) -> acceptCall()
+            (position < -thresholdDistance) -> animateToAccept()
 
-            (position < -thresholdDistance) -> endCall()
+            (position > thresholdDistance) -> animateToReject()
 
             else -> {
                 v.incoming.handle.translationY = position
@@ -561,21 +585,51 @@ class OngoingCallActivity : BaseActivity() {
     private fun animateToStart() {
         v.incoming.handle.animate()
             .translationY(0f)
-            .setDuration(300)
+            .setDuration(RESET_ANIMATION_DURATION)
             .start()
 
         v.incoming.accept.animate()
             .alpha(1f)
             .scaleX(1f)
             .scaleY(1f)
-            .setDuration(300)
+            .setDuration(RESET_ANIMATION_DURATION)
             .start()
 
         v.incoming.reject.animate()
             .alpha(1f)
             .scaleX(1f)
             .scaleY(1f)
-            .setDuration(300)
+            .setDuration(RESET_ANIMATION_DURATION)
+            .start()
+    }
+
+    private fun animateToAccept() {
+        isHandleDragged = false
+        v.incoming.handle.animate()
+            .translationY(-maxHandleDistance)
+            .setDuration(ACCEPT_ANIMATION_DURATION)
+            .withEndAction { acceptCall() }
+            .start()
+
+        v.incoming.accept.animate()
+            .scaleX(10f)
+            .scaleY(10f)
+            .setDuration(ACCEPT_ANIMATION_DURATION)
+            .start()
+    }
+
+    private fun animateToReject() {
+        isHandleDragged = false
+        v.incoming.handle.animate()
+            .translationY(maxHandleDistance)
+            .setDuration(REJECT_ANIMATION_DURATION)
+            .withEndAction { endCall() }
+            .start()
+
+        v.incoming.reject.animate()
+            .scaleX(10f)
+            .scaleY(10f)
+            .setDuration(REJECT_ANIMATION_DURATION)
             .start()
     }
     //endregion
