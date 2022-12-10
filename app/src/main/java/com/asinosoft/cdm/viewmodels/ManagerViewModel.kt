@@ -33,7 +33,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     val calls: MutableLiveData<List<CallHistoryItem>> = MutableLiveData()
     val contacts: MutableLiveData<Collection<Contact>> = MutableLiveData()
 
-    val contact: MutableLiveData<Contact> = MutableLiveData()
+    val contact: MutableLiveData<Contact?> = MutableLiveData()
     val contactHistory: MutableLiveData<List<CallHistoryItem>> = MutableLiveData()
     val contactActions: MutableLiveData<DirectActions> = MutableLiveData()
     val availableActions: MutableLiveData<List<Action.Type>> = MutableLiveData()
@@ -108,7 +108,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun setContact(contactId: Long) {
-        contact.postValue(Contact(0, ""))
+        contact.value = null
         viewModelScope.launch(Dispatchers.IO) {
             contactRepository.getContactById(contactId)?.let {
                 _contact = it
