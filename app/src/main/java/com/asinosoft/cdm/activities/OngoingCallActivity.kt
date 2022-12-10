@@ -111,12 +111,10 @@ class OngoingCallActivity : BaseActivity() {
     override fun onResume() {
         Timber.d("onResume # %s", intent.data)
         super.onResume()
-        acquireProximitySensor()
 
         CallService.instance?.getCall(intent?.data)?.let {
             setCurrentCall(it)
         } ?: finishAndRemoveTask()
-        updateCallState(STATE_RINGING)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -164,13 +162,11 @@ class OngoingCallActivity : BaseActivity() {
         val contact = ContactRepositoryImpl(this).getContactByPhone(phone)
 
         v.info.textCaller.text = contact.name
-        v.info.textCallerNumber.text = contact.phone
-        v.info.avatar.setImageDrawable(
-            contact.getAvatar(
-                this,
-                AvatarHelper.IMAGE
-            )
-        )
+        v.info.textCallerNumber.text = phone
+        contact.getAvatar(this, AvatarHelper.IMAGE).let { avatar ->
+            v.info.avatar.setImageDrawable(avatar)
+            v.incoming.handle.setImageDrawable(avatar)
+        }
     }
 
     @SuppressLint("ResourceAsColor")
@@ -344,6 +340,7 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoing.buttonMute.on()
         v.ongoing.buttonKeypad.off()
         v.ongoing.buttonSpeaker.on()
+        releaseProximitySensor()
     }
 
     /**
@@ -357,6 +354,7 @@ class OngoingCallActivity : BaseActivity() {
         v.info.avatar.visibility = View.GONE
         animateArrowUp()
         animateArrowDown()
+        releaseProximitySensor()
     }
 
     /**
@@ -372,6 +370,7 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoing.buttonMute.on()
         v.ongoing.buttonKeypad.on()
         v.ongoing.buttonSpeaker.on()
+        acquireProximitySensor()
     }
 
     /**
@@ -381,6 +380,7 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoing.root.visibility = View.INVISIBLE
         v.keyboard.root.visibility = View.VISIBLE
         v.keyboard.btnCall.setImageResource(R.drawable.ic_phone_hangup)
+        releaseProximitySensor()
     }
 
     private fun toggleKeyboard() {
@@ -610,12 +610,6 @@ class OngoingCallActivity : BaseActivity() {
             .setDuration(ACCEPT_ANIMATION_DURATION)
             .withEndAction { acceptCall() }
             .start()
-
-        v.incoming.accept.animate()
-            .scaleX(10f)
-            .scaleY(10f)
-            .setDuration(ACCEPT_ANIMATION_DURATION)
-            .start()
     }
 
     private fun animateToReject() {
@@ -624,12 +618,6 @@ class OngoingCallActivity : BaseActivity() {
             .translationY(maxHandleDistance)
             .setDuration(REJECT_ANIMATION_DURATION)
             .withEndAction { endCall() }
-            .start()
-
-        v.incoming.reject.animate()
-            .scaleX(10f)
-            .scaleY(10f)
-            .setDuration(REJECT_ANIMATION_DURATION)
             .start()
     }
     //endregion
