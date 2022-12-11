@@ -50,10 +50,10 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/handle"
-        android:layout_width="128dp"
-        android:layout_height="128dp"
+        android:layout_width="118dp"
+        android:layout_height="118dp"
         android:contentDescription="@string/drag_me"
-        android:padding="2dp"
+        android:padding="3dp"
         app:layout_constraintBottom_toTopOf="@id/reject"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,6 +61,6 @@
         app:shapeAppearanceOverlay="@style/RoundImage"
         app:srcCompat="@drawable/ic_photo_default"
         app:strokeColor="?attr/civ_border_color"
-        app:strokeWidth="4dp" />
+        app:strokeWidth="6dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
