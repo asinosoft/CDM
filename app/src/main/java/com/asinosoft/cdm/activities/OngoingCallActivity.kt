@@ -340,7 +340,7 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoing.buttonMute.on()
         v.ongoing.buttonKeypad.off()
         v.ongoing.buttonSpeaker.on()
-        releaseProximitySensor()
+        acquireProximitySensor()
     }
 
     /**

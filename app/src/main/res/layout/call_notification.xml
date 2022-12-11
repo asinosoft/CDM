@@ -11,6 +11,7 @@
         style="@style/TextAppearance.Compat.Notification.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxLines="1"
         android:textSize="16sp"
         android:textStyle="bold"
         tools:text="Caller name" />
@@ -30,8 +31,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/notification_caller_name"
         android:layout_toEndOf="@id/sim"
-        android:textColor="?android:attr/colorAccent"
         android:alpha="0.8"
+        android:textColor="?android:attr/colorAccent"
         android:visibility="visible"
         tools:text="Входящий вызов" />
 
@@ -68,7 +69,8 @@
             android:focusable="true"
             android:src="@drawable/ic_mic_off_black_24dp"
             android:visibility="gone"
-            app:tint="@color/white" />
+            app:tint="@color/white"
+            tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/notification_speaker"
@@ -83,7 +85,8 @@
             android:focusable="true"
             android:src="@drawable/ic_volume_on"
             android:visibility="gone"
-            app:tint="@color/white" />
+            app:tint="@color/white"
+            tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/notification_decline_call"

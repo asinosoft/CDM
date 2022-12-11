@@ -59,5 +59,5 @@ class CallService : InCallService() {
         calls.find { call -> call.details.handle == phone }
 
     fun getNextCall(): Call? =
-        calls.find { call -> Call.STATE_HOLDING == call.callState }
+        calls.find { call -> Call.STATE_DISCONNECTED != call.callState || Call.STATE_DISCONNECTING != call.callState }
 }
