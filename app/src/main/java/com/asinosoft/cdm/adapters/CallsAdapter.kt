@@ -1,14 +1,15 @@
 package com.asinosoft.cdm.adapters
 
-import android.content.ActivityNotFoundException
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.os.Bundle
 import android.provider.CallLog
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
@@ -21,10 +22,8 @@ import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ItemCallBinding
-import com.asinosoft.cdm.helpers.Keys
+import com.asinosoft.cdm.helpers.*
 import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
-import com.asinosoft.cdm.helpers.StHelper
-import com.asinosoft.cdm.helpers.vibrator
 import com.zerobranch.layout.SwipeLayout
 import java.security.InvalidParameterException
 
@@ -36,7 +35,10 @@ class CallsAdapter(
     private val context: Context,
     private val favorites: ViewBinding,
     private val onClickContact: (contact: Contact) -> Unit,
-    private val onClickPhone: (phone: String) -> Unit
+    private val onClickPhone: (phone: String) -> Unit,
+    private val onDeleteCallRecord: (call: CallHistoryItem) -> Unit,
+    private val onPurgeContactHistory: (contact: Contact) -> Unit,
+    private val onPurgeCallHistory: () -> Unit,
 ) : RecyclerView.Adapter<CallsAdapter.HolderHistory>() {
     companion object {
         const val TYPE_FAVORITES = 1
@@ -44,7 +46,10 @@ class CallsAdapter(
     }
 
     private var calls: List<CallHistoryItem> = listOf()
-    private val KEY_PHONE = "phone"
+
+    private var popupCall: CallHistoryItem? = null
+    private var popupColor: Int = context.getThemeColor(android.R.attr.listDivider)
+    private var backgroundColor: Int = context.getThemeColor(R.attr.backgroundColor)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
         val view = when (viewType) {
@@ -95,16 +100,16 @@ class CallsAdapter(
 
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
         when (holder.v) {
-            is ItemCallBinding -> bindCallHistoryItem(holder.v, calls[position - 1])
+            is ItemCallBinding -> bindCallHistoryItem(holder.v, calls[position - 1], position)
         }
     }
 
-    private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem) {
+    private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem, position: Int) {
         v.topDivider.isVisible = config.listDivider && config.favoritesFirst
         v.bottomDivider.isVisible = config.listDivider && !config.favoritesFirst
-        v.imageContact.setImageDrawable(call.contact.getAvatar(context,1))
+        v.imageContact.setImageDrawable(call.contact.getAvatar(context, AvatarHelper.SHORT))
         config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
-        v.name.text = call.contact.name ?: call.contact.phone
+        v.name.text = call.contact.title
 
         if (0L == call.contact.id) {
             v.number.setText(R.string.unsaved)
@@ -156,12 +161,12 @@ class CallsAdapter(
                 when (direction) {
                     SwipeLayout.RIGHT -> {
                         Analytics.logHistorySwipeRight()
-                        context?.vibrator?.vibrateSafety(Keys.VIBRO, 255)
+                        context.vibrator.vibrateSafety(Keys.VIBRO, 255)
                         performSwipeAction(directActions.right, call)
                     }
                     SwipeLayout.LEFT -> {
                         Analytics.logHistorySwipeLeft()
-                        context?.vibrator?.vibrateSafety(Keys.VIBRO, 255)
+                        context.vibrator.vibrateSafety(Keys.VIBRO, 255)
                         performSwipeAction(directActions.left, call)
                     }
                 }
@@ -191,6 +196,15 @@ class CallsAdapter(
                 onClickContact(call.contact)
             }
         }
+
+        v.dragLayout.setOnLongClickListener {
+            showPopup(it, call)
+            true
+        }
+
+        v.dragLayout.setBackgroundColor(
+            if (call == popupCall) popupColor else backgroundColor
+        )
     }
 
     private fun addNewContact(prettyPhone: CharSequence) {
@@ -198,7 +212,7 @@ class CallsAdapter(
         Intent().apply {
             action = Intent.ACTION_INSERT_OR_EDIT
             type = "vnd.android.cursor.item/contact"
-            putExtra(KEY_PHONE, prettyPhone)
+            putExtra("phone", prettyPhone)
             launchActivityIntent(this)
         }
     }
@@ -215,10 +229,51 @@ class CallsAdapter(
     inner class HolderHistory(val v: ViewBinding) : RecyclerView.ViewHolder(v.root)
 
     private fun performSwipeAction(action: Action, item: CallHistoryItem) {
-        when(action.type){
-            Action.Type.PhoneCall -> Action(0, Action.Type.PhoneCall, item.phone, "").perform(context) // Звонок делаем по тому телефону, который в истории, а не который в настройках контакта!
-            Action.Type.WhatsAppChat -> Action(action.id, Action.Type.WhatsAppChat, item.phone, "").perform(context) //если контакт не записан, вызываем чат по номеру а не по id
+        when (action.type) {
+            // Звонок делаем по тому телефону, который в истории, а не который в настройках контакта!
+            Action.Type.PhoneCall ->
+                Action(0, Action.Type.PhoneCall, item.phone, "")
+                    .perform(context)
+            Action.Type.WhatsAppChat ->
+                // если контакт не записан, вызываем чат по номеру а не по id
+                Action(action.id, Action.Type.WhatsAppChat, item.phone, "")
+                    .perform(context)
             else -> action.perform(context)
         }
+    }
+
+    private fun showPopup(view: View, call: CallHistoryItem) {
+        popupCall = call
+        notifyItemChanged(1 + calls.indexOf(popupCall))
+
+        val popup = PopupMenu(view.context, view, Gravity.END)
+        popup.inflate(R.menu.call_history_context_menu)
+        popup.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.copy_number -> copyNumber(call)
+                R.id.delete_call_item -> onDeleteCallRecord(call)
+                R.id.purge_contact_history -> onPurgeContactHistory(call.contact)
+                R.id.purge_call_history -> onPurgeCallHistory()
+            }
+            true
+        }
+        popup.setOnDismissListener {
+            popupCall?.let {
+                notifyItemChanged(1 + calls.indexOf(popupCall))
+            }
+            popupCall = null
+        }
+        popup.show()
+        context.vibrator.vibrateSafety(2, 255)
+    }
+
+    private fun copyNumber(call: CallHistoryItem) {
+        val myClipboard =
+            context.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager?
+        val clip: ClipData = ClipData.newPlainText("simple text", call.phone)
+        myClipboard?.setPrimaryClip(clip)
+        Toast.makeText(context, R.string.copied, Toast.LENGTH_LONG)
+            .show()
+        Analytics.logKeyboardCopy()
     }
 }

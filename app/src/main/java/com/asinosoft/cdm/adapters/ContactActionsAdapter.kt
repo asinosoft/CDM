@@ -14,17 +14,15 @@ import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
 import com.asinosoft.cdm.helpers.telecomManager
-import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
+import com.yandex.mobile.ads.banner.AdSize
+import com.yandex.mobile.ads.banner.BannerAdView
+import java.util.*
+import com.google.android.gms.ads.AdRequest as GoogleAds
+import com.yandex.mobile.ads.common.AdRequest as YandexAds
 
 class ContactActionsAdapter(private val contact: Contact) :
     RecyclerView.Adapter<ContactActionsAdapter.ViewContactInfo>() {
-
-    companion object {
-        const val TYPE_ADVERTISER = 0
-        const val TYPE_ACTION = 1
-        const val TYPE_BIRTHDAY = 2
-    }
 
     private lateinit var context: Context
     private val groups = contact.actions.groupBy { Item(it.type.group, it.value, it.description) }
@@ -51,44 +49,28 @@ class ContactActionsAdapter(private val contact: Contact) :
     }
 
     override fun getItemCount(): Int {
-        return 1 + keys.size + (if (contact.birthday != null) 1 else 0)
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return if (position == 1 + keys.size) {
-            TYPE_BIRTHDAY
-        } else if (keys.size < 3) {
-            if (position == keys.size) TYPE_ADVERTISER else TYPE_ACTION
-        } else {
-            if (position == 3) TYPE_ADVERTISER else TYPE_ACTION
-        }
+        return keys.size + (if (contact.birthday != null) 1 else 0)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewContactInfo {
         context = parent.context
-        val view: View = when (viewType) {
-            TYPE_ACTION, TYPE_BIRTHDAY ->
-                LayoutInflater.from(context)
-                    .inflate(R.layout.contact_detail_element, parent, false)
-            TYPE_ADVERTISER ->
-                LayoutInflater.from(context)
-                    .inflate(R.layout.advertiser, parent, false)
-            else -> throw Exception("Invalid view type: $viewType")
-        }
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.contact_detail_element, parent, false)
         return ViewContactInfo(view)
     }
 
     override fun onBindViewHolder(holder: ViewContactInfo, position: Int) {
-        when (getItemViewType(position)) {
-            TYPE_ACTION -> bindAction(holder, position)
-            TYPE_BIRTHDAY -> holder.bindBirthday(contact.birthday, contact.age)
-            TYPE_ADVERTISER -> bindAdvertiser(holder)
+        if (position == keys.size) {
+            holder.bindBirthday(contact.birthday, contact.age)
+        } else {
+            bindAction(holder, keys[position])
+            if (position == (keys.size - 1).coerceAtMost(2)) {
+                bindAdvertiser(holder)
+            }
         }
     }
 
-    private fun bindAction(holder: ViewContactInfo, position: Int) {
-        val index = if (position > 3) position - 1 else position
-        val key = keys[index]
+    private fun bindAction(holder: ViewContactInfo, key: Item) {
         val actions = groups[key]!!
         when (key.group) {
             Action.Group.Email -> holder.bindEmail(actions.first())
@@ -101,8 +83,19 @@ class ContactActionsAdapter(private val contact: Contact) :
     }
 
     private fun bindAdvertiser(holder: ViewContactInfo) {
-        holder.itemView.findViewById<AdView>(R.id.adView)
-            .loadAd(AdRequest.Builder().build())
+        if ("ru" == Locale.getDefault().language) {
+            holder.itemView.findViewById<BannerAdView>(R.id.yandexAds).apply {
+                setAdUnitId(context.getString(R.string.yandex_ads_unit_id))
+                setAdSize(AdSize.flexibleSize(320, 50))
+                loadAd(YandexAds.Builder().build())
+                visibility = View.VISIBLE
+            }
+        } else {
+            holder.itemView.findViewById<AdView>(R.id.googleAds).apply {
+                loadAd(GoogleAds.Builder().build())
+                visibility = View.VISIBLE
+            }
+        }
     }
 
     inner class ViewContactInfo(val view: View) : RecyclerView.ViewHolder(view) {

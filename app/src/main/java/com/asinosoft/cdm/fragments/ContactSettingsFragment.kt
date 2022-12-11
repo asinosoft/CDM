@@ -16,16 +16,13 @@ import com.asinosoft.cdm.adapters.ActionsAdapter
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.DirectActions
 import com.asinosoft.cdm.databinding.ContactSettingsBinding
-import com.asinosoft.cdm.helpers.Keys
-import com.asinosoft.cdm.helpers.Metoths
+import com.asinosoft.cdm.helpers.*
 import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
-import com.asinosoft.cdm.helpers.SelectPhoneDialog
-import com.asinosoft.cdm.helpers.vibrator
-import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
+import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import com.asinosoft.cdm.views.CircularImageView
 
 class ContactSettingsFragment : Fragment() {
-    private val model: DetailHistoryViewModel by activityViewModels()
+    private val model: ManagerViewModel by activityViewModels()
     private lateinit var v: ContactSettingsBinding
     private var actions: Collection<Action> = listOf()
 
@@ -54,7 +51,7 @@ class ContactSettingsFragment : Fragment() {
 
         model.contact.observe(viewLifecycleOwner) { contact ->
             contact?.let {
-                v.contact.setImageDrawable(it.getAvatar(requireContext(),1))
+                v.contact.setImageDrawable(it.getAvatar(requireContext(), AvatarHelper.SHORT))
             }
         }
         App.instance!!.config.favoritesBorderWidth.let { v.contact.borderWidth = it.toFloat() }
@@ -64,7 +61,7 @@ class ContactSettingsFragment : Fragment() {
             actions?.let { (v.rvActions.adapter as ActionsAdapter).setActions(it) }
         }
 
-        model.directActions.observe(viewLifecycleOwner) { actions ->
+        model.contactActions.observe(viewLifecycleOwner) { actions ->
             actions?.let { setData(it) }
         }
 
@@ -145,7 +142,7 @@ class ContactSettingsFragment : Fragment() {
     }
 
     override fun onStop() {
-        model.saveContactSettings(requireContext())
+        model.saveContactSettings()
         super.onStop()
     }
 

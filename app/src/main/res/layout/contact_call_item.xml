@@ -13,7 +13,7 @@
     <com.zerobranch.layout.SwipeLayout
         android:id="@+id/swipe_layout"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         app:draggedItem="@id/drag_layout"
         app:isTogether="true"
         app:leftItem="@id/imageRightAction"
@@ -22,21 +22,21 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageLeftAction"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="70sp"
+            android:layout_height="70sp"
             android:layout_gravity="end"
-            android:layout_marginEnd="-70dp"
-            android:padding="4dp"
+            android:layout_marginEnd="-70sp"
+            android:padding="4sp"
             android:src="@drawable/ic_phone_call"
             android:visibility="visible"
             app:civ_border_width="0dp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageRightAction"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginStart="-70dp"
-            android:padding="4dp"
+            android:layout_width="70sp"
+            android:layout_height="70sp"
+            android:layout_marginStart="-70sp"
+            android:padding="4sp"
             android:src="@drawable/ic_whatsapp_chat"
             android:visibility="visible"
             app:civ_border_width="0dp" />
@@ -44,25 +44,23 @@
         <RelativeLayout
             android:id="@+id/drag_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true">
 
             <ImageView
                 android:id="@+id/type"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="70sp"
+                android:layout_height="70sp"
                 android:contentDescription="@string/status_call_incoming"
-                android:padding="16dp"
-                app:civ_border_color="?attr/civ_border_color"
-                app:civ_border_width="1dp"
+                android:padding="16sp"
                 tools:src="@drawable/ic_call_outgoing" />
 
             <TextView
                 android:id="@+id/date"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginStart="4dp"
+                android:layout_height="36sp"
+                android:layout_marginStart="4sp"
                 android:layout_toEndOf="@id/type"
                 android:ellipsize="end"
                 android:gravity="bottom"
@@ -75,14 +73,14 @@
             <TextView
                 android:id="@+id/time"
                 android:layout_width="wrap_content"
-                android:layout_height="32dp"
+                android:layout_height="32sp"
                 android:layout_alignBaseline="@id/date"
                 android:layout_toEndOf="@+id/date"
                 android:ellipsize="end"
-                android:padding="4dp"
+                android:padding="4sp"
                 android:singleLine="true"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="14sp"
+                android:textSize="18sp"
                 android:textStyle="normal"
                 tools:text="20:54" />
 
@@ -94,8 +92,8 @@
 
                 <ImageView
                     android:id="@+id/sim"
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
+                    android:layout_width="14sp"
+                    android:layout_height="14sp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/sim_used"
                     android:src="@drawable/ic_sim1" />
@@ -103,8 +101,8 @@
                 <TextView
                     android:id="@+id/number"
                     android:layout_width="wrap_content"
-                    android:layout_height="22dp"
-                    android:layout_marginStart="4dp"
+                    android:layout_height="22sp"
+                    android:layout_marginStart="4sp"
                     android:gravity="top"
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="14sp"
@@ -113,8 +111,8 @@
                 <TextView
                     android:id="@+id/duration"
                     android:layout_width="wrap_content"
-                    android:layout_height="22dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_height="22sp"
+                    android:layout_marginStart="16sp"
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="14sp"
                     tools:text="4:56" />
@@ -124,5 +122,27 @@
         </RelativeLayout>
 
     </com.zerobranch.layout.SwipeLayout>
+
+    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/googleAds"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="4dp"
+        android:visibility="gone"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/google_ads_unit_id">
+
+    </com.google.android.gms.ads.AdView>
+
+    <com.yandex.mobile.ads.banner.BannerAdView
+        android:id="@+id/yandexAds"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="4dp"
+        android:visibility="gone">
+
+    </com.yandex.mobile.ads.banner.BannerAdView>
 
 </LinearLayout>

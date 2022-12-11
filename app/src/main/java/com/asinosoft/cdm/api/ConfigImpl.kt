@@ -45,6 +45,10 @@ class ConfigImpl(private val context: Context) : Config {
 
     override var isChanged = false
 
+    /**
+     * Тема (светлая = AppTheme_Light, серая = AppTheme_Gray, тёмная = AppTheme_Dark)
+     * По-умолчанию = светлая
+     */
     override var theme: Int
         get() = settings.getInt(Keys.THEME.name, R.style.AppTheme_Light)
         set(theme) = settings.edit().apply {
@@ -54,6 +58,10 @@ class ConfigImpl(private val context: Context) : Config {
             remove(Keys.FAVORITES_BORDER_COLOR.name)
         }.apply()
 
+    /**
+     * Фоновая картинка
+     * По-умолчанию = нет
+     */
     override var background: Uri?
         get() = File(context.filesDir, "background").let {
             if (it.isFile) it.toUri() else null
@@ -73,26 +81,45 @@ class ConfigImpl(private val context: Context) : Config {
             isChanged = true
         }
 
+    /**
+     * Проверять, является ли приложение Дозвонщиком
+     * По-умолчанию: проверять
+     */
     override var checkDefaultDialer: Boolean
         get() = settings.getBoolean(Keys.CHECK_DEFAULT_DIALER.name, true)
         set(value) = settings.edit().putBoolean(Keys.CHECK_DEFAULT_DIALER.name, value).apply()
             .also { isChanged = true }
 
+    /**
+     * Положение блока Избранные (true = вверху, false = внизу)
+     * По-умолчанию = внизу
+     */
     override var favoritesFirst: Boolean
         get() = settings.getBoolean(Keys.FAVORITES_LAYOUT.name, false)
         set(value) = settings.edit().putBoolean(Keys.FAVORITES_LAYOUT.name, value).apply()
             .also { isChanged = true }
 
+    /**
+     * Количество столбцов в блоке Избранных
+     * По-умолчанию = 4
+     */
     override var favoritesColumnCount: Int
-        get() = settings.getInt(Keys.FAVORITES_COLUMNS_COUNT.name, 3)
+        get() = settings.getInt(Keys.FAVORITES_COLUMNS_COUNT.name, 4)
         set(count) = settings.edit().putInt(Keys.FAVORITES_COLUMNS_COUNT.name, count).apply()
             .also { isChanged = true }
 
+    /**
+     * Размер кнопки в блоке Избранных
+     * По-умолчанию = 1/5 ширины экрана
+     */
     override var favoritesSize: Int
         get() = settings.getInt(Keys.FAVORITES_SIZE.name, defaultFavoritesSize)
         set(size) = settings.edit().putInt(Keys.FAVORITES_SIZE.name, size).apply()
             .also { isChanged = true }
 
+    /**
+     * Цвет обводки кнопки в блоке Избранных
+     */
     override var favoritesBorderColor: Int?
         get() = if (settings.contains(Keys.FAVORITES_BORDER_COLOR.name))
             settings.getInt(Keys.FAVORITES_BORDER_COLOR.name, Color.BLACK)
@@ -105,11 +132,18 @@ class ConfigImpl(private val context: Context) : Config {
         }.apply()
             .also { isChanged = true }
 
+    /**
+     * Толщина обводки кнопки в блоке Избранных
+     */
     override var favoritesBorderWidth: Int
         get() = settings.getInt(Keys.FAVORITES_BORDER_WIDTH.name, 5)
         set(size) = settings.edit().putInt(Keys.FAVORITES_BORDER_WIDTH.name, size).apply()
             .also { isChanged = true }
 
+    /**
+     * Действие на свайп влево
+     * По-умолчанию = чат Whatsapp
+     */
     override var swipeLeftAction: Action.Type
         get() = settings.getString(Keys.SWIPE_LEFT_ACTION.name, Action.Type.WhatsAppChat.name)
             ?.let { Action.Type.valueOf(it) }
@@ -118,6 +152,10 @@ class ConfigImpl(private val context: Context) : Config {
             .also { Analytics.logGlobalSetAction("LEFT", action.name) }
             .also { isChanged = true }
 
+    /**
+     * Действие на свайп вправо
+     * По-умолчанию = телефонный звонок
+     */
     override var swipeRightAction: Action.Type
         get() = settings.getString(Keys.SWIPE_RIGHT_ACTION.name, Action.Type.PhoneCall.name)
             ?.let { Action.Type.valueOf(it) }
@@ -126,6 +164,10 @@ class ConfigImpl(private val context: Context) : Config {
             .also { Analytics.logGlobalSetAction("RIGHT", action.name) }
             .also { isChanged = true }
 
+    /**
+     * Действие на свайп вверх
+     * По-умолчанию = письмо
+     */
     override var swipeUpAction: Action.Type
         get() = settings.getString(Keys.SWIPE_UP_ACTION.name, Action.Type.Email.name)
             ?.let { Action.Type.valueOf(it) }
@@ -134,6 +176,10 @@ class ConfigImpl(private val context: Context) : Config {
             .also { Analytics.logGlobalSetAction("UP", action.name) }
             .also { isChanged = true }
 
+    /**
+     * Действие на свайп вниз
+     * По-умолчанию = СМС
+     */
     override var swipeDownAction: Action.Type
         get() = settings.getString(Keys.SWIPE_DOWN_ACTION.name, Action.Type.TelegramChat.name)
             ?.let { Action.Type.valueOf(it) }
@@ -142,6 +188,10 @@ class ConfigImpl(private val context: Context) : Config {
             .also { Analytics.logGlobalSetAction("DOWN", action.name) }
             .also { isChanged = true }
 
+    /**
+     * Полоска-разделитель в истории звонков и в списке контактов
+     * По-умолчанию = отключена
+     */
     override var listDivider: Boolean
         get() = settings.getBoolean(Keys.LIST_DIVIDER.name, false)
         set(value) = settings.edit().putBoolean(Keys.LIST_DIVIDER.name, value).apply()

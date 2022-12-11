@@ -156,6 +156,13 @@
     <string name="give_permission">Permit</string>
     <string name="request_draw_overlays">Please allow displaying over other apps</string>
 
+    <!-- Call history context menu -->
+    <string name="copy_number">Copy number</string>
+    <string name="delete_call_history_record">Delete call history record</string>
+    <string name="purge_contact_history">Purge contact history</string>
+    <string name="purge_call_history">Purge call history</string>
+    <string name="drag_me">Drag me up to accept Call. Or down to reject.</string>
+
     <plurals name="age">
         <item quantity="zero">%d years</item>
         <item quantity="one">%d year</item>

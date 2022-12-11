@@ -1,31 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/frame"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <!-- OnGoingCall Layout -->
     <include
-        android:id="@+id/ongoing_call_layout"
-        layout="@layout/on_going_call" />
+        android:id="@+id/info"
+        layout="@layout/fragment_call_info"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/keyboard_wrapper"
+    <include
+        android:id="@+id/ongoing"
+        layout="@layout/fragment_ongoing_call"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/shape"
-        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintHeight="match_constraint"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/info"
+        tools:visibility="visible" />
 
-        <include
-            android:id="@+id/keyboard"
-            android:name="com.asinosoft.cdm.fragments.KeyboardFragment"
-            layout="@layout/keyboard" />
-    </LinearLayout>
+    <include
+        android:id="@+id/incoming"
+        layout="@layout/fragment_incoming_call"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight="match_constraint"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/info"
+        tools:visibility="gone" />
+
+    <include
+        android:id="@+id/keyboard"
+        layout="@layout/keyboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

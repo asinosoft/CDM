@@ -20,6 +20,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
     CallHistoryRepository {
     // Список колонок, получаемых из истории звонков
     private val projection = arrayOf(
+        CallLog.Calls._ID,
         CallLog.Calls.NUMBER,
         CallLog.Calls.TYPE,
         CallLog.Calls.DATE,
@@ -90,11 +91,35 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
         } ?: ArrayList()
     }
 
+    override fun purgeCallHistory(context: Context) {
+        context.contentResolver.delete(CallLog.Calls.CONTENT_URI, "true", null)
+    }
+
+    override fun purgeContactHistory(context: Context, contact: Contact) {
+        val phones = contact.phones.map { it.value }.toTypedArray()
+        if (phones.isEmpty()) {
+            return
+        }
+
+        val placeholders = "?".repeat(phones.size)
+
+        context.contentResolver.delete(
+            CallLog.Calls.CONTENT_URI,
+            "_id IN (SELECT _id FROM calls WHERE " + CallLog.Calls.NUMBER + " IN (" + placeholders + "))",
+            phones
+        )
+    }
+
+    override fun deleteCallHistoryItem(context: Context, call: CallHistoryItem) {
+        context.contentResolver.delete(CallLog.Calls.CONTENT_URI, "_id = ?", arrayOf(call.id.toString()))
+    }
+
     @SuppressLint("MissingPermission")
     inner class HistoryItemCursorAdapter(
         context: Context,
         private val cursor: Cursor
     ) {
+        private val colId = cursor.getColumnIndex(CallLog.Calls._ID)
         private val colNumber = cursor.getColumnIndex(CallLog.Calls.NUMBER)
         private val colType = cursor.getColumnIndex(CallLog.Calls.TYPE)
         private val colDate = cursor.getColumnIndex(CallLog.Calls.DATE)
@@ -140,6 +165,7 @@ class CallHistoryRepositoryImpl(private val contactRepository: ContactRepository
             val phoneAccount = cursor.getString(colPhoneAccount)
 
             return CallHistoryItem(
+                id = cursor.getLong(colId),
                 phone = phoneNumber,
                 prettyPhone = StHelper.convertNumber(phoneNumber, country),
                 timestamp = date,

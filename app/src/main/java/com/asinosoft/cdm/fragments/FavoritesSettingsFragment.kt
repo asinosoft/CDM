@@ -11,8 +11,8 @@ import androidx.navigation.fragment.findNavController
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.databinding.FragmentFavoritesSettingsBinding
-import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
+import com.asinosoft.cdm.helpers.getThemeColor
 import com.asinosoft.cdm.viewmodels.SettingsViewModel
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.xw.repo.BubbleSeekBar
@@ -25,16 +25,10 @@ class FavoritesSettingsFragment : Fragment() {
     private val model: SettingsViewModel by activityViewModels()
     private lateinit var v: FragmentFavoritesSettingsBinding
     private val colorSelected: Int by lazy {
-        Metoths.getThemeColor(
-            requireContext(),
-            R.attr.colorAccent
-        )
+        requireContext().getThemeColor(R.attr.colorAccent)
     }
     private val colorNotSelected: Int by lazy {
-        Metoths.getThemeColor(
-            requireContext(),
-            R.attr.colorSecondary
-        )
+        requireContext().getThemeColor(R.attr.colorSecondary)
     }
 
     override fun onCreateView(
@@ -65,7 +59,7 @@ class FavoritesSettingsFragment : Fragment() {
         setFavoritesLayout(model.config.favoritesFirst)
 
         model.buttonColor.observe(viewLifecycleOwner) {
-            (it ?: Metoths.getThemeColor(requireContext(), R.attr.civ_border_color)).let { color ->
+            (it ?: requireContext().getThemeColor(R.attr.civ_border_color)).let { color ->
                 v.imgFavorite.borderColor = color
                 v.pickBorderColor.setHintTextColor(color)
             }
@@ -205,7 +199,7 @@ class FavoritesSettingsFragment : Fragment() {
             ColorPickerDialog.newBuilder()
                 .setColor(
                     model.config.favoritesBorderColor
-                        ?: Metoths.getThemeColor(requireContext(), R.attr.civ_border_color)
+                        ?: requireContext().getThemeColor(R.attr.civ_border_color)
                 )
                 .show(activity)
         }

@@ -7,6 +7,7 @@ import java.util.*
  * Информационный класс элементов истории.
  */
 data class CallHistoryItem(
+    val id: Long,
     val timestamp: Date, // Точное время звонка
     val phone: String, // Номер телефона
     val prettyPhone: String, // Отформатированный номер телефона
@@ -25,5 +26,12 @@ data class CallHistoryItem(
                     other.typeCall == typeCall
             else -> false
         }
+    }
+
+    override fun hashCode(): Int {
+        var result = timestamp.hashCode()
+        result = 31 * result + phone.hashCode()
+        result = 31 * result + typeCall
+        return result
     }
 }

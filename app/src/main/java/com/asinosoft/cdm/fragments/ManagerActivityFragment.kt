@@ -1,6 +1,6 @@
 package com.asinosoft.cdm.fragments
 
-import android.Manifest
+import android.Manifest.permission.*
 import android.content.Context
 import android.os.Bundle
 import android.view.DragEvent
@@ -16,12 +16,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.App
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.activities.BaseActivity
 import com.asinosoft.cdm.adapters.CallsAdapter
 import com.asinosoft.cdm.adapters.FavoritesAdapter
 import com.asinosoft.cdm.adapters.PermissionRationaleAdapter
+import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.api.FavoriteContactRepositoryImpl
+import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.FavoriteContact
 import com.asinosoft.cdm.databinding.ActivityManagerBinding
 import com.asinosoft.cdm.databinding.FavoritesFragmentBinding
@@ -136,7 +139,7 @@ class ManagerActivityFragment : Fragment() {
         Timber.d("requestPermissions")
         ActivityCompat.requestPermissions(
             requireActivity(),
-            arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG),
+            arrayOf(READ_CONTACTS, READ_CALL_LOG),
             1235
         )
     }
@@ -221,21 +224,11 @@ class ManagerActivityFragment : Fragment() {
             config,
             requireContext(),
             favoritesView,
-            { contact ->
-                findNavController().navigate(
-                    R.id.action_open_contact_fragment,
-                    bundleOf(
-                        "contactId" to contact.id,
-                        "tab" to "history"
-                    )
-                )
-            },
-            { phone ->
-                findNavController().navigate(
-                    R.id.action_open_phone_history,
-                    bundleOf("phone" to phone)
-                )
-            }
+            { contact -> showContact(contact) },
+            { phone -> showPhoneHistory(phone) },
+            { call -> deleteCallHistoryItem(call) },
+            { contact -> purgeContactHistory(contact) },
+            { purgeCallHistory() }
         )
         v.rvCalls.layoutManager = callsLayoutManager
         v.rvCalls.isNestedScrollingEnabled = true
@@ -250,5 +243,40 @@ class ManagerActivityFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun showContact(contact: Contact) {
+        findNavController().navigate(
+            R.id.action_open_contact_fragment,
+            bundleOf(
+                "contactId" to contact.id,
+                "tab" to "history"
+            )
+        )
+    }
+
+    private fun showPhoneHistory(phone: String) {
+        findNavController().navigate(
+            R.id.action_open_phone_history,
+            bundleOf("phone" to phone)
+        )
+    }
+
+    private fun deleteCallHistoryItem(call: CallHistoryItem) {
+        (requireActivity() as BaseActivity).withPermission(WRITE_CALL_LOG) {
+            model.deleteCallHistoryItem(call)
+        }
+    }
+
+    private fun purgeContactHistory(contact: Contact) {
+        (requireActivity() as BaseActivity).withPermission(WRITE_CALL_LOG) {
+            model.purgeContactHistory(contact)
+        }
+    }
+
+    private fun purgeCallHistory() {
+        (requireActivity() as BaseActivity).withPermission(WRITE_CALL_LOG) {
+            model.purgeCallHistory()
+        }
     }
 }

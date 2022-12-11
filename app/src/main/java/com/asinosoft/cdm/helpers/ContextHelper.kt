@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
@@ -15,6 +16,7 @@ import android.os.Vibrator
 import android.provider.Settings
 import android.telecom.TelecomManager
 import android.telephony.TelephonyManager
+import android.util.TypedValue
 import android.view.View
 import com.asinosoft.cdm.R
 import com.google.android.material.snackbar.Snackbar
@@ -51,6 +53,12 @@ private object ContextHelper {
     val handler = Handler(Looper.getMainLooper())
 }
 
+fun Context.getThemeColor(attribute: Int): Int {
+    val typedValue = TypedValue()
+    this.theme.resolveAttribute(attribute, typedValue, true)
+    return typedValue.data
+}
+
 fun Context.hasNavBar(): Boolean {
     val id = resources.getIdentifier("config_showNavigationBar", "bool", "android")
     return id > 0 && resources.getBoolean(id)
@@ -74,7 +82,14 @@ fun Context.requestDrawOverlays(view: View) {
             .setTextColor(Color.WHITE)
             .setActionTextColor(Color.WHITE)
             .setBackgroundTint(Color.MAGENTA)
-            .setAction(R.string.ok) { startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)) }
+            .setAction(R.string.ok) {
+                startActivity(
+                    Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.fromParts("package", view.context.packageName, null)
+                    )
+                )
+            }
             .show()
     }
 }

@@ -24,32 +24,26 @@
     </style>
 
     <style name="AppTheme.Light" parent="BaseTheme">
-        <item name="colorAccent">@color/selected_button_light</item>
-        <item name="colorOnPrimary">@color/tab_text_light</item>
-        <item name="colorOnSurface">@color/tab_text_light</item>
-        <item name="colorPrimary">@color/active_tab_text_light</item>
-        <item name="colorSecondary">@color/floating_button_light</item>
-        <item name="android:colorAccent">@color/keyboard_border_light</item>
-        <item name="android:colorBackground">@color/background_light</item>
-        <item name="android:colorPrimary">@color/photo_border_light</item>
-        <item name="android:textColor">@color/text_color_light</item>
-        <item name="android:textColorSecondary">@color/subtext_color_light</item>
-        <item name="android:statusBarColor">@color/system_statbar_color_light</item>
-        <item name="android:navigationBarColor">@color/system_navbar_color_light</item>
-        <!-- Прозрачный StatusBar -->
-        <item name="android:windowTranslucentStatus">false</item>
-        <!-- Прозрачный navigationBar -->
-        <item name="android:windowTranslucentNavigation">false</item>
-        <!-- Цвет текста в StatusBar -->
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="popupColor">@color/popup_color_light</item>
-        <item name="android:listDivider">@color/divider_color_light</item>
-        <item name="civ_border_color">@color/fav_border_light</item>
-
-        <!-- Цвет текста в диалоге выбора SIM -->
-        <item name="colorSurface">@color/background_light</item>
-        <!-- Цвет текста в диалоге выбора SIM -->
-        <item name="android:textColorAlertDialogListItem">@color/text_color_light</item>
+        <item name="colorAccent">@color/selected_button_light</item><!--   -->
+        <item name="colorOnPrimary">@color/tab_text_light</item><!--   -->
+        <item name="colorOnSurface">@color/tab_text_light</item><!--   -->
+        <item name="colorPrimary">@color/active_tab_text_light</item><!--Обводка Истории???,Плавающая кнопка иконка-->
+        <item name="colorSecondary">@color/floating_button_light</item><!-- Плавающая кнопка фон  -->
+        <item name="android:colorAccent">@color/keyboard_border_light</item><!--   -->
+        <item name="android:colorBackground">@color/background_light</item><!-- фон главный-->
+        <item name="android:colorPrimary">@color/photo_border_light</item><!--   -->
+        <item name="android:textColor">@color/text_color_light</item>  <!-- имя контакта-->
+        <item name="android:textColorSecondary">@color/subtext_color_light</item><!-- телефон-->
+        <item name="android:statusBarColor">@color/system_statbar_color_light</item><!--  Верхний тулбар фон -->
+        <item name="android:navigationBarColor">@color/system_navbar_color_light</item><!-- Нижние кнопки управления фон  -->
+        <item name="android:windowTranslucentStatus">false</item><!-- Прозрачный StatusBar -->
+        <item name="android:windowTranslucentNavigation">false</item><!-- Прозрачный navigationBar -->
+        <item name="android:windowLightStatusBar">false</item><!-- Цвет текста в StatusBar -->
+        <item name="popupColor">@color/popup_color_light</item> <!--   -->
+        <item name="android:listDivider">@color/divider_color_light</item><!-- Разделительная Полоска  -->
+        <item name="civ_border_color">@color/fav_border_light</item><!-- Обводка Избранных  -->
+        <item name="colorSurface">@color/background_light</item><!-- Цвет текста в диалоге выбора SIM -->
+        <item name="android:textColorAlertDialogListItem">@color/text_color_light</item><!-- Цвет текста в диалоге выбора SIM -->
     </style>
 
     <style name="AppTheme.Gray" parent="BaseTheme">

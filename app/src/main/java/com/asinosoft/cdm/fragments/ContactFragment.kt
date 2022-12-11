@@ -10,21 +10,22 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.databinding.ActivityDetailHistoryBinding
-import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
+import com.asinosoft.cdm.helpers.AvatarHelper
+import com.asinosoft.cdm.viewmodels.ManagerViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 
 /**
  * Окно контакта
  */
 class ContactFragment : Fragment() {
-    private val model: DetailHistoryViewModel by activityViewModels()
+    private val model: ManagerViewModel by activityViewModels()
     private lateinit var v: ActivityDetailHistoryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         arguments?.getLong("contactId")?.let { contactId ->
-            model.initialize(requireContext(), contactId)
+            model.setContact(contactId)
         }
 
         Analytics.logActivityContact()
@@ -77,7 +78,7 @@ class ContactFragment : Fragment() {
 
         model.contact.observe(viewLifecycleOwner) { contact ->
             contact?.let {
-                v.image.setImageDrawable(it.getAvatar(requireContext(),1))
+                v.image.setImageDrawable(it.getAvatar(requireContext(), AvatarHelper.SHORT))
                 v.toolbarLayout.title = it.name
             }
         }

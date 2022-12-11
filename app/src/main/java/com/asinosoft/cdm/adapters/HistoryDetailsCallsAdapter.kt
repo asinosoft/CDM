@@ -3,24 +3,28 @@ package com.asinosoft.cdm.adapters
 import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.CallLog
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.api.CallHistoryItem
 import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.data.Action
-import com.asinosoft.cdm.databinding.AdvertiserBinding
+import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ContactCallItemBinding
 import com.asinosoft.cdm.helpers.DateHelper
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.StHelper
-import com.google.android.gms.ads.AdRequest
+import com.asinosoft.cdm.helpers.getThemeColor
+import com.yandex.mobile.ads.banner.AdSize
 import com.zerobranch.layout.SwipeLayout
 import java.util.*
+import com.google.android.gms.ads.AdRequest as GoogleAds
+import com.yandex.mobile.ads.common.AdRequest as YandexAds
 
 /**
  * Адаптер списка звонков, который показывается в активности "Просмотр контакта"
@@ -28,58 +32,51 @@ import java.util.*
 class HistoryDetailsCallsAdapter(
     private val config: Config,
     private val context: Context,
-    private val calls: List<CallHistoryItem>
+    private val calls: List<CallHistoryItem>,
+    private val onDeleteCallRecord: (call: CallHistoryItem) -> Unit,
+    private val onPurgeContactHistory: (contact: Contact) -> Unit
 ) :
     RecyclerView.Adapter<HistoryDetailsCallsAdapter.HolderHistory>() {
-
-    companion object {
-        const val TYPE_CALL = 0
-        const val TYPE_ADVERTISER = 1
-    }
 
     private val today: Date = StHelper.today()
     private val yesterday: Date = Date(today.time - 86400)
 
-    override fun getItemCount() = 1 + calls.size
+    private var popupCall: CallHistoryItem? = null
+    private var popupColor: Int = context.getThemeColor(android.R.attr.listDivider)
+    private var backgroundColor: Int = context.getThemeColor(R.attr.backgroundColor)
 
-    override fun getItemViewType(position: Int): Int {
-        if (calls.size < 3) {
-            return if (position >= calls.size) TYPE_ADVERTISER else TYPE_CALL
-        } else {
-            return if (position == 3) TYPE_ADVERTISER else TYPE_CALL
-        }
-    }
+    override fun getItemCount() = calls.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
-        val binding = when (viewType) {
-            TYPE_CALL -> ContactCallItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-            TYPE_ADVERTISER -> AdvertiserBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-            else -> throw Exception("Invalid view type: $viewType")
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = ContactCallItemBinding.inflate(inflater, parent, false)
+        binding.yandexAds.apply {
+            setAdUnitId(context.getString(R.string.yandex_ads_unit_id))
+            setAdSize(AdSize.flexibleSize(320, 50))
         }
         return HolderHistory(binding)
     }
 
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
-        when (val binding = holder.v) {
-            is ContactCallItemBinding -> bindCallHistoryItem(
-                binding,
-                if (position < 3) calls[position] else calls[position - 1]
-            )
-            is AdvertiserBinding -> bindAdvertiser(binding)
-        }
+        bindCallHistoryItem(holder.v, calls[position])
+        bindAdvertiser(holder.v, position == (calls.size - 1).coerceAtMost(2))
     }
 
-    private fun bindAdvertiser(v: AdvertiserBinding) {
-        val adRequest = AdRequest.Builder().build()
-        v.adView.loadAd(adRequest)
+    private fun bindAdvertiser(v: ContactCallItemBinding, visible: Boolean) {
+        if (!visible) {
+            v.yandexAds.visibility = View.GONE
+            v.googleAds.visibility = View.GONE
+        } else if ("ru" == Locale.getDefault().language) {
+            v.yandexAds.apply {
+                loadAd(YandexAds.Builder().build())
+                visibility = View.VISIBLE
+            }
+        } else {
+            v.googleAds.apply {
+                loadAd(GoogleAds.Builder().build())
+                visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun bindCallHistoryItem(v: ContactCallItemBinding, call: CallHistoryItem) {
@@ -128,6 +125,37 @@ class HistoryDetailsCallsAdapter(
             override fun onClose() {
             }
         })
+
+        v.dragLayout.setOnLongClickListener {
+            showPopup(it, call)
+            true
+        }
+
+        v.dragLayout.setBackgroundColor(
+            if (call == popupCall) popupColor else backgroundColor
+        )
+    }
+
+    private fun showPopup(view: View, call: CallHistoryItem) {
+        popupCall = call
+        notifyItemChanged(calls.indexOf(popupCall))
+
+        val popup = PopupMenu(view.context, view, Gravity.END)
+        popup.inflate(R.menu.contact_history_context_menu)
+        popup.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.delete_call_item -> onDeleteCallRecord(call)
+                R.id.purge_contact_history -> onPurgeContactHistory(call.contact)
+            }
+            true
+        }
+        popup.setOnDismissListener {
+            popupCall?.let {
+                notifyItemChanged(calls.indexOf(popupCall))
+            }
+            popupCall = null
+        }
+        popup.show()
     }
 
     private fun formatDate(date: Date): String {
@@ -140,5 +168,5 @@ class HistoryDetailsCallsAdapter(
         }
     }
 
-    inner class HolderHistory(val v: ViewBinding) : RecyclerView.ViewHolder(v.root)
+    inner class HolderHistory(val v: ContactCallItemBinding) : RecyclerView.ViewHolder(v.root)
 }

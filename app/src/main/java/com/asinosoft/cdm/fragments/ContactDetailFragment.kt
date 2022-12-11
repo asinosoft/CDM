@@ -8,10 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.asinosoft.cdm.adapters.ContactActionsAdapter
 import com.asinosoft.cdm.databinding.HistoryContactFragmentBinding
-import com.asinosoft.cdm.viewmodels.DetailHistoryViewModel
+import com.asinosoft.cdm.viewmodels.ManagerViewModel
 
 class ContactDetailFragment : Fragment() {
-    private val model: DetailHistoryViewModel by activityViewModels()
+    private val model: ManagerViewModel by activityViewModels()
     private lateinit var v: HistoryContactFragmentBinding
 
     override fun onCreateView(

@@ -4,7 +4,10 @@ import android.app.Application
 import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.api.ConfigImpl
 import com.asinosoft.cdm.dialer.NotificationManager
+import com.google.firebase.FirebaseApp
+import com.yandex.mobile.ads.common.MobileAds
 import timber.log.Timber
+import java.util.*
 
 class App : Application() {
     companion object {
@@ -17,6 +20,17 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
+        FirebaseApp.initializeApp(this)
         instance = this
+
+        if ("ru" == Locale.getDefault().language) {
+            initializeYandexAds()
+        }
+    }
+
+    private fun initializeYandexAds() {
+        MobileAds.initialize(this) {
+            Timber.i("Yandex Mobile Ads initialized")
+        }
     }
 }

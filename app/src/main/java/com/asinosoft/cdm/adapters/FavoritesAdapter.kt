@@ -19,6 +19,7 @@ import com.asinosoft.cdm.api.FavoriteContactRepository
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.data.FavoriteContact
 import com.asinosoft.cdm.databinding.ItemFavoriteBinding
+import com.asinosoft.cdm.helpers.AvatarHelper
 import com.asinosoft.cdm.helpers.ItemTouchCallbackCir
 import com.asinosoft.cdm.helpers.Keys
 import com.asinosoft.cdm.helpers.Metoths.Companion.setSize
@@ -85,7 +86,7 @@ class FavoritesAdapter(
 
                 setActionImage(v.actionView)
                 setImageDrawable(
-                    contact?.getAvatar(context,5) ?: ResourcesCompat.getDrawable(
+                    contact?.getAvatar(context, AvatarHelper.LONG) ?: ResourcesCompat.getDrawable(
                         resources,
                         R.drawable.ic_add_contact,
                         null

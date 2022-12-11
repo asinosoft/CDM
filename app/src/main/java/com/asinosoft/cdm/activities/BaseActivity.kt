@@ -1,20 +1,25 @@
 package com.asinosoft.cdm.activities
 
+import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.asinosoft.cdm.App
-import com.asinosoft.cdm.helpers.Metoths
+import com.asinosoft.cdm.helpers.getThemeColor
 import com.asinosoft.cdm.helpers.getThemeResourceId
+import com.asinosoft.cdm.helpers.hasPermissions
 import timber.log.Timber
 
 /**
  * Базовый клас с поддержкой тем
  */
 open class BaseActivity : AppCompatActivity() {
+    private var onPermissionGranted: () -> Unit = {}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.d("THEME = %d", App.instance!!.config.theme)
@@ -26,11 +31,32 @@ open class BaseActivity : AppCompatActivity() {
         applyBackgroundImage()
     }
 
+    fun withPermission(permission: String, callback: () -> Unit) {
+        val permissions = arrayOf(permission)
+        if (hasPermissions(permissions)) {
+            callback()
+        } else {
+            onPermissionGranted = callback
+            ActivityCompat.requestPermissions(this, permissions, 1234)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults.all { PackageManager.PERMISSION_GRANTED == it }) {
+            onPermissionGranted.invoke()
+        }
+    }
+
     private fun applyBackgroundImage() {
         val image = getBackgroundImage()
         val rootView = findViewById<ViewGroup>(android.R.id.content).rootView
         if (null == image) {
-            val backgroundColor = Metoths.getThemeColor(this, android.R.attr.colorBackground)
+            val backgroundColor = getThemeColor(android.R.attr.colorBackground)
             rootView.setBackgroundColor(backgroundColor)
         } else {
             rootView.background = image
@@ -68,7 +94,7 @@ open class BaseActivity : AppCompatActivity() {
         val paint = Paint()
         paint.isFilterBitmap = true
 
-        val backgroundColor = Metoths.getThemeColor(this, android.R.attr.colorBackground)
+        val backgroundColor = getThemeColor(android.R.attr.colorBackground)
 
         canvas.drawColor(backgroundColor)
         canvas.drawBitmap(bitmap, transformation, paint)

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/copy_number"
+        android:icon="@drawable/outline_clear_24"
+        android:title="@string/copy_number" />
+
+    <item
+        android:id="@+id/delete_call_item"
+        android:icon="@drawable/ic_photo_default"
+        android:title="@string/delete_call_history_record" />
+
+    <item
+        android:id="@+id/purge_contact_history"
+        android:icon="@drawable/ic_photo_default"
+        android:title="@string/purge_contact_history" />
+
+    <item
+        android:id="@+id/purge_call_history"
+        android:icon="@drawable/delete"
+        android:title="@string/purge_call_history" />
+</menu>

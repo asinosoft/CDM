@@ -81,7 +81,7 @@ class NotificationManager(private val context: Context) {
         val callState = call.callState
 
         val view = RemoteViews(context.packageName, R.layout.call_notification).apply {
-            setTextViewText(R.id.notification_caller_name, contact.name)
+            setTextViewText(R.id.notification_caller_name, contact.title)
             setTextViewText(R.id.notification_call_status, context.getCallStateText(callState))
             setViewVisibility(
                 R.id.notification_accept_call,
@@ -113,7 +113,7 @@ class NotificationManager(private val context: Context) {
         val channel = if (Call.STATE_RINGING == callState) INCOMING_CHANNEL else ONGOING_CHANNEL
         val builder = NotificationCompat.Builder(context, channel)
             .setSmallIcon(R.drawable.call)
-            .setLargeIcon(contact.getAvatar(context,1).toBitmap())
+            .setLargeIcon(contact.getAvatar(context, AvatarHelper.SHORT).toBitmap())
             .setContentIntent(openAppIntent(call))
             .setCategory(Notification.CATEGORY_CALL)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
