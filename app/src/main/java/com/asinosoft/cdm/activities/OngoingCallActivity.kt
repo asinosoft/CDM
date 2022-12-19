@@ -12,10 +12,7 @@ import android.telecom.Call
 import android.telecom.Call.*
 import android.telecom.CallAudioState
 import android.telecom.PhoneAccountHandle
-import android.view.MotionEvent
-import android.view.VelocityTracker
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
@@ -38,10 +35,10 @@ private const val DRAG_THRESHOLD = 0.8f
 private const val VELOCITY_THRESHOLD = 500f
 
 // Продолжительность анимации "Звонок принят"
-private const val ACCEPT_ANIMATION_DURATION = 300L
+private const val ACCEPT_ANIMATION_DURATION = 100L
 
 // Продолжительность анимации "Звонок отклонён"
-private const val REJECT_ANIMATION_DURATION = 300L
+private const val REJECT_ANIMATION_DURATION = 100L
 
 // Продолжительность анимации возврата в исходное состояние
 private const val RESET_ANIMATION_DURATION = 300L
@@ -53,6 +50,10 @@ class OngoingCallActivity : BaseActivity() {
     private lateinit var v: ActivityOngoingCallBinding
     private var call: Call? = null
     private var showIncomingAnimation = false
+
+    private var handleAnimation: ViewPropertyAnimator? = null
+    private var arrowUpAnimation: ViewPropertyAnimator? = null
+    private var arrowDownAnimation: ViewPropertyAnimator? = null
 
     // Интерфейс входящего звонка
     private var touchPosition = 0f
@@ -161,11 +162,17 @@ class OngoingCallActivity : BaseActivity() {
     private fun setCallerInfo(phone: String) {
         val contact = ContactRepositoryImpl(this).getContactByPhone(phone)
 
-        v.info.textCaller.text = contact.name
-        v.info.textCallerNumber.text = phone
-        contact.getAvatar(this, AvatarHelper.IMAGE).let { avatar ->
-            v.info.avatar.setImageDrawable(avatar)
-            v.incoming.handle.setImageDrawable(avatar)
+        if (0L == contact.id) {
+            v.info.textCaller.text = phone
+            v.info.avatar.setImageResource(R.drawable.ic_default_photo)
+            v.incoming.handle.setImageResource(R.drawable.ic_default_photo)
+        } else {
+            v.info.textCaller.text = contact.name
+            v.info.textCallerNumber.text = phone
+            contact.getAvatar(this, AvatarHelper.IMAGE).let { avatar ->
+                v.info.avatar.setImageDrawable(avatar)
+                v.incoming.handle.setImageDrawable(avatar)
+            }
         }
     }
 
@@ -240,10 +247,12 @@ class OngoingCallActivity : BaseActivity() {
 
     private fun acquireProximitySensor() {
         if (powerManager.isWakeLockLevelSupported(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK)) {
-            proximityWakeLock = powerManager.newWakeLock(
-                PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK or PowerManager.ON_AFTER_RELEASE,
-                "com.asinosoft.cdm:wake_lock"
-            )
+            if (null == proximityWakeLock) {
+                proximityWakeLock = powerManager.newWakeLock(
+                    PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK or PowerManager.ON_AFTER_RELEASE,
+                    "com.asinosoft.cdm:wake_lock"
+                )
+            }
             proximityWakeLock?.acquire(/* 1 hour */ 60 * 60 * 1000L)
         }
     }
@@ -283,6 +292,7 @@ class OngoingCallActivity : BaseActivity() {
 
     private fun onCallEnded() {
         Timber.d("onCallEnded # %s", call?.phone)
+        releaseProximitySensor()
         callTimer?.cancel()
 
         CallService.instance?.getNextCall()?.let {
@@ -291,10 +301,6 @@ class OngoingCallActivity : BaseActivity() {
         }
 
         try {
-            if (true == proximityWakeLock?.isHeld()) {
-                proximityWakeLock?.release()
-            }
-
             audioManager.mode = AudioManager.MODE_NORMAL
         } catch (ignored: Exception) {
             Timber.e(ignored)
@@ -340,7 +346,7 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoing.buttonMute.on()
         v.ongoing.buttonKeypad.off()
         v.ongoing.buttonSpeaker.on()
-        acquireProximitySensor()
+        releaseProximitySensor()
     }
 
     /**
@@ -354,6 +360,7 @@ class OngoingCallActivity : BaseActivity() {
         v.info.avatar.visibility = View.GONE
         animateArrowUp()
         animateArrowDown()
+        animateHandle()
         releaseProximitySensor()
     }
 
@@ -492,6 +499,7 @@ class OngoingCallActivity : BaseActivity() {
         isHandleDragged = true
         velocityTracker = VelocityTracker.obtain()
         velocityTracker?.addMovement(e)
+        handleAnimation?.cancel()
 
         return true
     }
@@ -559,33 +567,48 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun animateArrowUp() {
-        if (!showIncomingAnimation) return
+        if (!showIncomingAnimation || isHandleDragged) return
 
         v.incoming.animatedArrowUp.translationY = 400f
 
-        v.incoming.animatedArrowUp.animate()
+        arrowUpAnimation = v.incoming.animatedArrowUp.animate()
             .translationY(0.0f)
             .setDuration(999)
             .withEndAction { animateArrowUp() }
-            .start()
+            .apply { start() }
     }
 
     private fun animateArrowDown() {
-        if (!showIncomingAnimation) return
+        if (!showIncomingAnimation || isHandleDragged) return
 
         v.incoming.animatedArrowDown.translationY = -400f
 
-        v.incoming.animatedArrowDown.animate()
+        arrowDownAnimation = v.incoming.animatedArrowDown.animate()
             .translationY(0.0f)
             .setDuration(999)
             .withEndAction { animateArrowDown() }
-            .start()
+            .apply { start() }
+    }
+
+    private fun animateHandle(dy: Float = 11f) {
+        if (!showIncomingAnimation || isHandleDragged) return
+
+        handleAnimation = v.incoming.handle.animate()
+            .translationY(dy)
+            .setDuration(222)
+            .withEndAction { animateHandle(-dy) }
+            .apply { start() }
     }
 
     private fun animateToStart() {
         v.incoming.handle.animate()
             .translationY(0f)
             .setDuration(RESET_ANIMATION_DURATION)
+            .withEndAction {
+                animateHandle()
+                animateArrowUp()
+                animateArrowDown()
+            }
             .start()
 
         v.incoming.accept.animate()
