@@ -7,9 +7,11 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/avatar"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="20dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
         android:contentDescription="@string/photo"
         app:layout_constraintBottom_toTopOf="@+id/text_caller"
         app:layout_constraintEnd_toEndOf="@+id/text_caller"
@@ -23,7 +25,7 @@
 
     <TextView
         android:id="@+id/text_caller"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:paddingLeft="10sp"
@@ -41,7 +43,7 @@
 
     <TextView
         android:id="@+id/text_caller_number"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="10sp"
         android:paddingRight="10sp"
