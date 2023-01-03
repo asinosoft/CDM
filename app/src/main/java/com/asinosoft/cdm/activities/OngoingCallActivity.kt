@@ -147,16 +147,17 @@ class OngoingCallActivity : BaseActivity() {
     private fun setCallerInfo(phone: String) {
         val contact = ContactRepositoryImpl(this).getContactByPhone(phone)
 
-        if (0L == contact.id) {
-            v.info.textCaller.text = phone
-            v.info.avatar.setImageResource(R.drawable.ic_default_photo)
-            v.incoming.handle.setImageResource(R.drawable.ic_default_photo)
-        } else {
-            v.info.textCaller.text = contact.name
-            v.info.textCallerNumber.text = phone
-            contact.getAvatar(this, AvatarHelper.IMAGE).let { avatar ->
-                v.info.avatar.setImageDrawable(avatar)
-                v.incoming.handle.setImageDrawable(avatar)
+        v.info.textCaller.text = if (0L == contact.id) phone else contact.name
+
+        contact.getPhoto(this)?.let { photo ->
+            // Аватарки пользователей показываем по-крупнее
+            val size: Int = (120 * resources.displayMetrics.density).toInt()
+
+            v.info.avatar.setImageDrawable(photo)
+            v.incoming.handle.setImageDrawable(photo)
+            v.incoming.handle.layoutParams.apply {
+                width = size
+                height = size
             }
         }
     }
@@ -481,7 +482,7 @@ class OngoingCallActivity : BaseActivity() {
         maxHandleDistance = (v.incoming.accept.top - v.incoming.handle.top).absoluteValue.toFloat()
         thresholdDistance =
             maxHandleDistance * resources.getInteger(R.integer.incoming_swing_distance_threshold)
-                .toFloat() / 100f;
+                .toFloat() / 100f
         touchPosition = e.rawY
         isHandleDragged = true
         velocityTracker = VelocityTracker.obtain()

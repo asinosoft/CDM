@@ -34,6 +34,9 @@ data class Contact(
         actions.filter { action -> action.type == Action.Type.WhatsAppChat }
     }
 
+    fun getPhoto(context: Context): Drawable? =
+        fromUri(context, photoUri)
+
     fun getAvatar(context: Context, type: Int): Drawable =
         fromUri(context, photoUri) ?: generateAvatar(context, type)
 
