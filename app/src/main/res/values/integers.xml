@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Длителность анимации качания "кругляша" -->
+    <integer name="incoming_handle_animation_duration">444</integer>
+
+    <!-- Амплитуда качания "кругляша" -->
+    <integer name="incoming_handle_animation_amplitude">11</integer>
+
+    <!-- Длительность анимации движения стрелки вверх -->
+    <integer name="incoming_arrow_up_animation_duration">999</integer>
+
+    <!-- Длительность анимации движения стрелки вверх -->
+    <integer name="incoming_arrow_down_animation_duration">999</integer>
+
+    <!-- Длительность анимации возврата в исходное состояние после отпускания "кругляша" -->
+    <integer name="incoming_reset_animation_duration">300</integer>
+
+    <!-- Длительность финальной анимации "Звонок принят" -->
+    <integer name="incoming_accept_animation_duration">100</integer>
+
+    <!-- Длительность финальной анимации "Звонок отклонён" -->
+    <integer name="incoming_reject_animation_duration">100</integer>
+
+    <!--  Порог ускорения, с которым нужно бросить "кругляш", чтобы принять/отклонить звонок -->
+    <integer name="incoming_swing_velocity_threshold">500</integer>
+
+    <!-- Дистанция, на которую нужно протащить "кругляш", чтобы засчитался бросок (%, где 100% - это протащить до упора) -->
+    <integer name="incoming_swing_distance_threshold">80</integer>
+</resources>

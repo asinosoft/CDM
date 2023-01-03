@@ -28,21 +28,6 @@ import timber.log.Timber
 import java.util.*
 import kotlin.math.absoluteValue
 
-// Порог, докуда нужно дотянуть аватарку, чтобы принять/отклонить звонок
-private const val DRAG_THRESHOLD = 0.8f
-
-// Порог ускорения, с которым нужно бросить аватарку, чтобы принять/отклонить порог
-private const val VELOCITY_THRESHOLD = 500f
-
-// Продолжительность анимации "Звонок принят"
-private const val ACCEPT_ANIMATION_DURATION = 100L
-
-// Продолжительность анимации "Звонок отклонён"
-private const val REJECT_ANIMATION_DURATION = 100L
-
-// Продолжительность анимации возврата в исходное состояние
-private const val RESET_ANIMATION_DURATION = 300L
-
 /**
  * Активность текущего звонка
  */
@@ -494,7 +479,9 @@ class OngoingCallActivity : BaseActivity() {
     //region Incoming call handle interface
     private fun startDrag(e: MotionEvent): Boolean {
         maxHandleDistance = (v.incoming.accept.top - v.incoming.handle.top).absoluteValue.toFloat()
-        thresholdDistance = maxHandleDistance * DRAG_THRESHOLD
+        thresholdDistance =
+            maxHandleDistance * resources.getInteger(R.integer.incoming_swing_distance_threshold)
+                .toFloat() / 100f;
         touchPosition = e.rawY
         isHandleDragged = true
         velocityTracker = VelocityTracker.obtain()
@@ -514,15 +501,16 @@ class OngoingCallActivity : BaseActivity() {
             computeCurrentVelocity(100)
         }
         val position = (e.rawY - touchPosition)
+        val threshold = resources.getInteger(R.integer.incoming_swing_velocity_threshold).toFloat()
 
         when {
             (position > thresholdDistance) -> acceptCall()
 
             (position < -thresholdDistance) -> endCall()
 
-            VELOCITY_THRESHOLD < (velocityTracker?.yVelocity ?: 0f) -> endCall()
+            threshold < (velocityTracker?.yVelocity ?: 0f) -> endCall()
 
-            -VELOCITY_THRESHOLD > (velocityTracker?.yVelocity ?: 0f) -> acceptCall()
+            -threshold > (velocityTracker?.yVelocity ?: 0f) -> acceptCall()
 
             else -> animateToStart()
         }
@@ -573,7 +561,9 @@ class OngoingCallActivity : BaseActivity() {
 
         arrowUpAnimation = v.incoming.animatedArrowUp.animate()
             .translationY(0.0f)
-            .setDuration(999)
+            .setDuration(
+                resources.getInteger(R.integer.incoming_arrow_up_animation_duration).toLong()
+            )
             .withEndAction { animateArrowUp() }
             .apply { start() }
     }
@@ -585,25 +575,33 @@ class OngoingCallActivity : BaseActivity() {
 
         arrowDownAnimation = v.incoming.animatedArrowDown.animate()
             .translationY(0.0f)
-            .setDuration(999)
+            .setDuration(
+                resources.getInteger(R.integer.incoming_arrow_down_animation_duration).toLong()
+            )
             .withEndAction { animateArrowDown() }
             .apply { start() }
     }
 
-    private fun animateHandle(dy: Float = 11f) {
+    private fun animateHandle(
+        dy: Float = resources.getInteger(R.integer.incoming_handle_animation_amplitude).toFloat()
+    ) {
         if (!showIncomingAnimation || isHandleDragged) return
 
         handleAnimation = v.incoming.handle.animate()
             .translationY(dy)
-            .setDuration(222)
+            .setDuration(
+                resources.getInteger(R.integer.incoming_handle_animation_duration).toLong()
+            )
             .withEndAction { animateHandle(-dy) }
             .apply { start() }
     }
 
     private fun animateToStart() {
+        val duration = resources.getInteger(R.integer.incoming_reset_animation_duration).toLong()
+
         v.incoming.handle.animate()
             .translationY(0f)
-            .setDuration(RESET_ANIMATION_DURATION)
+            .setDuration(duration)
             .withEndAction {
                 animateHandle()
                 animateArrowUp()
@@ -615,14 +613,14 @@ class OngoingCallActivity : BaseActivity() {
             .alpha(1f)
             .scaleX(1f)
             .scaleY(1f)
-            .setDuration(RESET_ANIMATION_DURATION)
+            .setDuration(duration)
             .start()
 
         v.incoming.reject.animate()
             .alpha(1f)
             .scaleX(1f)
             .scaleY(1f)
-            .setDuration(RESET_ANIMATION_DURATION)
+            .setDuration(duration)
             .start()
     }
 
@@ -630,7 +628,9 @@ class OngoingCallActivity : BaseActivity() {
         isHandleDragged = false
         v.incoming.handle.animate()
             .translationY(-maxHandleDistance)
-            .setDuration(ACCEPT_ANIMATION_DURATION)
+            .setDuration(
+                resources.getInteger(R.integer.incoming_accept_animation_duration).toLong()
+            )
             .withEndAction { acceptCall() }
             .start()
     }
@@ -639,7 +639,9 @@ class OngoingCallActivity : BaseActivity() {
         isHandleDragged = false
         v.incoming.handle.animate()
             .translationY(maxHandleDistance)
-            .setDuration(REJECT_ANIMATION_DURATION)
+            .setDuration(
+                resources.getInteger(R.integer.incoming_reject_animation_duration).toLong()
+            )
             .withEndAction { endCall() }
             .start()
     }
