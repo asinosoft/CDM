@@ -242,7 +242,9 @@ class OngoingCallActivity : BaseActivity() {
                     "com.asinosoft.cdm:wake_lock"
                 )
             }
-            proximityWakeLock?.acquire(/* 1 hour */ 60 * 60 * 1000L)
+            if (false == proximityWakeLock?.isHeld) {
+                proximityWakeLock?.acquire(/* 1 hour */ 60 * 60 * 1000L)
+            }
         }
     }
 
