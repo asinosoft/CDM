@@ -147,10 +147,17 @@ class OngoingCallActivity : BaseActivity() {
     private fun setCallerInfo(phone: String) {
         val contact = ContactRepositoryImpl(this).getContactByPhone(phone)
 
-        v.info.textCaller.text = if (0L == contact.id) phone else contact.name
+        if (0L == contact.id) {
+            v.info.textCaller.text = phone
+            v.info.textCallerNumber.text = null
+
+        } else {
+            v.info.textCaller.text = contact.name
+            v.info.textCallerNumber.text = phone
+        }
 
         contact.getPhoto(this)?.let { photo ->
-            // Аватарки пользователей показываем по-крупнее
+            // Аватарки пользователей показываем покрупнее
             val size: Int = (120 * resources.displayMetrics.density).toInt()
 
             v.info.avatar.setImageDrawable(photo)
