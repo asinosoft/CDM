@@ -173,7 +173,7 @@ class OngoingCallActivity : BaseActivity() {
     private fun initEventListeners() {
 
         v.ongoing.disconnect.setOnClickListener {
-            endCall()
+            call?.reject()
         }
 
         v.ongoing.buttonSpeaker.setOnClickListener {
@@ -270,8 +270,6 @@ class OngoingCallActivity : BaseActivity() {
 
     private fun acceptCall() {
         Timber.d("activateCall # %s", call?.phone)
-        v.incoming.root.visibility = View.GONE
-        showIncomingAnimation = false
         switchToCallingUI()
         call?.accept()
     }
@@ -285,13 +283,15 @@ class OngoingCallActivity : BaseActivity() {
 
     private fun onCallEnded() {
         Timber.d("onCallEnded # %s", call?.phone)
-        releaseProximitySensor()
-        callTimer?.cancel()
 
         CallService.instance?.getNextCall()?.let {
             setCurrentCall(it)
+            initTimer()
             return
         }
+
+        releaseProximitySensor()
+        callTimer?.cancel()
 
         try {
             audioManager.mode = AudioManager.MODE_NORMAL
