@@ -8,12 +8,12 @@
 
     <item
         android:id="@+id/delete_call_item"
-        android:icon="@drawable/ic_photo_default"
+        android:icon="@drawable/ic_default_photo"
         android:title="@string/delete_call_history_record" />
 
     <item
         android:id="@+id/purge_contact_history"
-        android:icon="@drawable/ic_photo_default"
+        android:icon="@drawable/ic_default_photo"
         android:title="@string/purge_contact_history" />
 
     <item

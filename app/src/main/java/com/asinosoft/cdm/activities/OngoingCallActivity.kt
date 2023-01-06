@@ -14,6 +14,7 @@ import android.telecom.CallAudioState
 import android.telecom.PhoneAccountHandle
 import android.view.*
 import android.widget.ImageView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.ContactRepositoryImpl
@@ -150,23 +151,18 @@ class OngoingCallActivity : BaseActivity() {
         if (0L == contact.id) {
             v.info.textCaller.text = phone
             v.info.textCallerNumber.text = null
-
         } else {
             v.info.textCaller.text = contact.name
             v.info.textCallerNumber.text = phone
         }
 
-        contact.getPhoto(this)?.let { photo ->
-            // Аватарки пользователей показываем покрупнее
-            val size: Int = (120 * resources.displayMetrics.density).toInt()
-
-            v.info.avatar.setImageDrawable(photo)
-            v.incoming.handle.setImageDrawable(photo)
-            v.incoming.handle.layoutParams.apply {
-                width = size
-                height = size
-            }
-        }
+        val photo = contact.getPhoto(this)
+            ?: AppCompatResources.getDrawable(
+                this,
+                R.drawable.ic_small_photo
+            )
+        v.info.avatar.setImageDrawable(photo)
+        v.incoming.handle.setImageDrawable(photo)
     }
 
     @SuppressLint("ResourceAsColor")
