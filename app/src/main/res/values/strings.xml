@@ -162,6 +162,8 @@
     <string name="purge_contact_history">Purge contact history</string>
     <string name="purge_call_history">Purge call history</string>
     <string name="drag_me">Drag me up to accept Call. Or down to reject.</string>
+    <string name="call_sim1">Call by SIM1</string>
+    <string name="call_sim2">Call by SIM2</string>
 
     <plurals name="age">
         <item quantity="zero">%d years</item>

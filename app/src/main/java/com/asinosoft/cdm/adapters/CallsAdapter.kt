@@ -1,15 +1,22 @@
 package com.asinosoft.cdm.adapters
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.*
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.CallLog
+import android.telecom.PhoneAccountHandle
+import android.telecom.TelecomManager
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
@@ -242,14 +249,22 @@ class CallsAdapter(
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun showPopup(view: View, call: CallHistoryItem) {
         popupCall = call
         notifyItemChanged(1 + calls.indexOf(popupCall))
 
         val popup = PopupMenu(view.context, view, Gravity.END)
         popup.inflate(R.menu.call_history_context_menu)
+
+        if (!isMultiSim(view.context)) {
+            popup.menu.removeGroup(R.id.call_sim_group)
+        }
+
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
+                R.id.call_sim1 -> call(call, context.telecomManager.callCapablePhoneAccounts.first())
+                R.id.call_sim2 -> call(call, context.telecomManager.callCapablePhoneAccounts.last())
                 R.id.copy_number -> copyNumber(call)
                 R.id.delete_call_item -> onDeleteCallRecord(call)
                 R.id.purge_contact_history -> onPurgeContactHistory(call.contact)
@@ -263,8 +278,21 @@ class CallsAdapter(
             }
             popupCall = null
         }
+
+        popup.setForceShowIcon(true)
         popup.show()
         context.vibrator.vibrateSafety(2, 255)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun call(item: CallHistoryItem, handle: PhoneAccountHandle) {
+        val phone = Uri.fromParts("tel", item.phone, null)
+
+        Bundle().apply {
+            putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, handle)
+            putBoolean(TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE, false)
+            putBoolean(TelecomManager.EXTRA_START_CALL_WITH_SPEAKERPHONE, false)
+        }.let { context.telecomManager.placeCall(phone, it) }
     }
 
     private fun copyNumber(call: CallHistoryItem) {
@@ -276,4 +304,11 @@ class CallsAdapter(
             .show()
         Analytics.logKeyboardCopy()
     }
+
+    private fun isMultiSim(context: Context): Boolean =
+        PackageManager.PERMISSION_GRANTED == checkSelfPermission(
+            context,
+            Manifest.permission.READ_PHONE_STATE
+        )
+            && context.telecomManager.callCapablePhoneAccounts.count() >= 2
 }
