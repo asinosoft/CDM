@@ -3,6 +3,7 @@ package com.asinosoft.cdm.activities
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
@@ -14,7 +15,6 @@ import android.telecom.CallAudioState
 import android.telecom.PhoneAccountHandle
 import android.view.*
 import android.widget.ImageView
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.ContactRepositoryImpl
@@ -157,12 +157,16 @@ class OngoingCallActivity : BaseActivity() {
         }
 
         val photo = contact.getPhoto(this)
-            ?: AppCompatResources.getDrawable(
-                this,
-                R.drawable.ic_small_photo
-            )
-        v.info.avatar.setImageDrawable(photo)
-        v.incoming.handle.setImageDrawable(photo)
+        if (null == photo) {
+            v.info.avatar.setImageResource(R.drawable.ic_user_circle)
+            v.incoming.handle.setImageResource(R.drawable.ic_user_circle)
+            val color = ColorStateList.valueOf(AvatarHelper.getBackgroundColor(phone))
+            v.info.avatar.imageTintList = color
+            v.incoming.handle.imageTintList = color
+        } else {
+            v.info.avatar.setImageDrawable(photo)
+            v.incoming.handle.setImageDrawable(photo)
+        }
     }
 
     @SuppressLint("ResourceAsColor")
