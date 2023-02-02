@@ -41,7 +41,7 @@
 
     <include
         android:id="@+id/keyboard"
-        layout="@layout/keyboard"
+        layout="@layout/fragment_keyboard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/shape"
