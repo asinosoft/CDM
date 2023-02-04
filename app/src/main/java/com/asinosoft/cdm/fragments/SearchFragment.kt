@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -20,9 +21,20 @@ import com.asinosoft.cdm.helpers.Metoths.Companion.toggle
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 
 class SearchFragment : Fragment() {
+    private lateinit var v: ActivitySearchBinding
+    private lateinit var keyboard: KeyboardFragment
     private val model: ManagerViewModel by activityViewModels()
     private val contactsAdapter = ContactsAdapter()
     private var contacts = listOf<Contact>()
+
+    /**
+     * Сброс фильтра при нажатии системной кнопки Назад
+     */
+    private val onBackPressed = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            keyboard.clear()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,14 +42,13 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         Analytics.logActivitySearch()
-        val v = ActivitySearchBinding.inflate(layoutInflater)
-        initActivity(v)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressed)
+        v = ActivitySearchBinding.inflate(layoutInflater)
+        keyboard = childFragmentManager.findFragmentById(R.id.keyboard) as KeyboardFragment
         return v.root
     }
 
-    private fun initActivity(v: ActivitySearchBinding) {
-        val keyboard = childFragmentManager.findFragmentById(R.id.keyboard) as KeyboardFragment
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         model.contacts.observe(viewLifecycleOwner) { contacts ->
             this.contacts = contacts.filter { contact -> contact.phones.isNotEmpty() }
                 .sortedBy { it.name }
@@ -56,6 +67,7 @@ class SearchFragment : Fragment() {
         keyboard.doOnTextChanged { text ->
             val regex = Regex(Metoths.getPattern(text, requireContext()), RegexOption.IGNORE_CASE)
             contactsAdapter.setContactList(contacts.filtered(text, regex), text, regex)
+            onBackPressed.isEnabled = text.isNotEmpty()
         }
 
         keyboard.onCallButtonClick { phoneNumber, sim ->

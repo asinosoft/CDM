@@ -74,6 +74,10 @@ class KeyboardFragment : Fragment() {
         closeButtonClickCallback = callback
     }
 
+    fun clear() {
+        v.inputText.text = ""
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
