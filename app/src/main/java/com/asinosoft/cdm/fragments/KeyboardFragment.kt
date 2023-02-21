@@ -33,6 +33,12 @@ class KeyboardFragment : Fragment() {
     private var callButtonClickCallback: (phoneNumber: String, sim: Int) -> Unit = { _, _ -> }
     private var closeButtonClickCallback: () -> Unit = {}
 
+    var text: String
+        get() = v.inputText.text.toString()
+        set(text) {
+            v.inputText.text = text
+        }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -72,10 +78,6 @@ class KeyboardFragment : Fragment() {
      */
     fun onCloseButtonClick(callback: () -> Unit) {
         closeButtonClickCallback = callback
-    }
-
-    fun clear() {
-        v.inputText.text = ""
     }
 
     override fun onCreateView(

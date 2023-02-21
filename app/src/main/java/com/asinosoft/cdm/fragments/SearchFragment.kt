@@ -32,7 +32,7 @@ class SearchFragment : Fragment() {
      */
     private val onBackPressed = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
-            keyboard.clear()
+            keyboard.text = ""
         }
     }
 
@@ -45,6 +45,10 @@ class SearchFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressed)
         v = ActivitySearchBinding.inflate(layoutInflater)
         keyboard = childFragmentManager.findFragmentById(R.id.keyboard) as KeyboardFragment
+        arguments?.getString("phone")?.let { phone ->
+            keyboard.text = phone
+        }
+
         return v.root
     }
 
@@ -52,7 +56,7 @@ class SearchFragment : Fragment() {
         model.contacts.observe(viewLifecycleOwner) { contacts ->
             this.contacts = contacts.filter { contact -> contact.phones.isNotEmpty() }
                 .sortedBy { it.name }
-            contactsAdapter.setContactList(this.contacts)
+            filter(keyboard.text)
         }
 
         v.rvFilteredContacts.adapter = contactsAdapter
@@ -64,11 +68,7 @@ class SearchFragment : Fragment() {
             )
         }
 
-        keyboard.doOnTextChanged { text ->
-            val regex = Regex(Metoths.getPattern(text, requireContext()), RegexOption.IGNORE_CASE)
-            contactsAdapter.setContactList(contacts.filtered(text, regex), text, regex)
-            onBackPressed.isEnabled = text.isNotEmpty()
-        }
+        keyboard.doOnTextChanged { text -> filter(text) }
 
         keyboard.onCallButtonClick { phoneNumber, sim ->
             Analytics.logCallFromSearch()
@@ -93,6 +93,12 @@ class SearchFragment : Fragment() {
             v.layoutKeyboard.toggle()
             v.fabKeyboard.hide()
         }
+    }
+
+    private fun filter(text: String) {
+        val regex = Regex(Metoths.getPattern(text, requireContext()), RegexOption.IGNORE_CASE)
+        contactsAdapter.setContactList(contacts.filtered(text, regex), text, regex)
+        onBackPressed.isEnabled = text.isNotEmpty()
     }
 
     private fun List<Contact>.filtered(nums: String, regex: Regex?): List<Contact> {
