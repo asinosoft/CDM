@@ -43,6 +43,7 @@
     <string name="voicemail">Голосовая почта</string>
     <string name="unsaved">Не сохранено</string>
     <string name="add_error">Ошибка</string>
+    <string name="contact_not_found">Контакт не найден</string>
 
     <string name="digit_one_text">&#8203;</string>
     <string name="digit_two_text">ABC\nАБВГ</string>
@@ -115,7 +116,7 @@
     <string name="menu_paste">Вставить</string>
     <string name="menu_copy">Копировать</string>
 
-    <string name="copied" >Скопировано в буфер обмена</string>
+    <string name="copied">Скопировано в буфер обмена</string>
     <string name="privacy_policy">Политика конфиденциальности</string>
 
     <!-- About activity -->

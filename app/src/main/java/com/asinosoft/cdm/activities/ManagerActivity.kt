@@ -47,7 +47,7 @@ class ManagerActivity : BaseActivity() {
 
         requestDrawOverlays(findViewById(R.id.nav_host))
 
-        if (intent.action === Intent.ACTION_DIAL) {
+        if (intent.action === Intent.ACTION_DIAL || intent.action === Intent.ACTION_CALL) {
             intent.data?.schemeSpecificPart?.let { phone ->
                 val host = supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
                 host.navController.navigate(R.id.searchFragment, bundleOf("phone" to phone))

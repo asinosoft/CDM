@@ -42,6 +42,7 @@
     <string name="voicemail">Voice mail</string>
     <string name="unsaved">Unsaved</string>
     <string name="add_error">Error</string>
+    <string name="contact_not_found">Contact not found</string>
 
     <!-- Passcode lock -->
     <string name="digit_one" translatable="false">1</string>

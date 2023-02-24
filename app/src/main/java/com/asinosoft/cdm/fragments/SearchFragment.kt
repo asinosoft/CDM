@@ -17,7 +17,6 @@ import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ActivitySearchBinding
 import com.asinosoft.cdm.helpers.Metoths
-import com.asinosoft.cdm.helpers.Metoths.Companion.toggle
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 
 class SearchFragment : Fragment() {
@@ -85,20 +84,24 @@ class SearchFragment : Fragment() {
 
         keyboard.onCloseButtonClick {
             Analytics.logSearchKeyboardClose()
-            v.layoutKeyboard.toggle()
+            v.layoutKeyboard.visibility = View.GONE
             v.fabKeyboard.show()
         }
 
         v.fabKeyboard.setOnClickListener {
-            v.layoutKeyboard.toggle()
+            v.layoutKeyboard.visibility = View.VISIBLE
             v.fabKeyboard.hide()
         }
     }
 
     private fun filter(text: String) {
         val regex = Regex(Metoths.getPattern(text, requireContext()), RegexOption.IGNORE_CASE)
-        contactsAdapter.setContactList(contacts.filtered(text, regex), text, regex)
+        val filtered = contacts.filtered(text, regex)
+        contactsAdapter.setContactList(filtered, text, regex)
         onBackPressed.isEnabled = text.isNotEmpty()
+
+        // Показываем/скрываем сообщение "Не найдено"
+        v.notFound.visibility = if (filtered.isEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun List<Contact>.filtered(nums: String, regex: Regex?): List<Contact> {
