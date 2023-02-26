@@ -117,6 +117,9 @@ class Analytics {
         fun logDoubleCall() =
             Firebase.analytics.logEvent("double_call", Bundle.EMPTY)
 
+        fun logIncomingCall() =
+            Firebase.analytics.logEvent("incoming_call", Bundle.EMPTY)
+
         fun logFavoriteAction(direction: String) =
             Firebase.analytics.logEvent("favorite_action_$direction", Bundle.EMPTY)
 

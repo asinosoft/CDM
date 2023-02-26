@@ -47,6 +47,9 @@ class CallService : InCallService() {
         if (calls.size >= 2) {
             Analytics.logDoubleCall()
         }
+        if (Call.STATE_RINGING == call.callState) {
+            Analytics.logIncomingCall()
+        }
     }
 
     override fun onCallRemoved(call: Call) {
