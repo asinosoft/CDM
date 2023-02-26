@@ -38,6 +38,7 @@
 
     <attr name="backspaceIcon" format="reference" />
     <attr name="callIcon" format="reference" />
+    <attr name="hangupIcon" format="reference" />
     <attr name="settingsIcon" format="reference" />
     <attr name="voicemailIcon" format="reference" />
     <attr name="popupColor" format="reference" />

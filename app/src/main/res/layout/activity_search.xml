@@ -6,12 +6,30 @@
     android:layout_height="match_parent"
     tools:context="com.asinosoft.cdm.fragments.SearchFragment">
 
+    <LinearLayout
+        android:id="@+id/not_found"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible">
+
+        <TextView
+            style="@style/Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@string/contact_not_found" />
+
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_filtered_contacts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/contact_item"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/contact_item" />
 
     <LinearLayout
         android:id="@+id/layout_keyboard"

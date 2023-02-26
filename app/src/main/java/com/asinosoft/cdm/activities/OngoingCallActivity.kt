@@ -20,7 +20,6 @@ import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.databinding.ActivityOngoingCallBinding
 import com.asinosoft.cdm.dialer.CallService
-import com.asinosoft.cdm.dialer.addCharacter
 import com.asinosoft.cdm.dialer.getCallStateText
 import com.asinosoft.cdm.dialer.getFormattedDuration
 import com.asinosoft.cdm.helpers.*
@@ -169,7 +168,7 @@ class OngoingCallActivity : BaseActivity() {
         }
     }
 
-    @SuppressLint("ResourceAsColor")
+    @SuppressLint("ClickableViewAccessibility")
     private fun initEventListeners() {
 
         v.ongoing.disconnect.setOnClickListener {
@@ -192,7 +191,10 @@ class OngoingCallActivity : BaseActivity() {
             toggleKeyboard()
         }
 
-        v.keyboard.ripple0.setOnClickListener { dialpadPressed('0') }
+        v.keyboard.star.setOnClickListener { dialpadPressed('*') }
+        v.keyboard.star.setOnLongClickListener { dialpadPressed('#'); true }
+
+        v.keyboard.zeroBtn.setOnClickListener { dialpadPressed('0') }
         v.keyboard.oneBtn.setOnClickListener { dialpadPressed('1') }
         v.keyboard.twoBtn.setOnClickListener { dialpadPressed('2') }
         v.keyboard.threeBtn.setOnClickListener { dialpadPressed('3') }
@@ -203,10 +205,8 @@ class OngoingCallActivity : BaseActivity() {
         v.keyboard.eightBtn.setOnClickListener { dialpadPressed('8') }
         v.keyboard.nineBtn.setOnClickListener { dialpadPressed('9') }
 
-        v.keyboard.imageClear.setOnClickListener { toggleKeyboard() }
-        v.keyboard.btnCall.setOnClickListener { endCall() }
-
-        v.keyboard.ripple0.setOnLongClickListener { dialpadPressed('+'); true }
+        v.keyboard.close.setOnClickListener { toggleKeyboard() }
+        v.keyboard.hangup.setOnClickListener { endCall() }
 
         v.incoming.root.setOnTouchListener { _, e ->
             when (e.action) {
@@ -381,7 +381,6 @@ class OngoingCallActivity : BaseActivity() {
     private fun switchToKeyboard() {
         v.ongoing.root.visibility = View.INVISIBLE
         v.keyboard.root.visibility = View.VISIBLE
-        v.keyboard.btnCall.setImageResource(R.drawable.ic_phone_hangup)
         releaseProximitySensor()
     }
 
@@ -428,9 +427,9 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun dialpadPressed(char: Char) {
+        v.keyboard.inputText.text = v.keyboard.inputText.text.toString().plus(char)
         call?.playDtmfTone(char)
         call?.stopDtmfTone()
-        v.keyboard.inputText.addCharacter(char)
     }
 
     private fun updateCallState(callState: Int) {
