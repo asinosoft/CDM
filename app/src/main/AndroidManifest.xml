@@ -78,6 +78,16 @@
                 <data android:scheme="tel" />
             </intent-filter>
 
+        </activity>
+
+
+        <activity
+            android:name=".activities.CallActivity"
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:parentActivityName=".activities.ManagerActivity"
+            android:theme="@style/Theme.Transparent">
+
             <intent-filter>
                 <action android:name="android.intent.action.CALL" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -88,15 +98,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="tel" />
             </intent-filter>
+
         </activity>
-
-
-        <activity
-            android:name=".activities.DialActivity"
-            android:exported="true"
-            android:launchMode="singleInstance"
-            android:parentActivityName=".activities.ManagerActivity"
-            android:theme="@style/Theme.Transparent" />
 
         <activity
             android:name=".activities.OngoingCallActivity"

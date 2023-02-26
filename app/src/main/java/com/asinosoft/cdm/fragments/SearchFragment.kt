@@ -12,11 +12,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.asinosoft.cdm.R
+import com.asinosoft.cdm.activities.CallActivity
 import com.asinosoft.cdm.adapters.ContactsAdapter
 import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.databinding.ActivitySearchBinding
 import com.asinosoft.cdm.helpers.Metoths
+import com.asinosoft.cdm.helpers.isDefaultDialer
 import com.asinosoft.cdm.viewmodels.ManagerViewModel
 
 class SearchFragment : Fragment() {
@@ -72,7 +74,14 @@ class SearchFragment : Fragment() {
         keyboard.onCallButtonClick { phoneNumber, sim ->
             Analytics.logCallFromSearch()
             findNavController().popBackStack()
-            Intent(Intent.ACTION_CALL, Uri.fromParts("tel", phoneNumber, null))
+
+            val intent = if (requireContext().isDefaultDialer())
+                Intent(requireContext(), CallActivity::class.java)
+            else
+                Intent(Intent.ACTION_CALL)
+
+            intent
+                .setData(Uri.fromParts("tel", phoneNumber, null))
                 .putExtra("sim", sim)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .let { startActivity(it) }

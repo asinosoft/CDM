@@ -133,7 +133,7 @@
         <item name="android:textColor">@color/active_tab_text_light</item>
     </style>
 
-    <!-- Специальная прозрачная тема для промежуточной активоности DialActivity -->
+    <!-- Специальная прозрачная тема для промежуточной активности CallActivity -->
     <style name="Theme.Transparent" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>

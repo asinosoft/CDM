@@ -23,7 +23,7 @@ import timber.log.Timber
 /**
  * Невидимая активность для выбора симки и запуска звонка
  */
-class DialActivity : AppCompatActivity() {
+class CallActivity : AppCompatActivity() {
     private lateinit var phone: Uri
     private var sim: Int = 0
 
