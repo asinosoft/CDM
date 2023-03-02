@@ -28,8 +28,6 @@ class NotificationManager(private val context: Context) {
         private const val ONGOING_CHANNEL = "Ongoing"
     }
 
-    private val notifications = mutableMapOf<Int, Call>()
-
     init {
         if (Build.VERSION.SDK_INT >= 26) {
             Timber.d("Register notification channels")
@@ -59,19 +57,14 @@ class NotificationManager(private val context: Context) {
 
     fun show(calls: List<Call>) {
         // Удаляем завершённые звонки
-        notifications
-            .filterKeys { id -> calls.all { call -> call.id != id } }.keys
-            .forEach { id ->
-                Timber.d("remove # %d", id)
-                notifications.remove(id)
-                context.notificationManager.cancel(id)
+        context.notificationManager.activeNotifications.iterator().forEach { notification ->
+            if (calls.all { call -> call.id != notification.id }) {
+                context.notificationManager.cancel(notification.id)
             }
+        }
 
         // Добавляем уведомления о новых звонках и обновляем текущие
-        calls.forEach { call ->
-            notifications[call.id] = call
-            update(call)
-        }
+        calls.forEach { update(it) }
     }
 
     fun update(call: Call) {
