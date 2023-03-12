@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,12 +23,12 @@ import com.asinosoft.cdm.helpers.Metoths.Companion.vibrateSafety
 import com.asinosoft.cdm.helpers.runOnUiThread
 import com.asinosoft.cdm.helpers.telecomManager
 import com.asinosoft.cdm.helpers.vibrator
+import com.skyfishjy.library.RippleBackground
 
 /**
- * Класс кастомной клавиатуры.
+ * Фрагмент со всплывающей клавиатурой
  */
 class KeyboardFragment : Fragment() {
-    private val KEY_PHONE = "phone"
     private lateinit var v: KeyboardBinding
     private var settingsButtonClickCallback: () -> Unit = {}
     private var callButtonClickCallback: (phoneNumber: String, sim: Int) -> Unit = { _, _ -> }
@@ -60,7 +61,7 @@ class KeyboardFragment : Fragment() {
     }
 
     /**
-     * Реакия на кнопку "Вызов"
+     * Реакция на кнопку "Вызов"
      */
     fun onCallButtonClick(callback: (phoneNumber: String, sim: Int) -> Unit) {
         callButtonClickCallback = callback
@@ -87,77 +88,39 @@ class KeyboardFragment : Fragment() {
     ): View {
         v = KeyboardBinding.inflate(inflater, container, false)
         v.oneBtn.setOnClickListener {
-            v.ripple1.startRippleAnimation()
-            Handler().postDelayed(
-                {
-                    context?.runOnUiThread { v.ripple1.stopRippleAnimation() }
-                },
-                167
-            )
+            v.ripple1.ripple()
             takeValue("1")
         }
         v.twoBtn.setOnClickListener {
-            v.ripple2.startRippleAnimation()
-            Handler().postDelayed(
-                { context?.runOnUiThread { v.ripple2.stopRippleAnimation() } },
-                167
-            )
+            v.ripple2.ripple()
             takeValue("2")
         }
         v.threeBtn.setOnClickListener {
-            v.ripple3.startRippleAnimation()
-            Handler().postDelayed(
-                { context?.runOnUiThread { v.ripple3.stopRippleAnimation() } },
-                167
-            )
+            v.ripple3.ripple()
             takeValue("3")
         }
         v.fourBtn.setOnClickListener {
-            v.ripple4.startRippleAnimation()
-            Handler().postDelayed(
-                { context?.runOnUiThread { v.ripple4.stopRippleAnimation() } },
-                167
-            )
+            v.ripple4.ripple()
             takeValue("4")
         }
         v.fiveBtn.setOnClickListener {
-            v.ripple5.startRippleAnimation()
-            Handler().postDelayed(
-                { context?.runOnUiThread { v.ripple5.stopRippleAnimation() } },
-                167
-            )
+            v.ripple5.ripple()
             takeValue("5")
         }
         v.sixBtn.setOnClickListener {
-            v.ripple6.startRippleAnimation()
-            Handler().postDelayed(
-                { context?.runOnUiThread { v.ripple6.stopRippleAnimation() } },
-                167
-            )
+            v.ripple6.ripple()
             takeValue("6")
         }
         v.sevenBtn.setOnClickListener {
-            v.ripple7.startRippleAnimation()
-            Handler().postDelayed(
-                { context?.runOnUiThread { v.ripple7.stopRippleAnimation() } },
-                167
-            )
+            v.ripple7.ripple()
             takeValue("7")
         }
         v.eightBtn.setOnClickListener {
-            v.ripple8.startRippleAnimation()
-            Handler().postDelayed(
-                { context?.runOnUiThread { v.ripple8.stopRippleAnimation() } },
-                167
-            )
+            v.ripple8.ripple()
             takeValue("8")
         }
         v.nineBtn.setOnClickListener {
-            v.ripple9.startRippleAnimation()
-            Handler().postDelayed(
-                { context?.runOnUiThread { v.ripple9.stopRippleAnimation() } },
-                167
-            )
+            v.ripple9.ripple()
             takeValue("9")
         }
         v.zeroBtn.setOnLongClickListener {
@@ -172,15 +135,7 @@ class KeyboardFragment : Fragment() {
             true
         }
         v.zeroBtn.setOnClickListener {
-            v.ripple0.startRippleAnimation()
-            Handler().postDelayed(
-                {
-                    context?.runOnUiThread {
-                        v.ripple0.stopRippleAnimation()
-                    }
-                },
-                167
-            )
+            v.ripple0.ripple()
             takeValue("0")
         }
         v.imageBackspace.setOnClickListener {
@@ -223,14 +178,13 @@ class KeyboardFragment : Fragment() {
             }
         }
 
-        v.inputText.setOnLongClickListener { view ->
+        v.inputText.setOnLongClickListener { _ ->
             val myClipboard =
                 requireContext().getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager?
 
             if (v.inputText.text.isEmpty()) {
                 val abc = myClipboard?.primaryClip
                 val item = abc?.getItemAt(0)
-                val text = item?.text.toString()
                 context?.vibrator?.vibrateSafety(2, 255)
                 item?.text?.let {
                     v.inputText.text = it
@@ -255,7 +209,7 @@ class KeyboardFragment : Fragment() {
         Intent().apply {
             action = Intent.ACTION_INSERT_OR_EDIT
             type = "vnd.android.cursor.item/contact"
-            putExtra(KEY_PHONE, number)
+            putExtra("phone", number)
             launchActivityIntent(this)
         }
     }
@@ -274,4 +228,14 @@ class KeyboardFragment : Fragment() {
         v.settingsButton.setImageResource(R.drawable.ic_add_contact_new)
         v.inputText.text = v.inputText.text.toString().plus(num)
     }
+}
+
+fun RippleBackground.ripple() {
+    startRippleAnimation()
+    Handler(Looper.getMainLooper()).postDelayed(
+        {
+            context?.runOnUiThread { stopRippleAnimation() }
+        },
+        167
+    )
 }

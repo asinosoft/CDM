@@ -217,7 +217,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun retrieveLatestCalls() {
-        Timber.d("Подгрузка старой истории звонков")
+        Timber.d("Загрузка старой истории звонков")
         val callHistory = calls.value ?: listOf()
         val oldestCalls = callsRepository.getLatestHistory(
             getApplication(),

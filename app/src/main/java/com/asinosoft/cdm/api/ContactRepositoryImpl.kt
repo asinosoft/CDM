@@ -13,6 +13,8 @@ import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * Доступ к контактам
@@ -150,12 +152,11 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(contactId)
                 val name = cursor.getStringOrNull(displayName) ?: ""
-                val photo = cursor.getStringOrNull(photoUri)
-                    ?.let { Uri.parse(it) }
+                val photo = cursor.getStringOrNull(photoUri)?.let { Uri.parse(it) }
 
-                result.getOrPut(id) { Contact(id, name) }.let { contact ->
-                    contact.photoUri = photo
-                    contact.starred = 1 == cursor.getInt(starred)
+                result.getOrPut(id) {
+                    Contact(id, name, null, photo, 1 == cursor.getInt(starred))
+                }.let { contact ->
                     when (cursor.getString(mimeType).dropWhile { c -> c != '/' }) {
                         "/contact_event" -> parseBirthday(contact)
                         "/phone_v2" -> parsePhone(contact)
@@ -204,9 +205,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
         private fun parseBirthday(contact: Contact) {
             val date = cursor.getString(data1)
-
-            contact.age = StHelper.getAge(date)
-            contact.birthday = StHelper.parseDateToddMMyyyy(date)
+            contact.birthday = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)
         }
 
         private fun parsePhone(contact: Contact) {

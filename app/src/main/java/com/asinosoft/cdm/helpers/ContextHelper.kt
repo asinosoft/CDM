@@ -64,11 +64,13 @@ fun Context.hasNavBar(): Boolean {
     return id > 0 && resources.getBoolean(id)
 }
 
-fun Context.hasPermissions(permissions: Array<String>): Boolean {
-    return permissions.all {
+fun Context.hasPermission(permission: String): Boolean =
+    PackageManager.PERMISSION_GRANTED == checkSelfPermission(permission)
+
+fun Context.hasPermissions(permissions: Array<String>): Boolean =
+    permissions.all {
         PackageManager.PERMISSION_GRANTED == checkSelfPermission(it)
     }
-}
 
 fun Context.navBarHeight(): Int {
     val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")

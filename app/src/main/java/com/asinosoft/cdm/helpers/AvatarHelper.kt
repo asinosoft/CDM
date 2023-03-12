@@ -34,25 +34,12 @@ class AvatarHelper {
             val bitmap = Bitmap.createBitmap(size, size, ARGB_8888)
             val canvas = Canvas(bitmap)
             val painter = Paint().apply { isAntiAlias = true }
-            val textPaint = TextPaint().apply {
-                isAntiAlias = true
-                textSize = fontSize * context.resources.displayMetrics.scaledDensity
-            }
 
             painter.color = backgroundColor
             canvas.drawRect(areaRect, painter)
 
-            val label = firstCharacter(name, type)
-            val bounds = RectF(areaRect)
-            bounds.right = textPaint.measureText(label, 0, label.length)
-            bounds.bottom = textPaint.descent() - textPaint.ascent()
-            bounds.left += (size - bounds.right) / 2.0f
-            bounds.top += (size - bounds.bottom) / 2.0f
-
             painter.color = Color.TRANSPARENT
             canvas.drawCircle(size.toFloat() / 2, size.toFloat() / 2, size.toFloat() / 2, painter)
-
-            textPaint.color = getTextColor(backgroundColor)
 
             if (type == IMAGE) {
                 val icon = ContextCompat.getDrawable(
@@ -64,6 +51,18 @@ class AvatarHelper {
                 icon.intrinsicHeight
                 icon.intrinsicWidth
             } else {
+                val textPaint = TextPaint().apply {
+                    color = getTextColor(backgroundColor)
+                    isAntiAlias = true
+                    textSize = fontSize * context.resources.displayMetrics.scaledDensity
+                }
+                val label = firstCharacter(name, type)
+                val bounds = RectF(areaRect)
+                bounds.right = textPaint.measureText(label, 0, label.length)
+                bounds.bottom = textPaint.descent() - textPaint.ascent()
+                bounds.left += (size - bounds.right) / 2.0f
+                bounds.top += (size - bounds.bottom) / 2.0f
+
                 canvas.drawText(label, bounds.left, bounds.top - textPaint.ascent(), textPaint)
             }
 

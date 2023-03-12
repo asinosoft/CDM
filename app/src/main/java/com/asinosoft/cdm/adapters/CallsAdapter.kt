@@ -3,7 +3,6 @@ package com.asinosoft.cdm.adapters
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.*
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.CallLog
@@ -16,7 +15,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
@@ -107,11 +105,11 @@ class CallsAdapter(
 
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
         when (holder.v) {
-            is ItemCallBinding -> bindCallHistoryItem(holder.v, calls[position - 1], position)
+            is ItemCallBinding -> bindCallHistoryItem(holder.v, calls[position - 1])
         }
     }
 
-    private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem, position: Int) {
+    private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem) {
         v.topDivider.isVisible = config.listDivider && config.favoritesFirst
         v.bottomDivider.isVisible = config.listDivider && !config.favoritesFirst
         v.imageContact.setImageDrawable(call.contact.getAvatar(context, AvatarHelper.SHORT))
@@ -263,7 +261,10 @@ class CallsAdapter(
 
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.call_sim1 -> call(call, context.telecomManager.callCapablePhoneAccounts.first())
+                R.id.call_sim1 -> call(
+                    call,
+                    context.telecomManager.callCapablePhoneAccounts.first()
+                )
                 R.id.call_sim2 -> call(call, context.telecomManager.callCapablePhoneAccounts.last())
                 R.id.copy_number -> copyNumber(call)
                 R.id.delete_call_item -> onDeleteCallRecord(call)
@@ -305,10 +306,7 @@ class CallsAdapter(
         Analytics.logKeyboardCopy()
     }
 
+    @SuppressLint("MissingPermission")
     private fun isMultiSim(context: Context): Boolean =
-        PackageManager.PERMISSION_GRANTED == checkSelfPermission(
-            context,
-            Manifest.permission.READ_PHONE_STATE
-        )
-            && context.telecomManager.callCapablePhoneAccounts.count() >= 2
+        context.hasPermission(Manifest.permission.READ_PHONE_STATE) && context.telecomManager.callCapablePhoneAccounts.count() >= 2
 }

@@ -5,11 +5,15 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import com.asinosoft.cdm.helpers.AvatarHelper
 import timber.log.Timber
+import java.util.*
 
 data class Contact(
     val id: Long,
     val name: String?,
-    val phone: String? = null
+    val phone: String? = null,
+    val photo: Uri? = null,
+    val starred: Boolean = false,
+    val actions: MutableSet<Action> = mutableSetOf()
 ) {
     companion object {
         fun fromPhone(phone: String): Contact =
@@ -20,12 +24,8 @@ data class Contact(
 
     val title get() = name ?: phone
 
-    var photoUri: Uri? = null
-    var birthday: String? = null
-    var age: Int = 0
-    var starred = false
+    var birthday: Date? = null
 
-    var actions = mutableSetOf<Action>()
     val phones: List<Action> by lazy {
         actions.filter { action -> action.type == Action.Type.PhoneCall }
     }
@@ -35,10 +35,10 @@ data class Contact(
     }
 
     fun getPhoto(context: Context): Drawable? =
-        fromUri(context, photoUri)
+        fromUri(context, photo)
 
     fun getAvatar(context: Context, type: Int): Drawable =
-        fromUri(context, photoUri) ?: generateAvatar(context, type)
+        fromUri(context, photo) ?: generateAvatar(context, type)
 
     private fun fromUri(context: Context, uri: Uri?): Drawable? {
         if (null == uri) {

@@ -12,11 +12,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
+import com.asinosoft.cdm.helpers.DateHelper
 import com.asinosoft.cdm.helpers.StHelper
 import com.asinosoft.cdm.helpers.telecomManager
 import com.google.android.gms.ads.AdView
 import com.yandex.mobile.ads.banner.AdSize
 import com.yandex.mobile.ads.banner.BannerAdView
+import java.text.SimpleDateFormat
 import java.util.*
 import com.google.android.gms.ads.AdRequest as GoogleAds
 import com.yandex.mobile.ads.common.AdRequest as YandexAds
@@ -61,7 +63,7 @@ class ContactActionsAdapter(private val contact: Contact) :
 
     override fun onBindViewHolder(holder: ViewContactInfo, position: Int) {
         if (position == keys.size) {
-            holder.bindBirthday(contact.birthday, contact.age)
+            contact.birthday?.let { holder.bindBirthday(it) }
         } else {
             bindAction(holder, keys[position])
             if (position == (keys.size - 1).coerceAtMost(2)) {
@@ -107,9 +109,10 @@ class ContactActionsAdapter(private val contact: Contact) :
         private var number = itemView.findViewById<TextView>(R.id.number_id)
         private var bText = itemView.findViewById<TextView>(R.id.bText)
 
-        fun bindBirthday(birthday: String?, age: Int) {
+        fun bindBirthday(birthday: Date) {
             numberType.text = context.getString(R.string.type_birthday)
-            number.text = birthday
+            number.text = SimpleDateFormat("d MMMM yyyy г.", Locale.getDefault()).format(birthday)
+            val age = DateHelper.age(birthday)
             bText.text = view.resources.getQuantityString(R.plurals.age, age, age)
             bText.visibility = View.VISIBLE
             mCustomLeft.visibility = View.GONE

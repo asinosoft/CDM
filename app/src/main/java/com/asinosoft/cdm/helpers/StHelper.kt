@@ -3,7 +3,6 @@ package com.asinosoft.cdm.helpers
 import androidx.annotation.RequiresApi
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.Period
 import java.util.*
@@ -24,41 +23,6 @@ object StHelper {
                 clearNumber
         } catch (e: Exception) {
             number
-        }
-    }
-
-    fun parseDateToddMMyyyy(time: String): String {
-        try {
-            return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(time)?.let { date ->
-                return SimpleDateFormat("d MMMM yyyy г.", Locale.getDefault()).format(date)
-            } ?: ""
-        } catch (e: Exception) {
-            return ""
-        }
-    }
-
-    /**
-     * Возвращает количество полных лет на текущий момент времени
-     */
-    fun getAge(birthday: String): Int {
-        try {
-            // После апгрейда до SDK-26 можно заменить на LocalDate + Period
-            return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(birthday)
-                ?.let { date ->
-                    val today = Calendar.getInstance()
-                    val anniversary = Calendar.getInstance(); anniversary.time = date
-
-                    var age = 0
-                    anniversary.add(Calendar.YEAR, 1)
-                    while (!anniversary.after(today)) {
-                        age++
-                        anniversary.add(Calendar.YEAR, 1)
-                    }
-
-                    return age
-                } ?: 0
-        } catch (e: Exception) {
-            return 0
         }
     }
 
