@@ -64,8 +64,8 @@ class ManagerActivity : BaseActivity() {
         Timber.d("onResume")
         super.onResume()
 
-        if (App.instance!!.config.isChanged) {
-            App.instance!!.config.isChanged = false
+        if (App.instance.config.isChanged) {
+            App.instance.config.isChanged = false
             return recreate()
         }
 

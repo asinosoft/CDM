@@ -55,8 +55,8 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.Holder>() {
 
         fun bind(contact: Contact) {
             v.imageContact.setImageDrawable(contact.getAvatar(context, AvatarHelper.SHORT))
-            App.instance!!.config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
-            v.divider.isVisible = App.instance!!.config.listDivider
+            App.instance.config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
+            v.divider.isVisible = App.instance.config.listDivider
 
             v.name.text = contact.name
             var tNum = ""

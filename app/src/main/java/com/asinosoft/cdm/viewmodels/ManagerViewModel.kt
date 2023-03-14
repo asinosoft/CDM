@@ -22,7 +22,7 @@ import timber.log.Timber
 import java.util.*
 
 class ManagerViewModel(application: Application) : AndroidViewModel(application) {
-    private val config = App.instance!!.config
+    private val config = App.instance.config
 
     private var _contact: Contact = Contact(0, null)
     private lateinit var _actions: DirectActions
@@ -112,7 +112,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch(Dispatchers.IO) {
             contactRepository.getContactById(contactId)?.let {
                 _contact = it
-                _actions = App.instance!!.config.getContactSettings(it)
+                _actions = App.instance.config.getContactSettings(it)
 
                 contact.postValue(it)
                 contactActions.postValue(_actions)
@@ -151,7 +151,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     fun saveContactSettings() {
         Timber.d("Сохранение настроек контакта %s", _contact)
         if (haveUnsavedChanges) {
-            App.instance!!.config.setContactSettings(_contact, _actions)
+            App.instance.config.setContactSettings(_contact, _actions)
             haveUnsavedChanges = false
         }
     }

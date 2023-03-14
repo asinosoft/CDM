@@ -36,7 +36,7 @@ class HistoryDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         model.contactHistory.observe(viewLifecycleOwner) { calls ->
             v.rvContactCalls.adapter = HistoryDetailsCallsAdapter(
-                App.instance!!.config,
+                App.instance.config,
                 requireContext(),
                 calls,
                 { item -> deleteCallHistoryItem(item) },

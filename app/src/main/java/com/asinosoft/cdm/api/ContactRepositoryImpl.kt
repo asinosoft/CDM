@@ -9,6 +9,7 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Email
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import androidx.core.database.getStringOrNull
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
@@ -39,6 +40,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
         val index = HashMap<String, Contact>()
         contacts.values.forEach { contact ->
+            App.instance.database.contacts().upsert(contact)
             contact.phones.forEach {
                 index[it.value] = contact
             }

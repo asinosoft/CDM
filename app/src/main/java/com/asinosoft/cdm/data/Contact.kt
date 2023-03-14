@@ -3,12 +3,15 @@ package com.asinosoft.cdm.data
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.asinosoft.cdm.helpers.AvatarHelper
 import timber.log.Timber
 import java.util.*
 
+@Entity
 data class Contact(
-    val id: Long,
+    @PrimaryKey val id: Long,
     val name: String?,
     val phone: String? = null,
     val photo: Uri? = null,
