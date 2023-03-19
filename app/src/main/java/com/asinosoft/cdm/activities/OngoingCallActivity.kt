@@ -147,7 +147,7 @@ class OngoingCallActivity : BaseActivity() {
     private fun setCallerInfo(phone: String) {
         val contact = ContactRepositoryImpl(this).getContactByPhone(phone)
 
-        if (0L == contact.id) {
+        if (null == contact) {
             v.info.textCaller.text = phone
             v.info.textCallerNumber.text = null
         } else {
@@ -155,7 +155,7 @@ class OngoingCallActivity : BaseActivity() {
             v.info.textCallerNumber.text = phone
         }
 
-        val photo = contact.getPhoto(this)
+        val photo = contact?.getPhoto(this)
         if (null == photo) {
             v.info.avatar.setImageResource(R.drawable.ic_user_circle)
             v.incoming.handle.setImageResource(R.drawable.ic_user_circle)

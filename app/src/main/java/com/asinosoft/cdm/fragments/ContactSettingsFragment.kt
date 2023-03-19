@@ -61,12 +61,12 @@ class ContactSettingsFragment : Fragment() {
             actions?.let { (v.rvActions.adapter as ActionsAdapter).setActions(it) }
         }
 
-        model.contactActions.observe(viewLifecycleOwner) { actions ->
-            actions?.let { setData(it) }
+        model.directActions.observe(viewLifecycleOwner) { directActions ->
+            directActions?.let { setDirectActions(it) }
         }
 
-        model.contact.observe(viewLifecycleOwner) { contact ->
-            contact?.let { actions = contact.actions }
+        model.contactActions.observe(viewLifecycleOwner) { contactActions ->
+            contactActions?.let { actions = it }
         }
     }
 
@@ -173,7 +173,7 @@ class ContactSettingsFragment : Fragment() {
         }
     }
 
-    private fun setData(directActions: DirectActions) {
+    private fun setDirectActions(directActions: DirectActions) {
         v.cirRight.action = directActions.right.type
         v.cirLeft.action = directActions.left.type
         v.cirTop.action = directActions.top.type

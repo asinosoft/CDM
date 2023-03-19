@@ -114,9 +114,9 @@ class CallsAdapter(
         v.bottomDivider.isVisible = config.listDivider && !config.favoritesFirst
         v.imageContact.setImageDrawable(call.contact.getAvatar(context, AvatarHelper.SHORT))
         config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
-        v.name.text = call.contact.title
+        v.name.text = call.contact?.title ?: call.phone
 
-        if (0L == call.contact.id) {
+        if (call.contact != null) {
             v.number.setText(R.string.unsaved)
         } else {
             v.number.text = call.prettyPhone

@@ -86,10 +86,11 @@ class ManagerActivityFragment : Fragment() {
     private val pickContact =
         registerForActivityResult(PickContact()) { uri ->
             model.getContactByUri(requireContext(), uri)?.let { contact ->
-                if (contact.phones.count() > 1) {
+                val phones = model.getContactPhones(contact)?.toList() ?: listOf()
+                if (phones.count() > 1) {
                     SelectPhoneDialog(
                         requireContext(),
-                        contact.phones,
+                        phones,
                         { phone ->
                             run {
                                 model.setContactPhone(contact, phone)
@@ -199,10 +200,8 @@ class ManagerActivityFragment : Fragment() {
                 btnDelete,
                 btnEdit,
                 { contact ->
-                    findNavController().navigate(
-                        R.id.action_open_contact_fragment,
-                        bundleOf("contactId" to contact.id)
-                    )
+                    model.setContact(contact)
+                    findNavController().navigate(R.id.action_open_contact_fragment)
                 },
                 { position ->
                     pickedPosition = position
@@ -270,12 +269,10 @@ class ManagerActivityFragment : Fragment() {
     }
 
     private fun showContact(contact: Contact) {
+        model.setContact(contact)
         findNavController().navigate(
             R.id.action_open_contact_fragment,
-            bundleOf(
-                "contactId" to contact.id,
-                "tab" to "history"
-            )
+            bundleOf("tab" to "history")
         )
     }
 

@@ -11,23 +11,20 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
-import com.asinosoft.cdm.data.Contact
-import com.asinosoft.cdm.helpers.DateHelper
 import com.asinosoft.cdm.helpers.StHelper
 import com.asinosoft.cdm.helpers.telecomManager
 import com.google.android.gms.ads.AdView
 import com.yandex.mobile.ads.banner.AdSize
 import com.yandex.mobile.ads.banner.BannerAdView
-import java.text.SimpleDateFormat
 import java.util.*
 import com.google.android.gms.ads.AdRequest as GoogleAds
 import com.yandex.mobile.ads.common.AdRequest as YandexAds
 
-class ContactActionsAdapter(private val contact: Contact) :
+class ContactActionsAdapter(contactActions: Collection<Action>) :
     RecyclerView.Adapter<ContactActionsAdapter.ViewContactInfo>() {
 
     private lateinit var context: Context
-    private val groups = contact.actions.groupBy { Item(it.type.group, it.value, it.description) }
+    private val groups = contactActions.groupBy { Item(it.type.group, it.value, it.description) }
     private val keys = groups.keys.toList().sortedBy { it.group.order }
 
     inner class Item(val group: Action.Group, val name: String, val description: String) {
@@ -50,9 +47,7 @@ class ContactActionsAdapter(private val contact: Contact) :
         }
     }
 
-    override fun getItemCount(): Int {
-        return keys.size + (if (contact.birthday != null) 1 else 0)
-    }
+    override fun getItemCount(): Int = keys.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewContactInfo {
         context = parent.context
@@ -62,13 +57,9 @@ class ContactActionsAdapter(private val contact: Contact) :
     }
 
     override fun onBindViewHolder(holder: ViewContactInfo, position: Int) {
-        if (position == keys.size) {
-            contact.birthday?.let { holder.bindBirthday(it) }
-        } else {
-            bindAction(holder, keys[position])
-            if (position == (keys.size - 1).coerceAtMost(2)) {
-                bindAdvertiser(holder)
-            }
+        bindAction(holder, keys[position])
+        if (position == (keys.size - 1).coerceAtMost(2)) {
+            bindAdvertiser(holder)
         }
     }
 
@@ -108,17 +99,6 @@ class ContactActionsAdapter(private val contact: Contact) :
         private var numberType = itemView.findViewById<TextView>(R.id.description_id)
         private var number = itemView.findViewById<TextView>(R.id.number_id)
         private var bText = itemView.findViewById<TextView>(R.id.bText)
-
-        fun bindBirthday(birthday: Date) {
-            numberType.text = context.getString(R.string.type_birthday)
-            number.text = SimpleDateFormat("d MMMM yyyy г.", Locale.getDefault()).format(birthday)
-            val age = DateHelper.age(birthday)
-            bText.text = view.resources.getQuantityString(R.plurals.age, age, age)
-            bText.visibility = View.VISIBLE
-            mCustomLeft.visibility = View.GONE
-            mCustomMiddle.visibility = View.GONE
-            mCustomRight.visibility = View.GONE
-        }
 
         fun bindEmail(email: Action) {
             numberType.text = email.description

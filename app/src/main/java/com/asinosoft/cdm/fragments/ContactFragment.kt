@@ -23,11 +23,6 @@ class ContactFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        arguments?.getLong("contactId")?.let { contactId ->
-            model.setContact(contactId)
-        }
-
         Analytics.logActivityContact()
     }
 

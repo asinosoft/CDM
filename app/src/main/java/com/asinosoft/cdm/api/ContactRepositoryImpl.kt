@@ -27,27 +27,19 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     // Индекс контактов по номеру телефона
     private var contactPhones: MutableMap<String, Contact> = mutableMapOf()
 
+    private var contactActions: MutableMap<Long, Set<Action>> = mutableMapOf()
+
     fun initialize() {
         Timber.d("Чтение списка контактов")
-        val contacts = context.contentResolver.query(
+        context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             null, null, null
         )!!.use {
-            ContactCursorAdapter(it).getAll()
+            readAll(it)
         }
 
         Analytics.logContacts(contacts.values)
 
-        val index = HashMap<String, Contact>()
-        contacts.values.forEach { contact ->
-            App.instance.database.contacts().upsert(contact)
-            contact.phones.forEach {
-                index[it.value] = contact
-            }
-        }
-
-        this.contacts = contacts
-        contactPhones = index
         Timber.d("Найдено %d контактов", contacts.size)
     }
 
@@ -56,12 +48,11 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
     }
 
     override fun getContactById(id: Long): Contact? {
-        return contacts[id] ?: findContactById(id)?.also { cache(it) }
+        return contacts[id] ?: findContactById(id)
     }
 
-    override fun getContactByPhone(phone: String): Contact {
-        return contactPhones[phone] ?: (findContactByPhone(phone) ?: Contact.fromPhone(phone))
-            .also { cache(it) }
+    override fun getContactByPhone(phone: String): Contact? {
+        return contactPhones[phone] ?: findContactByPhone(phone)
     }
 
     override fun getContactByUri(uri: Uri): Contact? {
@@ -80,10 +71,22 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         }
     }
 
-    private fun cache(contact: Contact) {
-        this.contacts[contact.id] = contact
-        contact.phones.forEach {
-            contactPhones[it.value] = contact
+    override fun getContactActions(contactId: Long): Collection<Action>? =
+        contactActions[contactId]
+
+    private fun readAll(cursor: Cursor) {
+        val adapter = ContactCursorAdapter(cursor)
+        contacts.putAll(adapter.contacts)
+        contactActions.putAll(adapter.contactActions)
+
+        val db = App.instance.database.contacts()
+        contacts.forEach { contact ->
+            db.upsert(contact.value)
+            contactActions[contact.key]?.let { actions ->
+                actions.find { a -> a.type === Action.Type.PhoneCall }?.let { phone ->
+                    contactPhones[phone.value] = contact.value
+                }
+            }
         }
     }
 
@@ -96,8 +99,9 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         return context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, projection,
             "${ContactsContract.Data.CONTACT_ID} = ?", arrayOf(id.toString()), null
-        )?.use { cursor ->
-            ContactCursorAdapter(cursor).getAll()[id]
+        )?.use {
+            readAll(it)
+            contacts[id]
         }
     }
 
@@ -107,19 +111,15 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
             return null
         }
 
-        context.contentResolver.query(
+        return context.contentResolver.query(
             ContactsContract.Data.CONTENT_URI, arrayOf(ContactsContract.Data.CONTACT_ID),
             "${ContactsContract.Data.MIMETYPE} = ? AND ${ContactsContract.Data.DATA4} = ?",
             arrayOf("vnd.android.cursor.item/phone_v2", phone),
             null
-        )?.use { cursor ->
-            if (cursor.moveToNext()) {
-                val column = cursor.getColumnIndex(ContactsContract.Data.CONTACT_ID)
-                val contactId = cursor.getLong(column)
-                return getContactById(contactId)
-            }
+        )?.use {
+            readAll(it)
+            contactPhones[phone]
         }
-        return null
     }
 
     // Список колонок, получаемых из базы контактов
@@ -148,15 +148,16 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         private val data3 = cursor.getColumnIndex(ContactsContract.Data.DATA3)
         private val data4 = cursor.getColumnIndex(ContactsContract.Data.DATA4)
 
-        fun getAll(): HashMap<Long, Contact> {
-            val result = HashMap<Long, Contact>()
+        val contacts = HashMap<Long, Contact>()
+        val contactActions = HashMap<Long, MutableSet<Action>>()
 
+        init {
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(contactId)
                 val name = cursor.getStringOrNull(displayName) ?: ""
-                val photo = cursor.getStringOrNull(photoUri)?.let { Uri.parse(it) }
+                val photo = cursor.getStringOrNull(photoUri)
 
-                result.getOrPut(id) {
+                contacts.getOrPut(id) {
                     Contact(id, name, null, photo, 1 == cursor.getInt(starred))
                 }.let { contact ->
                     when (cursor.getString(mimeType).dropWhile { c -> c != '/' }) {
@@ -202,7 +203,6 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
                     }
                 }
             }
-            return result
         }
 
         private fun parseBirthday(contact: Contact) {
@@ -216,12 +216,11 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
             val description =
                 context.resources.getString(Phone.getTypeLabelResource(cursor.getInt(data2)))
 
-            contact.actions.add(
-                Action(id, Action.Type.PhoneCall, number, description)
-            )
-            contact.actions.add(
-                Action(id, Action.Type.Sms, number, description)
-            )
+            contactActions.getOrPut(contact.id) { mutableSetOf() }
+                .add(Action(id, Action.Type.PhoneCall, number, description))
+
+            contactActions.getOrPut(contact.id) { mutableSetOf() }
+                .add(Action(id, Action.Type.Sms, number, description))
         }
 
         private fun parseEmail(contact: Contact) {
@@ -230,7 +229,8 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
             val description =
                 context.resources.getString(Email.getTypeLabelResource(cursor.getInt(data2)))
 
-            contact.actions.add(Action(id, Action.Type.Email, emailAddress, description))
+            contactActions.getOrPut(contact.id) { mutableSetOf() }
+                .add(Action(id, Action.Type.Email, emailAddress, description))
         }
 
         private fun parseAction(contact: Contact, type: Action.Type) {
@@ -242,7 +242,8 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
             }
             val description = cursor.getString(data2) ?: type.name
 
-            contact.actions.add(Action(id, type, value, description))
+            contactActions.getOrPut(contact.id) { mutableSetOf() }
+                .add(Action(id, type, value, description))
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.asinosoft.cdm.api
 
 import android.net.Uri
+import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 
 /**
@@ -26,4 +27,6 @@ interface ContactRepository {
      * Возвращает контакт, которому принадлежит указанный телефон
      */
     fun getContactByPhone(phone: String): Contact?
+
+    fun getContactActions(contactId: Long): Collection<Action>?
 }

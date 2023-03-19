@@ -24,7 +24,8 @@ import java.util.*
 class ManagerViewModel(application: Application) : AndroidViewModel(application) {
     private val config = App.instance.config
 
-    private var _contact: Contact = Contact(0, null)
+    private lateinit var _contact: Contact
+    private lateinit var _contactActions: Collection<Action>
     private lateinit var _actions: DirectActions
     private var haveUnsavedChanges: Boolean = false
 
@@ -34,8 +35,9 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     val contacts: MutableLiveData<Collection<Contact>> = MutableLiveData()
 
     val contact: MutableLiveData<Contact?> = MutableLiveData()
+    val contactActions: MutableLiveData<Set<Action>> = MutableLiveData()
     val contactHistory: MutableLiveData<List<CallHistoryItem>> = MutableLiveData()
-    val contactActions: MutableLiveData<DirectActions> = MutableLiveData()
+    val directActions: MutableLiveData<DirectActions> = MutableLiveData()
     val availableActions: MutableLiveData<List<Action.Type>> = MutableLiveData()
 
     private val contactRepository = ContactRepositoryImpl(getApplication())
@@ -87,6 +89,10 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun getContactPhones(contact: Contact): Collection<Action>? =
+        contactRepository.getContactActions(contact.id)
+            ?.filter { action -> action.type == Action.Type.PhoneCall }
+
     /**
      * Изменение настроек действий контакта в соответствии с выбранным телефоном
      */
@@ -107,21 +113,17 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
         config.setContactSettings(contact, settings)
     }
 
-    fun setContact(contactId: Long) {
-        contact.value = null
-        viewModelScope.launch(Dispatchers.IO) {
-            contactRepository.getContactById(contactId)?.let {
-                _contact = it
-                _actions = App.instance.config.getContactSettings(it)
+    fun setContact(contact: Contact) {
+        _contact = contact
+        _contactActions = contactRepository.getContactActions(contact.id) ?: listOf()
+        _actions = App.instance.config.getContactSettings(contact)
 
-                contact.postValue(it)
-                contactActions.postValue(_actions)
-                availableActions.postValue(getAvailableActions())
-                haveUnsavedChanges = false
+        this.contact.postValue(contact)
+        directActions.postValue(_actions)
+        availableActions.postValue(getAvailableActions())
+        haveUnsavedChanges = false
 
-                getContactCalls()
-            }
-        }
+        getContactCalls()
     }
 
     fun setContactAction(direction: Metoths.Companion.Direction, action: Action) {
@@ -135,7 +137,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
             else -> throw Exception("Unknown direction: $direction")
         }
         haveUnsavedChanges = true
-        contactActions.postValue(_actions)
+        directActions.postValue(_actions)
         availableActions.postValue(getAvailableActions())
     }
 
@@ -230,7 +232,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun getAvailableActions(): List<Action.Type> =
-        _contact.actions
+        _contactActions
             .filter {
                 it != _actions.left && it != _actions.right && it != _actions.top && it != _actions.down
             }

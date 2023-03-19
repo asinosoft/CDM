@@ -5,52 +5,36 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
 import com.asinosoft.cdm.helpers.AvatarHelper
+import com.asinosoft.cdm.helpers.Converters
 import timber.log.Timber
 import java.util.*
 
 @Entity
+@TypeConverters(Converters::class)
 data class Contact(
     @PrimaryKey val id: Long,
     val name: String?,
-    val phone: String? = null,
-    val photo: Uri? = null,
+    val photo: String? = null,
     val starred: Boolean = false,
-    val actions: MutableSet<Action> = mutableSetOf()
-) {
-    companion object {
-        fun fromPhone(phone: String): Contact =
-            Contact(0, null, phone).apply {
-                actions.add(Action(0, Action.Type.PhoneCall, phone, ""))
-            }
-    }
-
-    val title get() = name ?: phone
-
     var birthday: Date? = null
-
-    val phones: List<Action> by lazy {
-        actions.filter { action -> action.type == Action.Type.PhoneCall }
-    }
-
-    val chats: List<Action> by lazy {
-        actions.filter { action -> action.type == Action.Type.WhatsAppChat }
-    }
-
+) {
     fun getPhoto(context: Context): Drawable? =
         fromUri(context, photo)
 
     fun getAvatar(context: Context, type: Int): Drawable =
         fromUri(context, photo) ?: generateAvatar(context, type)
 
-    private fun fromUri(context: Context, uri: Uri?): Drawable? {
+    private fun fromUri(context: Context, uri: String?): Drawable? {
         if (null == uri) {
             return null
         }
 
         return try {
             Drawable.createFromStream(
-                context.contentResolver.openInputStream(uri),
+                context.contentResolver.openInputStream(Uri.parse(uri)),
                 uri.toString()
             )
         } catch (ex: Exception) {
@@ -61,7 +45,7 @@ data class Contact(
 
     private fun generateAvatar(context: Context, type: Int): Drawable {
         return if (null == name) {
-            AvatarHelper.generate(context, phone as String, AvatarHelper.IMAGE)
+            AvatarHelper.generate(context, phone, AvatarHelper.IMAGE)
         } else {
             AvatarHelper.generate(context, name, type)
         }
