@@ -82,16 +82,27 @@ class FavoritesAdapter(
         fun bind(n: Int, favorite: FavoriteContact) {
             v.actionView.setSize(config.favoritesSize)
             v.circleImage.apply {
-                contact = favorite.contact
-
                 setActionImage(v.actionView)
-                setImageDrawable(
-                    contact?.getAvatar(context, AvatarHelper.LONG) ?: ResourcesCompat.getDrawable(
-                        resources,
-                        R.drawable.ic_add_contact,
-                        null
+
+                val contact = favorite.contact
+                if (null == contact) {
+                    setImageDrawable(
+                        ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.ic_add_contact,
+                            null
+                        )
                     )
-                )
+                } else {
+                    setImageDrawable(
+                        contact.getPhoto(context) ?: AvatarHelper.generate(
+                            context,
+                            contact.name,
+                            AvatarHelper.LONG
+                        )
+                    )
+                }
+
                 lockableNestedScrollView = callsLayoutManager
                 deleteCir = deleteButton
                 editCir = editButton

@@ -24,7 +24,7 @@ class AvatarHelper {
         fun generate(
             context: Context,
             name: String,
-            type: Int
+            type: Int = SHORT
         ): BitmapDrawable { // type 1- 2 буквы, 2 - 5 букв, 3-картика
             val size = 192
             val fontSize = if (type == 1) 30 else 16

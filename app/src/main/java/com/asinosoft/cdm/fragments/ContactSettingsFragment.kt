@@ -51,7 +51,7 @@ class ContactSettingsFragment : Fragment() {
 
         model.contact.observe(viewLifecycleOwner) { contact ->
             contact?.let {
-                v.contact.setImageDrawable(it.getAvatar(requireContext(), AvatarHelper.SHORT))
+                v.contact.setImageDrawable(AvatarHelper.generate(requireContext(), it.name))
             }
         }
         App.instance.config.favoritesBorderWidth.let { v.contact.borderWidth = it.toFloat() }

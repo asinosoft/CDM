@@ -50,7 +50,7 @@ class CircleImage @JvmOverloads constructor(
     var contact: Contact? = null
         set(value) {
             field = value
-            setImageDrawable(value?.getAvatar(context, AvatarHelper.SHORT))
+            setImageDrawable(value?.let { AvatarHelper.generate(context, it.name) })
         }
 
     var size: Int = this.width
