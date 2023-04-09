@@ -39,4 +39,6 @@ interface Config {
     // Настройки swipe-действия для конкретного контакта
     fun getContactSettings(contact: Contact): DirectActions
     fun setContactSettings(contact: Contact, actions: DirectActions)
+
+    fun getDefaultSettings(phone: String): DirectActions
 }

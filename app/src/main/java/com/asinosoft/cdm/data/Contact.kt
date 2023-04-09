@@ -5,24 +5,14 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import com.asinosoft.cdm.helpers.AvatarHelper
 import timber.log.Timber
+import java.util.Date
 
 data class Contact(
     val id: Long,
-    val name: String?,
-    val phone: String? = null
+    val name: String,
 ) {
-    companion object {
-        fun fromPhone(phone: String): Contact =
-            Contact(0, null, phone).apply {
-                actions.add(Action(0, Action.Type.PhoneCall, phone, ""))
-            }
-    }
-
-    val title get() = name ?: phone
-
     var photoUri: Uri? = null
-    var birthday: String? = null
-    var age: Int = 0
+    var birthday: Date? = null
     var starred = false
 
     var actions = mutableSetOf<Action>()
@@ -56,11 +46,6 @@ data class Contact(
         }
     }
 
-    private fun generateAvatar(context: Context, type: Int): Drawable {
-        return if (null == name) {
-            AvatarHelper.generate(context, phone as String, AvatarHelper.IMAGE)
-        } else {
-            AvatarHelper.generate(context, name, type)
-        }
-    }
+    private fun generateAvatar(context: Context, type: Int): Drawable =
+        AvatarHelper.generate(context, name, type)
 }

@@ -22,9 +22,8 @@ import timber.log.Timber
 import java.util.*
 
 class ManagerViewModel(application: Application) : AndroidViewModel(application) {
-    private val config = App.instance!!.config
+    private val config = App.instance.config
 
-    private var _contact: Contact = Contact(0, null)
     private lateinit var _actions: DirectActions
     private var haveUnsavedChanges: Boolean = false
 
@@ -111,15 +110,14 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
         contact.value = null
         viewModelScope.launch(Dispatchers.IO) {
             contactRepository.getContactById(contactId)?.let {
-                _contact = it
-                _actions = App.instance!!.config.getContactSettings(it)
+                _actions = App.instance.config.getContactSettings(it)
 
                 contact.postValue(it)
                 contactActions.postValue(_actions)
                 availableActions.postValue(getAvailableActions())
                 haveUnsavedChanges = false
 
-                getContactCalls()
+                getContactCalls(it)
             }
         }
     }
@@ -149,9 +147,9 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun saveContactSettings() {
-        Timber.d("Сохранение настроек контакта %s", _contact)
+        Timber.d("Сохранение настроек контакта %s", contact.value)
         if (haveUnsavedChanges) {
-            App.instance!!.config.setContactSettings(_contact, _actions)
+            contact.value?.let { App.instance.config.setContactSettings(it, _actions) }
             haveUnsavedChanges = false
         }
     }
@@ -173,7 +171,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     fun deleteCallHistoryItem(call: CallHistoryItem) {
         viewModelScope.launch(Dispatchers.IO) {
             callsRepository.deleteCallHistoryItem(getApplication(), call)
-            getContactCalls()
+            call.contact?.let { getContactCalls(it) }
             getCalls()
         }
     }
@@ -223,18 +221,21 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
             getApplication(),
             callHistory.lastOrNull()?.timestamp ?: Date(),
             CALL_HISTORY_LIMIT,
-            CallHistoryFilter(callHistory.map { it.contact })
+            CallHistoryFilter(callHistory.mapNotNull { it.contact })
         )
         Timber.d("Найдено %d звонков", oldestCalls.size)
         calls.postValue(callHistory + oldestCalls)
     }
 
     private fun getAvailableActions(): List<Action.Type> =
-        _contact.actions
-            .filter {
+        contact.value
+            ?.actions
+            ?.filter {
                 it != _actions.left && it != _actions.right && it != _actions.top && it != _actions.down
             }
-            .map { it.type }.distinct()
+            ?.map { it.type }
+            ?.distinct()
+            ?: listOf()
 
     private fun getContactAction(direction: Metoths.Companion.Direction): Action {
         return when (direction) {
@@ -246,8 +247,8 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    private fun getContactCalls() {
-        val calls = callsRepository.getHistoryByContact(getApplication(), _contact)
+    private fun getContactCalls(contact: Contact) {
+        val calls = callsRepository.getHistoryByContact(getApplication(), contact)
         contactHistory.postValue(calls)
     }
 }

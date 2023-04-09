@@ -54,7 +54,7 @@
     <string name="digit_seven_text">PQRS\nФХЦЧ</string>
     <string name="digit_eight_text">TUV\nШЩЬЫ</string>
     <string name="digit_nine_text">WXYZ\nЬЭЮЯ</string>
-    <string name="type_birthday">День рождения</string>
+    <string name="type_birthday">День рождения %s</string>
     <string name="state_call_ringing">Входящий звонок</string>
     <string name="state_call_active">Текущий вызов</string>
     <string name="unknown_caller">Неизвестный номер</string>

@@ -15,7 +15,9 @@ class CallHistoryFilter(initialContacts: Collection<Contact> = listOf()) :
             return false
         }
 
-        phones.addAll(call.contact.phones.map { it.value })
+        if (null !== call.contact) {
+            phones.addAll(call.contact.phones.map { it.value })
+        }
         return true
     }
 }

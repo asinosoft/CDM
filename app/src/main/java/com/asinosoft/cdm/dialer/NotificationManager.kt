@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.telecom.Call
 import android.view.View
@@ -16,6 +17,7 @@ import androidx.core.graphics.drawable.toBitmap
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.activities.OngoingCallActivity
 import com.asinosoft.cdm.api.ContactRepositoryImpl
+import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.*
 import timber.log.Timber
 
@@ -74,7 +76,7 @@ class NotificationManager(private val context: Context) {
         val callState = call.callState
 
         val view = RemoteViews(context.packageName, R.layout.call_notification).apply {
-            setTextViewText(R.id.notification_caller_name, contact.title)
+            setTextViewText(R.id.notification_caller_name, contact?.name ?: phone)
             setTextViewText(R.id.notification_call_status, context.getCallStateText(callState))
             setViewVisibility(
                 R.id.notification_accept_call,
@@ -106,7 +108,7 @@ class NotificationManager(private val context: Context) {
         val channel = if (Call.STATE_RINGING == callState) INCOMING_CHANNEL else ONGOING_CHANNEL
         val builder = NotificationCompat.Builder(context, channel)
             .setSmallIcon(R.drawable.call)
-            .setLargeIcon(contact.getAvatar(context, AvatarHelper.SHORT).toBitmap())
+            .setLargeIcon(getAvatar(phone, contact).toBitmap())
             .setContentIntent(openAppIntent(call))
             .setCategory(Notification.CATEGORY_CALL)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -122,6 +124,10 @@ class NotificationManager(private val context: Context) {
 
         context.notificationManager.notify(call.id, builder.build())
     }
+
+    private fun getAvatar(phone: String, contact: Contact?): Drawable =
+        contact?.getAvatar(context, AvatarHelper.SHORT)
+            ?: AvatarHelper.generate(context, phone, AvatarHelper.IMAGE)
 
     private fun openAppIntent(call: Call) =
         PendingIntent.getActivity(

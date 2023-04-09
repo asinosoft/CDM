@@ -22,8 +22,8 @@ open class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.d("THEME = %d", App.instance!!.config.theme)
-        setTheme(getThemeResourceId(App.instance!!.config.theme))
+        Timber.d("THEME = %d", App.instance.config.theme)
+        setTheme(getThemeResourceId(App.instance.config.theme))
     }
 
     override fun onResume() {
@@ -65,7 +65,7 @@ open class BaseActivity : AppCompatActivity() {
 
     private fun getBackgroundImage(): Drawable? {
         return try {
-            App.instance!!.config.background?.let { uri ->
+            App.instance.config.background?.let { uri ->
                 contentResolver.openInputStream(uri).use {
                     scaleToScreen(BitmapFactory.decodeStream(it))
                 }

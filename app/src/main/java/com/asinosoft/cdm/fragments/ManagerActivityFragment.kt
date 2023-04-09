@@ -44,7 +44,7 @@ import timber.log.Timber
 class ManagerActivityFragment : Fragment() {
     private lateinit var v: ActivityManagerBinding
     private val model: ManagerViewModel by activityViewModels()
-    private val config: Config = App.instance!!.config
+    private val config: Config = App.instance.config
 
     /**
      * Прокрутка в начало истории звонков при нажатии системной кнопки Назад

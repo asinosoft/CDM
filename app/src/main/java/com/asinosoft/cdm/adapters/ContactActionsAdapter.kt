@@ -21,7 +21,7 @@ import java.util.*
 import com.google.android.gms.ads.AdRequest as GoogleAds
 import com.yandex.mobile.ads.common.AdRequest as YandexAds
 
-class ContactActionsAdapter(private val contact: Contact) :
+class ContactActionsAdapter(contact: Contact) :
     RecyclerView.Adapter<ContactActionsAdapter.ViewContactInfo>() {
 
     private lateinit var context: Context
@@ -49,7 +49,7 @@ class ContactActionsAdapter(private val contact: Contact) :
     }
 
     override fun getItemCount(): Int {
-        return keys.size + (if (contact.birthday != null) 1 else 0)
+        return keys.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewContactInfo {
@@ -60,13 +60,9 @@ class ContactActionsAdapter(private val contact: Contact) :
     }
 
     override fun onBindViewHolder(holder: ViewContactInfo, position: Int) {
-        if (position == keys.size) {
-            holder.bindBirthday(contact.birthday, contact.age)
-        } else {
-            bindAction(holder, keys[position])
-            if (position == (keys.size - 1).coerceAtMost(2)) {
-                bindAdvertiser(holder)
-            }
+        bindAction(holder, keys[position])
+        if (position == (keys.size - 1).coerceAtMost(2)) {
+            bindAdvertiser(holder)
         }
     }
 
@@ -106,16 +102,6 @@ class ContactActionsAdapter(private val contact: Contact) :
         private var numberType = itemView.findViewById<TextView>(R.id.description_id)
         private var number = itemView.findViewById<TextView>(R.id.number_id)
         private var bText = itemView.findViewById<TextView>(R.id.bText)
-
-        fun bindBirthday(birthday: String?, age: Int) {
-            numberType.text = context.getString(R.string.type_birthday)
-            number.text = birthday
-            bText.text = view.resources.getQuantityString(R.plurals.age, age, age)
-            bText.visibility = View.VISIBLE
-            mCustomLeft.visibility = View.GONE
-            mCustomMiddle.visibility = View.GONE
-            mCustomRight.visibility = View.GONE
-        }
 
         fun bindEmail(email: Action) {
             numberType.text = email.description

@@ -54,8 +54,8 @@ class ContactSettingsFragment : Fragment() {
                 v.contact.setImageDrawable(it.getAvatar(requireContext(), AvatarHelper.SHORT))
             }
         }
-        App.instance!!.config.favoritesBorderWidth.let { v.contact.borderWidth = it.toFloat() }
-        App.instance!!.config.favoritesBorderColor?.let { v.contact.borderColor = it }
+        App.instance.config.favoritesBorderWidth.let { v.contact.borderWidth = it.toFloat() }
+        App.instance.config.favoritesBorderColor?.let { v.contact.borderColor = it }
 
         model.availableActions.observe(viewLifecycleOwner) { actions ->
             actions?.let { (v.rvActions.adapter as ActionsAdapter).setActions(it) }

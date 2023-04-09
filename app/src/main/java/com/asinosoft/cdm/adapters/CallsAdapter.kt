@@ -107,18 +107,23 @@ class CallsAdapter(
 
     override fun onBindViewHolder(holder: HolderHistory, position: Int) {
         when (holder.v) {
-            is ItemCallBinding -> bindCallHistoryItem(holder.v, calls[position - 1], position)
+            is ItemCallBinding -> bindCallHistoryItem(holder.v, calls[position - 1])
         }
     }
 
-    private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem, position: Int) {
+    private fun bindCallHistoryItem(v: ItemCallBinding, call: CallHistoryItem) {
         v.topDivider.isVisible = config.listDivider && config.favoritesFirst
         v.bottomDivider.isVisible = config.listDivider && !config.favoritesFirst
-        v.imageContact.setImageDrawable(call.contact.getAvatar(context, AvatarHelper.SHORT))
+        v.imageContact.setImageDrawable(
+            if (null == call.contact)
+                AvatarHelper.generate(context, call.phone, AvatarHelper.IMAGE)
+            else
+                call.contact.getAvatar(context, AvatarHelper.SHORT)
+        )
         config.favoritesBorderColor?.let { v.imageContact.borderColor = it }
-        v.name.text = call.contact.title
+        v.name.text = call.contact?.name ?: call.phone
 
-        if (0L == call.contact.id) {
+        if (null == call.contact) {
             v.number.setText(R.string.unsaved)
         } else {
             v.number.text = call.prettyPhone
@@ -130,7 +135,12 @@ class CallsAdapter(
         else
             v.timeContact.text = call.date
 
-        val directActions = config.getContactSettings(call.contact)
+        val directActions =
+            if (null == call.contact)
+                config.getDefaultSettings(call.phone)
+            else
+                config.getContactSettings(call.contact)
+
         v.imageLeftAction.setImageResource(Action.resourceByType(directActions.left.type))
         v.imageRightAction.setImageResource(Action.resourceByType(directActions.right.type))
 
@@ -187,7 +197,7 @@ class CallsAdapter(
         })
 
         v.imageContact.setOnClickListener {
-            if (0L == call.contact.id) {
+            if (null == call.contact) {
                 addNewContact(call.prettyPhone)
             } else {
                 Analytics.logCallHistoryClick()
@@ -197,7 +207,7 @@ class CallsAdapter(
 
         v.dragLayout.setOnClickListener {
             Analytics.logCallHistoryClick()
-            if (0L == call.contact.id) {
+            if (null == call.contact) {
                 onClickPhone(call.phone)
             } else {
                 onClickContact(call.contact)
@@ -263,11 +273,14 @@ class CallsAdapter(
 
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.call_sim1 -> call(call, context.telecomManager.callCapablePhoneAccounts.first())
+                R.id.call_sim1 -> call(
+                    call,
+                    context.telecomManager.callCapablePhoneAccounts.first()
+                )
                 R.id.call_sim2 -> call(call, context.telecomManager.callCapablePhoneAccounts.last())
                 R.id.copy_number -> copyNumber(call)
                 R.id.delete_call_item -> onDeleteCallRecord(call)
-                R.id.purge_contact_history -> onPurgeContactHistory(call.contact)
+                R.id.purge_contact_history -> if (null != call.contact) onPurgeContactHistory(call.contact)
                 R.id.purge_call_history -> onPurgeCallHistory()
             }
             true

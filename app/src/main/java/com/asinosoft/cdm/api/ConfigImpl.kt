@@ -222,6 +222,14 @@ class ConfigImpl(private val context: Context) : Config {
             .apply()
     }
 
+    override fun getDefaultSettings(phone: String): DirectActions =
+        DirectActions(
+            Action(0, swipeLeftAction, phone, ""),
+            Action(0, swipeRightAction, phone, ""),
+            Action(0, swipeUpAction, phone, ""),
+            Action(0, swipeDownAction, phone, ""),
+        )
+
     /**
      * Возвращает набор действий для контакта в соответствии с его настройками
      */
@@ -272,7 +280,7 @@ class ConfigImpl(private val context: Context) : Config {
     )
 
     class ActionSettings(
-        val id: Int,
+        val id: Long,
         val type: Action.Type,
     )
 }

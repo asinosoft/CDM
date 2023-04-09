@@ -16,7 +16,7 @@ data class CallHistoryItem(
     val time: String, // Время звонка
     val typeCall: Int, // Тип звонка (входящий/исходящий и т.д. @see CallLog.Calls)
     val duration: Long, // Длительность звонка в секундах
-    val contact: Contact // Контакт, которому принадлежит этот номер телефона
+    val contact: Contact? // Контакт, которому принадлежит этот номер телефона
 ) {
     override fun equals(other: Any?): Boolean {
         return when (other) {

@@ -11,11 +11,11 @@ import timber.log.Timber
 /**
  * Конкретное действие для конкретного контакта (звонок/смс/письмо/чат и т.д.)
  */
-class Action(
+data class Action(
     /**
      * ContactsContract.Data._ID
      */
-    val id: Int,
+    val id: Long,
     /**
      * Тип
      */
@@ -195,7 +195,7 @@ class Action(
     private fun whatsappChat(context: Context) {
         Timber.i("whatsappChat: %s (%s)", id, value)
         Analytics.logActionWhatsappChat()
-        if (id == 0) {
+        if (id == 0L) {
             value.substring(1, value.length - 1)
             val intent =
                 Intent(Intent.ACTION_VIEW, Uri.parse("https://api.whatsapp.com/send?phone=$value"))

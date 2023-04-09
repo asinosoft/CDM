@@ -9,10 +9,14 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Email
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import androidx.core.database.getStringOrNull
+import com.asinosoft.cdm.App
 import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.system.measureTimeMillis
 
 /**
  * Доступ к контактам
@@ -26,25 +30,23 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
     fun initialize() {
         Timber.d("Чтение списка контактов")
-        val contacts = context.contentResolver.query(
-            ContactsContract.Data.CONTENT_URI, projection,
-            null, null, null
-        )!!.use {
-            ContactCursorAdapter(it).getAll()
-        }
-
-        Analytics.logContacts(contacts.values)
-
-        val index = HashMap<String, Contact>()
-        contacts.values.forEach { contact ->
-            contact.phones.forEach {
-                index[it.value] = contact
+        val timeInMillis = measureTimeMillis {
+            var contacts = getContactsFromDatabase()
+            if (contacts.isEmpty()) {
+                contacts = getContactsFromSystem().also { putContactsIntoDatabase(it) }
             }
-        }
 
-        this.contacts = contacts
-        contactPhones = index
-        Timber.d("Найдено %d контактов", contacts.size)
+            val index = HashMap<String, Contact>()
+            contacts.values.forEach { contact ->
+                contact.phones.forEach {
+                    index[it.value] = contact
+                }
+            }
+
+            this.contacts = contacts
+            contactPhones = index
+        }
+        Timber.d("Найдено %d контактов (done at %d ms)", contacts.size, timeInMillis)
     }
 
     override fun getContacts(): Collection<Contact> {
@@ -55,9 +57,8 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         return contacts[id] ?: findContactById(id)?.also { cache(it) }
     }
 
-    override fun getContactByPhone(phone: String): Contact {
-        return contactPhones[phone] ?: (findContactByPhone(phone) ?: Contact.fromPhone(phone))
-            .also { cache(it) }
+    override fun getContactByPhone(phone: String): Contact? {
+        return contactPhones[phone] ?: findContactByPhone(phone)?.also { cache(it) }
     }
 
     override fun getContactByUri(uri: Uri): Contact? {
@@ -74,6 +75,74 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
                 getContactById(id)
             } else null
         }
+    }
+
+    private fun getContactsFromDatabase(): MutableMap<Long, Contact> {
+        Timber.d("getContactsFromDatabase")
+        val result = HashMap<Long, Contact>()
+        App.instance
+            .database
+            .contacts()
+            .contactsWithActions()
+            .onEach {
+                result[it.key.id] = contactFromDb(it.key, it.value)
+            }
+        return result
+    }
+
+    private fun putContactsIntoDatabase(contacts: Map<Long, Contact>) {
+        val contactsDao = App.instance.database.contacts()
+        val actionsDao = App.instance.database.actions()
+        contacts.values.forEach { contact ->
+            contactsDao.upsert(
+                com.asinosoft.cdm.db.Contact(
+                    contact.id,
+                    contact.name,
+                    contact.photoUri,
+                    contact.birthday,
+                    contact.starred
+                )
+            )
+
+            contact.actions.forEach { action ->
+                actionsDao.upsert(
+                    com.asinosoft.cdm.db.Action(
+                        contact.id,
+                        action.id,
+                        action.type,
+                        action.value,
+                        action.description
+                    )
+                )
+            }
+        }
+    }
+
+    private fun contactFromDb(
+        dbContact: com.asinosoft.cdm.db.Contact,
+        dbActions: List<com.asinosoft.cdm.db.Action>
+    ): Contact =
+        Contact(dbContact.id, dbContact.name).apply {
+            photoUri = dbContact.photo
+            starred = dbContact.starred
+            birthday = dbContact.birthday
+            actions = dbActions.map { actionFromDb(it) }.toMutableSet()
+        }
+
+    private fun actionFromDb(db: com.asinosoft.cdm.db.Action): Action =
+        Action(db.id, db.type, db.value, db.description)
+
+    private fun getContactsFromSystem(): MutableMap<Long, Contact> {
+        Timber.d("getContactsFromSystem")
+        val contacts = context.contentResolver.query(
+            ContactsContract.Data.CONTENT_URI, projection,
+            null, null, null
+        )!!.use {
+            ContactCursorAdapter(it).getAll()
+        }
+
+        Analytics.logContacts(contacts.values)
+        return contacts
     }
 
     private fun cache(contact: Contact) {
@@ -204,13 +273,11 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
 
         private fun parseBirthday(contact: Contact) {
             val date = cursor.getString(data1)
-
-            contact.age = StHelper.getAge(date)
-            contact.birthday = StHelper.parseDateToddMMyyyy(date)
+            contact.birthday = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)
         }
 
         private fun parsePhone(contact: Contact) {
-            val id = cursor.getInt(_id)
+            val id = cursor.getLong(_id)
             val number = cursor.getStringOrNull(data4) ?: cursor.getString(data1)
             val description =
                 context.resources.getString(Phone.getTypeLabelResource(cursor.getInt(data2)))
@@ -224,7 +291,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         }
 
         private fun parseEmail(contact: Contact) {
-            val id = cursor.getInt(_id)
+            val id = cursor.getLong(_id)
             val emailAddress = cursor.getString(data1)
             val description =
                 context.resources.getString(Email.getTypeLabelResource(cursor.getInt(data2)))
@@ -233,7 +300,7 @@ class ContactRepositoryImpl(private val context: Context) : ContactRepository {
         }
 
         private fun parseAction(contact: Contact, type: Action.Type) {
-            val id = cursor.getInt(_id)
+            val id = cursor.getLong(_id)
             val value = when (type.group) {
                 Action.Group.Telegram -> StHelper.convertNumber(cursor.getString(data3))
                 Action.Group.WhatsApp -> StHelper.convertNumber(cursor.getString(data1))

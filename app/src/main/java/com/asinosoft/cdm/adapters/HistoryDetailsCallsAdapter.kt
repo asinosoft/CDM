@@ -85,7 +85,12 @@ class HistoryDetailsCallsAdapter(
         v.time.text = call.time
         v.date.text = formatDate(call.timestamp)
 
-        val directActions = config.getContactSettings(call.contact)
+        val directActions =
+            if (null == call.contact)
+                config.getDefaultSettings(call.phone)
+            else
+                config.getContactSettings(call.contact)
+
         v.imageLeftAction.setImageResource(Action.resourceByType(directActions.left.type))
         v.imageRightAction.setImageResource(Action.resourceByType(directActions.right.type))
 
@@ -145,7 +150,7 @@ class HistoryDetailsCallsAdapter(
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.delete_call_item -> onDeleteCallRecord(call)
-                R.id.purge_contact_history -> onPurgeContactHistory(call.contact)
+                R.id.purge_contact_history -> if (null != call.contact) onPurgeContactHistory(call.contact)
             }
             true
         }

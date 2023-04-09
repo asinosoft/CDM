@@ -20,7 +20,7 @@ class CallService : InCallService() {
             super.onStateChanged(call, state)
             Timber.d("Call # %s | state → %s", call.phone, getCallStateText(state))
 
-            (application as App).notification.update(call)
+            App.instance.notification.update(call)
         }
     }
 
@@ -42,7 +42,7 @@ class CallService : InCallService() {
     override fun onCallAdded(call: Call) {
         Timber.i("Новый звонок → %s", call.details.handle.schemeSpecificPart)
         call.registerCallback(callback)
-        (application as App).notification.show(calls)
+        App.instance.notification.show(calls)
         startActivity(OngoingCallActivity.intent(this, call))
         if (calls.size >= 2) {
             Analytics.logDoubleCall()
@@ -55,7 +55,7 @@ class CallService : InCallService() {
     override fun onCallRemoved(call: Call) {
         Timber.i("Звонок завершён → %s", call.details.handle.schemeSpecificPart)
         call.unregisterCallback(callback)
-        (application as App).notification.show(calls)
+        App.instance.notification.show(calls)
     }
 
     fun getCall(phone: Uri?): Call? =

@@ -67,7 +67,7 @@
     <string name="digit_zero" translatable="false">0</string>
     <string name="digit_zero_text" translatable="false">+</string>
 
-    <string name="type_birthday">Birthday</string>
+    <string name="type_birthday">Birthday %s</string>
     <string name="state_call_ringing">Incoming</string>
     <string name="state_call_active">Active call</string>
     <string name="unknown_caller">Unknown caller</string>

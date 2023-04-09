@@ -11,7 +11,7 @@ import com.asinosoft.cdm.data.Action
 import com.asinosoft.cdm.helpers.Metoths
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
-    val config: Config = App.instance!!.config
+    val config: Config = App.instance.config
     val buttonColor: MutableLiveData<Int?> = MutableLiveData(config.favoritesBorderColor)
     val backgroundImages: MutableLiveData<List<Int>> = MutableLiveData()
 
