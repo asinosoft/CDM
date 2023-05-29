@@ -20,7 +20,7 @@ android {
             }
         }
     }
-    compileSdkVersion 32
+    compileSdkVersion 33
     buildToolsVersion "31.0.0"
     buildFeatures.viewBinding = true
     compileOptions {
@@ -46,7 +46,7 @@ android {
         defaultConfig {
             applicationId "com.asinosoft.cdm"
             minSdkVersion 23
-            targetSdkVersion 32
+            targetSdkVersion 33
             versionCode code
             versionName "${name}.${code}"
             testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -133,6 +133,7 @@ dependencies {
 
     //Yandex Mobile Ads
     implementation 'com.yandex.android:mobileads:5.5.0'
+    implementation 'com.yandex.android:mobmetricalib:5.3.0'
 
     // Runtime log-reader
 //    debugImplementation 'com.willowtreeapps.hyperion:hyperion-core:0.9.27'
