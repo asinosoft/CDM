@@ -85,17 +85,6 @@ class Analytics {
                     if (contact.starred) ++starredWithAvatar
                 }
             }
-
-            Firebase.analytics.setUserProperty("contacts_count", contacts.count().toString())
-            Firebase.analytics.setUserProperty(
-                "contacts_with_avatar",
-                contactsWithAvatar.toString()
-            )
-            Firebase.analytics.setUserProperty("favorites_count", starredCount.toString())
-            Firebase.analytics.setUserProperty(
-                "favorites_with_avatar",
-                starredWithAvatar.toString()
-            )
         }
 
         fun logContactSettingsTab() =
