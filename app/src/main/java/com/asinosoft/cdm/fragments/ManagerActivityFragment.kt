@@ -7,6 +7,7 @@ import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts.PickContact
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
@@ -44,6 +45,15 @@ class ManagerActivityFragment : Fragment() {
     private lateinit var v: ActivityManagerBinding
     private val model: ManagerViewModel by activityViewModels()
     private val config: Config = App.instance!!.config
+
+    /**
+     * Прокрутка в начало истории звонков при нажатии системной кнопки Назад
+     */
+    private val onBackPressed = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            v.rvCalls.scrollToPosition(0)
+        }
+    }
 
     /**
      * Блок избранных контактов
@@ -100,6 +110,7 @@ class ManagerActivityFragment : Fragment() {
     ): View {
         v = ActivityManagerBinding.inflate(layoutInflater)
         pickedPosition = savedInstanceState?.getInt("pickedPosition") ?: 0
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressed)
         return v.root
     }
 
@@ -114,6 +125,16 @@ class ManagerActivityFragment : Fragment() {
 
         initFavorites(callsLayoutManager)
         initCallHistory(callsLayoutManager)
+
+        v.rvCalls.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
+                onBackPressed.isEnabled =
+                    if (favoritesFirst)
+                        rv.computeVerticalScrollOffset() > 0
+                    else
+                        rv.computeVerticalScrollOffset() + rv.computeVerticalScrollExtent() < rv.computeVerticalScrollRange()
+            }
+        })
 
         v.fabKeyboard.supportImageTintList = null
         v.fabKeyboard.setOnClickListener {

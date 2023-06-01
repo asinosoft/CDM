@@ -3,6 +3,7 @@ package com.asinosoft.cdm.activities
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
@@ -12,17 +13,13 @@ import android.telecom.Call
 import android.telecom.Call.*
 import android.telecom.CallAudioState
 import android.telecom.PhoneAccountHandle
-import android.view.MotionEvent
-import android.view.VelocityTracker
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.ContactRepositoryImpl
 import com.asinosoft.cdm.databinding.ActivityOngoingCallBinding
 import com.asinosoft.cdm.dialer.CallService
-import com.asinosoft.cdm.dialer.addCharacter
 import com.asinosoft.cdm.dialer.getCallStateText
 import com.asinosoft.cdm.dialer.getFormattedDuration
 import com.asinosoft.cdm.helpers.*
@@ -31,21 +28,6 @@ import timber.log.Timber
 import java.util.*
 import kotlin.math.absoluteValue
 
-// Порог, докуда нужно дотянуть аватарку, чтобы принять/отклонить звонок
-private const val DRAG_THRESHOLD = 0.8f
-
-// Порог ускорения, с которым нужно бросить аватарку, чтобы принять/отклонить порог
-private const val VELOCITY_THRESHOLD = 500f
-
-// Продолжительность анимации "Звонок принят"
-private const val ACCEPT_ANIMATION_DURATION = 300L
-
-// Продолжительность анимации "Звонок отклонён"
-private const val REJECT_ANIMATION_DURATION = 300L
-
-// Продолжительность анимации возврата в исходное состояние
-private const val RESET_ANIMATION_DURATION = 300L
-
 /**
  * Активность текущего звонка
  */
@@ -53,6 +35,10 @@ class OngoingCallActivity : BaseActivity() {
     private lateinit var v: ActivityOngoingCallBinding
     private var call: Call? = null
     private var showIncomingAnimation = false
+
+    private var handleAnimation: ViewPropertyAnimator? = null
+    private var arrowUpAnimation: ViewPropertyAnimator? = null
+    private var arrowDownAnimation: ViewPropertyAnimator? = null
 
     // Интерфейс входящего звонка
     private var touchPosition = 0f
@@ -161,19 +147,32 @@ class OngoingCallActivity : BaseActivity() {
     private fun setCallerInfo(phone: String) {
         val contact = ContactRepositoryImpl(this).getContactByPhone(phone)
 
-        v.info.textCaller.text = contact.name
-        v.info.textCallerNumber.text = phone
-        contact.getAvatar(this, AvatarHelper.IMAGE).let { avatar ->
-            v.info.avatar.setImageDrawable(avatar)
-            v.incoming.handle.setImageDrawable(avatar)
+        if (0L == contact.id) {
+            v.info.textCaller.text = phone
+            v.info.textCallerNumber.text = null
+        } else {
+            v.info.textCaller.text = contact.name
+            v.info.textCallerNumber.text = phone
+        }
+
+        val photo = contact.getPhoto(this)
+        if (null == photo) {
+            v.info.avatar.setImageResource(R.drawable.ic_user_circle)
+            v.incoming.handle.setImageResource(R.drawable.ic_user_circle)
+            val color = ColorStateList.valueOf(AvatarHelper.getBackgroundColor(phone))
+            v.info.avatar.imageTintList = color
+            v.incoming.handle.imageTintList = color
+        } else {
+            v.info.avatar.setImageDrawable(photo)
+            v.incoming.handle.setImageDrawable(photo)
         }
     }
 
-    @SuppressLint("ResourceAsColor")
+    @SuppressLint("ClickableViewAccessibility")
     private fun initEventListeners() {
 
         v.ongoing.disconnect.setOnClickListener {
-            endCall()
+            call?.reject()
         }
 
         v.ongoing.buttonSpeaker.setOnClickListener {
@@ -192,7 +191,10 @@ class OngoingCallActivity : BaseActivity() {
             toggleKeyboard()
         }
 
-        v.keyboard.ripple0.setOnClickListener { dialpadPressed('0') }
+        v.keyboard.star.setOnClickListener { dialpadPressed('*') }
+        v.keyboard.star.setOnLongClickListener { dialpadPressed('#'); true }
+
+        v.keyboard.zeroBtn.setOnClickListener { dialpadPressed('0') }
         v.keyboard.oneBtn.setOnClickListener { dialpadPressed('1') }
         v.keyboard.twoBtn.setOnClickListener { dialpadPressed('2') }
         v.keyboard.threeBtn.setOnClickListener { dialpadPressed('3') }
@@ -203,10 +205,8 @@ class OngoingCallActivity : BaseActivity() {
         v.keyboard.eightBtn.setOnClickListener { dialpadPressed('8') }
         v.keyboard.nineBtn.setOnClickListener { dialpadPressed('9') }
 
-        v.keyboard.imageClear.setOnClickListener { toggleKeyboard() }
-        v.keyboard.btnCall.setOnClickListener { endCall() }
-
-        v.keyboard.ripple0.setOnLongClickListener { dialpadPressed('+'); true }
+        v.keyboard.close.setOnClickListener { toggleKeyboard() }
+        v.keyboard.hangup.setOnClickListener { endCall() }
 
         v.incoming.root.setOnTouchListener { _, e ->
             when (e.action) {
@@ -240,11 +240,15 @@ class OngoingCallActivity : BaseActivity() {
 
     private fun acquireProximitySensor() {
         if (powerManager.isWakeLockLevelSupported(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK)) {
-            proximityWakeLock = powerManager.newWakeLock(
-                PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK or PowerManager.ON_AFTER_RELEASE,
-                "com.asinosoft.cdm:wake_lock"
-            )
-            proximityWakeLock?.acquire(/* 1 hour */ 60 * 60 * 1000L)
+            if (null == proximityWakeLock) {
+                proximityWakeLock = powerManager.newWakeLock(
+                    PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK or PowerManager.ON_AFTER_RELEASE,
+                    "com.asinosoft.cdm:wake_lock"
+                )
+            }
+            if (false == proximityWakeLock?.isHeld) {
+                proximityWakeLock?.acquire(/* 1 hour */ 60 * 60 * 1000L)
+            }
         }
     }
 
@@ -268,8 +272,6 @@ class OngoingCallActivity : BaseActivity() {
 
     private fun acceptCall() {
         Timber.d("activateCall # %s", call?.phone)
-        v.incoming.root.visibility = View.GONE
-        showIncomingAnimation = false
         switchToCallingUI()
         call?.accept()
     }
@@ -283,18 +285,17 @@ class OngoingCallActivity : BaseActivity() {
 
     private fun onCallEnded() {
         Timber.d("onCallEnded # %s", call?.phone)
-        callTimer?.cancel()
 
         CallService.instance?.getNextCall()?.let {
             setCurrentCall(it)
+            initTimer()
             return
         }
 
-        try {
-            if (true == proximityWakeLock?.isHeld()) {
-                proximityWakeLock?.release()
-            }
+        releaseProximitySensor()
+        callTimer?.cancel()
 
+        try {
             audioManager.mode = AudioManager.MODE_NORMAL
         } catch (ignored: Exception) {
             Timber.e(ignored)
@@ -340,7 +341,7 @@ class OngoingCallActivity : BaseActivity() {
         v.ongoing.buttonMute.on()
         v.ongoing.buttonKeypad.off()
         v.ongoing.buttonSpeaker.on()
-        releaseProximitySensor()
+        acquireProximitySensor()
     }
 
     /**
@@ -354,6 +355,7 @@ class OngoingCallActivity : BaseActivity() {
         v.info.avatar.visibility = View.GONE
         animateArrowUp()
         animateArrowDown()
+        animateHandle()
         releaseProximitySensor()
     }
 
@@ -379,7 +381,6 @@ class OngoingCallActivity : BaseActivity() {
     private fun switchToKeyboard() {
         v.ongoing.root.visibility = View.INVISIBLE
         v.keyboard.root.visibility = View.VISIBLE
-        v.keyboard.btnCall.setImageResource(R.drawable.ic_phone_hangup)
         releaseProximitySensor()
     }
 
@@ -426,9 +427,9 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun dialpadPressed(char: Char) {
+        v.keyboard.inputText.text = v.keyboard.inputText.text.toString().plus(char)
         call?.playDtmfTone(char)
         call?.stopDtmfTone()
-        v.keyboard.inputText.addCharacter(char)
     }
 
     private fun updateCallState(callState: Int) {
@@ -487,11 +488,14 @@ class OngoingCallActivity : BaseActivity() {
     //region Incoming call handle interface
     private fun startDrag(e: MotionEvent): Boolean {
         maxHandleDistance = (v.incoming.accept.top - v.incoming.handle.top).absoluteValue.toFloat()
-        thresholdDistance = maxHandleDistance * DRAG_THRESHOLD
+        thresholdDistance =
+            maxHandleDistance * resources.getInteger(R.integer.incoming_swing_distance_threshold)
+                .toFloat() / 100f
         touchPosition = e.rawY
         isHandleDragged = true
         velocityTracker = VelocityTracker.obtain()
         velocityTracker?.addMovement(e)
+        handleAnimation?.cancel()
 
         return true
     }
@@ -506,15 +510,16 @@ class OngoingCallActivity : BaseActivity() {
             computeCurrentVelocity(100)
         }
         val position = (e.rawY - touchPosition)
+        val threshold = resources.getInteger(R.integer.incoming_swing_velocity_threshold).toFloat()
 
         when {
             (position > thresholdDistance) -> acceptCall()
 
             (position < -thresholdDistance) -> endCall()
 
-            VELOCITY_THRESHOLD < (velocityTracker?.yVelocity ?: 0f) -> endCall()
+            threshold < (velocityTracker?.yVelocity ?: 0f) -> endCall()
 
-            -VELOCITY_THRESHOLD > (velocityTracker?.yVelocity ?: 0f) -> acceptCall()
+            -threshold > (velocityTracker?.yVelocity ?: 0f) -> acceptCall()
 
             else -> animateToStart()
         }
@@ -559,47 +564,72 @@ class OngoingCallActivity : BaseActivity() {
     }
 
     private fun animateArrowUp() {
-        if (!showIncomingAnimation) return
+        if (!showIncomingAnimation || isHandleDragged) return
 
         v.incoming.animatedArrowUp.translationY = 400f
 
-        v.incoming.animatedArrowUp.animate()
+        arrowUpAnimation = v.incoming.animatedArrowUp.animate()
             .translationY(0.0f)
-            .setDuration(999)
+            .setDuration(
+                resources.getInteger(R.integer.incoming_arrow_up_animation_duration).toLong()
+            )
             .withEndAction { animateArrowUp() }
-            .start()
+            .apply { start() }
     }
 
     private fun animateArrowDown() {
-        if (!showIncomingAnimation) return
+        if (!showIncomingAnimation || isHandleDragged) return
 
         v.incoming.animatedArrowDown.translationY = -400f
 
-        v.incoming.animatedArrowDown.animate()
+        arrowDownAnimation = v.incoming.animatedArrowDown.animate()
             .translationY(0.0f)
-            .setDuration(999)
+            .setDuration(
+                resources.getInteger(R.integer.incoming_arrow_down_animation_duration).toLong()
+            )
             .withEndAction { animateArrowDown() }
-            .start()
+            .apply { start() }
+    }
+
+    private fun animateHandle(
+        dy: Float = resources.getInteger(R.integer.incoming_handle_animation_amplitude).toFloat()
+    ) {
+        if (!showIncomingAnimation || isHandleDragged) return
+
+        handleAnimation = v.incoming.handle.animate()
+            .translationY(dy)
+            .setDuration(
+                resources.getInteger(R.integer.incoming_handle_animation_duration).toLong()
+            )
+            .withEndAction { animateHandle(-dy) }
+            .apply { start() }
     }
 
     private fun animateToStart() {
+        val duration = resources.getInteger(R.integer.incoming_reset_animation_duration).toLong()
+
         v.incoming.handle.animate()
             .translationY(0f)
-            .setDuration(RESET_ANIMATION_DURATION)
+            .setDuration(duration)
+            .withEndAction {
+                animateHandle()
+                animateArrowUp()
+                animateArrowDown()
+            }
             .start()
 
         v.incoming.accept.animate()
             .alpha(1f)
             .scaleX(1f)
             .scaleY(1f)
-            .setDuration(RESET_ANIMATION_DURATION)
+            .setDuration(duration)
             .start()
 
         v.incoming.reject.animate()
             .alpha(1f)
             .scaleX(1f)
             .scaleY(1f)
-            .setDuration(RESET_ANIMATION_DURATION)
+            .setDuration(duration)
             .start()
     }
 
@@ -607,7 +637,9 @@ class OngoingCallActivity : BaseActivity() {
         isHandleDragged = false
         v.incoming.handle.animate()
             .translationY(-maxHandleDistance)
-            .setDuration(ACCEPT_ANIMATION_DURATION)
+            .setDuration(
+                resources.getInteger(R.integer.incoming_accept_animation_duration).toLong()
+            )
             .withEndAction { acceptCall() }
             .start()
     }
@@ -616,7 +648,9 @@ class OngoingCallActivity : BaseActivity() {
         isHandleDragged = false
         v.incoming.handle.animate()
             .translationY(maxHandleDistance)
-            .setDuration(REJECT_ANIMATION_DURATION)
+            .setDuration(
+                resources.getInteger(R.integer.incoming_reject_animation_duration).toLong()
+            )
             .withEndAction { endCall() }
             .start()
     }

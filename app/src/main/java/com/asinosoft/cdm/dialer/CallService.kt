@@ -47,6 +47,9 @@ class CallService : InCallService() {
         if (calls.size >= 2) {
             Analytics.logDoubleCall()
         }
+        if (Call.STATE_RINGING == call.callState) {
+            Analytics.logIncomingCall()
+        }
     }
 
     override fun onCallRemoved(call: Call) {
@@ -59,5 +62,5 @@ class CallService : InCallService() {
         calls.find { call -> call.details.handle == phone }
 
     fun getNextCall(): Call? =
-        calls.find { call -> Call.STATE_HOLDING == call.callState }
+        calls.find { call -> Call.STATE_DISCONNECTING != call.callState && Call.STATE_DISCONNECTED != call.callState }
 }

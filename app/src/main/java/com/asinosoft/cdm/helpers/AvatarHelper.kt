@@ -78,7 +78,7 @@ class AvatarHelper {
             }
         }
 
-        private fun getBackgroundColor(name: String): Int =
+        fun getBackgroundColor(name: String): Int =
             name.hashCode() and 0xffffff or 0xff000000.toInt()
 
         private fun getTextColor(backgroundColor: Int): Int =

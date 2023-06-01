@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import com.asinosoft.cdm.R
-import com.asinosoft.cdm.activities.DialActivity
+import com.asinosoft.cdm.activities.CallActivity
 import com.asinosoft.cdm.api.Analytics
 import timber.log.Timber
 
@@ -95,7 +95,7 @@ class Action(
     private fun phoneCall(context: Context, sim: Int = 0) {
         Timber.i("phoneCall: %s", value)
         Analytics.logActionPhoneCall()
-        Intent(context, DialActivity::class.java)
+        Intent(context, CallActivity::class.java)
             .setData(Uri.fromParts("tel", value, null))
             .putExtra("sim", sim)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

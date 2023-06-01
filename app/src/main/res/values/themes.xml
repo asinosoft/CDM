@@ -17,6 +17,7 @@
         <item name="backspaceIcon">@drawable/ic_backspace_24px</item>
         <item name="callIcon">@drawable/ic_phone_24px</item>
         <item name="closeIcon">@drawable/ic_close_24px</item>
+        <item name="hangupIcon">@drawable/ic_phone_hangup</item>
         <item name="settingsIcon">@drawable/ic_cog</item>
         <item name="searchIcon">@drawable/ic_dialpad</item>
         <item name="keyboardIcon">@drawable/ic_keyboard</item>
@@ -132,7 +133,7 @@
         <item name="android:textColor">@color/active_tab_text_light</item>
     </style>
 
-    <!-- Специальная прозрачная тема для промежуточной активоности DialActivity -->
+    <!-- Специальная прозрачная тема для промежуточной активности CallActivity -->
     <style name="Theme.Transparent" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>

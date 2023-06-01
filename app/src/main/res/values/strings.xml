@@ -42,6 +42,7 @@
     <string name="voicemail">Voice mail</string>
     <string name="unsaved">Unsaved</string>
     <string name="add_error">Error</string>
+    <string name="contact_not_found">Contact not found</string>
 
     <!-- Passcode lock -->
     <string name="digit_one" translatable="false">1</string>
@@ -162,6 +163,8 @@
     <string name="purge_contact_history">Purge contact history</string>
     <string name="purge_call_history">Purge call history</string>
     <string name="drag_me">Drag me up to accept Call. Or down to reject.</string>
+    <string name="call_sim1">Call by SIM1</string>
+    <string name="call_sim2">Call by SIM2</string>
 
     <plurals name="age">
         <item quantity="zero">%d years</item>

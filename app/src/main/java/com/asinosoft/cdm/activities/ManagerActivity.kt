@@ -1,9 +1,12 @@
 package com.asinosoft.cdm.activities
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
+import androidx.core.os.bundleOf
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.fragment.NavHostFragment
 import com.asinosoft.cdm.App
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
@@ -43,6 +46,13 @@ class ManagerActivity : BaseActivity() {
         }
 
         requestDrawOverlays(findViewById(R.id.nav_host))
+
+        if (intent.action === Intent.ACTION_DIAL || intent.action === Intent.ACTION_CALL) {
+            intent.data?.schemeSpecificPart?.let { phone ->
+                val host = supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
+                host.navController.navigate(R.id.searchFragment, bundleOf("phone" to phone))
+            }
+        }
     }
 
     override fun onPause() {
