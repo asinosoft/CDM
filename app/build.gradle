@@ -20,16 +20,14 @@ android {
             }
         }
     }
-    compileSdkVersion 32
-    buildToolsVersion "31.0.0"
     buildFeatures.viewBinding = true
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     // Автоматический инкремент номера сборки
@@ -42,11 +40,11 @@ android {
         versionProps['VERSION_CODE'] = code.toString()
         versionProps.store(versionPropsFile.newWriter(), null)
 
-
         defaultConfig {
             applicationId "com.asinosoft.cdm"
             minSdkVersion 23
-            targetSdkVersion 32
+            compileSdk 34
+            targetSdkVersion 34
             versionCode code
             versionName "${name}.${code}"
             testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
