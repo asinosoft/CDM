@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
 import android.net.Uri
+import androidx.annotation.Keep
 import androidx.core.net.toUri
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.data.Action
@@ -70,9 +71,9 @@ class ConfigImpl(private val context: Context) : Config {
             if (null == uri) {
                 context.deleteFile("background")
             } else {
-                context.contentResolver.openInputStream(uri)?.copyTo(
-                    File(context.filesDir, "background").outputStream()
-                )
+                context.contentResolver.openInputStream(uri)?.use {
+                    it.copyTo(File(context.filesDir, "background").outputStream())
+                }
 
                 // Переключаемся в специальную тёмную тему
                 theme = 3
@@ -198,15 +199,19 @@ class ConfigImpl(private val context: Context) : Config {
             .also { isChanged = true }
 
     override fun getContactSettings(contact: Contact): DirectActions {
-        val preferences = context.getSharedPreferences("contacts", Context.MODE_PRIVATE)
-        val settings = preferences.getString("actions-${contact.id}", null)
-        return if (settings == null) {
-            getDefaultContactActions(contact)
-        } else {
-            Gson().fromJson(settings, ContactSettings::class.java)
-                ?.let { getContactActions(contact, it) }
-                ?: getDefaultContactActions(contact)
+        val settings = context.getSharedPreferences("contacts", Context.MODE_PRIVATE)
+            .getString("actions-${contact.id}", null)
+        if (settings != null) {
+            try {
+                return Gson().fromJson(settings, ContactSettings::class.java)
+                    ?.let { getContactActions(contact, it) }
+                    ?: getDefaultContactActions(contact)
+            } catch (_: Exception) {
+                // ignore
+            }
         }
+
+        return getDefaultContactActions(contact)
     }
 
     override fun setContactSettings(contact: Contact, actions: DirectActions) {
@@ -264,6 +269,7 @@ class ConfigImpl(private val context: Context) : Config {
     /**
      * Адапторы для сериализации настроек в json
      */
+    @Keep
     class ContactSettings(
         var left: ActionSettings,
         var right: ActionSettings,
@@ -271,6 +277,7 @@ class ConfigImpl(private val context: Context) : Config {
         var down: ActionSettings,
     )
 
+    @Keep
     class ActionSettings(
         val id: Int,
         val type: Action.Type,

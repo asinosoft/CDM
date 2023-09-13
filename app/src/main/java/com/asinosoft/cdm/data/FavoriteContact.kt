@@ -11,11 +11,15 @@ data class FavoriteContact(
 ) {
     companion object {
         fun fromJson(json: String, contactRepository: ContactRepository): FavoriteContact {
-            return Gson().fromJson(json, JsonData::class.java)?.let { data ->
-                FavoriteContact(
-                    if (0L == data.contactID) null else contactRepository.getContactById(data.contactID),
-                )
-            } ?: FavoriteContact()
+            return try {
+                Gson().fromJson(json, JsonData::class.java)?.let { data ->
+                    FavoriteContact(
+                        if (0L == data.contactID) null else contactRepository.getContactById(data.contactID),
+                    )
+                } ?: FavoriteContact()
+            } catch (_: Exception) {
+                FavoriteContact()
+            }
         }
     }
 
