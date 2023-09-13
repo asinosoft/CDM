@@ -1,7 +1,6 @@
 package com.asinosoft.cdm.adapters
 
 import android.content.ClipData
-import android.content.Context
 import android.os.Build
 import android.os.Vibrator
 import android.view.DragEvent
@@ -28,16 +27,15 @@ import com.asinosoft.cdm.views.CircularImageView
 import com.asinosoft.cdm.views.LockableLayoutManager
 
 class FavoritesAdapter(
-    val config: Config,
-    val favorites: FavoriteContactRepository,
-    val callsLayoutManager: LockableLayoutManager,
-    val deleteButton: CircularImageView,
-    val editButton: CircularImageView,
-    val openContact: (Contact) -> Unit,
-    val pickContact: (Int) -> Unit,
-    val onTouch: (Int) -> Unit, // Через колбэк передаётся позиция контакта, на котором находится палец пользователя
-    val context: Context,
-    val vibrator: Vibrator
+    private val config: Config,
+    private val favorites: FavoriteContactRepository,
+    private val callsLayoutManager: LockableLayoutManager,
+    private val deleteButton: CircularImageView,
+    private val editButton: CircularImageView,
+    private val openContact: (Contact) -> Unit,
+    private val pickContact: (Int) -> Unit,
+    private val onTouch: (Int) -> Unit, // Через колбэк передаётся позиция контакта, на котором находится палец пользователя
+    private val vibrator: Vibrator
 ) : RecyclerView.Adapter<FavoritesAdapter.Holder>() {
 
     private val touchHelper = ItemTouchHelper(ItemTouchCallbackCir())
@@ -100,18 +98,7 @@ class FavoritesAdapter(
                 tag = n
                 borderWidth = config.favoritesBorderWidth.toFloat()
                 config.favoritesBorderColor?.let { borderColor = it }
-                replaceListener = {
-                    touchHelper.startDrag(it)
-                }
-
                 directActions = favorite.contact?.let { config.getContactSettings(it) }
-                deleteListener = {
-                    favorites.removeContact(absoluteAdapterPosition)
-                    notifyItemRemoved(absoluteAdapterPosition)
-                }
-                replaceListenerForHolder = {
-                    replaceListener(this@Holder)
-                }
                 dragListener = {
                     ViewCompat.startDragAndDrop(
                         v.root,
@@ -143,11 +130,14 @@ class FavoritesAdapter(
                             vibrator.vibrateSafety(Keys.VIBRO, 255)
                             Analytics.logFavoriteLongClick()
                         }
+
                         DragEvent.ACTION_DRAG_EXITED -> {
                         }
+
                         DragEvent.ACTION_DRAG_ENDED -> {
                             setOptionalCirsVisible(false)
                         }
+
                         DragEvent.ACTION_DROP -> {
                             val draggedPosition =
                                 event.clipData.getItemAt(0).text.toString().toInt()

@@ -206,7 +206,6 @@ class ManagerActivityFragment : Fragment() {
                     pickContact.launch(null)
                 },
                 { indexOfFrontChild = it },
-                context,
                 context.vibrator
             )
             rvFavorites.adapter = favoritesAdapter

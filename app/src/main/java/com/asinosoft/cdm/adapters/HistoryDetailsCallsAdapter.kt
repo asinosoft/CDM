@@ -20,7 +20,7 @@ import com.asinosoft.cdm.helpers.DateHelper
 import com.asinosoft.cdm.helpers.Metoths
 import com.asinosoft.cdm.helpers.StHelper
 import com.asinosoft.cdm.helpers.getThemeColor
-import com.yandex.mobile.ads.banner.AdSize
+import com.yandex.mobile.ads.banner.BannerAdSize
 import com.zerobranch.layout.SwipeLayout
 import java.util.*
 import com.google.android.gms.ads.AdRequest as GoogleAds
@@ -52,7 +52,7 @@ class HistoryDetailsCallsAdapter(
         val binding = ContactCallItemBinding.inflate(inflater, parent, false)
         binding.yandexAds.apply {
             setAdUnitId(context.getString(R.string.yandex_ads_unit_id))
-            setAdSize(AdSize.flexibleSize(320, 50))
+            setAdSize(BannerAdSize.fixedSize(context, 320, 50))
         }
         return HolderHistory(binding)
     }
@@ -112,6 +112,7 @@ class HistoryDetailsCallsAdapter(
                         Analytics.logContactHistorySwipeRight()
                         directActions.right.perform(context)
                     }
+
                     SwipeLayout.LEFT -> {
                         Analytics.logContactHistorySwipeLeft()
                         directActions.left.perform(context)

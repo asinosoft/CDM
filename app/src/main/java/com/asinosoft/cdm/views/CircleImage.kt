@@ -7,7 +7,6 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
 import com.asinosoft.cdm.R
 import com.asinosoft.cdm.api.Analytics
 import com.asinosoft.cdm.data.Contact
@@ -35,9 +34,6 @@ class CircleImage @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : CircularImageView(context, attrs, 0) {
     // TODO: Добавь в настройках изменение типа управления кнопками (перетаскивание, меню)
-    var deleteListener: () -> Unit = {}
-    var replaceListenerForHolder: () -> Unit = {}
-    var replaceListener: (RecyclerView.ViewHolder) -> Unit = {}
     var openContact: (Contact) -> Unit = {}
     var pickContact: () -> Unit = {}
     var dragListener: () -> Unit = {}

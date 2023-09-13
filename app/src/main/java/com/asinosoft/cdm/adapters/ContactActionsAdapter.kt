@@ -15,7 +15,7 @@ import com.asinosoft.cdm.data.Contact
 import com.asinosoft.cdm.helpers.StHelper
 import com.asinosoft.cdm.helpers.telecomManager
 import com.google.android.gms.ads.AdView
-import com.yandex.mobile.ads.banner.AdSize
+import com.yandex.mobile.ads.banner.BannerAdSize
 import com.yandex.mobile.ads.banner.BannerAdView
 import java.util.*
 import com.google.android.gms.ads.AdRequest as GoogleAds
@@ -86,7 +86,7 @@ class ContactActionsAdapter(private val contact: Contact) :
         if ("ru" == Locale.getDefault().language) {
             holder.itemView.findViewById<BannerAdView>(R.id.yandexAds).apply {
                 setAdUnitId(context.getString(R.string.yandex_ads_unit_id))
-                setAdSize(AdSize.flexibleSize(320, 50))
+                setAdSize(BannerAdSize.fixedSize(context, 320, 50))
                 loadAd(YandexAds.Builder().build())
                 visibility = View.VISIBLE
             }
