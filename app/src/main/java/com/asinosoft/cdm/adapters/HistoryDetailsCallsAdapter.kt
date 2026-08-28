@@ -50,10 +50,7 @@ class HistoryDetailsCallsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderHistory {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ContactCallItemBinding.inflate(inflater, parent, false)
-        binding.yandexAds.apply {
-            setAdUnitId(context.getString(R.string.yandex_ads_unit_id))
-            setAdSize(BannerAdSize.fixedSize(context, 320, 50))
-        }
+        binding.yandexAds.setAdSize(BannerAdSize.fixed(context, 320, 50))
         return HolderHistory(binding)
     }
 
@@ -68,7 +65,7 @@ class HistoryDetailsCallsAdapter(
             v.googleAds.visibility = View.GONE
         } else if ("ru" == Locale.getDefault().language) {
             v.yandexAds.apply {
-                loadAd(YandexAds.Builder().build())
+                loadAd(YandexAds.Builder(context.getString(R.string.yandex_ads_unit_id)).build())
                 visibility = View.VISIBLE
             }
         } else {

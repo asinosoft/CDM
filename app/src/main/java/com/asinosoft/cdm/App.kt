@@ -5,7 +5,7 @@ import com.asinosoft.cdm.api.Config
 import com.asinosoft.cdm.api.ConfigImpl
 import com.asinosoft.cdm.dialer.NotificationManager
 import com.google.firebase.FirebaseApp
-import com.yandex.mobile.ads.common.MobileAds
+import com.yandex.mobile.ads.common.YandexAds
 import timber.log.Timber
 import java.util.*
 
@@ -29,7 +29,7 @@ class App : Application() {
     }
 
     private fun initializeYandexAds() {
-        MobileAds.initialize(this) {
+        YandexAds.initialize(this) {
             Timber.i("Yandex Mobile Ads initialized")
         }
     }

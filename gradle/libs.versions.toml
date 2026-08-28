@@ -1,0 +1,77 @@
+[versions]
+appcompat = "1.8.0"
+bubbleseekbar = "2.1.1"
+circleimageview = "3.1.0"
+colorpicker = "1.1.0"
+constraintlayout = "2.2.2"
+coreKtx = "1.19.0"
+coreSplashscreen = "1.2.0"
+firebaseAnalyticsKtx = "22.5.0"
+firebaseBom = "34.18.0"
+firebaseConfigKtx = "22.1.2"
+fragmentKtx = "1.9.0"
+googleServices = "4.5.0"
+gradle = "9.3.2"
+gson = "2.14.0"
+junit = "4.13.2"
+kotlinGradlePlugin = "2.4.10"
+kotlinx = "1.11.0"
+legacySupportV4 = "1.0.0"
+libphonenumber = "9.0.38"
+library = "1.0.1"
+lifecycle = "2.11.0"
+lifecycleExtensions = "2.2.0"
+material = "1.14.0"
+mobileads = "8.3.0"
+mockitoCore = "5.23.0"
+navigation = "2.10.0"
+playServicesAds = "25.4.0"
+preferenceKtx = "1.2.1"
+recyclerview = "1.4.0"
+runner = "1.7.0"
+smarttablayout = "2.0.0"
+swipelayout = "1.3.0"
+timber = "5.0.1"
+viewpager2 = "1.1.0"
+webkit = "1.17.0"
+
+[libraries]
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+bubbleseekbar = { group = "com.github.koliong", name = "BubbleSeekBar", version.ref = "bubbleseekbar" }
+circleimageview = { group = "de.hdodenhof", name = "circleimageview", version.ref = "circleimageview" }
+colorpicker = { group = "com.jaredrummler", name = "colorpicker", version.ref = "colorpicker" }
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+firebase-analytics-ktx = { group = "com.google.firebase", name = "firebase-analytics-ktx", version.ref = "firebaseAnalyticsKtx" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-config-ktx = { group = "com.google.firebase", name = "firebase-config-ktx", version.ref = "firebaseConfigKtx" }
+fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
+google-services = { group = "com.google.gms", name = "google-services", version.ref = "googleServices" }
+gradle = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx" }
+legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
+libphonenumber = { group = "com.googlecode.libphonenumber", name = "libphonenumber", version.ref = "libphonenumber" }
+library = { group = "com.ogaclejapan.smarttablayout", name = "library", version.ref = "smarttablayout" }
+lifecycle-extensions1 = { group = "androidx.lifecycle", name = "lifecycle-extensions", version.ref = "lifecycleExtensions" }
+lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
+lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+mobileads = { group = "com.yandex.android", name = "mobileads", version.ref = "mobileads" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockitoCore" }
+navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
+navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation" }
+play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
+preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preferenceKtx" }
+recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+ripplebackground-library = { group = "com.skyfishjy.ripplebackground", name = "library", version.ref = "library" }
+runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
+swipelayout = { group = "com.github.zerobranch", name = "SwipeLayout", version.ref = "swipelayout" }
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+utils-v4 = { group = "com.ogaclejapan.smarttablayout", name = "utils-v4", version.ref = "smarttablayout" }
+viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
+webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }

@@ -85,9 +85,9 @@ class ContactActionsAdapter(private val contact: Contact) :
     private fun bindAdvertiser(holder: ViewContactInfo) {
         if ("ru" == Locale.getDefault().language) {
             holder.itemView.findViewById<BannerAdView>(R.id.yandexAds).apply {
-                setAdUnitId(context.getString(R.string.yandex_ads_unit_id))
-                setAdSize(BannerAdSize.fixedSize(context, 320, 50))
-                loadAd(YandexAds.Builder().build())
+                val adUnitId = context.getString(R.string.yandex_ads_unit_id)
+                setAdSize(BannerAdSize.fixed(context, 320, 50))
+                loadAd(YandexAds.Builder(adUnitId).build())
                 visibility = View.VISIBLE
             }
         } else {
